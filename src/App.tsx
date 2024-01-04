@@ -21,33 +21,33 @@ function App() {
         {/* <LMChannelList/> */}
         <LMChatView>
           <Header />
-          <MessageList MessageComponent={CustomMessage} />
+          <MessageList MessageComponent={CustomMessageWithClassStyling} />
           <Input />
         </LMChatView>
       </LMClientOverlayProvider>
     </>
   );
 }
-function CustomMessage() {
-  const { message } = useContext(MessageContext);
-  return (
-    <div
-      style={{
-        color: "green",
-        background: "#f0f0f0",
-        padding: "16px",
-        borderRadius: "8px",
-        margin: "30px",
-        width: "250px",
-      }}
-    >
-      {message?.toString()}
-    </div>
-  );
-}
-
-// function CustomMessageWithClassStyling() {
+// function CustomMessage() {
 //   const { message } = useContext(MessageContext);
-//   return <div className="customClass">{message?.toString()}</div>;
+//   return (
+//     <div
+//       style={{
+//         color: "green",
+//         background: "#f0f0f0",
+//         padding: "16px",
+//         borderRadius: "8px",
+//         margin: "30px",
+//         width: "250px",
+//       }}
+//     >
+//       {message?.toString()}
+//     </div>
+//   );
 // }
+
+function CustomMessageWithClassStyling() {
+  const { message } = useContext(MessageContext);
+  return <div className="customClass">{message?.toString()}</div>;
+}
 export default App;
