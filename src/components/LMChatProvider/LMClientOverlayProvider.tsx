@@ -1,9 +1,11 @@
-import React, { PropsWithChildren, useState } from "react";
+import React, { PropsWithChildren } from "react";
 import { LMChatProps } from "../../types/prop-types/LMChatProps";
 import GlobalClientProviderContext from "../../context/GlobalClientProviderContext";
 import UserProviderContext from "../../context/UserProviderContext";
 import ThemeProviderContext from "../../context/ThemeProviderContext";
 import LoaderContextProvider from "../../context/LoaderContextProvider";
+import useUserProvider from "../../hooks/useUserProvider";
+import LMChatClient from "@likeminds.community/chat-js-beta";
 
 const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
   client,
@@ -11,15 +13,18 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
   theme,
 }) => {
   // State Variables
-  const [lmChatUser, setLmChatUser] = useState<unknown>(null);
-  const [lmChatUserMemberState, setLmChatUserMemberState] =
-    useState<unknown>(null);
-  console.log(children);
+  // const [lmChatUser, setLmChatUser] = useState<unknown>(null);
+  // const [lmChatUserMemberState, setLmChatUserMemberState] =
+  //   useState<unknown>(null);
+
   // common functions
-  function logoutUser() {
-    setLmChatUser(null);
-    setLmChatUserMemberState(null);
-  }
+  // function logoutUser() {
+  //   setLmChatUser(null);
+  //   setLmChatUserMemberState(null);
+  // }
+  const { lmChatUser, lmChatUserMemberState, logoutUser } = useUserProvider({
+    lmChatClient: client as LMChatClient,
+  });
   return (
     <GlobalClientProviderContext.Provider
       value={{
