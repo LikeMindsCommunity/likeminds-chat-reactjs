@@ -1,4 +1,7 @@
-import React from "react";
+// Icons
+import searchIcon from "./../../assets/img/search.svg";
+import shareIcon from "./../../assets/img/share.svg";
+import menuIcon from "./../../assets/img/overflow-menu.svg";
 
 const Header = () => {
   return (
@@ -13,8 +16,14 @@ const Header = () => {
         </div>
       </div>
       <div className="lm-header-right">
-        <div className="lm-channel-search">
-          <img src="https://placehold.co/400" alt="chaneel img" />
+        <div className="lm-channel-icon">
+          <img src={searchIcon} alt="searchIcon" />
+        </div>
+        <div className="lm-channel-icon">
+          <img src={shareIcon} alt="shareIcon" />
+        </div>
+        <div className="lm-channel-icon">
+          <img src={menuIcon} alt="menuIcon" />
         </div>
       </div>
     </div>
