@@ -12,17 +12,12 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
   children,
   theme,
 }) => {
-  // State Variables
-  // const [lmChatUser, setLmChatUser] = useState<unknown>(null);
-  // const [lmChatUserMemberState, setLmChatUserMemberState] =
-  //   useState<unknown>(null);
-
-  // common functions
-  // function logoutUser() {
-  //   setLmChatUser(null);
-  //   setLmChatUserMemberState(null);
-  // }
-  const { lmChatUser, lmChatUserMemberState, logoutUser } = useUserProvider({
+  const {
+    lmChatUser,
+    lmChatUserMemberState,
+    logoutUser,
+    lmChatUserCurrentCommunity,
+  } = useUserProvider({
     lmChatClient: client as LMChatClient,
   });
   return (
@@ -41,6 +36,7 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
             currentUser: lmChatUser,
             memberState: lmChatUserMemberState,
             logoutUser: logoutUser,
+            currentCommunity: lmChatUserCurrentCommunity,
           }}
         >
           <LoaderContextProvider.Provider

@@ -11,7 +11,7 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
     const { conversations } = useContext(MessageListContext);
 
     return (
-      <div>
+      <div className="lm-channel">
         {conversations?.map((conversation: unknown) => {
           return (
             <MessageContext.Provider
