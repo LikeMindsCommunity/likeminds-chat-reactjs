@@ -3,6 +3,7 @@ import { MessageListProps } from "../../types/prop-types/MessageListProps";
 import MessageListContext from "../../context/MessageListContext";
 import MessageContext from "../../context/MessageContext";
 import Message from "../LMMessage/Message";
+// import DmReqBlock from "./DmReqBlock";
 
 const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
   (props) => {
@@ -26,6 +27,49 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
           <div className="msg">Can we connect sometime?</div>
           <div className="time">10:30</div>
         </div>
+
+        <div className="conversation sender">
+          <div className="msg">Sender's message goes here</div>
+          <div className="time">10:30</div>
+        </div>
+        <div className="conversation receiver">
+          <div className="name">Name</div>
+          <div className="msg">
+            Can we connect sometime? Sender's message goes here
+          </div>
+          <div className="time">10:30</div>
+        </div>
+
+        <div className="conversation sender">
+          <div className="msg">
+            Sender's message goes here Sender's message goes here
+          </div>
+          <div className="time">10:30</div>
+        </div>
+
+        <div className="conversation sender">
+          <div className="msg">
+            Sender's message goes hereSender's message goes here Sender's
+            message goes here Sender's message goes here
+          </div>
+          <div className="time">10:30</div>
+        </div>
+        <div className="conversation sender">
+          <div className="msg">Sender's message goes hereSender's mess</div>
+          <div className="time">10:30</div>
+        </div>
+        <div className="conversation sender">
+          <div className="msg">
+            Sender's message goes hereSender' ssage goes here
+          </div>
+          <div className="time">10:30</div>
+        </div>
+        <div className="conversation receiver">
+          <div className="name">Name</div>
+          <div className="msg">Can we connect sometime?</div>
+          <div className="time">10:30</div>
+        </div>
+
         <div className="conversation sender">
           <div className="msg">Sender's message goes here</div>
           <div className="time">10:30</div>
@@ -44,18 +88,7 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
         })}
 
         {/* DM Request Block */}
-
-        <div className="dmReqBlock">
-          <p>
-            The sender has sent you a direct messaging request. Approve or
-            respond with a message to get connected. Rejecting this request will
-            not notify the sender.
-          </p>
-          <div className="dmActions">
-            <button type="button">Approve</button>
-            <button type="button">Reject</button>
-          </div>
-        </div>
+        {/* <DmReqBlock /> */}
       </div>
     );
   }

@@ -94,6 +94,7 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
+  overflow-y: scroll;
 }
 
 .lm-channel .dmReqBlock{
@@ -148,7 +149,9 @@ body {
   text-align: center;
 }
 .lm-channel .conversation{ 
-  width: 265px;
+  max-width: 425px;
+  min-width: 180px;
+  width: auto;
   border-radius: 15px;
   padding: 14px 14px 8px 14px;  
   margin: 0 0 2px 0;
@@ -184,7 +187,7 @@ body {
   background-color: #fff; 
   float: left;
   clear: both;
-  margin-right: 50%;
+  margin-right: auto;
 }
 .lm-channel .conversation.sender { 
   background-color: #e1fefb; 
