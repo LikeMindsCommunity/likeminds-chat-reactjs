@@ -1,42 +1,108 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+}
+body{
+  font-family: 'Roboto', sans-serif;
+}
+/* LM - Styles */
+.d-flex{
+  display: flex; 
+  width: 100%;
+  height: 100vh;
+}
+.justify-content-around{
+  justify-content: space-around;
+}
+.flex-direction{
+  flex-direction: column;
+}
+/* LM - Styles */
+/* Header */
+.lm-channel-header{
+  padding: 20px 30px; 
+  margin: 0px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.lm-channel-header .lm-header-left{
+  display: flex;
+  align-items: center;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.lm-channel-header .lm-channel-img{
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 20px 0 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.lm-channel-header .lm-channel-img img{
+  width: 100%;
+}
+.lm-channel-header .lm-channel-desc{
+  display: flex;
+  flex-direction: column;
 }
 
-.card {
-  padding: 2em;
+.lm-channel-header .lm-channel-desc .lm-channel-title{
+  color: #020202;
+  font-size: 18px;
+  font-weight: 500;
+  margin:  0 0 5px 0;
 }
 
-.read-the-docs {
-  color: #888;
+.lm-channel-header .lm-channel-desc .lm-channel-participants{
+  color: #818182;
+  font-size: 16px;
+  font-weight: 300;
 }
+
+.lm-channel-header .lm-header-right{
+  display: flex;
+  align-items: center;
+}
+.lm-channel-header .lm-header-right .lm-channel-search{
+  height: 32px;
+  width: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.lm-channel-header .lm-header-right .lm-channel-search img{ 
+  width: 32px;
+}
+
+/* Header */
+
+
+/* Message Box */
+.lm-channel{
+  background-color: #d0d8e2;
+  padding: 30px;
+  height: 100vh;
+}
+/* Message Box */
+
+
+/* LM Input */
+.lm-channel-input{
+  padding: 20px 30px;
+  border: 1px solid #b1bbc5;
+  width: 100%;
+  background-color: #d0d8e2; 
+  box-sizing: border-box;
+}
+.lm-channel-input input{
+  border-radius: 25px;
+  width: 100%;
+  padding: 15px 20px;
+  border: 1px solid #b1bbc5; 
+  font-size: 16px;
+}
+/* LM Input */

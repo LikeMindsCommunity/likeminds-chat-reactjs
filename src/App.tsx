@@ -7,6 +7,8 @@ import Input from "./components/LMInput/Input";
 import MessageList from "./components/LMMessageList/MessageList";
 import MessageContext from "./context/MessageContext";
 
+import "./App.css";
+
 function App() {
   return (
     <>
@@ -16,9 +18,11 @@ function App() {
         //   return <p>hello this is a custom component</p>;
         // }}
         >
-          <Header />
-          <MessageList MessageComponent={CustomMessageWithClassStyling} />
-          <Input />
+          <div className="d-flex flex-direction ">
+            <Header />
+            <MessageList MessageComponent={CustomMessageWithClassStyling} />
+            <Input />
+          </div>
         </LMChatView>
       </LMClientOverlayProvider>
     </>
