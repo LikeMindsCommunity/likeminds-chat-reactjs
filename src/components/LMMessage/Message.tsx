@@ -3,12 +3,7 @@ import MessageContext from "../../context/MessageContext";
 
 const Message = () => {
   const { message } = useContext(MessageContext);
-  return (
-    <div className="lm-channel">
-      {message?.toString()}
-      dfsdf
-    </div>
-  );
+  return <div>{message?.toString()}</div>;
 };
 
 export default Message;

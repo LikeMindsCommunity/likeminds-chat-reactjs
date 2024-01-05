@@ -9,6 +9,7 @@ import MessageContext from "./context/MessageContext";
 import LMChatClient from "@likeminds.community/chat-js-beta";
 
 import "./App.css";
+import LMChannelList from "./components/LMChannelList/LmChannelList";
 
 function App() {
   const myClient: LMChatClient = LMChatClient.setApiKey(
@@ -25,10 +26,15 @@ function App() {
         //   return <p>hello this is a custom component</p>;
         // }}
         >
-          <div className="d-flex flex-direction ">
-            <Header />
-            <MessageList MessageComponent={CustomMessageWithClassStyling} />
-            <Input />
+          <div className="d-flex">
+            <div className="lm-left-panel">
+              <LMChannelList />
+            </div>
+            <div className="lm-right-panel d-flex flex-direction">
+              <Header />
+              <MessageList MessageComponent={CustomMessageWithClassStyling} />
+              <Input />
+            </div>
           </div>
         </LMChatView>
       </LMClientOverlayProvider>
