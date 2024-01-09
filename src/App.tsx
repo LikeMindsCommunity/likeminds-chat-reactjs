@@ -1,11 +1,11 @@
-import { useContext } from "react";
+// import { useContext } from "react";
 import { Theme } from "./Themes/ThemeClass";
 import Header from "./components/Header/Header";
 import LMClientOverlayProvider from "./components/LMChatProvider/LMClientOverlayProvider";
 import LMChatView from "./components/LMChatView/LMChatView";
 import Input from "./components/LMInput/Input";
 import MessageList from "./components/LMMessageList/MessageList";
-import MessageContext from "./context/MessageContext";
+// import MessageContext from "./context/MessageContext";
 import LMChatClient from "@likeminds.community/chat-js-beta";
 
 import "./App.css";
@@ -33,7 +33,7 @@ function App() {
             </div>
             <div className="lm-right-panel d-flex flex-direction">
               <Header />
-              <MessageList MessageComponent={CustomMessageWithClassStyling} />
+              <MessageList />
               <Input />
             </div>
           </div>
@@ -60,8 +60,8 @@ function App() {
 //   );
 // }
 
-function CustomMessageWithClassStyling() {
-  const { message } = useContext(MessageContext);
-  return <div className="customClass">{message?.toString()}</div>;
-}
+// function CustomMessageWithClassStyling() {
+//   const { message } = useContext(MessageContext);
+//   return <div className="customClass">{message?.toString()}</div>;
+// }
 export default App;

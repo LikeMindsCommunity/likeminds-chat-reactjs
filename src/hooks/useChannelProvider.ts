@@ -23,7 +23,7 @@ export default function useChannelProvider(): ChannelProviderInterface {
   const { chatroomId } = useContext(ChatroomProviderContext);
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
-  const { lmChatUser } = useUserProvider({ lmChatClient: lmChatclient! });
+  const { lmChatUser } = useUserProvider();
   const [chatroom, setChatroom] = useState<unknown>(null);
   const [conversations, setConversations] = useState<Conversation[] | null>([]);
 
