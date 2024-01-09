@@ -5,7 +5,7 @@ import UserProviderContext from "../../context/UserProviderContext";
 import ThemeProviderContext from "../../context/ThemeProviderContext";
 import LoaderContextProvider from "../../context/LoaderContextProvider";
 import useUserProvider from "../../hooks/useUserProvider";
-import LMChatClient from "@likeminds.community/chat-js-beta";
+import { LMClient } from "../../types/DataLayerExportsTypes";
 
 const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
   client,
@@ -18,7 +18,7 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
     logoutUser,
     lmChatUserCurrentCommunity,
   } = useUserProvider({
-    lmChatClient: client as LMChatClient,
+    lmChatClient: client as LMClient,
   });
   return (
     <GlobalClientProviderContext.Provider

@@ -1,9 +1,9 @@
 import React from "react";
 interface ChatroomProviderContextInterface {
-  chatroomId: unknown | null;
+  chatroomId: string | number | null;
   setChatroom: (() => void) | null;
 }
 export default React.createContext<ChatroomProviderContextInterface>({
-  chatroomId: null,
+  chatroomId: 94621,
   setChatroom: null,
 });

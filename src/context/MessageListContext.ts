@@ -1,8 +1,9 @@
 import React from "react";
+import Conversation from "../types/models/conversations";
 
 interface MessageListContextInterface {
-  conversations: string[] | null;
-  setConversations: React.Dispatch<string[]> | null;
+  conversations: Conversation[] | null;
+  setConversations: React.Dispatch<Conversation[]> | null;
 }
 
 export default React.createContext<MessageListContextInterface>({

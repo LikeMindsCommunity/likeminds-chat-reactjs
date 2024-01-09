@@ -1,5 +1,5 @@
-import LMChatClient from "@likeminds.community/chat-js-beta";
 import { useEffect, useState } from "react";
+import { LMClient } from "../types/DataLayerExportsTypes";
 
 interface UserProviderInterface {
   lmChatUser: unknown;
@@ -9,13 +9,13 @@ interface UserProviderInterface {
 }
 
 interface UseUserProviderParams {
-  lmChatClient: LMChatClient;
+  lmChatClient: LMClient;
 }
 
 export default function useUserProvider({
   lmChatClient,
 }: UseUserProviderParams): UserProviderInterface {
-  const [lmChatUser, setLmChatUser] = useState<unknown>(null);
+  const [lmChatUser, setLmChatUser] = useState<null | LMClient>(null);
   const [lmChatUserMemberState, setLmChatUserMemberState] =
     useState<unknown>(null);
   const [lmChatUserCurrentCommunity, setLmChatUserCurrentCommunity] =

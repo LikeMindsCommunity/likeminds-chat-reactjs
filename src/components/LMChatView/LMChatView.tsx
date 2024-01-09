@@ -1,39 +1,19 @@
-import React, {
-  PropsWithChildren,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { PropsWithChildren, useContext } from "react";
 import { LMChatViewProps } from "../../types/prop-types/LMChatViewProps";
 import LoaderContextProvider from "../../context/LoaderContextProvider";
 import Loader from "../LMLoader/Loader";
 
-import ChatroomProviderContext from "../../context/ChatroomProviderContext";
 import ChatroomDetailContext from "../../context/ChatroomDetailContext";
 import MessageListContext from "../../context/MessageListContext";
+
+import useChannelProvider from "../../hooks/useChannelProvider";
 
 const LMChatView: React.FC<PropsWithChildren<LMChatViewProps>> = (props) => {
   const { children } = props;
   const { loader } = useContext(LoaderContextProvider);
-  const { chatroomId } = useContext(ChatroomProviderContext);
 
-  // state variables and functions
-  const [chatroom, setChatroom] = useState<unknown>(null);
-  const [conversations, setConversations] = useState<string[]>(["hello", "hi"]);
-
-  useEffect(() => {
-    async function fetchChannel() {
-      try {
-        // get the chatroom details
-        // get the chatroom conversations
-        // set the loader to false
-      } catch (error) {
-        // console.log the error
-      }
-    }
-    fetchChannel();
-  }, [chatroomId]);
-
+  const { chatroom, setChatroom, conversations, setConversations } =
+    useChannelProvider();
   // Function to set the layout in case loader is false
   function setLayout() {
     return (
@@ -44,7 +24,11 @@ const LMChatView: React.FC<PropsWithChildren<LMChatViewProps>> = (props) => {
             setConversations,
           }}
         >
-          {conversations.length > 0 ? children : <div>0 conversations</div>}
+          {conversations && conversations?.length > 0 ? (
+            children
+          ) : (
+            <div>0 conversations</div>
+          )}
         </MessageListContext.Provider>
       </ChatroomDetailContext.Provider>
     );

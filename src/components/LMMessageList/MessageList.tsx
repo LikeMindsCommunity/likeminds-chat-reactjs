@@ -3,6 +3,7 @@ import { MessageListProps } from "../../types/prop-types/MessageListProps";
 import MessageListContext from "../../context/MessageListContext";
 import MessageContext from "../../context/MessageContext";
 import Message from "../LMMessage/Message";
+import Conversation from "../../types/models/conversations";
 // import DmReqBlock from "./DmReqBlock";
 
 const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
@@ -75,7 +76,7 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
           <div className="time">10:30</div>
         </div>
 
-        {conversations?.map((conversation: unknown) => {
+        {conversations?.map((conversation: Conversation) => {
           return (
             <MessageContext.Provider
               value={{

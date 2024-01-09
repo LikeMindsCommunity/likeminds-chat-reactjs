@@ -9,10 +9,11 @@ import MessageContext from "./context/MessageContext";
 import LMChatClient from "@likeminds.community/chat-js-beta";
 
 import "./App.css";
-import LMChannelList from "./components/LMChannelList/LmChannelList";
+import LMChannelList from "./components/LMChannelList/LMChannelList";
+import { LMClient } from "./types/DataLayerExportsTypes";
 
 function App() {
-  const myClient: LMChatClient = LMChatClient.setApiKey(
+  const myClient: LMClient = LMChatClient.setApiKey(
     "5f567ca1-9d74-4a1b-be8b-a7a81fef796f"
   )
     .setPlatformCode("rt")
