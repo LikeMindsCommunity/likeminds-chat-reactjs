@@ -34,6 +34,11 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
           <div className="msg">Sender's message goes here</div>
           <div className="time">10:30</div>
         </div>
+        {/* Delete msg */}
+        <div className="conversation sender">
+          <div className="msg deleted">This message has been deleted.</div>
+          <div className="time">10:30</div>
+        </div>
 
         {conversations?.map((conversation: Conversation) => {
           return (

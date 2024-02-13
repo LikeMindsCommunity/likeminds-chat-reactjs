@@ -16,11 +16,11 @@ body {
   width: 100%;
   height: 100vh;
 }
-.lm-left-panel{
-  flex: 30%;  
+.lm-left-panel {
+  flex: 30%;
 }
-.lm-chat-panel{
-  flex: 70%;  
+.lm-chat-panel {
+  flex: 70%;
 }
 .justify-content-around {
   justify-content: space-around;
@@ -30,57 +30,64 @@ body {
 }
 /* LM - Styles */
 
-
 /* LM-Left-panel  */
-.lm-channel-list{
+.lm-channel-list {
   width: 100%;
   height: 100vh;
   overflow: auto;
 }
-.lm-channel-list .lm-channel-list-header{
+.lm-channel-list .lm-channel-list-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px 16px;
   border-bottom: 1px solid #dae1ee;
 }
-.lm-channel-list .lm-channel-list-header .title{
-  color: #484F67;
+.lm-channel-list .lm-channel-list-header .title {
+  color: #484f67;
   font-size: 16px;
   font-weight: 500;
   line-height: 22px;
 }
-.lm-channel-list .lm-channel-list-body { 
-  padding: 15px; 
+.lm-channel-list .lm-channel-list-body {
+  padding: 15px;
   width: 100%;
 }
-.lm-channel-list .lm-channel-list-body .channel-media{ 
+.lm-channel-list .lm-channel-list-body .channel-media {
   display: flex;
-  align-items: center; 
+  align-items: center;
   margin: 0 0 10px 0;
 }
-.lm-channel-list .lm-channel-list-body .channel-media .channel-icon{ 
+.lm-channel-list .lm-channel-list-body .channel-media .channel-icon {
   width: 54px;
   height: 54px;
   border-radius: 50%;
   overflow: hidden;
-  margin: 0 13px 0 0; 
+  margin: 0 13px 0 0;
 }
-.lm-channel-list .lm-channel-list-body .channel-media .channel-icon img{ 
-  width: 100%; 
+.lm-channel-list .lm-channel-list-body .channel-media .channel-icon img {
+  width: 100%;
 }
-.lm-channel-list .lm-channel-list-body .channel-media .channel-desc{  
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc {
   padding: 18px 0;
   border-bottom: 1px solid #e0e0e0;
   width: 83%;
 }
-.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-title{  
+.lm-channel-list
+  .lm-channel-list-body
+  .channel-media
+  .channel-desc
+  .channel-title {
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
   color: #020202;
 }
-.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-info{  
+.lm-channel-list
+  .lm-channel-list-body
+  .channel-media
+  .channel-desc
+  .channel-info {
   font-weight: 400;
   font-size: 12px;
   line-height: 16px;
@@ -89,12 +96,11 @@ body {
 
 /* LM-Left-panel  */
 
-
 /* Header */
 .lm-channel-header {
-  padding: 10px 16px; 
+  padding: 10px 16px;
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
   background: #f6f7f9;
 }
 
@@ -138,10 +144,10 @@ body {
 }
 .lm-channel-header .lm-header-right .lm-channel-icon {
   height: 22px;
-  width: 22px;  
+  width: 22px;
   margin: 0 35px 0 0;
 }
- 
+
 .lm-channel-header .lm-header-right .lm-channel-icon img {
   width: 100%;
   cursor: pointer;
@@ -165,7 +171,7 @@ body {
   overflow-y: scroll;
 }
 
-.lm-channel .dmReqBlock{
+.lm-channel .dmReqBlock {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -177,20 +183,20 @@ body {
   align-items: center;
   border-bottom: 1px solid #b1bbc5;
 }
-.lm-channel .dmReqBlock p{ 
+.lm-channel .dmReqBlock p {
   color: #666666;
-  font-size: 14px; 
+  font-size: 14px;
   font-weight: 400;
-  line-height: 20px; 
+  line-height: 20px;
   margin: 0 0 24px 0;
   text-align: center;
 }
-.lm-channel .dmReqBlock .dmActions{
+.lm-channel .dmReqBlock .dmActions {
   width: 260px;
   display: flex;
   justify-content: space-between;
- }
-.lm-channel .dmReqBlock .dmActions button{ 
+}
+.lm-channel .dmReqBlock .dmActions button {
   width: 110px;
   height: 48px;
   text-align: center;
@@ -204,7 +210,7 @@ body {
   cursor: pointer;
 }
 
-.lm-channel .data-pill{ 
+.lm-channel .data-pill {
   width: auto;
   border-radius: 16px;
   padding: 3px 8px;
@@ -213,55 +219,59 @@ body {
   color: #fff;
   font-size: 14px;
   font-weight: 500;
-  line-height: 20px; 
+  line-height: 20px;
   text-align: center;
 }
-.lm-channel .conversation{ 
+.lm-channel .conversation {
   max-width: 425px;
   min-width: 180px;
   width: auto;
   border-radius: 15px;
-  padding: 14px 14px 8px 14px;  
+  padding: 14px 14px 8px 14px;
   margin: 0 0 2px 0;
-  background-color: #fff; 
+  background-color: #fff;
   word-wrap: break-word;
   display: flex;
   flex-direction: column;
 }
 
-.lm-channel .conversation .name{
+.lm-channel .conversation .name {
   font-size: 14px;
   font-weight: 500;
   line-height: 16px;
-  color: #F2749A;
+  color: #f2749a;
   margin: 0 0 4px 0;
   cursor: pointer;
 }
-.lm-channel .conversation .msg{
+.lm-channel .conversation .msg {
   color: #020202;
-  font-size: 14px; 
+  font-size: 14px;
   font-weight: 400;
   line-height: 18px;
   word-wrap: break-word;
 }
-.lm-channel .conversation .time{
+.lm-channel .conversation .time {
   color: #8a8a8e;
-  font-size: 13px; 
+  font-size: 13px;
   font-weight: 400;
-  line-height: 18px; 
+  line-height: 18px;
   text-align: right;
 }
 .lm-channel .conversation.receiver {
-  background-color: #fff; 
+  background-color: #fff;
   float: left;
   clear: both;
   margin-right: auto;
 }
-.lm-channel .conversation.sender { 
-  background-color: #e1fefb; 
+.lm-channel .conversation.sender {
+  background-color: #e1fefb;
   float: right;
-    clear: both;
-    margin-left: auto;
+  clear: both;
+  margin-left: auto;
+}
+.lm-channel .conversation.sender .deleted {
+  font-style: italic;
+  color: #8a8a8e;
 }
 /* Message Box */
 
@@ -269,15 +279,15 @@ body {
 .lm-channel-footer {
   padding: 8px 16px;
   background-color: #fff;
-  width: 100%; 
+  width: 100%;
   display: flex;
   align-items: center;
 }
-.lm-channel-footer .disable-input{
+.lm-channel-footer .disable-input {
   border-radius: 24px;
   width: 100%;
   padding: 14px 16px;
-  border: 1px solid #DAE1EE;
+  border: 1px solid #dae1ee;
   font-size: 16px;
   font-weight: 400;
   line-height: 20px;
@@ -289,20 +299,20 @@ body {
   color: #808080;
   width: 100%;
   padding: 14px 16px;
-  border: 1px solid #DAE1EE;
+  border: 1px solid #dae1ee;
   font-size: 16px;
   font-weight: 400;
   line-height: 20px;
 }
 
-.lm-channel-footer .lm-channel-icon{
-  width: auto; 
+.lm-channel-footer .lm-channel-icon {
+  width: auto;
   margin: 0 16px 0 0;
 }
-.lm-channel-footer .lm-channel-icon.send{ 
+.lm-channel-footer .lm-channel-icon.send {
   margin: 0 0px 0 16px;
 }
-.lm-channel-footer .lm-channel-icon img{
+.lm-channel-footer .lm-channel-icon img {
   width: 100%;
 }
 /* LM Input */
@@ -316,7 +326,6 @@ body {
   width: 250px;
 }
 
-
-.text-center{
+.text-center {
   text-align: center;
 }
