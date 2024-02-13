@@ -23,48 +23,7 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
         <div className="data-pill">Jan 4</div>
 
         {/* Conversations */}
-        <div className="conversation receiver">
-          <div className="name">Name</div>
-          <div className="msg">Can we connect sometime?</div>
-          <div className="time">10:30</div>
-        </div>
-
-        <div className="conversation sender">
-          <div className="msg">Sender's message goes here</div>
-          <div className="time">10:30</div>
-        </div>
-        <div className="conversation receiver">
-          <div className="name">Name</div>
-          <div className="msg">
-            Can we connect sometime? Sender's message goes here
-          </div>
-          <div className="time">10:30</div>
-        </div>
-
-        <div className="conversation sender">
-          <div className="msg">
-            Sender's message goes here Sender's message goes here
-          </div>
-          <div className="time">10:30</div>
-        </div>
-
-        <div className="conversation sender">
-          <div className="msg">
-            Sender's message goes hereSender's message goes here Sender's
-            message goes here Sender's message goes here
-          </div>
-          <div className="time">10:30</div>
-        </div>
-        <div className="conversation sender">
-          <div className="msg">Sender's message goes hereSender's mess</div>
-          <div className="time">10:30</div>
-        </div>
-        <div className="conversation sender">
-          <div className="msg">
-            Sender's message goes hereSender' ssage goes here
-          </div>
-          <div className="time">10:30</div>
-        </div>
+        {/* Static */}
         <div className="conversation receiver">
           <div className="name">Name</div>
           <div className="msg">Can we connect sometime?</div>

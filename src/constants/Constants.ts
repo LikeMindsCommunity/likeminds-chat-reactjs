@@ -1,1 +1,1 @@
-export const CONVERSATIONS_PAGINATE_BY = 10;
+export const CONVERSATIONS_PAGINATE_BY = 50;

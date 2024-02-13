@@ -16,7 +16,7 @@ export default interface Member {
   uuid: string;
 }
 
-interface SdkClientInfo {
+export interface SdkClientInfo {
   community: number;
   user: number;
   userUniqueId: string;

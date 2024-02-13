@@ -4,6 +4,6 @@ interface ChatroomProviderContextInterface {
   setChatroom: (() => void) | null;
 }
 export default React.createContext<ChatroomProviderContextInterface>({
-  chatroomId: 94621,
+  chatroomId: 24591,
   setChatroom: null,
 });

@@ -14,7 +14,7 @@ import { LMClient } from "./types/DataLayerExportsTypes";
 
 function App() {
   const myClient: LMClient = LMChatClient.setApiKey(
-    "5f567ca1-9d74-4a1b-be8b-a7a81fef796f"
+    "8fa4304d-a5b6-4f10-baeb-a80650a480a4"
   )
     .setPlatformCode("rt")
     .setVersionCode(35)
@@ -22,11 +22,7 @@ function App() {
   return (
     <>
       <LMClientOverlayProvider client={myClient} theme={new Theme().theme}>
-        <LMChatView
-        // MessageComponent={() => {
-        //   return <p>hello this is a custom component</p>;
-        // }}
-        >
+        <LMChatView>
           <div className="d-flex">
             <div className="lm-left-panel">
               <LMChannelList />
