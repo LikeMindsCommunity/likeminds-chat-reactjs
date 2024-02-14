@@ -8,7 +8,7 @@ import LMChatView from "./components/LMChatView/LMChatView";
 
 import "./App.css";
 import { LMClient } from "./types/DataLayerExportsTypes";
-import Error from "./shared/Error";
+import Error from "./shared/components/Error";
 import Channel from "./components/channel/Channel";
 
 const LMAppLayout = () => {
