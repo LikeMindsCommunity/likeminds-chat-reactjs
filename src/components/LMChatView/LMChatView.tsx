@@ -7,6 +7,7 @@ import ChatroomDetailContext from "../../context/ChatroomDetailContext";
 import MessageListContext from "../../context/MessageListContext";
 
 import useChannelProvider from "../../hooks/useChannelProvider";
+// import ScrollContainer from "../DualSidePagination/ScrollContainer";
 
 const LMChatView: React.FC<PropsWithChildren<LMChatViewProps>> = (props) => {
   const { children } = props;
@@ -24,11 +25,7 @@ const LMChatView: React.FC<PropsWithChildren<LMChatViewProps>> = (props) => {
             setConversations,
           }}
         >
-          {conversations && conversations?.length > 0 ? (
-            children
-          ) : (
-            <div>0 conversations</div>
-          )}
+          {children}
         </MessageListContext.Provider>
       </ChatroomDetailContext.Provider>
     );

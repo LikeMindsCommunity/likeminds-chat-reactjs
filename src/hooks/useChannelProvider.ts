@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
-import ChatroomProviderContext from "../context/ChatroomProviderContext";
+// import ChatroomProviderContext from "../context/ChatroomProviderContext";
 import { CONVERSATIONS_PAGINATE_BY } from "../constants/Constants";
 import LoaderContextProvider from "../context/LoaderContextProvider";
 import useUserProvider from "./useUserProvider";
@@ -11,8 +11,8 @@ interface ChannelProviderInterface {
   setChatroom: React.Dispatch<unknown | null>;
   conversations: Conversation[] | null;
   setConversations: React.Dispatch<Conversation[] | null>;
-
-  getNewConversations: unknown;
+  getChatroomConversationsOnTopScroll: unknown;
+  getChatroomConversationsOnBottomScroll: unknown;
 }
 
 // interface UseChannelProviderParams {
@@ -20,7 +20,8 @@ interface ChannelProviderInterface {
 // }
 
 export default function useChannelProvider(): ChannelProviderInterface {
-  const { chatroomId } = useContext(ChatroomProviderContext);
+  // const { chatroomId } = useContext(ChatroomProviderContext);
+  const chatroomId = 25907;
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
   const { lmChatUser } = useUserProvider();
@@ -63,7 +64,24 @@ export default function useChannelProvider(): ChannelProviderInterface {
       return logError(error);
     }
   }
-  async function getChatroomConversations(
+  async function getChatroomConversationsOnTopScroll(
+    conversationId: number | string | undefined,
+    topNavigation: boolean | undefined
+  ) {
+    try {
+      const chatroomConversationsCall = await lmChatclient?.getConversation({
+        chatroomID: parseInt(chatroomId!.toString()),
+        paginateBy: CONVERSATIONS_PAGINATE_BY,
+        topNavigate: topNavigation,
+        // conversationID: parseInt(conversationId?.toString()),
+        include: false,
+      });
+      return chatroomConversationsCall.data.conversations;
+    } catch (error) {
+      return logError(error);
+    }
+  }
+  async function getChatroomConversationsOnBottomScroll(
     conversationId: number | string | undefined,
     topNavigation: boolean | undefined
   ) {
@@ -103,7 +121,8 @@ export default function useChannelProvider(): ChannelProviderInterface {
     setChatroom,
     conversations,
     setConversations,
-
-    getNewConversations: getChatroomConversations,
+    getChatroomConversationsOnBottomScroll,
+    getChatroomConversationsOnTopScroll,
   };
 }
+export type UnknownReturnFunction = (...props: unknown[]) => unknown;
