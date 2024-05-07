@@ -1,15 +1,21 @@
-import ChannelBody from "./channel-body/ChannelBody";
-import ChannelFooter from "./channel-footer/ChannelFooter";
-import ChannelHeader from "./channel-header/ChannelHeader";
+import Header from "../Header/Header";
+import LMChannelList from "../LMChannelList/LMChannelList";
+import Input from "../LMInput/Input";
+import MessageList from "../LMMessageList/MessageList";
 
-function Channel() {
+const Channel = () => {
   return (
-    <div className="lm-channel">
-      <ChannelHeader />
-      <ChannelBody />
-      <ChannelFooter />
+    <div className="d-flex">
+      <div className="lm-left-panel">
+        <LMChannelList />
+      </div>
+      <div className="lm-right-panel d-flex flex-direction">
+        <Header />
+        <MessageList />
+        <Input />
+      </div>
     </div>
   );
-}
+};
 
 export default Channel;
