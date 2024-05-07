@@ -11,15 +11,25 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
   (props) => {
     const { MessageComponent } = props;
 
-    const { conversations } = useContext(MessageListContext);
-
+    const { conversations, getChatroomConversationsOnTopScroll } =
+      useContext(MessageListContext);
+    if (!conversations?.length) {
+      return null;
+    }
     return (
       <div className="lm-channel">
         <ScrollContainer
           dataLength={conversations?.length || 0}
-          nextOnScrollBottom={() => console.log("scroll reached bottom")}
-          nextOnScrollTop={() => console.log("scroll reached top")}
-          callNextOnBottom={true}
+          nextOnScrollBottom={() => {
+            console.log("bottom scroll function call");
+          }}
+          nextOnScrollTop={() => {
+            if (getChatroomConversationsOnTopScroll) {
+              console.log("calling");
+              getChatroomConversationsOnTopScroll();
+            }
+          }}
+          callNextOnBottom={false}
           callNextOnTop={true}
         >
           {conversations?.map((conversation: Conversation) => {

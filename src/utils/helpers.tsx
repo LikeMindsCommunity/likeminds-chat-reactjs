@@ -14,8 +14,6 @@ export class Utils {
     const user_splitted_string = answer.split(this.REGEX_USER_SPLITTING);
     const users_matched = answer.match(this.REGEX_USER_TAGGING);
     const combinedMatchesArray: StringTagType[] = [];
-    console.log(user_splitted_string);
-    console.log(users_matched);
     for (
       let index = 0;
       index <
@@ -43,7 +41,6 @@ export class Utils {
         });
       }
     }
-    console.log(combinedMatchesArray);
     return combinedMatchesArray.map((item: StringTagType, index: number) => {
       switch (item.type) {
         case 0: {

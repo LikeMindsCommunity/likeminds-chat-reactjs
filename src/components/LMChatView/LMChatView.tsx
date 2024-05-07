@@ -13,8 +13,13 @@ const LMChatView: React.FC<PropsWithChildren<LMChatViewProps>> = (props) => {
   const { children } = props;
   const { loader } = useContext(LoaderContextProvider);
 
-  const { chatroom, setChatroom, conversations, setConversations } =
-    useChannelProvider();
+  const {
+    chatroom,
+    setChatroom,
+    conversations,
+    setConversations,
+    getChatroomConversationsOnTopScroll,
+  } = useChannelProvider();
   // Function to set the layout in case loader is false
   function setLayout() {
     return (
@@ -23,6 +28,7 @@ const LMChatView: React.FC<PropsWithChildren<LMChatViewProps>> = (props) => {
           value={{
             conversations: conversations,
             setConversations,
+            getChatroomConversationsOnTopScroll,
           }}
         >
           {children}
