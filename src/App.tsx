@@ -1,5 +1,4 @@
-import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import LMChatClient from "@likeminds.community/chat-js-beta";
 
 import { Theme } from "./Themes/ThemeClass";
@@ -28,7 +27,7 @@ const LMAppLayout = () => {
 };
 
 // Routing
-const appRoute = createBrowserRouter([
+export const appRoute = createBrowserRouter([
   {
     path: "/",
     element: <LMAppLayout />,
@@ -42,9 +41,9 @@ const appRoute = createBrowserRouter([
   },
 ]);
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement,
-);
-root.render(<RouterProvider router={appRoute} />);
+// const root = ReactDOM.createRoot(
+//   document.getElementById("root") as HTMLElement,
+// );
+// root.render(<RouterProvider router={appRoute} />);
 
 export default LMAppLayout;
