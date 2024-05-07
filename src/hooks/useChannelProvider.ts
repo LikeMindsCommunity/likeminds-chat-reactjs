@@ -1,6 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
-import ChatroomProviderContext from "../context/ChatroomProviderContext";
+// import ChatroomProviderContext from "../context/ChatroomProviderContext";
 import { CONVERSATIONS_PAGINATE_BY } from "../constants/Constants";
 import LoaderContextProvider from "../context/LoaderContextProvider";
 import useUserProvider from "./useUserProvider";
@@ -11,8 +12,8 @@ interface ChannelProviderInterface {
   setChatroom: React.Dispatch<unknown | null>;
   conversations: Conversation[] | null;
   setConversations: React.Dispatch<Conversation[] | null>;
-
-  getNewConversations: unknown;
+  getChatroomConversationsOnTopScroll: UnknownGetConversationFunction;
+  getChatroomConversationsOnBottomScroll: UnknownGetConversationFunction;
 }
 
 // interface UseChannelProviderParams {
@@ -20,13 +21,64 @@ interface ChannelProviderInterface {
 // }
 
 export default function useChannelProvider(): ChannelProviderInterface {
-  const { chatroomId } = useContext(ChatroomProviderContext);
+  // const { chatroomId } = useContext(ChatroomProviderContext);
+  const chatroomId = 25907;
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
   const { lmChatUser } = useUserProvider();
   const [chatroom, setChatroom] = useState<unknown>(null);
   const [conversations, setConversations] = useState<Conversation[] | null>([]);
 
+  const getChatroomDetails = useCallback(async () => {
+    try {
+      const chatroomDetailsCall = await lmChatclient?.getChatroom({
+        chatroomId,
+      });
+      return chatroomDetailsCall.data.chatroom;
+    } catch (error) {
+      return logError(error);
+    }
+  }, [lmChatclient]);
+  const getChatroomConversationsOnTopScroll = useCallback(
+    async (
+      conversationId: number | string | undefined,
+      topNavigation: boolean | undefined
+    ) => {
+      try {
+        const chatroomConversationsCall = await lmChatclient?.getConversation({
+          chatroomID: parseInt(chatroomId!.toString()),
+          paginateBy: CONVERSATIONS_PAGINATE_BY,
+          topNavigate: topNavigation,
+          // conversationID: parseInt(conversationId?.toString()),
+          include: false,
+        });
+        return chatroomConversationsCall.data.conversations;
+      } catch (error) {
+        return logError(error);
+      }
+    },
+    [lmChatclient]
+  );
+  const getChatroomConversationsOnBottomScroll = useCallback(
+    async (
+      conversationId: number | string | undefined,
+      topNavigation: boolean | undefined
+    ) => {
+      try {
+        const chatroomConversationsCall = await lmChatclient?.getConversation({
+          chatroomID: parseInt(chatroomId!.toString()),
+          paginateBy: CONVERSATIONS_PAGINATE_BY,
+          topNavigate: topNavigation,
+          // conversationID: parseInt(conversationId?.toString()),
+          include: false,
+        });
+        return chatroomConversationsCall.data.conversations;
+      } catch (error) {
+        return logError(error);
+      }
+    },
+    [lmChatclient]
+  );
   useEffect(() => {
     async function fetchChannel() {
       try {
@@ -35,7 +87,7 @@ export default function useChannelProvider(): ChannelProviderInterface {
         setChatroom(newChatroom);
 
         // get the chatroom conversations
-        const newConversations = await getChatroomConversations(
+        const newConversations = await getChatroomConversationsOnTopScroll(
           undefined,
           false
         );
@@ -51,35 +103,13 @@ export default function useChannelProvider(): ChannelProviderInterface {
     return () => {
       resetChannel();
     };
-  }, [chatroomId, lmChatUser]);
-
-  async function getChatroomDetails() {
-    try {
-      const chatroomDetailsCall = await lmChatclient?.getChatroom({
-        chatroomId,
-      });
-      return chatroomDetailsCall.data.chatroom;
-    } catch (error) {
-      return logError(error);
-    }
-  }
-  async function getChatroomConversations(
-    conversationId: number | string | undefined,
-    topNavigation: boolean | undefined
-  ) {
-    try {
-      const chatroomConversationsCall = await lmChatclient?.getConversation({
-        chatroomID: parseInt(chatroomId!.toString()),
-        paginateBy: CONVERSATIONS_PAGINATE_BY,
-        topNavigate: topNavigation,
-        // conversationID: parseInt(conversationId?.toString()),
-        include: false,
-      });
-      return chatroomConversationsCall.data.conversations;
-    } catch (error) {
-      return logError(error);
-    }
-  }
+  }, [
+    chatroomId,
+    getChatroomConversationsOnTopScroll,
+    getChatroomDetails,
+    lmChatUser,
+    setLoader,
+  ]);
 
   function resetChannel() {
     setChatroom(null);
@@ -103,7 +133,9 @@ export default function useChannelProvider(): ChannelProviderInterface {
     setChatroom,
     conversations,
     setConversations,
-
-    getNewConversations: getChatroomConversations,
+    getChatroomConversationsOnBottomScroll,
+    getChatroomConversationsOnTopScroll,
   };
 }
+export type UnknownReturnFunction = (...props: unknown[]) => unknown;
+export type UnknownGetConversationFunction = any;
