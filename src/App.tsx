@@ -14,7 +14,7 @@ import { LMClient } from "./types/DataLayerExportsTypes";
 
 function App() {
   const myClient: LMClient = LMChatClient.setApiKey(
-    "8fa4304d-a5b6-4f10-baeb-a80650a480a4"
+    "01b4e80f-29e7-45ad-b914-69d61ffc130d"
   )
     .setPlatformCode("rt")
     .setVersionCode(35)
