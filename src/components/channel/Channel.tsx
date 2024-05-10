@@ -1,7 +1,5 @@
-import Header from "../Header/Header";
 import LMChannelList from "../LMChannelList/LMChannelList";
-import Input from "../LMInput/Input";
-import MessageList from "../LMMessageList/MessageList";
+import LMChatChatroom from "./LMChatChatroom";
 
 const Channel = () => {
   return (
@@ -10,9 +8,11 @@ const Channel = () => {
         <LMChannelList />
       </div>
       <div className="lm-right-panel d-flex flex-direction">
-        <Header />
+        {/* <Header />
         <MessageList />
-        <Input />
+        <Input /> */}
+        {/*  */}
+        <LMChatChatroom />
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import LMChatClient from "@likeminds.community/chat-js-beta";
 
 import { Theme } from "./Themes/ThemeClass";
 import LMClientOverlayProvider from "./components/LMChatProvider/LMClientOverlayProvider";
-import LMChatView from "./components/LMChatView/LMChatView";
+// import LMChatView from "./components/LMChatView/LMChatView";
 
 import "./App.css";
 import { LMClient } from "./types/DataLayerExportsTypes";
@@ -19,9 +19,9 @@ const LMAppLayout = () => {
     .build();
   return (
     <LMClientOverlayProvider client={myClient} theme={new Theme().theme}>
-      <LMChatView>
-        <Outlet />
-      </LMChatView>
+      {/* <LMChatView> */}
+      <Outlet />
+      {/* </LMChatView> */}
     </LMClientOverlayProvider>
   );
 };

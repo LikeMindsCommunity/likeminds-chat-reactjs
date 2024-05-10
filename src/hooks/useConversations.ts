@@ -7,26 +7,20 @@ import LoaderContextProvider from "../context/LoaderContextProvider";
 import useUserProvider from "./useUserProvider";
 import Conversation from "../types/models/conversations";
 
-interface ChannelProviderInterface {
-  chatroom: unknown;
-  setChatroom: React.Dispatch<unknown | null>;
+interface UseConversations {
   conversations: Conversation[] | null;
   setConversations: React.Dispatch<Conversation[] | null>;
   getChatroomConversationsOnTopScroll: UnknownGetConversationFunction;
   getChatroomConversationsOnBottomScroll: UnknownGetConversationFunction;
 }
 
-// interface UseChannelProviderParams {
-//   client: LMClient;
-// }
-
-export default function useChannelProvider(): ChannelProviderInterface {
+export default function useConversations(): UseConversations {
   // const { chatroomId } = useContext(ChatroomProviderContext);
   const chatroomId = 25907;
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
   const { lmChatUser } = useUserProvider();
-  const [chatroom, setChatroom] = useState<unknown>(null);
+
   const [conversations, setConversations] = useState<Conversation[] | null>([]);
 
   const getChatroomDetails = useCallback(async () => {
@@ -42,14 +36,14 @@ export default function useChannelProvider(): ChannelProviderInterface {
   const getChatroomConversationsOnTopScroll = useCallback(
     async (
       conversationId: number | string | undefined,
-      topNavigation: boolean | undefined
+      topNavigation: boolean | undefined,
     ) => {
       try {
         const chatroomConversationsCall = await lmChatclient?.getConversation({
           chatroomID: parseInt(chatroomId!.toString()),
           paginateBy: CONVERSATIONS_PAGINATE_BY,
           topNavigate: topNavigation,
-          // conversationID: parseInt(conversationId?.toString()),
+          // conversationID: parseInt(conversationId?.toString())
           include: false,
         });
         return chatroomConversationsCall.data.conversations;
@@ -57,12 +51,12 @@ export default function useChannelProvider(): ChannelProviderInterface {
         return logError(error);
       }
     },
-    [lmChatclient]
+    [lmChatclient],
   );
   const getChatroomConversationsOnBottomScroll = useCallback(
     async (
       conversationId: number | string | undefined,
-      topNavigation: boolean | undefined
+      topNavigation: boolean | undefined,
     ) => {
       try {
         const chatroomConversationsCall = await lmChatclient?.getConversation({
@@ -77,19 +71,15 @@ export default function useChannelProvider(): ChannelProviderInterface {
         return logError(error);
       }
     },
-    [lmChatclient]
+    [lmChatclient],
   );
   useEffect(() => {
     async function fetchChannel() {
       try {
-        // get the chatroom details
-        const newChatroom = await getChatroomDetails();
-        setChatroom(newChatroom);
-
         // get the chatroom conversations
         const newConversations = await getChatroomConversationsOnTopScroll(
           undefined,
-          false
+          false,
         );
         setConversations(newConversations);
 
@@ -101,7 +91,7 @@ export default function useChannelProvider(): ChannelProviderInterface {
     }
     fetchChannel();
     return () => {
-      resetChannel();
+      resetConversations();
     };
   }, [
     chatroomId,
@@ -111,8 +101,7 @@ export default function useChannelProvider(): ChannelProviderInterface {
     setLoader,
   ]);
 
-  function resetChannel() {
-    setChatroom(null);
+  function resetConversations() {
     setConversations(null);
   }
 
@@ -129,8 +118,6 @@ export default function useChannelProvider(): ChannelProviderInterface {
     return null;
   }
   return {
-    chatroom,
-    setChatroom,
     conversations,
     setConversations,
     getChatroomConversationsOnBottomScroll,

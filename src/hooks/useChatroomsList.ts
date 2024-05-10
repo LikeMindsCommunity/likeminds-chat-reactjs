@@ -6,13 +6,13 @@ interface ChatroomProviderInterface {
   loadMoreDmChatrooms: boolean;
 }
 
-export default function useChatroomProvider(): ChatroomProviderInterface {
+export default function useChatroomList(): ChatroomProviderInterface {
   //   const { chatroomId, setChatroom } = useContext(ChatroomProviderContext);
   const { lmChatclient } = useContext(GlobalClientProviderContext);
 
   //   states for dm chatrooms
   const [dmChatrooms, setDmChatrooms] = useState<DMChatroomResponse[] | null>(
-    null
+    null,
   );
   const [dmChatroomsPageCount, setDmChatroomsPageCount] = useState<number>(1);
   const [loadMoreDmChatrooms, setLoadMoreDmChatrooms] = useState<boolean>(true);

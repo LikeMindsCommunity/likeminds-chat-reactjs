@@ -1,10 +1,11 @@
 import React from "react";
 import Conversation from "../types/models/conversations";
 
-interface MessageContextInterface {
+interface LMMessageContextInterface {
   message: Conversation | null;
 }
 
-export default React.createContext<MessageContextInterface>({
-  message: null,
-});
+const LMMessageContext = React.createContext<LMMessageContextInterface>(
+  {} as LMMessageContextInterface,
+);
+export default LMMessageContext;
