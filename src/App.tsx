@@ -33,7 +33,7 @@ export const appRoute = createBrowserRouter([
     element: <LMAppLayout />,
     children: [
       {
-        path: "/",
+        path: "/community",
         element: <Channel />,
       },
     ],

@@ -24,7 +24,7 @@ function createDebouncedFunction(originalFunction: () => void) {
 function isScrollTopBeyondThresholdLimits(
   scrollDirection: number,
   scrollThreshold: number,
-  targetElement: HTMLDivElement | null
+  targetElement: HTMLDivElement | null,
 ): boolean {
   if (!targetElement) {
     return false;
@@ -61,7 +61,7 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
       callNextOnBottom,
       callNextOnTop,
       nextOnScrollBottom,
-      nextOnScrollTop
+      nextOnScrollTop,
     );
     if (hasAlreadyCalled.current) {
       // TODO remove the below log
@@ -82,7 +82,7 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
     const isInScrollableLimits = isScrollTopBeyondThresholdLimits(
       scrollDirection,
       30,
-      scrollTarget.current || null
+      scrollTarget.current || null,
     );
     if (scrollDirection && isInScrollableLimits) {
       if (callNextOnBottom) {
@@ -107,7 +107,6 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
     scrollTarget.current = scrollContainerRef.current;
     if (scrollTarget.current) {
       // console.log("inside decounce ");
-      console.log(debouncedScroll);
       scrollTarget.current.scrollTo(0, scrollTarget.current.scrollHeight);
       scrollTarget.current.addEventListener("scroll", debouncedScroll);
     }
