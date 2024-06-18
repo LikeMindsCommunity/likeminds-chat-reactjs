@@ -1,9 +1,8 @@
 import React from "react";
+import { UseInputReturns } from "../hooks/useInput";
 
-interface InputContextInterface {
-  replyConversation: unknown;
-}
+interface InputContextInterface extends UseInputReturns {}
 
-export default React.createContext<InputContextInterface>({
-  replyConversation: null,
-});
+export default React.createContext<InputContextInterface>(
+  {} as InputContextInterface,
+);

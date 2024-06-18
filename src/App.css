@@ -44,6 +44,7 @@ body {
   height: 100vh;
   overflow: auto;
 }
+
 .lm-channel-list .lm-channel-list-header {
   display: flex;
   justify-content: space-between;
@@ -58,15 +59,18 @@ body {
   font-weight: 500;
   line-height: 22px;
 }
+
 .lm-channel-list .lm-channel-list-body {
   padding: 15px;
   width: 100%;
 }
+
 .lm-channel-list .lm-channel-list-body .channel-media {
   display: flex;
   align-items: center;
   margin: 0 0 10px 0;
 }
+
 .lm-channel-list .lm-channel-list-body .channel-media .channel-icon {
   width: 54px;
   height: 54px;
@@ -85,22 +89,14 @@ body {
   width: 83%;
 }
 
-.lm-channel-list
-  .lm-channel-list-body
-  .channel-media
-  .channel-desc
-  .channel-title {
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-title {
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
   color: #020202;
 }
 
-.lm-channel-list
-  .lm-channel-list-body
-  .channel-media
-  .channel-desc
-  .channel-info {
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-info {
   font-weight: 400;
   font-size: 12px;
   line-height: 16px;
@@ -200,6 +196,7 @@ body {
   align-items: center;
   border-bottom: 1px solid #b1bbc5;
 }
+
 .lm-channel .dmReqBlock p {
   color: #666666;
   font-size: 14px;
@@ -208,11 +205,13 @@ body {
   margin: 0 0 24px 0;
   text-align: center;
 }
+
 .lm-channel .dmReqBlock .dmActions {
   width: 260px;
   display: flex;
   justify-content: space-between;
 }
+
 .lm-channel .dmReqBlock .dmActions button {
   width: 110px;
   height: 48px;
@@ -239,6 +238,7 @@ body {
   line-height: 20px;
   text-align: center;
 }
+
 .lm-channel .conversation {
   max-width: 425px;
   min-width: 180px;
@@ -260,6 +260,7 @@ body {
   margin: 0 0 4px 0;
   cursor: pointer;
 }
+
 .lm-channel .conversation .msg {
   color: #020202;
   font-size: 14px;
@@ -267,6 +268,7 @@ body {
   line-height: 18px;
   word-wrap: break-word;
 }
+
 .lm-channel .conversation .time {
   color: #8a8a8e;
   font-size: 13px;
@@ -281,6 +283,7 @@ body {
   clear: both;
   margin-right: auto;
 }
+
 .lm-channel .conversation.sender {
   background-color: #e1fefb;
   float: right;
@@ -291,6 +294,44 @@ body {
 /* Message Box */
 
 /* LM Input */
+.lm-channel-footer-wrapper {
+  position: relative;
+
+}
+
+.lm-input-carousel {
+  position: absolute;
+  top: -500px;
+  display: flex;
+  width: 100%;
+  height: 250px;
+}
+
+.lm-input-carousel-image-element {
+  height: 100%;
+  width: auto;
+}
+
+.lm-input-carousel-video-element {
+  height: 100%;
+  width: auto;
+}
+
+.lm-input-carousel-document-element {
+  height: 100%;
+  width: auto;
+}
+
+.lm-chat-input-attachment-label>input {
+  display: none;
+}
+
+.lm-chat-text-area-wrapper {
+  flex-grow: 1;
+  padding: 12px;
+  border: 1px solid black;
+}
+
 .lm-channel-footer {
   padding: 8px 16px;
   background-color: #fff;
@@ -298,6 +339,7 @@ body {
   display: flex;
   align-items: center;
 }
+
 .lm-channel-footer .disable-input {
   border-radius: 24px;
   width: 100%;
@@ -357,12 +399,14 @@ body {
   height: 100vh;
   background-color: #f7f4ff;
 }
+
 .lmError .lmErrorBox {
   padding: 3rem;
   box-shadow: 0 0 3px #ccc;
   border-radius: 10px;
   background: #fff;
 }
+
 .lmError .lmErrorBox h1 {
   font-size: 5rem;
   font-weight: bold;
@@ -370,15 +414,18 @@ body {
   color: #212b33;
   letter-spacing: 3px;
 }
+
 .lmError .lmErrorBox .lmErrorTitle {
   font-size: 1.2rem;
   margin-bottom: 1rem;
   color: #212b33;
 }
+
 .lmError .lmErrorBox .lmErrorMsg {
   font-size: 1rem;
   color: #6c6e70;
 }
+
 /* Error */
 .lm-dual-scroll-container {
   position: relative;

@@ -4,10 +4,14 @@ import GlobalClientProviderContext from "../context/GlobalClientProviderContext"
 import LoaderContextProvider from "../context/LoaderContextProvider";
 import useUserProvider from "./useUserProvider";
 import Conversation from "../types/models/conversations";
+import {
+  ChatroomCollabcard,
+  GetChatroomResponse,
+} from "../types/api-responses/getChatroomResponse";
 
 interface UseChatroom {
-  chatroom: unknown;
-  setChatroom: React.Dispatch<unknown | null>;
+  chatroom: ChatroomCollabcard | null;
+  setChatroom: React.Dispatch<ChatroomCollabcard | null>;
   conversationToReply: Conversation | null;
   conversationToedit: Conversation | null;
   setConversationToReply: React.Dispatch<Conversation | null>;
@@ -20,7 +24,7 @@ export default function useChatroom(): UseChatroom {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
   const { lmChatUser } = useUserProvider();
-  const [chatroom, setChatroom] = useState<unknown>(null);
+  const [chatroom, setChatroom] = useState<ChatroomCollabcard | null>(null);
   const [conversationToReply, setConversationToReply] =
     useState<Conversation | null>(null);
   const [conversationToedit, setConversationToEdit] =
@@ -28,10 +32,11 @@ export default function useChatroom(): UseChatroom {
 
   const getChatroomDetails = useCallback(async () => {
     try {
-      const chatroomDetailsCall = await lmChatclient?.getChatroom({
-        chatroomId,
-      });
-      return chatroomDetailsCall.data.chatroom;
+      const chatroomDetailsCall: GetChatroomResponse =
+        await lmChatclient?.getChatroom({
+          chatroomId,
+        });
+      return chatroomDetailsCall.data;
     } catch (error) {
       return logError(error);
     }
