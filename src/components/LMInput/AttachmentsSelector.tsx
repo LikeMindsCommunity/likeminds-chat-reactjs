@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { useMenu } from "../../hooks/useMenu";
 // TODO change to default icons
 // import PermMediaIcon from "@mui/icons-material/PermMedia";
-import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+// import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import { Menu, MenuItem } from "@mui/material";
 import InputContext from "../../context/InputContext";
 
@@ -28,23 +28,27 @@ const AttachmentsSelector = () => {
       >
         <div className="lm-upload-media-dialog">
           <MenuItem className="lm-chat-input-attachment-label">
-            <input
-              type="file"
-              accept=".png, .jpeg, .jpg, .mp4"
-              onChange={addImagesAndVideosMedia}
-            />
-            <div>
-              <img src={uploadMedia} alt="media" />
-            </div>
-            <div className="title">Photos &amp; Videos</div>
+            <label>
+              <input
+                type="file"
+                accept=".png, .jpeg, .jpg, .mp4"
+                onChange={addImagesAndVideosMedia}
+              />
+              <div>
+                <img src={uploadMedia} alt="media" />
+              </div>
+              <div className="title">Photos &amp; Videos</div>
+            </label>
           </MenuItem>
 
           <MenuItem className="lm-chat-input-attachment-label">
-            <input type="file" accept=".pdf" onChange={addDocumentsMedia} />
-            <div>
-              <img src={uploadDoc} alt="doc" />
-            </div>
-            <div className="title">Document</div>
+            <label>
+              <input type="file" accept=".pdf" onChange={addDocumentsMedia} />
+              <div>
+                <img src={uploadDoc} alt="doc" />
+              </div>
+              <div className="title">Document</div>
+            </label>
           </MenuItem>
         </div>
       </Menu>
