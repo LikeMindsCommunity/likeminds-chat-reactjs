@@ -12,7 +12,7 @@ import Channel from "./components/channel/Channel";
 
 const LMAppLayout = () => {
   const myClient: LMClient = LMChatClient.setApiKey(
-    "01b4e80f-29e7-45ad-b914-69d61ffc130d",
+    "ac8ee360-dedb-462f-93f1-fd400ca343a7",
   )
     .setPlatformCode("rt")
     .setVersionCode(35)

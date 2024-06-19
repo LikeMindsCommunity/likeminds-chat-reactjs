@@ -27,8 +27,8 @@ export default function useUserProvider(): UserProviderInterface {
     async function setUser() {
       try {
         const initiateUserCall = await lmChatclient?.initiateUser({
-          userUniqueId: "524d3b99-2c30-4c0b-994a-e455602240db",
-          userName: "",
+          userUniqueId: "6599d0a5-1fa6-4d40-8953-26cce1aad22d",
+          userName: "ishaan",
           isGuest: false,
         });
         const memberStateCall = await lmChatclient?.getMemberState();

@@ -1,6 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import useChatroomList from "../../hooks/useChatroomsList";
 import searchIcon from "./../../assets/img/search.svg";
 
 function LMChannelList() {
+  const { dmChatroomList, groupChatroomsList, loadMoreDmChatrooms } =
+    useChatroomList();
   return (
     <div className="lm-channel-list">
       <div className="lm-channel-list-header">
