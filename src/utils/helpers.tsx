@@ -29,9 +29,9 @@ export class Utils {
       }
       if (index < (users_matched?.length || 0)) {
         const match = Array.from(users_matched || [])[index];
-        console.log(match);
+        // console.log(match);
         const regexMatch = this.REGEX_USER_TAGGING.exec(match);
-        console.log(regexMatch);
+        // console.log(regexMatch);
         const groups = regexMatch?.groups;
 
         combinedMatchesArray.push({
