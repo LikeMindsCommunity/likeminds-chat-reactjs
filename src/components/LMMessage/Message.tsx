@@ -18,7 +18,7 @@ const Message = () => {
   const imgUrl = message?.member.imageUrl;
   const userName = message?.member.name;
   const avatarContent = getAvatar({ imgUrl, userName });
-
+  console.log(avatarContent);
   switch (state) {
     case ConversationStates.NORMAL: {
       return (
