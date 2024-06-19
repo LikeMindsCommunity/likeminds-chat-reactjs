@@ -17,6 +17,7 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
     logoutUser,
     lmChatUserCurrentCommunity,
   } = useUserProvider();
+
   return (
     <GlobalClientProviderContext.Provider
       value={{

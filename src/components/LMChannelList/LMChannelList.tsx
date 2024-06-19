@@ -1,10 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import InfiniteScroll from "react-infinite-scroll-component";
 import useChatroomList from "../../hooks/useChatroomsList";
 import searchIcon from "./../../assets/img/search.svg";
 
 function LMChannelList() {
-  const { dmChatroomList, groupChatroomsList, loadMoreDmChatrooms } =
-    useChatroomList();
+  const {
+    dmChatroomList,
+    groupChatroomsList,
+    loadMoreDmChatrooms,
+    loadMoreGroupChatrooms,
+    getChatroomsMine,
+  } = useChatroomList();
   return (
     <div className="lm-channel-list">
       <div className="lm-channel-list-header">
@@ -15,7 +21,29 @@ function LMChannelList() {
       </div>
 
       <div className="lm-channel-list-body">
-        <div className="channel-media">
+        <InfiniteScroll
+          dataLength={groupChatroomsList?.length || 0}
+          loader={null}
+          hasMore={loadMoreGroupChatrooms}
+          next={getChatroomsMine}
+        >
+          {groupChatroomsList?.map(() => {
+            return (
+              <div className="channel-media">
+                <div className="channel-icon">
+                  <img src="https://placehold.co/400" alt="channel icon" />
+                </div>
+                <div className="channel-desc">
+                  <div className="channel-title">Simarn Kaur</div>
+                  <div className="channel-info">
+                    Direct messaging request received.
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </InfiniteScroll>
+        {/* <div className="channel-media">
           <div className="channel-icon">
             <img src="https://placehold.co/400" alt="channel icon" />
           </div>
@@ -66,7 +94,7 @@ function LMChannelList() {
               Direct messaging request received.
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
