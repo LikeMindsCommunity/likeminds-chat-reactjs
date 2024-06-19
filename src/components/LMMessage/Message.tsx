@@ -3,7 +3,6 @@ import MessageContext from "../../context/MessageContext";
 import ConversationStates from "../../enums/conversation-states";
 import { Utils } from "../../utils/helpers";
 import useUserProvider from "../../hooks/useUserProvider";
-import useChatroomList from "../../hooks/useChatroomsList";
 import { getAvatar } from "../../shared/components/LMUserMedia";
 
 const Message = () => {
@@ -15,10 +14,11 @@ const Message = () => {
 
   const isSender = message?.member?.uuid === lmChatUser?.uuid;
   const messageClass = isSender ? "sender" : "receiver";
-  const imgUrl = message?.member.imageUrl;
-  const userName = message?.member.name;
-  const avatarContent = getAvatar({ imgUrl, userName });
-  console.log(avatarContent);
+
+  const imageUrl = message?.member.imageUrl;
+  const name = message?.member.name;
+  const avatarContent = getAvatar({ imageUrl, name });
+
   switch (state) {
     case ConversationStates.NORMAL: {
       return (

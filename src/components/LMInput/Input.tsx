@@ -58,6 +58,7 @@ const Input = () => {
           <div className="lm-channel-icon">
             <AttachmentsSelector />
           </div>
+
           <LMChatTextArea />
           {/* <input type="text" placeholder="Type a message" /> */}
           <div className="lm-channel-icon send">

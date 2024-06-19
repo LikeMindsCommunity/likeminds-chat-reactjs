@@ -2,22 +2,20 @@
 import InfiniteScroll from "react-infinite-scroll-component";
 import useChatroomList from "../../hooks/useChatroomsList";
 import searchIcon from "./../../assets/img/search.svg";
+import { getAvatar } from "../../shared/components/LMUserMedia";
 
 function LMChannelList() {
-  const {
-    groupChatroomsList,
+  const { groupChatroomsList, loadMoreGroupChatrooms, getChatroomsMine } =
+    useChatroomList();
 
-    loadMoreGroupChatrooms,
-    getChatroomsMine,
-  } = useChatroomList();
   return (
     <div className="lm-channel-list">
       <div>
         <div className="lm-channel-list-header">
-          <div className="title">Chatroom</div>
-          <div className="icon">
+          <div className="title">Chatrooms</div>
+          {/* <div className="icon">
             <img src={searchIcon} alt="searchIcon" />
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -29,13 +27,20 @@ function LMChannelList() {
           next={getChatroomsMine}
         >
           {groupChatroomsList?.map((chatroom) => {
+            console.log(chatroom);
             return (
               <div className="channel-media">
                 <div className="channel-icon">
-                  <img
-                    src={chatroom.chatroom_image_url || ""}
-                    alt="channel icon"
-                  />
+                  {chatroom.chatroom_image_url ? (
+                    <>
+                      <img
+                        src={chatroom.chatroom_image_url || ""}
+                        alt="channel icon"
+                      />
+                    </>
+                  ) : (
+                    <>{chatroom.header[0]}</>
+                  )}
                 </div>
                 <div className="channel-desc">
                   <div className="channel-title">{chatroom.header}</div>
@@ -47,101 +52,48 @@ function LMChannelList() {
             );
           })}
         </InfiniteScroll>
-        {/* <div className="channel-media">
-          <div className="channel-icon">
-            <img src="https://placehold.co/400" alt="channel icon" />
-          </div>
-          <div className="channel-desc">
-            <div className="channel-title">Simarn Kaur</div>
-            <div className="channel-info">
-              Direct messaging request received.
-            </div>
-          </div>
-        </div>
-        <div className="channel-media">
-          <div className="channel-icon">
-            <img src="https://placehold.co/400" alt="channel icon" />
-          </div>
-          <div className="channel-desc">
-            <div className="channel-title">Bradley Thornton</div>
-            <div className="channel-info">
-              Direct message your community manager.
-            </div>
-          </div>
-        </div>
-        <div className="channel-media">
-          <div className="channel-icon">
-            <img src="https://placehold.co/400" alt="channel icon" />
-          </div>
-          <div className="channel-desc">
-            <div className="channel-title">Sachin Gakkhar</div>
-            <div className="channel-info">You: Can we connect sometime?</div>
-          </div>
-        </div>
-        <div className="channel-media">
-          <div className="channel-icon">
-            <img src="https://placehold.co/400" alt="channel icon" />
-          </div>
-          <div className="channel-desc">
-            <div className="channel-title">Winifred Price</div>
-            <div className="channel-info">You: Can we connect sometime?</div>
-          </div>
-        </div>
+      </div>
 
-        <div className="lm-channel-list-body">
-          <div className="channel-media">
-            <div className="channel-icon">
-              <img src="https://placehold.co/400" alt="channel icon" />
-            </div>
-            <div className="channel-desc">
-              <div className="channel-title">Simarn Kaur</div>
-              <div className="channel-info">
-                Direct messaging request received.
-              </div>
-            </div>
-          </div>
-          <div className="channel-media">
-            <div className="channel-icon">
-              <img src="https://placehold.co/400" alt="channel icon" />
-            </div>
-            <div className="channel-desc">
-              <div className="channel-title">Bradley Thornton</div>
-              <div className="channel-info">
-                Direct message your community manager.
-              </div>
-            </div>
-          </div>
-          <div className="channel-media">
-            <div className="channel-icon">
-              <img src="https://placehold.co/400" alt="channel icon" />
-            </div>
-            <div className="channel-desc">
-              <div className="channel-title">Sachin Gakkhar</div>
-              <div className="channel-info">You: Can we connect sometime?</div>
-            </div>
-          </div>
-          <div className="channel-media">
-            <div className="channel-icon">
-              <img src="https://placehold.co/400" alt="channel icon" />
-            </div>
-            <div className="channel-desc">
-              <div className="channel-title">Winifred Price</div>
-              <div className="channel-info">You: Can we connect sometime?</div>
-            </div>
-          </div>
+      {/* ------------------------ Explore Feed ------------------------ */}
+      <div>
+        <div className="lm-channel-list-header">
+          <div className="title">Explore</div>
+        </div>
+      </div>
 
-          <div className="channel-media">
-            <div className="channel-icon">
-              <img src="https://placehold.co/400" alt="channel icon" />
-            </div>
-            <div className="channel-desc">
-              <div className="channel-title">Simarn Kaur</div>
-              <div className="channel-info">
-                Direct messaging request received.
+      <div className="lm-channel-list-body">
+        <InfiniteScroll
+          dataLength={groupChatroomsList?.length || 0}
+          loader={null}
+          hasMore={loadMoreGroupChatrooms}
+          next={getChatroomsMine}
+        >
+          {groupChatroomsList?.map((chatroom) => {
+            console.log(chatroom);
+            return (
+              <div className="channel-media">
+                <div className="channel-icon">
+                  {chatroom.chatroom_image_url ? (
+                    <>
+                      <img
+                        src={chatroom.chatroom_image_url || ""}
+                        alt="channel icon"
+                      />
+                    </>
+                  ) : (
+                    <>{chatroom.header[0]}</>
+                  )}
+                </div>
+                <div className="channel-desc">
+                  <div className="channel-title">{chatroom.header}</div>
+                  {/* <div className="channel-info">
+                    Direct messaging request received.
+                  </div> */}
+                </div>
               </div>
-            </div>
-          </div>
-        </div> */}
+            );
+          })}
+        </InfiniteScroll>
       </div>
     </div>
   );
