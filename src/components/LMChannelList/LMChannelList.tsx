@@ -5,9 +5,8 @@ import searchIcon from "./../../assets/img/search.svg";
 
 function LMChannelList() {
   const {
-    dmChatroomList,
     groupChatroomsList,
-    loadMoreDmChatrooms,
+
     loadMoreGroupChatrooms,
     getChatroomsMine,
   } = useChatroomList();
