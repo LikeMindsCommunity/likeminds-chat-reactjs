@@ -176,7 +176,7 @@ body {
 /* Message Box */
 .lm-channel {
   background-color: #e6ebf5;
-  padding: 1rem;
+  padding: 0 1rem;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -231,6 +231,22 @@ body {
   border-radius: 16px;
   padding: 3px 8px;
   margin: 10px auto;
+  background-color: #acb7c0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  text-align: center;
+}
+
+.lm-chat-card{
+  display: flex;
+}
+
+.lm-channel .lmUserData {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; 
   background-color: #acb7c0;
   color: #fff;
   font-size: 14px;
@@ -450,4 +466,5 @@ body {
 .lm-dual-scroll-container {
   position: relative;
   overflow-y: scroll;
+  height: 100vh;
 }

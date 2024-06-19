@@ -32,7 +32,7 @@ export default function useUserProvider(): UserProviderInterface {
           isGuest: false,
         });
         const memberStateCall = await lmChatclient?.getMemberState();
-        console.log(memberStateCall);
+        // console.log(memberStateCall);
         setLmChatUser(initiateUserCall.data.user);
         setLmChatUserCurrentCommunity(initiateUserCall.data.community);
       } catch (error) {

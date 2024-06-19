@@ -57,15 +57,15 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
   const prevDataLength = useRef<number>(0);
   //   Original function for handling scroll event
   const handleScroll = useCallback(() => {
-    console.log(
-      callNextOnBottom,
-      callNextOnTop,
-      nextOnScrollBottom,
-      nextOnScrollTop,
-    );
+    // console.log(
+    //   callNextOnBottom,
+    //   callNextOnTop,
+    //   nextOnScrollBottom,
+    //   nextOnScrollTop,
+    // );
     if (hasAlreadyCalled.current) {
       // TODO remove the below log
-      console.log("The function has already been called before");
+      // console.log("The function has already been called before");
       return;
     }
     const scrollContainer = scrollContainerRef.current;
@@ -102,8 +102,8 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
   useEffect(() => {
     //   The debounced function which will handle the scoll event
     const debouncedScroll = createDebouncedFunction(handleScroll);
-    console.log("handle scroll changed");
-    console.log(debouncedScroll);
+    // console.log("handle scroll changed");
+    // console.log(debouncedScroll);
     scrollTarget.current = scrollContainerRef.current;
     if (scrollTarget.current) {
       // console.log("inside decounce ");

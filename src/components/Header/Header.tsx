@@ -1,9 +1,15 @@
+import { useContext } from "react";
+
 // Icons
 import searchIcon from "./../../assets/img/search.svg";
 import shareIcon from "./../../assets/img/share.svg";
 import menuIcon from "./../../assets/img/overflow-menu.svg";
+import ChatroomDetailContext from "../../context/ChatroomDetailContext";
 
 const Header = () => {
+  const { chatroom } = useContext(ChatroomDetailContext);
+  // console.log(chatroom);
+
   return (
     <div className="lm-channel-header">
       <div className="lm-header-left">
