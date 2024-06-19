@@ -28,8 +28,9 @@ const AttachmentsSelector = () => {
       >
         <div className="lm-upload-media-dialog">
           <MenuItem className="lm-chat-input-attachment-label">
-            <label>
+            <label for="media">
               <input
+                id="media"
                 type="file"
                 accept=".png, .jpeg, .jpg, .mp4"
                 onChange={addImagesAndVideosMedia}
@@ -42,8 +43,13 @@ const AttachmentsSelector = () => {
           </MenuItem>
 
           <MenuItem className="lm-chat-input-attachment-label">
-            <label>
-              <input type="file" accept=".pdf" onChange={addDocumentsMedia} />
+            <label for="doc">
+              <input
+                id="doc"
+                type="file"
+                accept=".pdf"
+                onChange={addDocumentsMedia}
+              />
               <div>
                 <img src={uploadDoc} alt="doc" />
               </div>

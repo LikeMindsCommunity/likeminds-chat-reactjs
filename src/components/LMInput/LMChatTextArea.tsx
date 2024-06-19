@@ -20,7 +20,7 @@ const LMChatTextArea = () => {
         tabIndex={0}
         autoFocus={true}
         id="lm-feed-content-editable-text-area"
-        data-placeholder="Write something here..."
+        data-placeholder="Type a message"
         className="lm-chat-text-area__input-box"
         onKeyDown={onTextInputKeydownHandler}
         onInput={updateInputText}
