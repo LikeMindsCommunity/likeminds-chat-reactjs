@@ -1,9 +1,17 @@
-import { useContext, useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useCallback, useContext, useEffect, useState } from "react";
 import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
 import { DMChatroomResponse } from "../types/models/ChatroomResponse";
+import { GetHomeFeedRequest } from "@likeminds.community/chat-js-beta/dist/pages/home-feed/types";
+import {
+  ChatroomData,
+  GetChatroomsSyncResponse,
+} from "../types/api-responses/getChatroomSync";
 interface ChatroomProviderInterface {
   dmChatroomList: DMChatroomResponse[] | null;
   loadMoreDmChatrooms: boolean;
+  groupChatroomsList: ChatroomData[] | null;
+  loadMoreGroupChatrooms: boolean;
 }
 
 export default function useChatroomList(): ChatroomProviderInterface {
@@ -14,13 +22,18 @@ export default function useChatroomList(): ChatroomProviderInterface {
   const [dmChatrooms, setDmChatrooms] = useState<DMChatroomResponse[] | null>(
     null,
   );
+
   const [dmChatroomsPageCount, setDmChatroomsPageCount] = useState<number>(1);
   const [loadMoreDmChatrooms, setLoadMoreDmChatrooms] = useState<boolean>(true);
   //   state for groupchat chatrooms should come here
+  const [groupChatrooms, setGroupChatrooms] = useState<ChatroomData[] | null>(
+    null,
+  );
+  const [groupChatroomsPageCount, setGroupChatroomsPageCount] =
+    useState<number>(1);
+  const [loadMoreGroupChatrooms, setLoadMoreGroupChatrooms] =
+    useState<boolean>(true);
 
-  useEffect(() => {
-    getDmChannelList();
-  });
   async function getDmChannelList() {
     try {
       //
@@ -46,9 +59,43 @@ export default function useChatroomList(): ChatroomProviderInterface {
       console.log(error);
     }
   }
-
+  const getChatroomsMine = useCallback(async () => {
+    try {
+      const getChatroomsMineCall: GetChatroomsSyncResponse =
+        await lmChatclient?.getHomeFeed({
+          page: groupChatroomsPageCount,
+          pageSize: 10,
+          chatroomTypes: [0, 7] as unknown,
+          maxTimestamp: Date.now(),
+          minTimestamp: 0,
+        } as GetHomeFeedRequest);
+      if (getChatroomsMineCall.success) {
+        if (!getChatroomsMineCall.data.chatrooms_data.length) {
+          setLoadMoreGroupChatrooms(false);
+          return;
+        } else {
+          setGroupChatroomsPageCount((currentCount) => currentCount + 1);
+        }
+        setGroupChatrooms((currentChatrooms) => {
+          return [
+            ...(currentChatrooms || []),
+            ...getChatroomsMineCall.data.chatrooms_data,
+          ];
+        });
+      }
+      console.log(getChatroomsMineCall);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [groupChatroomsPageCount, lmChatclient]);
+  useEffect(() => {
+    // getDmChannelList();
+    getChatroomsMine();
+  }, [getChatroomsMine]);
   return {
     dmChatroomList: dmChatrooms,
     loadMoreDmChatrooms,
+    groupChatroomsList: groupChatrooms,
+    loadMoreGroupChatrooms,
   };
 }

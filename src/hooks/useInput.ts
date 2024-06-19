@@ -51,6 +51,7 @@ export function useInput(): UseInputReturns {
       try {
         const call: GetTaggingListResponse = await lmChatclient?.getTaggingList(
           {
+            feedroomId: chatroom?.chatroom.id,
             page: pg ? pg : taggingListPageCount.current,
             pageSize: 10,
             searchName: tagSearchKey || "",

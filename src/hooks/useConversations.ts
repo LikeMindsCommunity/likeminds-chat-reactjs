@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
-// import ChatroomProviderContext from "../context/ChatroomProviderContext";
+import { onValue, ref } from "firebase/database";
 import { CONVERSATIONS_PAGINATE_BY } from "../constants/Constants";
 import LoaderContextProvider from "../context/LoaderContextProvider";
 import useUserProvider from "./useUserProvider";
@@ -16,12 +16,14 @@ interface UseConversations {
 
 export default function useConversations(): UseConversations {
   // const { chatroomId } = useContext(ChatroomProviderContext);
-  const chatroomId = 25907;
+  const chatroomId = 97940;
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
   const { lmChatUser } = useUserProvider();
 
   const [conversations, setConversations] = useState<Conversation[] | null>([]);
+
+  // const params = useParams();
 
   const getChatroomDetails = useCallback(async () => {
     try {
@@ -73,6 +75,41 @@ export default function useConversations(): UseConversations {
     },
     [lmChatclient],
   );
+  const getChatroomConversationsWithID = useCallback(
+    async (conversationId: number | string | undefined) => {
+      try {
+        const chatroomConversationsCall = await lmChatclient?.getConversation({
+          chatroomID: parseInt(chatroomId!.toString()),
+          paginateBy: undefined,
+          topNavigate: undefined,
+          conversationID: parseInt(conversationId?.toString() || ""),
+          include: true,
+        });
+        return chatroomConversationsCall.data.conversations;
+      } catch (error) {
+        return logError(error);
+      }
+    },
+    [lmChatclient],
+  );
+
+  function resetConversations() {
+    setConversations(null);
+  }
+
+  function logError(error: unknown): null {
+    // Check if the error is an instance of Error
+    if (error instanceof Error) {
+      console.error("Error:", error.message);
+      console.error("Stack trace:", error.stack);
+    } else {
+      // If it's not an Error instance, log a generic message
+      console.error("An unknown error occurred:", error);
+    }
+
+    return null;
+  }
+
   useEffect(() => {
     async function fetchChannel() {
       try {
@@ -100,23 +137,33 @@ export default function useConversations(): UseConversations {
     lmChatUser,
     setLoader,
   ]);
-
-  function resetConversations() {
-    setConversations(null);
-  }
-
-  function logError(error: unknown): null {
-    // Check if the error is an instance of Error
-    if (error instanceof Error) {
-      console.error("Error:", error.message);
-      console.error("Stack trace:", error.stack);
-    } else {
-      // If it's not an Error instance, log a generic message
-      console.error("An unknown error occurred:", error);
+  useEffect(() => {
+    const db = lmChatclient?.fbInstance();
+    if (!db) {
+      return;
     }
+    const query = ref(db, `collabcards/${chatroomId}`);
+    return onValue(query, async (snapshot) => {
+      try {
+        if (snapshot.exists()) {
+          // uncomment to stop the scroll to bottom when new conversations come and user is on a searched conversation
+          // if (sessionStorage.getItem(SEARCHED_CONVERSATION_ID) !== null) {
+          //   return;
+          // }
 
-    return null;
-  }
+          const collabcardId = snapshot.val().collabcard.answer_id;
+          const conversations =
+            await getChatroomConversationsWithID(collabcardId);
+          setConversations((conversationsList) => {
+            return [...(conversationsList || []), ...conversations];
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  }, [chatroomId, getChatroomConversationsWithID, lmChatclient]);
+
   return {
     conversations,
     setConversations,
