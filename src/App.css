@@ -296,7 +296,6 @@ body {
 /* LM Input */
 .lm-channel-footer-wrapper {
   position: relative;
-
 }
 
 .lm-input-carousel {
@@ -322,9 +321,30 @@ body {
   width: auto;
 }
 
+.lm-upload-media-dialog{
+  padding: 0px 5px;
+  display: flex;
+}
+.lm-cursor-pointer{
+  cursor: pointer;
+}
 .lm-chat-input-attachment-label>input {
   display: none;
 }
+.lm-chat-input-attachment-label{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin: 0px 10px;
+}
+.lm-chat-input-attachment-label .title{
+   color: #9b9b9b;
+   font-size: 13px;
+   white-space: nowrap;
+}
+
 
 .lm-chat-text-area-wrapper {
   flex-grow: 1;

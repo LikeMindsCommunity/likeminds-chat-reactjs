@@ -2,18 +2,26 @@ import React, { useContext } from "react";
 import MessageContext from "../../context/MessageContext";
 import ConversationStates from "../../enums/conversation-states";
 import { Utils } from "../../utils/helpers";
+import useUserProvider from "../../hooks/useUserProvider";
 
 const Message = () => {
   const { message } = useContext(MessageContext);
+  const { lmChatUser } = useUserProvider();
   const { state } = message!;
+
+  const isSender = message?.member?.uuid === lmChatUser?.uuid;
+  const messageClass = isSender ? "sender" : "receiver";
+
+  console.log(message);
+  // console.log(lmChatUser?.uuid);
 
   switch (state) {
     case ConversationStates.NORMAL: {
       return (
         <>
-          <div className="conversation sender">
+          <div className={`conversation ${messageClass}`}>
             <div className="msg">{Utils.parseAnser(message?.answer || "")}</div>
-            <div className="time">10:30</div>
+            <div className="time">{message?.created_at}</div>
           </div>
         </>
       );
@@ -34,7 +42,7 @@ const Message = () => {
     default: {
       return (
         <>
-          <div className="conversation sender">
+          <div className={`conversation ${messageClass}`}>
             <div className="msg">{Utils.parseAnser(message?.answer || "")}</div>
             <div className="time">10:30</div>
           </div>
@@ -42,7 +50,7 @@ const Message = () => {
       );
     }
   }
-  return <div>{message?.toString()}</div>;
+  // return <div>{message?.toString()}</div>;
 };
 
 export default Message;
