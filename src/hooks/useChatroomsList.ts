@@ -7,11 +7,13 @@ import {
   ChatroomData,
   GetChatroomsSyncResponse,
 } from "../types/api-responses/getChatroomSync";
+import { ZeroArgVoidReturns } from "./useInput";
 interface ChatroomProviderInterface {
   dmChatroomList: DMChatroomResponse[] | null;
   loadMoreDmChatrooms: boolean;
   groupChatroomsList: ChatroomData[] | null;
   loadMoreGroupChatrooms: boolean;
+  getChatroomsMine: ZeroArgVoidReturns;
 }
 
 export default function useChatroomList(): ChatroomProviderInterface {
@@ -97,5 +99,6 @@ export default function useChatroomList(): ChatroomProviderInterface {
     loadMoreDmChatrooms,
     groupChatroomsList: groupChatrooms,
     loadMoreGroupChatrooms,
+    getChatroomsMine,
   };
 }
