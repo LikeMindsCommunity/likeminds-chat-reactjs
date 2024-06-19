@@ -1,6 +1,5 @@
-import { useContext, useEffect, useState } from "react";
-// import { LMClient } from "../types/DataLayerExportsTypes";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
+import { useEffect, useState } from "react";
+import { LMClient } from "../types/DataLayerExportsTypes";
 
 interface UserProviderInterface {
   lmChatUser: unknown;
@@ -13,14 +12,17 @@ interface UserProviderInterface {
 //   lmChatclient: LMClient;
 // }
 
-export default function useUserProvider(): UserProviderInterface {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+export default function useUserProvider(
+  client: LMClient | null,
+): UserProviderInterface {
+  const lmChatclient = client;
   const [lmChatUser, setLmChatUser] = useState<null | unknown>(null);
   const [lmChatUserMemberState, setLmChatUserMemberState] =
     useState<unknown>(null);
   const [lmChatUserCurrentCommunity, setLmChatUserCurrentCommunity] =
     useState<unknown>(null);
   useEffect(() => {
+    console.log(lmChatclient);
     if (!lmChatclient) {
       return;
     }

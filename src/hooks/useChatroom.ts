@@ -2,12 +2,12 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
 import LoaderContextProvider from "../context/LoaderContextProvider";
-import useUserProvider from "./useUserProvider";
 import Conversation from "../types/models/conversations";
 import {
   ChatroomCollabcard,
   GetChatroomResponse,
 } from "../types/api-responses/getChatroomResponse";
+import UserProviderContext from "../context/UserProviderContext";
 
 interface UseChatroom {
   chatroom: ChatroomCollabcard | null;
@@ -23,7 +23,7 @@ export default function useChatroom(): UseChatroom {
   const chatroomId = 97940;
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
-  const { lmChatUser } = useUserProvider();
+  const { currentUser } = useContext(UserProviderContext);
   const [chatroom, setChatroom] = useState<ChatroomCollabcard | null>(null);
   const [conversationToReply, setConversationToReply] =
     useState<Conversation | null>(null);
@@ -59,7 +59,7 @@ export default function useChatroom(): UseChatroom {
     return () => {
       resetChatroom();
     };
-  }, [chatroomId, getChatroomDetails, lmChatUser, setLoader]);
+  }, [chatroomId, getChatroomDetails, currentUser, setLoader]);
 
   function resetChatroom() {
     setChatroom(null);

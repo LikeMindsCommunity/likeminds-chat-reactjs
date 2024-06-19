@@ -29,17 +29,20 @@ function LMChannelList() {
           hasMore={loadMoreGroupChatrooms}
           next={getChatroomsMine}
         >
-          {groupChatroomsList?.map(() => {
+          {groupChatroomsList?.map((chatroom) => {
             return (
               <div className="channel-media">
                 <div className="channel-icon">
-                  <img src="https://placehold.co/400" alt="channel icon" />
+                  <img
+                    src={chatroom.chatroom_image_url || ""}
+                    alt="channel icon"
+                  />
                 </div>
                 <div className="channel-desc">
-                  <div className="channel-title">Simarn Kaur</div>
-                  <div className="channel-info">
+                  <div className="channel-title">{chatroom.header}</div>
+                  {/* <div className="channel-info">
                     Direct messaging request received.
-                  </div>
+                  </div> */}
                 </div>
               </div>
             );

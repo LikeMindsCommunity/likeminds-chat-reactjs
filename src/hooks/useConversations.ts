@@ -4,8 +4,8 @@ import GlobalClientProviderContext from "../context/GlobalClientProviderContext"
 import { onValue, ref } from "firebase/database";
 import { CONVERSATIONS_PAGINATE_BY } from "../constants/Constants";
 import LoaderContextProvider from "../context/LoaderContextProvider";
-import useUserProvider from "./useUserProvider";
 import Conversation from "../types/models/conversations";
+import UserProviderContext from "../context/UserProviderContext";
 
 interface UseConversations {
   conversations: Conversation[] | null;
@@ -19,7 +19,7 @@ export default function useConversations(): UseConversations {
   const chatroomId = 97940;
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
-  const { lmChatUser } = useUserProvider();
+  const { currentUser } = useContext(UserProviderContext);
 
   const [conversations, setConversations] = useState<Conversation[] | null>([]);
 
@@ -134,7 +134,7 @@ export default function useConversations(): UseConversations {
     chatroomId,
     getChatroomConversationsOnTopScroll,
     getChatroomDetails,
-    lmChatUser,
+    currentUser,
     setLoader,
   ]);
   useEffect(() => {
@@ -155,7 +155,11 @@ export default function useConversations(): UseConversations {
           const conversations =
             await getChatroomConversationsWithID(collabcardId);
           setConversations((conversationsList) => {
-            return [...(conversationsList || []), ...conversations];
+            if (conversationsList) {
+              return [...conversationsList, ...conversations];
+            } else {
+              return [...conversations];
+            }
           });
         }
       } catch (error) {
