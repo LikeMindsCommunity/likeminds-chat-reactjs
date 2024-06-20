@@ -1,5 +1,14 @@
 import React, { MutableRefObject } from "react";
-
+import {
+  S3Client,
+  PutObjectCommand,
+  PutObjectOutput,
+  PutObjectRequest,
+} from "@aws-sdk/client-s3";
+import { fromCognitoIdentityPool } from "@aws-sdk/credential-provider-cognito-identity";
+// import { LMAppAwsKeys } from "./constants/lmAppAwsKeys";
+import { FileType } from "../types/enums/Filetype";
+import { FileTypeInitials } from "../enums/file-type-initials";
 type StringTagType = {
   text: string;
   type: number;
@@ -7,6 +16,10 @@ type StringTagType = {
 };
 
 export class Utils {
+  private static poolId = `ap-south-1:181963ba-f2db-450b-8199-964a941b38c2`;
+  private static bucketName = "beta-likeminds-media";
+  private static region = "ap-south-1";
+  private static bucketUrl = "https://beta-likeminds-media.s3.amazonaws.com/";
   static REGEX_USER_SPLITTING = /<<[^<>>]*>>/g;
   static REGEX_USER_TAGGING =
     /<<(?<name>[^<>|]+)\|route:\/\/(?<route>[^<>]+(\?.+)?)>>/g;
@@ -277,6 +290,70 @@ export class Utils {
 
     return container;
   }
+  static getAWS(): S3Client {
+    const credentials = fromCognitoIdentityPool({
+      identityPoolId: this.poolId,
+      clientConfig: {
+        region: this.region,
+      },
+    });
+
+    const s3Client = new S3Client({ region: this.region, credentials });
+    return s3Client;
+  }
+
+  static async uploadMedia(
+    media: File,
+    conversationId: string,
+  ): Promise<PutObjectOutput> {
+    const s3Client = this.getAWS();
+    const { Key, Bucket, Body, ACL, ContentType } = this.buildUploadParams(
+      media,
+      conversationId,
+    );
+    const command = new PutObjectCommand({
+      Key,
+      Bucket,
+      Body,
+      ACL,
+      ContentType,
+    });
+    return s3Client.send(command);
+  }
+
+  private static buildUploadParams(
+    media: File,
+    conversationId: string,
+  ): PutObjectRequest {
+    const key = this.generateKey(conversationId, media);
+    console.log(key);
+    return {
+      // Key: `files/post/${userUniqueId}/${media.name}`,
+      Key: key,
+      Bucket: this.bucketName,
+      Body: media,
+      ACL: "public-read-write",
+      ContentType: media.type.includes(FileType.image)
+        ? FileType.image
+        : media.type.includes(FileType.video)
+          ? FileType.video
+          : "pdf",
+    };
+  }
+  static generateKey(conversationId: string, media: File) {
+    const conversationInitials = media.type.includes(FileType.image)
+      ? FileTypeInitials.IMAGE
+      : media.type.includes(FileType.video)
+        ? FileTypeInitials.VIDEO
+        : media.type.includes(FileType.document)
+          ? FileTypeInitials.PDF
+          : FileTypeInitials.OTHERS;
+    return `files/collabcard/$chatroom_id/conversation/${conversationId}/${conversationInitials}/${Date.now()}.${media.name.split(".").reverse()[0]}`;
+  }
+  static generateFileUrl(conversationId: string, media: File) {
+    const key = this.generateKey(conversationId, media);
+    return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${key}`;
+  }
 }
 export interface TagInfo {
   tagString: string;
@@ -285,3 +362,9 @@ export interface TagInfo {
 }
 // normal text strings: 0
 // taggingStrings: 1
+interface MatchPattern {
+  type: number;
+  displayName?: string;
+  routeId?: string;
+  link?: string;
+}

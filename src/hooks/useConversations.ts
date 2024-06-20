@@ -7,6 +7,8 @@ import { CONVERSATIONS_PAGINATE_BY } from "../constants/Constants";
 import LoaderContextProvider from "../context/LoaderContextProvider";
 import Conversation from "../types/models/conversations";
 import UserProviderContext from "../context/UserProviderContext";
+import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
+import { useParams } from "react-router-dom";
 
 interface UseConversations {
   conversations: Conversation[] | null;
@@ -18,7 +20,8 @@ interface UseConversations {
 
 export default function useConversations(): UseConversations {
   // const { chatroomId } = useContext(ChatroomProviderContext);
-  const chatroomId = 97940;
+  const { id: chatroomId } = useParams();
+  // const {chatroom} = useContext(LMChatChatroomContext)
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
   const { currentUser } = useContext(UserProviderContext);
@@ -36,7 +39,7 @@ export default function useConversations(): UseConversations {
     } catch (error) {
       return logError(error);
     }
-  }, [lmChatclient]);
+  }, [chatroomId, lmChatclient]);
   const getChatroomConversationsOnTopScroll = useCallback(async () =>
     // topNavigation: boolean | undefined,
     {
@@ -69,7 +72,7 @@ export default function useConversations(): UseConversations {
       } catch (error) {
         return logError(error);
       }
-    }, [conversations, lmChatclient]);
+    }, [chatroomId, conversations, lmChatclient]);
   const getChatroomConversationsOnBottomScroll = useCallback(
     async (
       conversationId: number | string | undefined,

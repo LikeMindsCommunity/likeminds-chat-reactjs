@@ -3,6 +3,8 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import useChatroomList from "../../hooks/useChatroomsList";
 import searchIcon from "./../../assets/img/search.svg";
 import { getAvatar } from "../../shared/components/LMUserMedia";
+import { useNavigate } from "react-router-dom";
+import { ConstantStrings } from "../../enums/common-strings";
 
 function LMChannelList() {
   const {
@@ -12,7 +14,9 @@ function LMChannelList() {
     getExploreGroupChatrooms,
     exploreGroupChatrooms,
     loadMoreExploreGroupChatrooms,
+    joinAChatroom,
   } = useChatroomList();
+  const navigate = useNavigate();
 
   return (
     <div className="lm-channel-list">
@@ -35,7 +39,12 @@ function LMChannelList() {
         >
           {groupChatroomsList?.map((chatroom) => {
             return (
-              <div className="channel-media">
+              <div
+                className="channel-media"
+                onClick={() => {
+                  navigate(`/chat/${chatroom.id}`);
+                }}
+              >
                 <div className="channel-icon">
                   {chatroom.chatroom_image_url ? (
                     <>
@@ -94,7 +103,16 @@ function LMChannelList() {
                   <div className="channel-title">
                     <div>{chatroom.header}</div>
                     <div>
-                      <button>Join</button>
+                      <button
+                        disabled={chatroom.follow_status ? true : false}
+                        onClick={() => {
+                          joinAChatroom(chatroom.id.toString());
+                        }}
+                      >
+                        {chatroom.follow_status
+                          ? ConstantStrings.CHATROOM_ALREADY_JOINED_BUTTON_STRING
+                          : ConstantStrings.CHATROOM_NOT_ALREADY_JOINED_BUTTON_STRING}
+                      </button>
                       {/* <button className="joined">Join</button> */}
                     </div>
                   </div>

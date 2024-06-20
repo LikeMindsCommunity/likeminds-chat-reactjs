@@ -56,7 +56,7 @@ const Header = () => {
                       return onMute();
                     case ChatroomAction.ACTION_UNMUTE:
                       return onMute();
-                    case ChatroomAction.ACTION_LEAVE_CHATROOM:
+                    case ChatroomAction.ACTION_UNFOLLOW:
                       return onLeaveChatroom();
                     case ChatroomAction.ACTION_VIEW_PARTICIPANTS:
                       return onViewParticipants();

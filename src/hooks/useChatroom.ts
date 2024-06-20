@@ -8,6 +8,7 @@ import {
   GetChatroomResponse,
 } from "../types/api-responses/getChatroomResponse";
 import UserProviderContext from "../context/UserProviderContext";
+import { useParams } from "react-router-dom";
 
 interface UseChatroom {
   chatroom: ChatroomCollabcard | null;
@@ -20,7 +21,7 @@ interface UseChatroom {
 
 export default function useChatroom(): UseChatroom {
   // const { chatroomId } = useContext(ChatroomProviderContext);
-  const chatroomId = 97940;
+  const { id: chatroomId } = useParams();
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
   const { currentUser } = useContext(UserProviderContext);

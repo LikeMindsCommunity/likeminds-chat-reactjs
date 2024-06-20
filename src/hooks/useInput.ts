@@ -21,6 +21,7 @@ import {
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { PostConversationResponse } from "../types/api-responses/postConversationResponse";
 import { FileType } from "../types/enums/Filetype";
+import { CustomActions } from "../customActions";
 
 export function useInput(): UseInputReturns {
   //contexts
@@ -82,6 +83,11 @@ export function useInput(): UseInputReturns {
           conversationId: conversationToedit.id,
           text: Utils.extractTextFromNode(inputBoxRef.current!),
         });
+        dispatchEvent(
+          new CustomEvent(CustomActions.EDIT_ACTION_COMPLETED, {
+            detail: call.data.conversation,
+          }),
+        );
         if (call.success) {
           console.log(call);
         }
@@ -188,9 +194,18 @@ export function useInput(): UseInputReturns {
 
           video.load();
         } else {
-          await lmChatclient
-            ?.uploadMedia(uploadConfig)
-            .then((fileResponse: any) => {
+          const resp = await Utils.uploadMedia(
+            attachment,
+            conversation.id.toString(),
+          );
+
+          console.log(resp);
+          await Utils.uploadMedia(attachment, conversation.id.toString()).then(
+            () => {
+              const fileUrl = Utils.generateFileUrl(
+                conversation.id.toString(),
+                attachment,
+              );
               const onUploadConfig: {
                 conversationId: number;
                 filesCount: number;
@@ -211,12 +226,13 @@ export function useInput(): UseInputReturns {
                 name: name,
                 // type: type,
                 type: type.includes(FileType.image) ? FileType.image : "pdf",
-                url: fileResponse.Location,
+                url: fileUrl,
                 thumbnail_url: null,
               };
 
               lmChatclient?.putMultimedia(onUploadConfig);
-            });
+            },
+          );
         }
       }
     } catch (error) {
@@ -348,6 +364,7 @@ export function useInput(): UseInputReturns {
       ).innerHTML;
     }
   }, [conversationToedit]);
+
   return {
     inputBoxRef,
     inputWrapperRef,
@@ -390,3 +407,17 @@ export type onKeydownEvent = (change: KeyboardEvent<HTMLDivElement>) => void;
 export type ZeroArgVoidReturns = () => void;
 export type OneArgVoidReturns<T> = (arg: T) => void;
 export type TwoArgVoidReturns<T, S> = (argOne: T, ardTwo: S) => void;
+
+// "files/collabcard/$chatroom_id/conversation/$conversation_id/initials of media/current time in milliseconds.fileextension"
+// var initial = when (mediaType) {
+//                 IMAGE -> "IMG_"
+//                 GIF -> "GIF_"
+//                 VIDEO -> "VID_"
+//                 PDF -> "DOC_"
+//                 AUDIO -> "AUD_"
+//                 VOICE_NOTE -> "VOC_"
+//                 else -> "MEDIA_"
+//             }
+//             if (isThumbnail) {
+//                 initial += "THUMB_"
+//             }

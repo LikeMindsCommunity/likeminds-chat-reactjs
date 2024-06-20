@@ -26,12 +26,14 @@ function MessageOptions() {
       title: "Report",
       clickFunction: () => {
         openDialog();
+        closeMenu();
       },
     },
     {
       title: "Delete",
       clickFunction: () => {
         onDelete();
+        closeMenu();
       },
     },
 
@@ -39,6 +41,7 @@ function MessageOptions() {
       title: "Edit Message",
       clickFunction: () => {
         onEdit();
+        closeMenu();
       },
     },
   ];

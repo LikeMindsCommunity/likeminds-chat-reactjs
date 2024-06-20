@@ -21,9 +21,7 @@ const LMAppLayout = () => {
   console.log(myClient);
   return (
     <LMClientOverlayProvider client={myClient}>
-      {/* <LMChatView> */}
       <Outlet />
-      {/* </LMChatView> */}
     </LMClientOverlayProvider>
   );
 };

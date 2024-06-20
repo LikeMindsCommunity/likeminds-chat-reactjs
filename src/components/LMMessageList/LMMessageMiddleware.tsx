@@ -18,19 +18,16 @@ const LMMessageMiddleware = (props: LMMessageMiddlewareProps) => {
     setLocalMessageCopy(message);
   }, [message]);
   function deleteMessage() {
-    // const newLocalMessage = {...localMessageCopy}
-    setLocalMessageCopy((currentLocalMessage) => {
-      console.log(currentLocalMessage);
-      if (currentLocalMessage) {
-        currentLocalMessage["deleted_by"] = currentUser?.id;
-        currentLocalMessage["deleted_by_member"] = currentUser;
-        console.log("current local message after editing");
-        console.log(currentLocalMessage);
-        return currentLocalMessage;
-      } else {
-        return currentLocalMessage;
-      }
-    });
+    const currentLocalMessage = { ...localMessageCopy };
+    currentLocalMessage["deleted_by"] = currentUser?.id;
+    currentLocalMessage["deleted_by_member"] = currentUser;
+    setLocalMessageCopy(currentLocalMessage as Conversation);
+  }
+  function editMessageLocally(newMessage: Conversation) {
+    console.log(localMessageCopy?.id === newMessage.id);
+    if (localMessageCopy?.id === newMessage.id) {
+      setLocalMessageCopy(newMessage);
+    }
   }
   return (
     <LMMessageContext.Provider
@@ -38,6 +35,7 @@ const LMMessageMiddleware = (props: LMMessageMiddlewareProps) => {
         message: localMessageCopy || null,
         index,
         deleteMessage: deleteMessage,
+        editMessageLocally: editMessageLocally,
       }}
     >
       <Message />

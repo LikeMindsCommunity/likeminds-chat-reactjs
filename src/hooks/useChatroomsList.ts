@@ -7,11 +7,13 @@ import {
   ChatroomData,
   GetChatroomsSyncResponse,
 } from "../types/api-responses/getChatroomSync";
-import { ZeroArgVoidReturns } from "./useInput";
+import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import {
   ExploreChatroom,
   GetExploreChatroomsResponse,
 } from "../types/api-responses/getExploreChatroomsResponse";
+import { useNavigate } from "react-router-dom";
+import UserProviderContext from "../context/UserProviderContext";
 interface ChatroomProviderInterface {
   dmChatroomList: DMChatroomResponse[] | null;
   loadMoreDmChatrooms: boolean;
@@ -21,12 +23,14 @@ interface ChatroomProviderInterface {
   getExploreGroupChatrooms: ZeroArgVoidReturns;
   exploreGroupChatrooms: ExploreChatroom[];
   loadMoreExploreGroupChatrooms: boolean;
+  joinAChatroom: OneArgVoidReturns<string>;
 }
 
 export default function useChatroomList(): ChatroomProviderInterface {
+  const navigate = useNavigate();
   //   const { chatroomId, setChatroom } = useContext(ChatroomProviderContext);
   const { lmChatclient } = useContext(GlobalClientProviderContext);
-
+  const { currentUser } = useContext(UserProviderContext);
   //   states for dm chatrooms
   const [dmChatrooms, setDmChatrooms] = useState<DMChatroomResponse[] | null>(
     null,
@@ -49,6 +53,20 @@ export default function useChatroomList(): ChatroomProviderInterface {
     useState<number>(1);
   const [loadMoreExploreGroupChatrooms, setLoadMoreExploreGroupChatrooms] =
     useState<boolean>(true);
+
+  const joinAChatroom = async (collabcardId: string) => {
+    try {
+      const joinCall = await lmChatclient?.followChatroom({
+        collabcardId: parseInt(collabcardId),
+        memberId: parseInt(currentUser?.id?.toString() || "0"),
+        value: true,
+      });
+      navigate(`/chat/${collabcardId}`);
+      console.log(joinCall);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const getExploreGroupChatrooms = async () => {
     try {
       const call: GetExploreChatroomsResponse =
@@ -138,5 +156,6 @@ export default function useChatroomList(): ChatroomProviderInterface {
     getExploreGroupChatrooms,
     exploreGroupChatrooms,
     loadMoreExploreGroupChatrooms,
+    joinAChatroom,
   };
 }

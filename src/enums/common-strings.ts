@@ -1,3 +1,5 @@
 export enum ConstantStrings {
   MESSAGE_DELETED = "This Message has been deleted",
+  CHATROOM_ALREADY_JOINED_BUTTON_STRING = "JOINED",
+  CHATROOM_NOT_ALREADY_JOINED_BUTTON_STRING = "JOIN",
 }

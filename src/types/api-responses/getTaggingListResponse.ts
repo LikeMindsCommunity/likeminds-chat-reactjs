@@ -1,8 +1,10 @@
-import { TaggingMember } from "../models/taggingMember";
+// import { TaggingMember } from "../models/taggingMember";
+
+import Member from "../models/member";
 
 export interface GetTaggingListResponse {
   success: boolean;
   data: {
-    members: TaggingMember[];
+    members: Member[];
   };
 }
