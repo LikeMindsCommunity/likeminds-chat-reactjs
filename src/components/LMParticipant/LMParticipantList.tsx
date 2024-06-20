@@ -4,8 +4,8 @@ import { getAvatar } from "../../shared/components/LMUserMedia";
 import { useParticipants } from "../../hooks/useParticipants";
 
 const LMParticipantList = () => {
-  const { participants } = useParticipants();
-  console.log(participants);
+  const { participantsList } = useParticipants();
+  console.log(participantsList);
   //   const avatarContent = getAvatar({ imageUrl, name });
 
   return (

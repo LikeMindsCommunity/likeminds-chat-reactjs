@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
 
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
@@ -15,7 +15,7 @@ export function useParticipants(): UseParticipantsReturns {
   const participantListPageCount = useRef<number>(1);
   const [loadMoreParticipants, setLoadMoreParticipants] =
     useState<boolean>(true);
-  const getMembers = async () => {
+  const getMembers = useCallback(async () => {
     try {
       const getMembersCall: ViewParticipantsResponse =
         await lmChatclient?.viewParticipants({
@@ -39,8 +39,10 @@ export function useParticipants(): UseParticipantsReturns {
     } catch (error) {
       console.log(error);
     }
-  };
-
+  }, [chatroom?.chatroom.id, chatroom?.chatroom.is_secret, lmChatclient]);
+  useEffect(() => {
+    getMembers();
+  }, [getMembers]);
   return {
     participantsList,
     loadMoreParticipants,
