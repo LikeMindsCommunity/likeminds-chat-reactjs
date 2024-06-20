@@ -2,6 +2,7 @@ import { useRouteError } from "react-router-dom";
 
 const Error = () => {
   const error: unknown = useRouteError();
+  console.log(error);
   return (
     <div id="error-page" className="lmError">
       <div className="lmErrorBox">

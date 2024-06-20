@@ -15,4 +15,6 @@ export default interface Conversation {
   member: Member;
   reactions: unknown[]; // Replace with the appropriate type for reactions
   state: number;
+  deletedBy?: number;
+  deletedByMember?: Member;
 }

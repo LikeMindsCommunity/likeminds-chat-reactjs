@@ -6,7 +6,7 @@ import Loader from "../LMLoader/Loader";
 import ChatroomDetailContext from "../../context/ChatroomDetailContext";
 import MessageListContext from "../../context/MessageListContext";
 
-import useChannelProvider from "../../hooks/useChannelProvider";
+import useChatroom from "../../hooks/useChatroom";
 // import ScrollContainer from "../DualSidePagination/ScrollContainer";
 
 const LMChatView: React.FC<PropsWithChildren<LMChatViewProps>> = (props) => {
@@ -19,7 +19,7 @@ const LMChatView: React.FC<PropsWithChildren<LMChatViewProps>> = (props) => {
     conversations,
     setConversations,
     getChatroomConversationsOnTopScroll,
-  } = useChannelProvider();
+  } = useChatroom();
   // Function to set the layout in case loader is false
   function setLayout() {
     return (

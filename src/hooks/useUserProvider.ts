@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { LMClient } from "../types/DataLayerExportsTypes";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
+import Member from "../types/models/member";
 
 interface UserProviderInterface {
-  lmChatUser: unknown;
+  lmChatUser: null | Member;
   lmChatUserMemberState: unknown;
   logoutUser: () => void;
   lmChatUserCurrentCommunity: unknown;
@@ -13,26 +13,29 @@ interface UserProviderInterface {
 //   lmChatclient: LMClient;
 // }
 
-export default function useUserProvider(): UserProviderInterface {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
-  const [lmChatUser, setLmChatUser] = useState<null | LMClient>(null);
+export default function useUserProvider(
+  client: LMClient | null,
+): UserProviderInterface {
+  const lmChatclient = client;
+  const [lmChatUser, setLmChatUser] = useState<null | Member>(null);
   const [lmChatUserMemberState, setLmChatUserMemberState] =
     useState<unknown>(null);
   const [lmChatUserCurrentCommunity, setLmChatUserCurrentCommunity] =
     useState<unknown>(null);
   useEffect(() => {
+    console.log(lmChatclient);
     if (!lmChatclient) {
       return;
     }
     async function setUser() {
       try {
         const initiateUserCall = await lmChatclient?.initiateUser({
-          userUniqueId: "524d3b99-2c30-4c0b-994a-e455602240db",
-          userName: "",
+          userUniqueId: "6599d0a5-1fa6-4d40-8953-26cce1aad22d",
+          userName: "ishaan",
           isGuest: false,
         });
         const memberStateCall = await lmChatclient?.getMemberState();
-        console.log(memberStateCall);
+        // console.log(memberStateCall);
         setLmChatUser(initiateUserCall.data.user);
         setLmChatUserCurrentCommunity(initiateUserCall.data.community);
       } catch (error) {

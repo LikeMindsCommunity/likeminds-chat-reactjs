@@ -2,50 +2,44 @@ import React, { PropsWithChildren } from "react";
 import { LMChatProps } from "../../types/prop-types/LMChatProps";
 import GlobalClientProviderContext from "../../context/GlobalClientProviderContext";
 import UserProviderContext from "../../context/UserProviderContext";
-import ThemeProviderContext from "../../context/ThemeProviderContext";
+
 import LoaderContextProvider from "../../context/LoaderContextProvider";
 import useUserProvider from "../../hooks/useUserProvider";
 
 const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
   client,
   children,
-  theme,
 }) => {
   const {
     lmChatUser,
     lmChatUserMemberState,
     logoutUser,
     lmChatUserCurrentCommunity,
-  } = useUserProvider();
+  } = useUserProvider(client);
+
   return (
     <GlobalClientProviderContext.Provider
       value={{
         lmChatclient: client,
       }}
     >
-      <ThemeProviderContext.Provider
+      <UserProviderContext.Provider
         value={{
-          themeObject: theme,
+          currentUser: lmChatUser,
+          memberState: lmChatUserMemberState,
+          logoutUser: logoutUser,
+          currentCommunity: lmChatUserCurrentCommunity,
         }}
       >
-        <UserProviderContext.Provider
+        <LoaderContextProvider.Provider
           value={{
-            currentUser: lmChatUser,
-            memberState: lmChatUserMemberState,
-            logoutUser: logoutUser,
-            currentCommunity: lmChatUserCurrentCommunity,
+            loader: false,
+            setLoader: null,
           }}
         >
-          <LoaderContextProvider.Provider
-            value={{
-              loader: false,
-              setLoader: null,
-            }}
-          >
-            {children}
-          </LoaderContextProvider.Provider>
-        </UserProviderContext.Provider>
-      </ThemeProviderContext.Provider>
+          {lmChatUser ? children : null}
+        </LoaderContextProvider.Provider>
+      </UserProviderContext.Provider>
     </GlobalClientProviderContext.Provider>
   );
 };

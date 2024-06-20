@@ -1,10 +1,6 @@
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import LMChatClient from "@likeminds.community/chat-js-beta";
-
-import { Theme } from "./Themes/ThemeClass";
 import LMClientOverlayProvider from "./components/LMChatProvider/LMClientOverlayProvider";
-import LMChatView from "./components/LMChatView/LMChatView";
-
 import "./App.css";
 import { LMClient } from "./types/DataLayerExportsTypes";
 import Error from "./shared/components/Error";
@@ -12,16 +8,17 @@ import Channel from "./components/channel/Channel";
 
 const LMAppLayout = () => {
   const myClient: LMClient = LMChatClient.setApiKey(
-    "01b4e80f-29e7-45ad-b914-69d61ffc130d",
+    "ac8ee360-dedb-462f-93f1-fd400ca343a7",
   )
     .setPlatformCode("rt")
     .setVersionCode(35)
     .build();
+  console.log(myClient);
   return (
-    <LMClientOverlayProvider client={myClient} theme={new Theme().theme}>
-      <LMChatView>
-        <Outlet />
-      </LMChatView>
+    <LMClientOverlayProvider client={myClient}>
+      {/* <LMChatView> */}
+      <Outlet />
+      {/* </LMChatView> */}
     </LMClientOverlayProvider>
   );
 };
