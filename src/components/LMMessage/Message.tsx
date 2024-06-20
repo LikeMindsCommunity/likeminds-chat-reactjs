@@ -12,8 +12,6 @@ const Message = () => {
   const { currentUser } = useContext(UserProviderContext);
   const { state } = message!;
 
-  console.log(message);
-
   const isSender = message?.member?.uuid === currentUser?.uuid;
   const messageClass = isSender ? "sender" : "receiver";
 
