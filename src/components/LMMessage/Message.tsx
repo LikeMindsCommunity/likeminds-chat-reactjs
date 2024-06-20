@@ -32,8 +32,16 @@ const Message = () => {
             <div className="msg">{Utils.parseAnser(message?.answer || "")}</div>
             <div className="time">{message?.created_at}</div>
           </div>
-          <Reactions />
-          <MessageOptions />
+
+          <div className="actions">
+            <div className="lm-cursor-pointer">
+              <MessageOptions />
+            </div>
+            <div className="lm-cursor-pointer">
+              <Reactions />
+            </div>
+          </div>
+
           {/* <div className="data-pill">{message?.date}</div> */}
         </div>
       );
@@ -41,53 +49,27 @@ const Message = () => {
     case ConversationStates.CHAT_ROOM_HEADER: {
       return (
         <div className="lm-chat-card">
-          <div className="lmUserData">
-            {/* <img src={message?.member.imageUrl} alt={message?.member.name} /> */}
-          </div>
-          <div className={`conversation ${messageClass}`}>
-            {!isSender ? (
-              <div className="name">{message?.member.name}</div>
-            ) : null}
+          <div className="lm-date-data ">
+            <div className="data-pill">{message?.date}</div>
 
-            <div className="msg">{Utils.parseAnser(message?.answer || "")}</div>
-            <div className="time">{message?.created_at}</div>
+            <div className="data-pill">
+              {Utils.parseAnser(message?.answer || "")}
+            </div>
           </div>
-          {/* <div className="data-pill">{message?.date}</div> */}
         </div>
       );
     }
     case 11:
       return (
         <div className={`lm-chat-card ${message?.state}`}>
-          <div className="lmUserData">
-            {/* <img src={message?.member.imageUrl} alt={message?.member.name} /> */}
-          </div>
-          <div className={`conversation ${messageClass}`}>
-            {!isSender ? (
-              <div className="name">{message?.member.name}</div>
-            ) : null}
-
-            <div className="msg">{Utils.parseAnser(message?.answer || "")}</div>
-            <div className="time">{message?.created_at}</div>
-          </div>
-          {/* <div className="data-pill">{message?.date}</div> */}
+          <div className="data-pill">{message?.date}</div>
         </div>
       );
     default: {
       return (
         <div className={`lm-chat-card ${message?.state}`}>
-          <div className="lmUserData">
-            {/* <img src={message?.member.imageUrl} alt={message?.member.name} /> */}
-          </div>
-          <div className={`conversation ${messageClass}`}>
-            {!isSender ? (
-              <div className="name">{message?.member.name}</div>
-            ) : null}
-
-            <div className="msg">{Utils.parseAnser(message?.answer || "")}</div>
-            <div className="time">{message?.created_at}</div>
-          </div>
-          {/* <div className="data-pill">{message?.date}</div> */}
+          {/* {message?.state} */}
+          <div className="data-pill">{message?.date}</div>
         </div>
       );
     }
