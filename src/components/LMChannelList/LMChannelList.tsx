@@ -91,10 +91,13 @@ function LMChannelList() {
                   )}
                 </div>
                 <div className="channel-desc">
-                  <div className="channel-title">{chatroom.header}</div>
-                  {/* <div className="channel-info">
-                    Direct messaging request received.
-                  </div> */}
+                  <div className="channel-title">
+                    <div>{chatroom.header}</div>
+                    <div>
+                      <button>Join</button>
+                      {/* <button className="joined">Join</button> */}
+                    </div>
+                  </div>
                 </div>
               </div>
             );

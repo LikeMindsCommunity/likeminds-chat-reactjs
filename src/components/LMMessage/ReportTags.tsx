@@ -35,7 +35,67 @@ const ReportTagsDialog = ({
   }, [lmChatclient]);
   return (
     <div>
-      {reportTags.map((tag) => {
+      <div className="lmReportPostWrapper">
+        <div className="lmReportPostWrapper__header">Report Post</div>
+        {/* <img
+          src={closeIcon}
+          className="lmReportPostWrapper__header__closeIcon"
+          alt="close-icon"
+          onClick={closeReportDialog}
+        /> */}
+        <div className="lmReportPostWrapper__body">
+          <div className="lmReportPostWrapper__body__content">
+            <div className="lmReportPostWrapper__body__content--texted">
+              <span>Please specify the problem to continue </span> <br />
+              You would be able to report this Post after selecting a problem.
+            </div>
+            <div className="lmReportPostWrapper__body__content__types">
+              {reportTags.map((tag) => {
+                return (
+                  <span
+                    lm-feed-component-id={`lm-feed-report-tag-vwxyz`}
+                    // className={`${selectedTag?.id === tag.id ? "active" : ""}`}
+                    key={tag.id}
+                    onClick={() => {
+                      reportCallback({
+                        id: tag.id,
+                        reason: tag.name,
+                      });
+                    }}
+                  >
+                    {tag.name}
+                  </span>
+                );
+              })}
+            </div>
+
+            {/* <div className="lmReportPostWrapper__body__content__actions">
+              {selectedTag?.id === 11 ? (
+                <input
+                  value={otherReason}
+                  onChange={(e) => {
+                    setOtherReasons(e.target.value);
+                  }}
+                  placeholder="Enter the reason here..."
+                  type="text"
+                  lm-feed-component-id={`lm-feed-report-input-fghij`}
+                  className="lmReportPostWrapper__body__content__actions--input"
+                />
+              ) : null}
+              <button
+                onClick={report}
+                disabled={!selectedTag}
+                className="lmReportPostWrapper__body__content__actions--btnReport"
+                lm-feed-component-id={`lm-feed-report-submit-klmno`}
+              >
+                Report
+              </button>
+            </div> */}
+          </div>
+        </div>
+      </div>
+
+      {/* {reportTags.map((tag) => {
         return (
           <div
             key={tag.id}
@@ -50,7 +110,7 @@ const ReportTagsDialog = ({
             {tag.name}
           </div>
         );
-      })}
+      })} */}
     </div>
   );
 };
