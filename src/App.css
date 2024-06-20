@@ -364,28 +364,32 @@ body {
   max-height: 415px;
   object-fit: contain;
 }
-.lm-input-carousel ul li{
+
+.lm-input-carousel ul li {
   list-style: none;
 }
-.lm-input-carousel .control-arrow, .lm-input-carousel .carousel-status{
+
+.lm-input-carousel .control-arrow,
+.lm-input-carousel .carousel-status {
   display: none;
 }
-.lm-input-carousel .thumbs{
+
+.lm-input-carousel .thumbs {
   display: flex;
   justify-content: center;
   gap: 0px;
 }
-.lm-input-carousel .thumbs .thumb img{
+
+.lm-input-carousel .thumbs .thumb img {
   height: 60px;
   width: 60px;
   object-fit: cover;
   border: 2px solid transparent;
 }
-.lm-input-carousel .thumbs .thumb.selected img{
+
+.lm-input-carousel .thumbs .thumb.selected img {
   border: 2px solid #7b94ea;
 }
- 
-.lm-upload-media-dialog{
 
 .lm-upload-media-dialog {
   padding: 0px 5px;
@@ -554,11 +558,12 @@ body {
 
 
 /* Participants list */
-.lm-participant-wrapper{
+.lm-participant-wrapper {
   width: 100%;
   float: left;
 }
-.lm-participant-header{
+
+.lm-participant-header {
   width: 100%;
   float: left;
   background: #D0D8E2;
@@ -568,19 +573,22 @@ body {
   justify-content: space-between;
   align-items: center;
 }
-.lm-participant-header .heading{
+
+.lm-participant-header .heading {
   font-size: 20px;
   color: #000;
   line-height: 23px;
   font-weight: 400;
 }
-.lm-participant-header .counts{
+
+.lm-participant-header .counts {
   font-size: 14px;
   color: #666;
   line-height: 16px;
   font-weight: 400;
 }
-.lm-participant-body{
+
+.lm-participant-body {
   width: 100%;
   /* float: left; */
   padding: 20px;
@@ -589,11 +597,13 @@ body {
   flex-direction: column;
   gap: 20px;
 }
-.lm-participant-card{
-  display: flex; 
+
+.lm-participant-card {
+  display: flex;
   gap: 20px;
 }
-.lm-participant-card .lm-participant-card-user{
+
+.lm-participant-card .lm-participant-card-user {
   width: 54px;
   height: 54px;
   border-radius: 50%;
@@ -604,19 +614,22 @@ body {
   color: #333;
   font-size: 16px;
 }
-.lm-participant-card .lm-participant-card-detail{
+
+.lm-participant-card .lm-participant-card-detail {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
-.lm-participant-card .lm-participant-card-detail .name{
+
+.lm-participant-card .lm-participant-card-detail .name {
   font-size: 14px;
   font-weight: 500;
   color: #000;
   line-height: 18px;
 }
-.lm-participant-card .lm-participant-card-detail .desc{
+
+.lm-participant-card .lm-participant-card-detail .desc {
   font-size: 14px;
   font-weight: 400;
   color: #666;
