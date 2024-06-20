@@ -9,10 +9,12 @@ import { getAvatar } from "../../shared/components/LMUserMedia";
 import { useMenu } from "../../hooks/useMenu";
 import { Menu, MenuItem } from "@mui/material";
 import useChatroomMenuOptions from "../../hooks/useChatroomMenuOptions";
+import { ChatroomAction } from "../../enums/chatroom-actions";
 
 const Header = () => {
   const { chatroom } = useContext(LMChatChatroomContext);
-  const { onMute } = useChatroomMenuOptions();
+  const { onMute, onLeaveChatroom, onViewParticipants } =
+    useChatroomMenuOptions();
   const { menuAnchor, openMenu, closeMenu } = useMenu();
   const imageUrl = chatroom?.chatroom.chatroom_image_url;
   const name = chatroom?.chatroom.header;
@@ -46,7 +48,24 @@ const Header = () => {
           onClose={closeMenu}
         >
           {chatroom?.chatroom_actions.map((menuOption) => {
-            return <MenuItem onClick={onMute}>{menuOption.title}</MenuItem>;
+            return (
+              <MenuItem
+                onClick={() => {
+                  switch (menuOption.id) {
+                    case ChatroomAction.ACTION_MUTE:
+                      return onMute();
+                    case ChatroomAction.ACTION_UNMUTE:
+                      return onMute();
+                    case ChatroomAction.ACTION_LEAVE_CHATROOM:
+                      return onLeaveChatroom();
+                    case ChatroomAction.ACTION_VIEW_PARTICIPANTS:
+                      return onViewParticipants();
+                  }
+                }}
+              >
+                {menuOption.title}
+              </MenuItem>
+            );
           })}
         </Menu>
       </div>

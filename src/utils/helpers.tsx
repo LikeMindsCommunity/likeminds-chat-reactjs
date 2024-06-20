@@ -231,6 +231,52 @@ export class Utils {
       console.error("The provided element is not contenteditable.");
     }
   }
+  static convertTextToHTML(text: string) {
+    const regex =
+      /<<.*?>>|(?:https?|ftp):\/\/[^\s/$.?#].[^\s]*|www\.[^\s/$.?#].[^\s]*/g;
+    const matches = text?.match(regex) || [];
+    const splits = text?.split(regex);
+
+    const container = document.createElement("div");
+
+    for (let i = 0; i < splits?.length; i++) {
+      const splitNode = document.createTextNode(splits[i]);
+      container.appendChild(splitNode);
+
+      if (matches[i]) {
+        const text = matches[i];
+        const getInfoPattern = /<<([^|]+)\|([^>>]+)>>/;
+        const match = text.match(getInfoPattern);
+        const userObject: MatchPattern = {
+          type: 1,
+        };
+        if (match) {
+          const userName = match[1];
+          const userId = match[2];
+          userObject.displayName = userName;
+          userObject.routeId = userId;
+        } else {
+          userObject.type = 2;
+          userObject.link = text;
+        }
+        if (userObject.type === 1) {
+          // const matchText = matches[i].slice(2, -2); // Remove '<<' and '>>'
+          const linkNode = document.createElement("a");
+          linkNode.href = "#"; // You can set the appropriate URL here
+          linkNode.textContent = userObject.displayName!;
+          linkNode.id = userObject.routeId!;
+          container.appendChild(linkNode);
+        } else {
+          const linkNode = document.createElement("a");
+          linkNode.href = userObject.link!; // You can set the appropriate URL here
+          linkNode.textContent = userObject.link!;
+          container.appendChild(linkNode);
+        }
+      }
+    }
+
+    return container;
+  }
 }
 export interface TagInfo {
   tagString: string;

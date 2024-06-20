@@ -25,7 +25,7 @@ import { FileType } from "../types/enums/Filetype";
 export function useInput(): UseInputReturns {
   //contexts
   const { lmChatclient } = useContext(GlobalClientProviderContext);
-  const { chatroom } = useContext(LMChatChatroomContext);
+  const { chatroom, conversationToedit } = useContext(LMChatChatroomContext);
   // state
   const [inputText, setInputText] = useState<string>("");
   const [tagSearchKey, setTagSearchKey] = useState<string | null>(null);
@@ -77,6 +77,17 @@ export function useInput(): UseInputReturns {
       if (!chatroom) {
         return;
       }
+      if (conversationToedit) {
+        const call: any = await lmChatclient?.editConversation({
+          conversationId: conversationToedit.id,
+          text: Utils.extractTextFromNode(inputBoxRef.current!),
+        });
+        if (call.success) {
+          console.log(call);
+        }
+        setFocusOnInputField();
+        return;
+      }
       // sending the text part of the conversation
       const chatroomData = chatroom.chatroom;
       const postConversationCallConfig: PostConversation = {
@@ -93,7 +104,7 @@ export function useInput(): UseInputReturns {
 
       const postConversationsCall: PostConversationResponse =
         await lmChatclient?.postConversation(postConversationCallConfig);
-      console.log(postConversationsCall);
+      setFocusOnInputField();
       for (let index = 0; index < attachmentsList.length; index++) {
         const conversation = postConversationsCall.data.conversation;
         console.log(conversation);
@@ -160,7 +171,7 @@ export function useInput(): UseInputReturns {
                             index: localIndex,
                             meta: { size: size },
                             name: name,
-                            type: type,
+                            type: "video",
                             url: fileResponse.Location,
                             thumbnailUrl: thumbnailResponse.Location,
                           };
@@ -198,7 +209,8 @@ export function useInput(): UseInputReturns {
                 index,
                 meta: { size: size },
                 name: name,
-                type: type,
+                // type: type,
+                type: type.includes(FileType.image) ? FileType.image : "pdf",
                 url: fileResponse.Location,
                 thumbnail_url: null,
               };
@@ -213,6 +225,12 @@ export function useInput(): UseInputReturns {
   };
 
   // normal functions
+  const setFocusOnInputField = () => {
+    while (inputBoxRef.current?.firstChild) {
+      inputBoxRef.current.removeChild(inputBoxRef.current?.firstChild);
+    }
+    inputBoxRef.current?.focus();
+  };
   const incrementPageNo = () => {
     taggingListPageCount.current = taggingListPageCount.current + 1;
   };
@@ -323,7 +341,13 @@ export function useInput(): UseInputReturns {
       resetPageCount();
     }
   }, [fetchTaggingList, tagSearchKey]);
-
+  useEffect(() => {
+    if (conversationToedit && inputBoxRef.current) {
+      inputBoxRef.current.innerHTML = Utils.convertTextToHTML(
+        conversationToedit.answer,
+      ).innerHTML;
+    }
+  }, [conversationToedit]);
   return {
     inputBoxRef,
     inputWrapperRef,

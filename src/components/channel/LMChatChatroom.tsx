@@ -5,6 +5,7 @@ import Header from "../Header/Header";
 import MessageList from "../LMMessageList/MessageList";
 import Input from "../LMInput/Input";
 import useChatroom from "../../hooks/useChatroom";
+import { Outlet } from "react-router-dom";
 
 const LMChatChatroom = () => {
   const {
@@ -13,6 +14,7 @@ const LMChatChatroom = () => {
     conversationToedit,
     setConversationToEdit,
     setConversationToReply,
+    setChatroom,
   } = useChatroom();
   return (
     <LMChatChatroomContext.Provider
@@ -22,11 +24,13 @@ const LMChatChatroom = () => {
         setConversationToEdit,
         setConversationToReply,
         chatroom,
+        setNewChatroom: setChatroom,
       }}
     >
-      <Header />
+      <Outlet />
+      {/* <Header />
       <MessageList />
-      <Input />
+      <Input /> */}
     </LMChatChatroomContext.Provider>
   );
 };

@@ -5,6 +5,11 @@ import "./App.css";
 import { LMClient } from "./types/DataLayerExportsTypes";
 import Error from "./shared/components/Error";
 import Channel from "./components/channel/Channel";
+import LMParticipantList from "./components/LMParticipant/LMParticipantList";
+import LMChatChatroom from "./components/channel/LMChatChatroom";
+import Header from "./components/Header/Header";
+import MessageList from "./components/LMMessageList/MessageList";
+import Input from "./components/LMInput/Input";
 
 const LMAppLayout = () => {
   const myClient: LMClient = LMChatClient.setApiKey(
@@ -32,6 +37,22 @@ export const appRoute = createBrowserRouter([
       {
         path: "/",
         element: <Channel />,
+        children: [
+          {
+            path: "chat/:id",
+            element: (
+              <>
+                <Header />
+                <MessageList />
+                <Input />
+              </>
+            ),
+          },
+          {
+            path: "participants/:id",
+            element: <LMParticipantList />,
+          },
+        ],
       },
     ],
     errorElement: <Error />,

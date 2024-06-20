@@ -12,6 +12,7 @@ const Channel = () => {
         <MessageList />
         <Input /> */}
         {/*  */}
+        {/* <Outlet /> */}
         <LMChatChatroom />
       </div>
     </div>

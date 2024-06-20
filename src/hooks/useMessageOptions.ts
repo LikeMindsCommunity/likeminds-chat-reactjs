@@ -7,8 +7,9 @@ import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 
 export function useMessageOptions(): UseMessageOptionsReturn {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
+
   const { setConversationToEdit } = useContext(LMChatChatroomContext);
-  const { message } = useContext(LMMessageContext);
+  const { message, deleteMessage } = useContext(LMMessageContext);
   const onReport = async ({
     id,
     reason,
@@ -34,6 +35,9 @@ export function useMessageOptions(): UseMessageOptionsReturn {
         conversationIds: [parseInt(message!.id.toString())],
         reason: "none",
       });
+
+      console.log(message);
+      deleteMessage();
       console.log(deleteCall);
     } catch (error) {
       console.log(error);
