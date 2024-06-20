@@ -49,7 +49,13 @@ const Message = () => {
     case ConversationStates.CHAT_ROOM_HEADER: {
       return (
         <div className="lm-chat-card">
-          <div className="data-pill">{message?.date}</div>
+          <div className="lm-date-data ">
+            <div className="data-pill">{message?.date}</div>
+
+            <div className="data-pill">
+              {Utils.parseAnser(message?.answer || "")}
+            </div>
+          </div>
         </div>
       );
     }
@@ -62,6 +68,7 @@ const Message = () => {
     default: {
       return (
         <div className={`lm-chat-card ${message?.state}`}>
+          {/* {message?.state} */}
           <div className="data-pill">{message?.date}</div>
         </div>
       );

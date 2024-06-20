@@ -116,6 +116,7 @@ body {
   color: #020202;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-title button { 
   background: #00897b;
@@ -470,6 +471,14 @@ body {
 
 .lm-content-center {
   justify-content: center;
+}
+
+.lm-date-data{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .lm-chat-text-area-wrapper {
