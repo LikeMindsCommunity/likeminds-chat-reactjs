@@ -656,6 +656,12 @@ body {
   gap: 20px;
 }
 
+.lm-delete-msg{
+  color: #9b9b9b;
+  font-weight: 300;
+  font-style: italic;
+  font-size: 12px;
+}
 .lm-participant-card .lm-participant-card-user {
     width: 54px;
     height: 54px;
@@ -688,6 +694,18 @@ body {
   color: #000;
   line-height: 18px;
 }
+.lm-media {
+  max-width: 200px;
+  max-height: 200px;
+  overflow: hidden;
+  
+  
+}
+.lm-media img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 
 .lm-participant-card .lm-participant-card-detail .desc {
   font-size: 14px;
@@ -701,8 +719,7 @@ body {
 /* Participants list */
 
 .lmReportPostWrapper {
-  max-width: 25rem;
-  /* 400px */
+  max-width: 25rem; 
   width: 100%;
   background: var(--light-color);
   position: relative;
