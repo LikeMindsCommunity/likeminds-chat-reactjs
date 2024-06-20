@@ -1,4 +1,5 @@
 import sendIcon from "./../../assets/img/send.svg";
+import giffyIcon from "./../../assets/img/giffy.png";
 import { useInput } from "../../hooks/useInput";
 import InputContext from "../../context/InputContext";
 import LMChatTextArea from "./LMChatTextArea";
@@ -52,11 +53,14 @@ const Input = () => {
         </Slide>
 
         <div className="lm-channel-footer">
-          <div className="lm-channel-icon">
+          <div className="lm-channel-icon lm-cursor-pointer">
             <Emojis />
           </div>
-          <div className="lm-channel-icon">
+          <div className="lm-channel-icon lm-cursor-pointer">
             <AttachmentsSelector />
+          </div>
+          <div className="lm-channel-icon lm-cursor-pointer">
+            <img src={giffyIcon} alt="giffy" />
           </div>
 
           <LMChatTextArea />
