@@ -34,6 +34,7 @@ const AttachmentsSelector = () => {
                 type="file"
                 accept=".png, .jpeg, .jpg, .mp4"
                 onChange={addImagesAndVideosMedia}
+                multiple
               />
               <div>
                 <img src={uploadMedia} alt="media" />
@@ -49,6 +50,7 @@ const AttachmentsSelector = () => {
                 type="file"
                 accept=".pdf"
                 onChange={addDocumentsMedia}
+                multiple
               />
               <div>
                 <img src={uploadDoc} alt="doc" />

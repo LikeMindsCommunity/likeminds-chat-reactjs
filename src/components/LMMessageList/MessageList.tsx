@@ -51,13 +51,6 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
           >
             {conversations?.map((conversation: Conversation) => {
               return (
-                // <MessageContext
-                //   value={{
-                //     message: conversation,
-                //   }}
-                // >
-                //   {MessageComponent ? <MessageComponent /> : <Message />}
-                // </MessageContext>
                 <LMMessageMiddleware
                   message={conversation}
                   key={conversation.id}
@@ -65,26 +58,6 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
               );
             })}
           </ScrollContainer>
-          {/* <InfiniteScroll
-            dataLength={conversations?.length || 0}
-            hasMore={loadMore}
-            next={getChatroomConversationsOnTopScroll}
-            inverse={true}
-            loader={null}
-          >
-            {conversations?.map((conversation: Conversation) => {
-              return (
-                // <MessageContext
-                //   value={{
-                //     message: conversation,
-                //   }}
-                // >
-                //   {MessageComponent ? <MessageComponent /> : <Message />}
-                // </MessageContext>
-                <LMMessageMiddleware message={conversation} />
-              );
-            })}
-          </InfiniteScroll> */}
         </MessageListContext.Provider>
         {/* DM Request Block */}
         {/* <DmReqBlock /> */}

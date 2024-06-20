@@ -8,12 +8,19 @@ import {
   GetChatroomsSyncResponse,
 } from "../types/api-responses/getChatroomSync";
 import { ZeroArgVoidReturns } from "./useInput";
+import {
+  ExploreChatroom,
+  GetExploreChatroomsResponse,
+} from "../types/api-responses/getExploreChatroomsResponse";
 interface ChatroomProviderInterface {
   dmChatroomList: DMChatroomResponse[] | null;
   loadMoreDmChatrooms: boolean;
   groupChatroomsList: ChatroomData[] | null;
   loadMoreGroupChatrooms: boolean;
   getChatroomsMine: ZeroArgVoidReturns;
+  getExploreGroupChatrooms: ZeroArgVoidReturns;
+  exploreGroupChatrooms: ExploreChatroom[];
+  loadMoreExploreGroupChatrooms: boolean;
 }
 
 export default function useChatroomList(): ChatroomProviderInterface {
@@ -28,14 +35,41 @@ export default function useChatroomList(): ChatroomProviderInterface {
   const [dmChatroomsPageCount, setDmChatroomsPageCount] = useState<number>(1);
   const [loadMoreDmChatrooms, setLoadMoreDmChatrooms] = useState<boolean>(true);
   //   state for groupchat chatrooms should come here
-  const [groupChatrooms, setGroupChatrooms] = useState<ChatroomData[] | null>(
-    null,
-  );
+  const [groupChatrooms, setGroupChatrooms] = useState<ChatroomData[]>([]);
   const [groupChatroomsPageCount, setGroupChatroomsPageCount] =
     useState<number>(1);
   const [loadMoreGroupChatrooms, setLoadMoreGroupChatrooms] =
     useState<boolean>(true);
 
+  //   state for explore group chatrooms should come here
+  const [exploreGroupChatrooms, setExploreGroupChatrooms] = useState<
+    ExploreChatroom[]
+  >([]);
+  const [exploreGroupChatroomsPageCount, setExploreGroupChatroomsPageCount] =
+    useState<number>(1);
+  const [loadMoreExploreGroupChatrooms, setLoadMoreExploreGroupChatrooms] =
+    useState<boolean>(true);
+  const getExploreGroupChatrooms = async () => {
+    try {
+      const call: GetExploreChatroomsResponse =
+        await lmChatclient?.getExploreFeed({
+          page: exploreGroupChatroomsPageCount,
+          orderType: 0,
+        });
+      if (call.success) {
+        if (call.data.chatrooms.length) {
+          setExploreGroupChatroomsPageCount((currentPage) => currentPage + 1);
+          setExploreGroupChatrooms((currentChatrooms) => {
+            return [...currentChatrooms, ...call.data.chatrooms];
+          });
+        } else {
+          setLoadMoreExploreGroupChatrooms(false);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   async function getDmChannelList() {
     try {
       //
@@ -93,12 +127,16 @@ export default function useChatroomList(): ChatroomProviderInterface {
   useEffect(() => {
     // getDmChannelList();
     getChatroomsMine();
-  }, [getChatroomsMine]);
+    getExploreGroupChatrooms();
+  }, []);
   return {
     dmChatroomList: dmChatrooms,
     loadMoreDmChatrooms,
     groupChatroomsList: groupChatrooms,
     loadMoreGroupChatrooms,
     getChatroomsMine,
+    getExploreGroupChatrooms,
+    exploreGroupChatrooms,
+    loadMoreExploreGroupChatrooms,
   };
 }

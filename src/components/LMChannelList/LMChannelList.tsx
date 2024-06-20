@@ -5,8 +5,14 @@ import searchIcon from "./../../assets/img/search.svg";
 import { getAvatar } from "../../shared/components/LMUserMedia";
 
 function LMChannelList() {
-  const { groupChatroomsList, loadMoreGroupChatrooms, getChatroomsMine } =
-    useChatroomList();
+  const {
+    groupChatroomsList,
+    loadMoreGroupChatrooms,
+    getChatroomsMine,
+    getExploreGroupChatrooms,
+    exploreGroupChatrooms,
+    loadMoreExploreGroupChatrooms,
+  } = useChatroomList();
 
   return (
     <div className="lm-channel-list">
@@ -19,12 +25,13 @@ function LMChannelList() {
         </div>
       </div>
 
-      <div className="lm-channel-list-body">
+      <div className="lm-channel-list-body" id="lm-channel-list-group">
         <InfiniteScroll
           dataLength={groupChatroomsList?.length || 0}
           loader={null}
           hasMore={loadMoreGroupChatrooms}
           next={getChatroomsMine}
+          scrollableTarget="lm-channel-list-group"
         >
           {groupChatroomsList?.map((chatroom) => {
             return (
@@ -60,14 +67,15 @@ function LMChannelList() {
         </div>
       </div>
 
-      <div className="lm-channel-list-body">
+      <div className="lm-channel-list-body" id="lm-channel-list-explore">
         <InfiniteScroll
-          dataLength={groupChatroomsList?.length || 0}
+          dataLength={exploreGroupChatrooms?.length || 0}
           loader={null}
-          hasMore={loadMoreGroupChatrooms}
-          next={getChatroomsMine}
+          hasMore={loadMoreExploreGroupChatrooms}
+          next={getExploreGroupChatrooms}
+          scrollableTarget="lm-channel-list-explore"
         >
-          {groupChatroomsList?.map((chatroom) => {
+          {exploreGroupChatrooms?.map((chatroom) => {
             return (
               <div className="channel-media">
                 <div className="channel-icon">

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
@@ -218,7 +219,7 @@ export default function useConversations(): UseConversations {
         console.log(error);
       }
     });
-  }, [chatroomId, lmChatclient]);
+  }, [chatroomId, conversations, lmChatclient]);
 
   return {
     conversations,

@@ -63,6 +63,8 @@ body {
 .lm-channel-list .lm-channel-list-body {
   padding: 15px;
   width: 100%;
+  height: 200px;
+  overflow: scroll;
 }
 
 .lm-channel-list .lm-channel-list-body .channel-media {
