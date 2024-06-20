@@ -1,17 +1,21 @@
 import React, { useContext } from "react";
-import { Utils } from "../../utils/helpers";
-import { getAvatar } from "../../shared/components/LMUserMedia";
 import { useParticipants } from "../../hooks/useParticipants";
+
+// icons
+import backIcon from "../../assets/img/back-navigation-arrow.svg";
 
 const LMParticipantList = () => {
   const { participantsList } = useParticipants();
-  console.log(participantsList);
-  //   const avatarContent = getAvatar({ imageUrl, name });
 
   return (
     <div className="lm-participant-wrapper">
       <div className="lm-participant-header">
-        <div className="heading">Participants</div>
+        <div className="heading">
+          <div className="back-icon">
+            <img src={backIcon} alt="back-icon" />
+          </div>
+          <div>Participants</div>
+        </div>
         <div className="counts">{participantsList.length} Participants</div>
       </div>
       <div className="lm-participant-body">

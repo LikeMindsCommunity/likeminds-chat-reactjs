@@ -108,6 +108,7 @@ function LMChannelList() {
                         onClick={() => {
                           joinAChatroom(chatroom.id.toString());
                         }}
+                        className={chatroom.follow_status ? "joined" : ""}
                       >
                         {chatroom.follow_status
                           ? ConstantStrings.CHATROOM_ALREADY_JOINED_BUTTON_STRING

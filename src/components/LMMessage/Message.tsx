@@ -9,13 +9,14 @@ import Reactions from "./Reactions";
 import MessageListContext from "../../context/MessageListContext";
 import { ConstantStrings } from "../../enums/common-strings";
 import LMMessageContext from "../../context/MessageContext";
+import MediaRenderer from "../../shared/components/MediaRenderer";
 
 const Message = () => {
   const { message, index } = useContext(LMMessageContext);
   const { conversations } = useContext(MessageListContext);
   const { currentUser } = useContext(UserProviderContext);
   useEffect(() => {
-    console.log("updated message, the new message is");
+    // console.log("updated message, the new message is");
     console.log(message);
   }, [message]);
   const isSender = message?.member?.uuid === currentUser?.uuid;
@@ -78,10 +79,8 @@ const Message = () => {
 
               {/* media */}
               <div className="lm-media">
-                {message.has_files ? (
-                  <>
-                    <img src={message?.attachments[0]?.url} alt="img" />
-                  </>
+                {message.has_files && message.attachments?.length > 0 ? (
+                  <MediaRenderer attachments={message.attachments} />
                 ) : null}
               </div>
 

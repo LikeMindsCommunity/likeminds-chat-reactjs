@@ -1,6 +1,7 @@
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import LMChatClient from "@likeminds.community/chat-js-beta";
 import LMClientOverlayProvider from "./components/LMChatProvider/LMClientOverlayProvider";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import { LMClient } from "./types/DataLayerExportsTypes";
 import Error from "./shared/components/Error";
