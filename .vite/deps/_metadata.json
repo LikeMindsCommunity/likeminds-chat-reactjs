@@ -1,0 +1,49 @@
+{
+  "hash": "2daad1e7",
+  "configHash": "13ab0586",
+  "lockfileHash": "c3e839d6",
+  "browserHash": "f1c19f09",
+  "optimized": {
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "297b329c",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "d6fba7ef",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.js",
+      "file": "react-router-dom.js",
+      "fileHash": "79ca49fb",
+      "needsInterop": false
+    },
+    "@likeminds.community/chat-js-beta": {
+      "src": "../../node_modules/@likeminds.community/chat-js-beta/dist/index.m.js",
+      "file": "@likeminds__community_chat-js-beta.js",
+      "fileHash": "cb391eee",
+      "needsInterop": false
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "55facbd1",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "chunk-4ASWBRZ3": {
+      "file": "chunk-4ASWBRZ3.js"
+    },
+    "chunk-O6O4HUXW": {
+      "file": "chunk-O6O4HUXW.js"
+    },
+    "chunk-LQ2VYIYD": {
+      "file": "chunk-LQ2VYIYD.js"
+    }
+  }
+}
