@@ -15,13 +15,13 @@ function MessageOptions() {
   const { menuAnchor, openMenu, closeMenu } = useMenu();
   const { openDialog, dialogOpen, closeDialog } = useDialog();
   const options = [
-    {
-      title: "Reply",
-      clickFunction: () => {
-        // chatroomContext.setIsSelectedConversation(true);
-        // chatroomContext.setSelectedConversation(convoObject);
-      },
-    },
+    // {
+    //   title: "Reply",
+    //   clickFunction: () => {
+    //     // chatroomContext.setIsSelectedConversation(true);
+    //     // chatroomContext.setSelectedConversation(convoObject);
+    //   },
+    // },
     {
       title: "Report",
       clickFunction: () => {

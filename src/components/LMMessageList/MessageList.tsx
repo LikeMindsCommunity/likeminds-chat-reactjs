@@ -49,10 +49,11 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
             callNextOnBottom={false}
             callNextOnTop={true}
           >
-            {conversations?.map((conversation: Conversation) => {
+            {conversations?.map((conversation: Conversation, index: number) => {
               return (
                 <LMMessageMiddleware
                   message={conversation}
+                  index={index}
                   key={conversation.id}
                 />
               );

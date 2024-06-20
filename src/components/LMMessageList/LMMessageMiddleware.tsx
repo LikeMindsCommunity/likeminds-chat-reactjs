@@ -4,11 +4,12 @@ import LMMessageContext from "../../context/MessageContext";
 import Message from "../LMMessage/Message";
 interface LMMessageMiddlewareProps {
   message: Conversation;
+  index: number;
 }
 const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
-  const { message } = props;
+  const { message, index } = props;
   return (
-    <LMMessageContext.Provider value={{ message }}>
+    <LMMessageContext.Provider value={{ message, index }}>
       <Message />
     </LMMessageContext.Provider>
   );

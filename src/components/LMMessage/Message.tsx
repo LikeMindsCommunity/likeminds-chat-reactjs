@@ -6,9 +6,11 @@ import { getAvatar } from "../../shared/components/LMUserMedia";
 import UserProviderContext from "../../context/UserProviderContext";
 import MessageOptions from "./MessageOptions";
 import Reactions from "./Reactions";
+import MessageListContext from "../../context/MessageListContext";
 
 const Message = () => {
-  const { message } = useContext(MessageContext);
+  const { message, index } = useContext(MessageContext);
+  const { conversations } = useContext(MessageListContext);
   const { currentUser } = useContext(UserProviderContext);
   const { state } = message!;
 
@@ -18,45 +20,70 @@ const Message = () => {
   const imageUrl = message?.member.imageUrl;
   const name = message?.member.name;
   const avatarContent = getAvatar({ imageUrl, name });
-
+  message?.createdAt;
+  function renderDatePill() {
+    if (index === 0) {
+      return <div className="data-pill">{message?.date}</div>;
+    } else {
+      if (conversations![index - 1].date !== message?.date) {
+        return <div className="data-pill">{message?.date}</div>;
+      }
+    }
+  }
   switch (state) {
     case ConversationStates.NORMAL: {
       return (
-        <div className={`lm-chat-card ${messageClass} ${message?.state}`}>
-          {!isSender ? <div className="lmUserData">{avatarContent}</div> : null}
-          <div className={`conversation ${messageClass}`}>
+        <>
+          <div className={`lm-chat-card ${message?.state}`}>
+            {/* {message?.state} */}
+            {renderDatePill()}
+          </div>
+          <div className={`lm-chat-card ${messageClass} ${message?.state}`}>
             {!isSender ? (
-              <div className="name">{message?.member.name}</div>
+              <div className="lmUserData">{avatarContent}</div>
             ) : null}
+            <div className={`conversation ${messageClass}`}>
+              {!isSender ? (
+                <div className="name">{message?.member.name}</div>
+              ) : null}
 
-            <div className="msg">{Utils.parseAnser(message?.answer || "")}</div>
-            <div className="time">{message?.created_at}</div>
-          </div>
-
-          <div className="actions">
-            <div className="lm-cursor-pointer">
-              <MessageOptions />
+              <div className="msg">
+                {Utils.parseAnser(message?.answer || "")}
+              </div>
+              <div className="time">{message?.created_at}</div>
             </div>
-            <div className="lm-cursor-pointer">
-              <Reactions />
-            </div>
-          </div>
 
-          {/* <div className="data-pill">{message?.date}</div> */}
-        </div>
+            <div className="actions">
+              <div className="lm-cursor-pointer">
+                <MessageOptions />
+              </div>
+              <div className="lm-cursor-pointer">
+                <Reactions />
+              </div>
+            </div>
+
+            {/* <div className="data-pill">{message?.date}</div> */}
+          </div>
+        </>
       );
     }
     case ConversationStates.CHAT_ROOM_HEADER: {
       return (
-        <div className="lm-chat-card">
-          <div className="lm-date-data ">
-            <div className="data-pill">{message?.date}</div>
+        <>
+          <div className={`lm-chat-card ${message?.state}`}>
+            {/* {message?.state} */}
+            {renderDatePill()}
+          </div>
+          <div className="lm-chat-card">
+            <div className="lm-date-data ">
+              <div className="data-pill">{message?.date}</div>
 
-            <div className="data-pill">
-              {Utils.parseAnser(message?.answer || "")}
+              <div className="data-pill">
+                {Utils.parseAnser(message?.answer || "")}
+              </div>
             </div>
           </div>
-        </div>
+        </>
       );
     }
     case 11:
@@ -66,12 +93,11 @@ const Message = () => {
         </div>
       );
     default: {
-      return (
-        <div className={`lm-chat-card ${message?.state}`}>
-          {/* {message?.state} */}
-          <div className="data-pill">{message?.date}</div>
-        </div>
-      );
+      return null;
+      // <div className={`lm-chat-card ${message?.state}`}>
+      //   {/* {message?.state} */}
+      //   <div className="data-pill">{message?.date}</div>
+      // </div>
     }
   }
   // return <div>{message?.toString()}</div>;
