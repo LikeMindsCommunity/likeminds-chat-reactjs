@@ -39,7 +39,11 @@ const Message = () => {
       <div className={`lm-chat-card ${messageClass} ${message?.state}`}>
         {!isSender ? <div className="lmUserData">{avatarContent}</div> : null}
         <div className={`conversation ${messageClass}`}>
-          <div className="msg">{ConstantStrings.MESSAGE_DELETED}</div>
+          {!isSender ? (
+            <div className="name">{message?.member.name}</div>
+          ) : null}
+          <div className="lm-delete-msg">{ConstantStrings.MESSAGE_DELETED}</div>
+          <div className="time">{message?.created_at}</div>
         </div>
 
         <div className="actions">
@@ -72,10 +76,25 @@ const Message = () => {
                 <div className="name">{message?.member.name}</div>
               ) : null}
 
+              {/* media */}
+              <div className="lm-media">
+                {message.has_files ? (
+                  <>
+                    <img src={message?.attachments[0]?.url} alt="img" />
+                  </>
+                ) : null}
+              </div>
+
+              {/* text msg */}
               <div className="msg">
                 {Utils.parseAnser(message?.answer || "")}
               </div>
-              <div className="time">{message?.created_at}</div>
+              <div className="time">
+                {message.isEdited ? (
+                  <div className="error-message">Edited</div>
+                ) : null}
+                {message?.created_at}
+              </div>
             </div>
 
             <div className="actions">
