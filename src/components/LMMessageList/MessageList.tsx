@@ -8,6 +8,7 @@ import Conversation from "../../types/models/conversations";
 import ScrollContainer from "../DualSidePagination/ScrollContainer";
 import useConversations from "../../hooks/useConversations";
 import LMMessageMiddleware from "./LMMessageMiddleware";
+import InfiniteScroll from "react-infinite-scroll-component";
 // import DmReqBlock from "./DmReqBlock";
 
 const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
@@ -20,6 +21,7 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       conversations,
       getChatroomConversationsOnBottomScroll,
       getChatroomConversationsOnTopScroll,
+      loadMore,
     } = useConversations();
     if (!conversations?.length) {
       return null;
@@ -56,10 +58,33 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
                 // >
                 //   {MessageComponent ? <MessageComponent /> : <Message />}
                 // </MessageContext>
-                <LMMessageMiddleware message={conversation} />
+                <LMMessageMiddleware
+                  message={conversation}
+                  key={conversation.id}
+                />
               );
             })}
           </ScrollContainer>
+          {/* <InfiniteScroll
+            dataLength={conversations?.length || 0}
+            hasMore={loadMore}
+            next={getChatroomConversationsOnTopScroll}
+            inverse={true}
+            loader={null}
+          >
+            {conversations?.map((conversation: Conversation) => {
+              return (
+                // <MessageContext
+                //   value={{
+                //     message: conversation,
+                //   }}
+                // >
+                //   {MessageComponent ? <MessageComponent /> : <Message />}
+                // </MessageContext>
+                <LMMessageMiddleware message={conversation} />
+              );
+            })}
+          </InfiniteScroll> */}
         </MessageListContext.Provider>
         {/* DM Request Block */}
         {/* <DmReqBlock /> */}

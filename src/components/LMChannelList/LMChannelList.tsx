@@ -27,7 +27,6 @@ function LMChannelList() {
           next={getChatroomsMine}
         >
           {groupChatroomsList?.map((chatroom) => {
-            console.log(chatroom);
             return (
               <div className="channel-media">
                 <div className="channel-icon">
@@ -69,7 +68,6 @@ function LMChannelList() {
           next={getChatroomsMine}
         >
           {groupChatroomsList?.map((chatroom) => {
-            console.log(chatroom);
             return (
               <div className="channel-media">
                 <div className="channel-icon">

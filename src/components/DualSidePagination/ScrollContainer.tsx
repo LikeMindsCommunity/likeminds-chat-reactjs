@@ -30,15 +30,20 @@ function isScrollTopBeyondThresholdLimits(
     return false;
   }
   const { scrollTop, clientHeight, scrollHeight } = targetElement;
-  const scrollableLimit =
-    ((Math.abs(scrollHeight) - Math.floor(clientHeight)) * scrollThreshold) /
-    100;
-  if (scrollDirection) {
-    return scrollTop >= Math.abs(scrollHeight) - Math.abs(scrollableLimit)
-      ? true
-      : false;
+  // const scrollableLimit =
+  //   ((Math.abs(scrollHeight) - Math.floor(clientHeight)) * scrollThreshold) /
+  //   100;
+  // if (scrollDirection) {
+  //   return scrollTop >= Math.abs(scrollHeight) - Math.abs(scrollableLimit)
+  //     ? true
+  //     : false;
+  // } else {
+  //   return scrollTop <= Math.abs(scrollableLimit) ? true : false;
+  // }
+  if (scrollTop < 0.3 * scrollHeight) {
+    return true;
   } else {
-    return scrollTop <= Math.abs(scrollableLimit) ? true : false;
+    return false;
   }
 }
 const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
@@ -56,50 +61,59 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
   const previousScrollPosition = useRef<number>(Number.POSITIVE_INFINITY);
   const prevDataLength = useRef<number>(0);
   //   Original function for handling scroll event
-  const handleScroll = useCallback(() => {
+  const handleScroll = useCallback(async () => {
     // console.log(
     //   callNextOnBottom,
     //   callNextOnTop,
     //   nextOnScrollBottom,
     //   nextOnScrollTop,
     // );
-    if (hasAlreadyCalled.current) {
-      // TODO remove the below log
-      // console.log("The function has already been called before");
-      return;
-    }
-    const scrollContainer = scrollContainerRef.current;
-    if (!scrollContainer) {
-      throw Error("The reference to scroll container is undefined or null");
-    }
-    if (typeof previousScrollPosition.current === "undefined") {
-      throw Error("The previos scroll position isnt set yet");
-    }
-    const currentScrollTop = scrollContainer.scrollTop;
-    const previousScrollTop = previousScrollPosition.current;
-    // Scroll direction is 1 for downwards direction and 0 for upwards position
-    const scrollDirection = currentScrollTop > previousScrollTop ? 1 : 0;
-    const isInScrollableLimits = isScrollTopBeyondThresholdLimits(
-      scrollDirection,
-      30,
-      scrollTarget.current || null,
-    );
-    if (scrollDirection && isInScrollableLimits) {
-      if (callNextOnBottom) {
-        hasAlreadyCalled.current = true;
-        nextOnScrollBottom();
+    try {
+      if (hasAlreadyCalled.current) {
+        // TODO remove the below log
+        // console.log("The function has already been called before");
+        return;
       }
-    } else {
-      if (callNextOnTop && isInScrollableLimits) {
-        console.log("calling from top scroller");
-        hasAlreadyCalled.current = true;
-        nextOnScrollTop();
+      const scrollContainer = scrollContainerRef.current;
+      if (!scrollContainer) {
+        throw Error("The reference to scroll container is undefined or null");
       }
+      if (typeof previousScrollPosition.current === "undefined") {
+        throw Error("The previos scroll position isnt set yet");
+      }
+      const currentScrollTop = scrollContainer.scrollTop;
+      const previousScrollTop = previousScrollPosition.current;
+      // Scroll direction is 1 for downwards direction and 0 for upwards position
+      const scrollDirection = currentScrollTop > previousScrollTop ? 1 : 0;
+      const isInScrollableLimits = isScrollTopBeyondThresholdLimits(
+        scrollDirection,
+        30,
+        scrollTarget.current || null,
+      );
+      // if (scrollDirection && isInScrollableLimits) {
+      //   if (callNextOnBottom) {
+      //     hasAlreadyCalled.current = true;
+      //     nextOnScrollBottom();
+      //   }
+      // } else {
+      //   if (callNextOnTop && isInScrollableLimits) {
+      //     console.log("calling from top scroller");
+      //     hasAlreadyCalled.current = true;
+      //     nextOnScrollTop();
+      //   }
+      // }
+      if (isInScrollableLimits) {
+        hasAlreadyCalled.current = true;
+        await nextOnScrollTop();
+      }
+      previousScrollPosition.current = currentScrollTop;
+    } catch (error) {
+      console.log(error);
     }
-    previousScrollPosition.current = currentScrollTop;
-  }, [callNextOnBottom, callNextOnTop, nextOnScrollBottom, nextOnScrollTop]);
+  }, [nextOnScrollTop]);
 
   useEffect(() => {
+    console.log("calling the effect");
     //   The debounced function which will handle the scoll event
     const debouncedScroll = createDebouncedFunction(handleScroll);
     // console.log("handle scroll changed");
@@ -109,14 +123,13 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
       // console.log("inside decounce ");
       scrollTarget.current.scrollTo(0, scrollTarget.current.scrollHeight);
       scrollTarget.current.addEventListener("scroll", debouncedScroll);
+      return () => {
+        scrollTarget?.current?.removeEventListener("scroll", debouncedScroll);
+      };
     }
   }, [handleScroll]);
   useEffect(() => {
-    // console.log("entering inside data length useEffect");
     if (dataLength !== prevDataLength.current) {
-      // console.log(`prevDataLength is : ${prevDataLength.current}`);
-      // console.log(`newDataLength is : ${dataLength}`);
-      // console.log("setting the hasAlreadyCalled to false");
       hasAlreadyCalled.current = false;
     }
   }, [dataLength]);
