@@ -12,9 +12,21 @@ const MediaRenderer = ({ attachments }) => {
 
   const handleClose = () => setShow(false);
 
+  const handleError = (e) => {
+    e.target.src = "https://via.placeholder.com/100"; // Fallback image URL
+    e.target.onerror = null; // Prevent infinite loop if the fallback also fails
+  };
+
   const renderMedia = (attachment, index, isThumbnail = false) => {
+    if (!attachment || !attachment.url) {
+      console.error(`Invalid attachment at index ${index}:`, attachment);
+      return null;
+    }
+
     const fileType = attachment.url.split(".").pop().toLowerCase();
     const className = isThumbnail ? "thumbnail" : "carousel-media";
+
+    console.log(`Rendering attachment at index ${index}:`, attachment);
 
     if (
       ["jpeg", "jpg", "png", "gif", "bmp", "tiff", "tif"].includes(fileType)
@@ -26,6 +38,7 @@ const MediaRenderer = ({ attachments }) => {
           key={index}
           className={className}
           onClick={() => handleShow(index)}
+          onError={handleError}
         />
       );
     } else if (["mp4", "mov", "avi", "mkv", "wmv", "flv"].includes(fileType)) {
@@ -35,6 +48,7 @@ const MediaRenderer = ({ attachments }) => {
           key={index}
           className={className}
           onClick={() => handleShow(index)}
+          onError={handleError}
         >
           <source src={attachment.url} type={`video/${fileType}`} />
           Your browser does not support the video tag.
@@ -53,6 +67,7 @@ const MediaRenderer = ({ attachments }) => {
         />
       );
     } else {
+      console.error(`Unsupported file type at index ${index}: ${fileType}`);
       return null;
     }
   };
