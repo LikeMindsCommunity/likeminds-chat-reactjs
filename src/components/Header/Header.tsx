@@ -1,8 +1,7 @@
 import { useContext } from "react";
 
 // Icons
-import searchIcon from "./../../assets/img/search.svg";
-import shareIcon from "./../../assets/img/share.svg";
+
 import menuIcon from "./../../assets/img/overflow-menu.svg";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
 import { getAvatar } from "../../shared/components/LMUserMedia";

@@ -70,7 +70,7 @@ export function useInput(): UseInputReturns {
         console.log(error);
       }
     },
-    [lmChatclient, tagSearchKey],
+    [chatroom?.chatroom.id, lmChatclient, tagSearchKey],
   );
   const postMessage = async () => {
     try {

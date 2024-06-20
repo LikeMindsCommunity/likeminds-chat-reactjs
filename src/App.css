@@ -250,7 +250,7 @@ body {
   text-align: center;
 }
 
-.lm-chat-card{
+.lm-chat-card {
   display: flex;
   align-items: end;
   gap: 10px;
@@ -259,7 +259,7 @@ body {
 .lm-channel .lmUserData {
   width: 40px;
   height: 40px;
-  border-radius: 50%; 
+  border-radius: 50%;
   background-color: #acb7c0;
   color: #fff;
   font-size: 14px;
@@ -313,14 +313,18 @@ body {
   background-color: #fff;
   float: left;
   clear: both;
-  margin-right: auto;
+  /* margin-right: auto; */
 }
 
 .lm-channel .conversation.sender {
   background-color: #e1fefb;
   float: right;
   clear: both;
-  margin-left: auto;
+  /* margin-left: auto; */
+}
+
+.lm-chat-card.sender {
+  flex-direction: row-reverse;
 }
 
 /* Message Box */
@@ -353,24 +357,28 @@ body {
   width: auto;
 }
 
-.lm-upload-media-dialog{
+.lm-upload-media-dialog {
   padding: 0px 5px;
   display: flex;
 }
-.lm-cursor-pointer{
+
+.lm-cursor-pointer {
   cursor: pointer;
 }
+
 .lm-chat-input-attachment-label label input {
   display: none;
 }
+
 .lm-chat-input-attachment-label label {
   cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
-.lm-chat-input-attachment-label{
+
+.lm-chat-input-attachment-label {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -378,15 +386,18 @@ body {
   gap: 5px;
   margin: 0px 10px;
 }
-.lm-chat-input-attachment-label .title{
-   color: #9b9b9b;
-   font-size: 13px;
-   white-space: nowrap;
+
+.lm-chat-input-attachment-label .title {
+  color: #9b9b9b;
+  font-size: 13px;
+  white-space: nowrap;
 }
-.lm-d-flex{
+
+.lm-d-flex {
   display: flex;
 }
-.lm-content-center{
+
+.lm-content-center {
   justify-content: center;
 }
 
@@ -395,13 +406,15 @@ body {
   border-radius: 24px;
   box-shadow: 0 0 2px #3a465d80;
 }
-.lm-chat-text-area__input-box{
-  padding: 12px; 
+
+.lm-chat-text-area__input-box {
+  padding: 12px;
   font-size: 14px;
-    font-weight: 400;
+  font-weight: 400;
 }
-.lm-chat-text-area__input-box:focus{
-  outline: none; 
+
+.lm-chat-text-area__input-box:focus {
+  outline: none;
 }
 
 .lm-channel-footer {

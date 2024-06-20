@@ -1,7 +1,8 @@
 import React from "react";
+import Member from "../types/models/member";
 
 interface UserProviderContextInterface {
-  currentUser: unknown;
+  currentUser: Member | null;
   memberState: unknown;
   logoutUser: (() => void) | null;
   currentCommunity: unknown;
