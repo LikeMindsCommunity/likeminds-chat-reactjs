@@ -14,7 +14,7 @@ const Header = () => {
   const avatarContent = getAvatar({ imageUrl, name });
   return (
     <div className="lm-channel-header">
-      <LMParticipantList />
+      {/* <LMParticipantList /> */}
 
       <div className="lm-header-left">
         <div className="lm-channel-img">{avatarContent}</div>
