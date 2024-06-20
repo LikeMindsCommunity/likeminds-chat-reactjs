@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { LMClient } from "../types/DataLayerExportsTypes";
+import Member from "../types/models/member";
 
 interface UserProviderInterface {
-  lmChatUser: unknown;
+  lmChatUser: null | Member;
   lmChatUserMemberState: unknown;
   logoutUser: () => void;
   lmChatUserCurrentCommunity: unknown;
@@ -16,7 +17,7 @@ export default function useUserProvider(
   client: LMClient | null,
 ): UserProviderInterface {
   const lmChatclient = client;
-  const [lmChatUser, setLmChatUser] = useState<null | unknown>(null);
+  const [lmChatUser, setLmChatUser] = useState<null | Member>(null);
   const [lmChatUserMemberState, setLmChatUserMemberState] =
     useState<unknown>(null);
   const [lmChatUserCurrentCommunity, setLmChatUserCurrentCommunity] =
