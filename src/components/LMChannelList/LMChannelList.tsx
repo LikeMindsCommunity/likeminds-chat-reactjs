@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import InfiniteScroll from "react-infinite-scroll-component";
 import useChatroomList from "../../hooks/useChatroomsList";
-import searchIcon from "./../../assets/img/search.svg";
-import { getAvatar } from "../../shared/components/LMUserMedia";
 import { useNavigate, useParams } from "react-router-dom";
 import { ConstantStrings } from "../../enums/common-strings";
 

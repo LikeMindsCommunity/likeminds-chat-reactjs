@@ -70,7 +70,7 @@ export function useInput(): UseInputReturns {
     },
     [chatroom?.chatroom.id, lmChatclient, tagSearchKey],
   );
- 
+
   const postMessage = async () => {
     try {
       if (!chatroom) {
@@ -206,7 +206,6 @@ export function useInput(): UseInputReturns {
           });
 
           video.load();
-          
         } else {
           await Utils.uploadMedia(attachment, conversation.id.toString()).then(
             () => {

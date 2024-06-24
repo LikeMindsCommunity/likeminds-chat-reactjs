@@ -956,3 +956,9 @@ body {
   display: flex;
   flex-direction: row-reverse;
 } */
+.lm-channel-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}

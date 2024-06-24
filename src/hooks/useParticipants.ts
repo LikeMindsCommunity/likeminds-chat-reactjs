@@ -7,6 +7,7 @@ import {
   Participant,
   ViewParticipantsResponse,
 } from "../types/api-responses/viewParticipants";
+import { useNavigate, useParams } from "react-router-dom";
 
 export function useParticipants(): UseParticipantsReturns {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
@@ -15,6 +16,11 @@ export function useParticipants(): UseParticipantsReturns {
   const participantListPageCount = useRef<number>(1);
   const [loadMoreParticipants, setLoadMoreParticipants] =
     useState<boolean>(true);
+  const { id: chatroomId } = useParams();
+  const navigate = useNavigate();
+  const navigateBackToChatroom = useCallback(() => {
+    navigate(`/chat/${chatroomId}`);
+  }, [chatroomId, navigate]);
   const getMembers = useCallback(async () => {
     try {
       const getMembersCall: ViewParticipantsResponse =
@@ -47,6 +53,7 @@ export function useParticipants(): UseParticipantsReturns {
     participantsList,
     loadMoreParticipants,
     getMembers,
+    navigateBackToChatroom,
   };
 }
 
@@ -54,4 +61,5 @@ export interface UseParticipantsReturns {
   participantsList: Participant[];
   loadMoreParticipants: boolean;
   getMembers: ZeroArgVoidReturns;
+  navigateBackToChatroom: ZeroArgVoidReturns;
 }

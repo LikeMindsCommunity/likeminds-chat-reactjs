@@ -23,6 +23,8 @@ interface UseConversations {
   getChatroomConversationsOnTopScroll: UnknownGetConversationFunction;
   getChatroomConversationsOnBottomScroll: UnknownGetConversationFunction;
   loadMore: boolean;
+  showLoader: MutableRefObject<boolean>;
+  // showLoader: boolean;
   bottomReferenceDiv: MutableRefObject<HTMLDivElement | null>;
 }
 
@@ -38,6 +40,8 @@ export default function useConversations(): UseConversations {
   const newChatroomConversationsLoaded = useRef<boolean>(false);
   const lastMessageRef = useRef<number | null>(null);
   const bottomReferenceDiv = useRef<HTMLDivElement | null>(null);
+  // const [showLoader, setShowLoader] = useState<boolean>(false);
+  const showLoader = useRef<boolean>(false);
   // const params = useParams();
 
   const getChatroomDetails = useCallback(async () => {
@@ -170,7 +174,9 @@ export default function useConversations(): UseConversations {
         await getChatroomConversationsOnTopScroll();
         newChatroomConversationsLoaded.current = true;
         // set the loader to false
-        setLoader!(false);
+        // setShowLoader(() => false);
+        showLoader.current = false;
+        // setLoader!(false);
       } catch (error) {
         // console.log the error
       }
@@ -258,11 +264,17 @@ export default function useConversations(): UseConversations {
   }, [chatroomId, lmChatclient]);
   useEffect(() => {
     return () => {
+      // setShowLoader(() => {
+      //   console.log(`setting the loader to true`);
+      //   return true;
+      // });
+      showLoader.current = true;
       resetConversations();
     };
   }, [chatroomId]);
   useEffect(() => {
     if (conversations) {
+      console.log("scrolling into view");
       bottomReferenceDiv.current?.scrollIntoView();
     }
   }, [conversations]);
@@ -272,6 +284,7 @@ export default function useConversations(): UseConversations {
     getChatroomConversationsOnBottomScroll,
     getChatroomConversationsOnTopScroll,
     loadMore,
+    showLoader,
     bottomReferenceDiv,
   };
 }

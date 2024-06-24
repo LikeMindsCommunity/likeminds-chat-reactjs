@@ -5,13 +5,12 @@ import { useParticipants } from "../../hooks/useParticipants";
 import backIcon from "../../assets/img/back-navigation-arrow.svg";
 
 const LMParticipantList = () => {
-  const { participantsList } = useParticipants();
-
+  const { participantsList, navigateBackToChatroom } = useParticipants();
   return (
     <div className="lm-participant-wrapper">
       <div className="lm-participant-header">
         <div className="heading">
-          <div className="back-icon">
+          <div className="back-icon" onClick={navigateBackToChatroom}>
             <img src={backIcon} alt="back-icon" />
           </div>
           <div>Participants</div>
