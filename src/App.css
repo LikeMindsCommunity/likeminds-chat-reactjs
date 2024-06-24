@@ -505,6 +505,8 @@ body {
   padding: 12px;
   font-size: 14px;
   font-weight: 400;
+  max-height: 80px;
+  overflow-y: auto;
 }
 
 .lm-chat-text-area__input-box:focus {
@@ -610,6 +612,8 @@ body {
   position: relative;
   overflow-y: scroll;
   height: 100vh;
+  display: block;
+  width: 100%;
 }
 
 .gifContainer {

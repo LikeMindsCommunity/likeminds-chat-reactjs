@@ -65,7 +65,7 @@ const Input = () => {
 
           <LMChatTextArea />
           {/* <input type="text" placeholder="Type a message" /> */}
-          <div className="lm-channel-icon send">
+          <div className="lm-channel-icon send lm-cursor-pointer">
             <img src={sendIcon} alt="sendIcon" onClick={postMessage} />
           </div>
         </div>
