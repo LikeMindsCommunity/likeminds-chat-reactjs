@@ -25,7 +25,7 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       bottomReferenceDiv,
     } = useConversations();
     if (!conversations?.length) {
-      return null;
+      return <div className="lm-channel"></div>;
     }
     return (
       <div className="lm-channel">

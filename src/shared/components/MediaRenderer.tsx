@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Modal, Carousel } from "react-bootstrap";
 import LMMessageContext from "../../context/MessageContext";
+import pdfIcon from "../../assets/img/pdf-document.svg";
 
 const MediaRenderer = ({ attachments }) => {
   const [show, setShow] = useState(false);
@@ -19,7 +20,6 @@ const MediaRenderer = ({ attachments }) => {
   };
 
   const renderMedia = (attachment, index, isThumbnail = false) => {
-    
     if (!attachment || !attachment.url) {
       console.error(`Invalid attachment at index ${index}:`, attachment);
       return null;
@@ -57,16 +57,23 @@ const MediaRenderer = ({ attachments }) => {
         </video>
       );
     } else if (fileType === "pdf") {
+      console.log(attachment.name);
       return (
-        <embed
-          src={attachment.url}
-          type="application/pdf"
-          width="100"
-          height="100"
-          key={index}
-          className={className}
-          onClick={() => handleShow(index)}
-        />
+        <div>
+          <a href={attachment.url} target="_blank" className="pdf">
+            <img src={pdfIcon} alt="pdf" />
+            <div className="pdfName">{attachment.name}</div>
+          </a>
+        </div>
+        // <embed
+        //   src={attachment.url}
+        //   type="application/pdf"
+        //   width="100"
+        //   height="100"
+        //   key={index}
+        //   className={className}
+        //   onClick={() => handleShow(index)}
+        // />
       );
     } else {
       // console.log(message)

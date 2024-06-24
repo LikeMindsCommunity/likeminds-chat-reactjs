@@ -84,7 +84,10 @@ const Message = () => {
 
                 {/* text msg */}
                 <div className="msg">
-                  {Utils.parseAnser(message?.answer || "")}
+                  {Utils.parseAnser(message?.answer || "") !==
+                  "* This is a gif message. Please update your app *" ? (
+                    <div>{Utils.parseAnser(message?.answer || "")}</div>
+                  ) : null}
                 </div>
                 <div className="time">
                   {message.isEdited ? (
