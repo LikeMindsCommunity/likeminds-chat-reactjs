@@ -14,6 +14,7 @@ import {
 } from "../types/api-responses/getExploreChatroomsResponse";
 import { useNavigate } from "react-router-dom";
 import UserProviderContext from "../context/UserProviderContext";
+import { onValue, ref } from "firebase/database";
 interface ChatroomProviderInterface {
   dmChatroomList: DMChatroomResponse[] | null;
   loadMoreDmChatrooms: boolean;
@@ -30,7 +31,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
   const navigate = useNavigate();
   //   const { chatroomId, setChatroom } = useContext(ChatroomProviderContext);
   const { lmChatclient } = useContext(GlobalClientProviderContext);
-  const { currentUser } = useContext(UserProviderContext);
+  const { currentUser, currentCommunity } = useContext(UserProviderContext);
   //   states for dm chatrooms
   const [dmChatrooms, setDmChatrooms] = useState<DMChatroomResponse[] | null>(
     null,
@@ -67,6 +68,22 @@ export default function useChatroomList(): ChatroomProviderInterface {
       console.log(error);
     }
   };
+  const refreshGroupChatrooms = useCallback((chatroomId: string | number) => {
+    setGroupChatrooms((groupChatrooms) => {
+      const groupChatroomsCopy = [...groupChatrooms];
+      const targetChatroom = groupChatroomsCopy.find((chatroom) => {
+        return chatroom.id.toString() === chatroomId.toString();
+      });
+      const newGroupChatroomsCopy = groupChatroomsCopy.filter((chatroom) => {
+        return chatroom.id.toString() !== chatroomId.toString();
+      });
+      if (targetChatroom) {
+        newGroupChatroomsCopy.unshift(targetChatroom);
+        return newGroupChatroomsCopy;
+      }
+      return groupChatroomsCopy;
+    });
+  }, []);
   const getExploreGroupChatrooms = async () => {
     try {
       const call: GetExploreChatroomsResponse =
@@ -137,7 +154,6 @@ export default function useChatroomList(): ChatroomProviderInterface {
           ];
         });
       }
-      console.log(getChatroomsMineCall);
     } catch (error) {
       console.log(error);
     }
@@ -147,6 +163,25 @@ export default function useChatroomList(): ChatroomProviderInterface {
     getChatroomsMine();
     getExploreGroupChatrooms();
   }, []);
+  useEffect(() => {
+    if (!lmChatclient) {
+      return;
+    }
+    console.log(currentCommunity);
+    const fb = lmChatclient?.fbInstance();
+
+    const query = ref(fb, `community/${currentCommunity.id}`);
+    return onValue(query, (snapshot) => {
+      if (snapshot.exists()) {
+        // log("the firebase val is");
+        // log(snapshot.val());
+        const chatroomId = snapshot.val().chatroom_id;
+        // if (chatroomId != id) refreshHomeFeed();
+        refreshGroupChatrooms(chatroomId);
+        console.log(chatroomId);
+      }
+    });
+  }, [currentCommunity, lmChatclient, refreshGroupChatrooms]);
   return {
     dmChatroomList: dmChatrooms,
     loadMoreDmChatrooms,

@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Modal, Carousel } from "react-bootstrap";
+import LMMessageContext from "../../context/MessageContext";
 
 const MediaRenderer = ({ attachments }) => {
   const [show, setShow] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  // const {message} = useContext(LMMessageContext)
   const handleShow = (index) => {
     setCurrentIndex(index);
     setShow(true);
@@ -18,6 +19,7 @@ const MediaRenderer = ({ attachments }) => {
   };
 
   const renderMedia = (attachment, index, isThumbnail = false) => {
+    
     if (!attachment || !attachment.url) {
       console.error(`Invalid attachment at index ${index}:`, attachment);
       return null;
@@ -26,7 +28,7 @@ const MediaRenderer = ({ attachments }) => {
     const fileType = attachment.url.split(".").pop().toLowerCase();
     const className = isThumbnail ? "thumbnail" : "carousel-media";
 
-    console.log(`Rendering attachment at index ${index}:`, attachment);
+    // console.log(`Rendering attachment at index ${index}:`, attachment);
 
     if (
       ["jpeg", "jpg", "png", "gif", "bmp", "tiff", "tif"].includes(fileType)
@@ -67,6 +69,7 @@ const MediaRenderer = ({ attachments }) => {
         />
       );
     } else {
+      // console.log(message)
       console.error(`Unsupported file type at index ${index}: ${fileType}`);
       return null;
     }

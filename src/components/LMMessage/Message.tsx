@@ -15,10 +15,7 @@ const Message = () => {
   const { message, index } = useContext(LMMessageContext);
   const { conversations } = useContext(MessageListContext);
   const { currentUser } = useContext(UserProviderContext);
-  useEffect(() => {
-    // console.log("updated message, the new message is");
-    console.log(message);
-  }, [message]);
+
   const isSender = message?.member?.uuid === currentUser?.uuid;
   const messageClass = isSender ? "sender" : "receiver";
 
@@ -72,30 +69,41 @@ const Message = () => {
             {!isSender ? (
               <div className="lmUserData">{avatarContent}</div>
             ) : null}
-            <div className={`conversation ${messageClass}`}>
-              {!isSender ? (
-                <div className="name">{message?.member.name}</div>
-              ) : null}
-
-              {/* media */}
-              <div className="lm-media">
-                {message.has_files && message.attachments?.length > 0 ? (
-                  <MediaRenderer attachments={message.attachments} />
+            <div className="lm-chat-message-reactions-holder-plate">
+              <div className={`conversation ${messageClass}`}>
+                {!isSender ? (
+                  <div className="name">{message?.member.name}</div>
                 ) : null}
-              </div>
 
-              {/* text msg */}
-              <div className="msg">
-                {Utils.parseAnser(message?.answer || "")}
+                {/* media */}
+                <div className="lm-media">
+                  {message.has_files && message.attachments?.length > 0 ? (
+                    <MediaRenderer attachments={message.attachments} />
+                  ) : null}
+                </div>
+
+                {/* text msg */}
+                <div className="msg">
+                  {Utils.parseAnser(message?.answer || "")}
+                </div>
+                <div className="time">
+                  {message.isEdited ? (
+                    <div className="error-message">Edited</div>
+                  ) : null}
+                  {message?.created_at}
+                </div>
               </div>
-              <div className="time">
-                {message.isEdited ? (
-                  <div className="error-message">Edited</div>
-                ) : null}
-                {message?.created_at}
+              <div className="lm-chat-message-reactions-holder">
+                {message.reactions.map((reaction) => {
+                  return (
+                    <div className="lm-chat-message-reaction">
+                      <span className="reaction-con">{reaction.reaction}</span>
+                      <span className="reaction-count"></span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-
             <div className="actions">
               <div className="lm-cursor-pointer">
                 <MessageOptions />

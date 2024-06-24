@@ -16,7 +16,7 @@ type StringTagType = {
 };
 
 export class Utils {
-  private static poolId = `ap-south-1:181963ba-f2db-450b-8199-964a941b38c2`;
+  private static poolId = "ap-south-1:181963ba-f2db-450b-8199-964a941b38c2";
   private static bucketName = "beta-likeminds-media";
   private static region = "ap-south-1";
   private static bucketUrl = "https://beta-likeminds-media.s3.amazonaws.com/";

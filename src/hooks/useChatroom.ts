@@ -41,7 +41,7 @@ export default function useChatroom(): UseChatroom {
     } catch (error) {
       return logError(error);
     }
-  }, [lmChatclient]);
+  }, [chatroomId, lmChatclient]);
 
   useEffect(() => {
     async function fetchChannel() {

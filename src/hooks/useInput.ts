@@ -14,10 +14,7 @@ import GlobalClientProviderContext from "../context/GlobalClientProviderContext"
 import { Utils } from "../utils/helpers";
 import { GetTaggingListResponse } from "../types/api-responses/getTaggingListResponse";
 import { EmojiData } from "../types/models/emojiData";
-import {
-  Media,
-  PostConversation,
-} from "@likeminds.community/chat-js-beta/dist/pages/chatroom/types";
+import { PostConversation } from "@likeminds.community/chat-js-beta/dist/pages/chatroom/types";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { PostConversationResponse } from "../types/api-responses/postConversationResponse";
 import { FileType } from "../types/enums/Filetype";
@@ -73,6 +70,7 @@ export function useInput(): UseInputReturns {
     },
     [chatroom?.chatroom.id, lmChatclient, tagSearchKey],
   );
+ 
   const postMessage = async () => {
     try {
       if (!chatroom) {
@@ -107,7 +105,6 @@ export function useInput(): UseInputReturns {
         postConversationCallConfig.hasFiles = true;
         postConversationCallConfig.attachmentCount = attachmentsList.length;
       }
-
       const postConversationsCall: PostConversationResponse =
         await lmChatclient?.postConversation(postConversationCallConfig);
       setFocusOnInputField();
@@ -116,12 +113,13 @@ export function useInput(): UseInputReturns {
         console.log(conversation);
         const attachment = attachmentsList[index];
         const { name, size, type } = attachment;
-        const uploadConfig: Media = {
-          messageId: parseInt(conversation.id.toString(), 10),
-          chatroomId: chatroomData.id,
-          file: attachment,
-          index: index,
-        };
+
+        // const uploadConfig: Media = {
+        //   messageId: parseInt(conversation.id.toString(), 10),
+        //   chatroomId: chatroomData.id,
+        //   file: attachment,
+        //   index: index,
+        // };
         if (type.includes(FileType.video)) {
           const video = document.createElement("video");
           const canvas = document.createElement("canvas");
@@ -144,47 +142,62 @@ export function useInput(): UseInputReturns {
               canvas.toBlob(
                 (blob) => {
                   blobEl = blob;
-                  const thumbnailConfig = {
-                    messageId: parseInt(conversation.id.toString(), 10),
-                    chatroomId: chatroomData.id,
-                    file: new File(
-                      [blobEl!],
-                      conversation.id.toString().concat("thumbnail.jpeg"),
-                    ),
-                  };
+                  const thumbnailFile = new File(
+                    [blobEl!],
+                    conversation.id.toString().concat("thumbnail.jpeg"),
+                  );
+                  // const thumbnailConfig = {
+                  //   messageId: parseInt(conversation.id.toString(), 10),
+                  //   chatroomId: chatroomData.id,
+                  //   file: thumbnailFile,
+                  // };
 
-                  lmChatclient
-                    ?.uploadMedia(thumbnailConfig)
-                    .then((thumbnailResponse: any) => {
-                      lmChatclient
-                        ?.uploadMedia(uploadConfig)
-                        .then((fileResponse: any) => {
-                          const onUploadConfig: {
-                            conversationId: number;
-                            filesCount: number;
-                            index: number;
-                            meta: { size: number };
-                            name: string;
-                            type: string;
-                            url: string;
-                            thumbnailUrl: undefined | string;
-                          } = {
-                            conversationId: parseInt(
-                              conversation.id.toString(),
-                              10,
-                            ),
-                            filesCount: 1,
-                            index: localIndex,
-                            meta: { size: size },
-                            name: name,
-                            type: "video",
-                            url: fileResponse.Location,
-                            thumbnailUrl: thumbnailResponse.Location,
-                          };
+                  // lmChatclient
+                  //   ?.uploadMedia(thumbnailConfig)
+                  Utils.uploadMedia(
+                    attachment,
+                    conversation.id.toString(),
+                  ).then(() => {
+                    const thumbnailUrl = Utils.generateFileUrl(
+                      conversation.id.toString(),
+                      thumbnailFile,
+                    );
+                    // lmChatclient
+                    //   ?.uploadMedia(uploadConfig)
+                    Utils.uploadMedia(
+                      attachment,
+                      conversation.id.toString(),
+                    ).then(() => {
+                      const fileUrl = Utils.generateFileUrl(
+                        conversation.id.toString(),
+                        attachment,
+                      );
+                      const onUploadConfig: {
+                        conversationId: number;
+                        filesCount: number;
+                        index: number;
+                        meta: { size: number };
+                        name: string;
+                        type: string;
+                        url: string;
+                        thumbnailUrl: undefined | string;
+                      } = {
+                        conversationId: parseInt(
+                          conversation.id.toString(),
+                          10,
+                        ),
+                        filesCount: 1,
+                        index: localIndex,
+                        meta: { size: size },
+                        name: name,
+                        type: "video",
+                        url: fileUrl,
+                        thumbnailUrl: thumbnailUrl,
+                      };
 
-                          lmChatclient.putMultimedia(onUploadConfig);
-                        });
+                      lmChatclient?.putMultimedia(onUploadConfig);
                     });
+                  });
                 },
                 "image/jpeg",
                 0.8,
@@ -193,13 +206,8 @@ export function useInput(): UseInputReturns {
           });
 
           video.load();
+          
         } else {
-          const resp = await Utils.uploadMedia(
-            attachment,
-            conversation.id.toString(),
-          );
-
-          console.log(resp);
           await Utils.uploadMedia(attachment, conversation.id.toString()).then(
             () => {
               const fileUrl = Utils.generateFileUrl(

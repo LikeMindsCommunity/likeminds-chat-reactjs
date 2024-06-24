@@ -7,7 +7,7 @@ import { LMClient } from "./types/DataLayerExportsTypes";
 import Error from "./shared/components/Error";
 import Channel from "./components/channel/Channel";
 import LMParticipantList from "./components/LMParticipant/LMParticipantList";
-import LMChatChatroom from "./components/channel/LMChatChatroom";
+//import LMChatChatroom from "./components/channel/LMChatChatroom";
 import Header from "./components/Header/Header";
 import MessageList from "./components/LMMessageList/MessageList";
 import Input from "./components/LMInput/Input";
@@ -19,7 +19,6 @@ const LMAppLayout = () => {
     .setPlatformCode("rt")
     .setVersionCode(35)
     .build();
-  console.log(myClient);
   return (
     <LMClientOverlayProvider client={myClient}>
       <Outlet />

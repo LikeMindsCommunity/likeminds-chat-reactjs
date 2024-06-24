@@ -3,7 +3,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import useChatroomList from "../../hooks/useChatroomsList";
 import searchIcon from "./../../assets/img/search.svg";
 import { getAvatar } from "../../shared/components/LMUserMedia";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ConstantStrings } from "../../enums/common-strings";
 
 function LMChannelList() {
@@ -17,7 +17,7 @@ function LMChannelList() {
     joinAChatroom,
   } = useChatroomList();
   const navigate = useNavigate();
-
+  const { id: chatroomId } = useParams();
   return (
     <div className="lm-channel-list">
       <div>
@@ -40,7 +40,7 @@ function LMChannelList() {
           {groupChatroomsList?.map((chatroom) => {
             return (
               <div
-                className="channel-media"
+                className={`channel-media ${chatroomId?.toString() === chatroom.id.toString() ? "selected" : null}`}
                 onClick={() => {
                   navigate(`/chat/${chatroom.id}`);
                 }}

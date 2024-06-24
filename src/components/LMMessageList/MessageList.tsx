@@ -22,6 +22,7 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       getChatroomConversationsOnBottomScroll,
       getChatroomConversationsOnTopScroll,
       loadMore,
+      bottomReferenceDiv,
     } = useConversations();
     if (!conversations?.length) {
       return null;
@@ -33,9 +34,11 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
             conversations,
             getChatroomConversationsOnBottomScroll,
             getChatroomConversationsOnTopScroll,
+            bottomReferenceDiv,
           }}
         >
           <ScrollContainer
+            bottomReferenceDiv={bottomReferenceDiv}
             dataLength={conversations?.length || 0}
             nextOnScrollBottom={() => {
               console.log("bottom scroll function call");

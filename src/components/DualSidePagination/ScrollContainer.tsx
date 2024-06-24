@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {
+  MutableRefObject,
   PropsWithChildren,
   useCallback,
   useEffect,
   useMemo,
   useRef,
 } from "react";
+import { useParams } from "react-router-dom";
 //   Debounce creator for creating a debounced variation of the original function
 function createDebouncedFunction(originalFunction: () => void) {
   let hasTheFunctionAlreadyCalled: boolean = false;
@@ -40,7 +42,11 @@ function isScrollTopBeyondThresholdLimits(
   // } else {
   //   return scrollTop <= Math.abs(scrollableLimit) ? true : false;
   // }
-  if (scrollTop < 0.3 * scrollHeight) {
+  console.log(`The scroll height is: ${scrollHeight}`);
+  console.log(`The scroll top is ${scrollTop}`);
+  console.log(`The scroll direction is ${scrollDirection}`);
+  console.log(scrollTop < 0.3 * scrollHeight);
+  if (scrollTop < 0.3 * scrollHeight && !scrollDirection) {
     return true;
   } else {
     return false;
@@ -54,20 +60,19 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
     callNextOnBottom,
     callNextOnTop,
     dataLength,
+    bottomReferenceDiv,
   } = props;
+  const { id: chatroomId } = useParams();
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const scrollTarget = useRef<HTMLDivElement | null>(null);
+  // const bottomReferenceDiv = useRef<HTMLDivElement | null>(null);
   const hasAlreadyCalled = useRef<boolean>(false);
-  const previousScrollPosition = useRef<number>(Number.POSITIVE_INFINITY);
+  const previousScrollPosition = useRef<number>(Number.NEGATIVE_INFINITY);
   const prevDataLength = useRef<number>(0);
+  const isFirstRender = useRef<boolean>(true);
+
   //   Original function for handling scroll event
   const handleScroll = useCallback(async () => {
-    // console.log(
-    //   callNextOnBottom,
-    //   callNextOnTop,
-    //   nextOnScrollBottom,
-    //   nextOnScrollTop,
-    // );
     try {
       if (hasAlreadyCalled.current) {
         // TODO remove the below log
@@ -90,18 +95,6 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
         30,
         scrollTarget.current || null,
       );
-      // if (scrollDirection && isInScrollableLimits) {
-      //   if (callNextOnBottom) {
-      //     hasAlreadyCalled.current = true;
-      //     nextOnScrollBottom();
-      //   }
-      // } else {
-      //   if (callNextOnTop && isInScrollableLimits) {
-      //     console.log("calling from top scroller");
-      //     hasAlreadyCalled.current = true;
-      //     nextOnScrollTop();
-      //   }
-      // }
       if (isInScrollableLimits) {
         hasAlreadyCalled.current = true;
         await nextOnScrollTop();
@@ -116,8 +109,6 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
     console.log("calling the effect");
     //   The debounced function which will handle the scoll event
     const debouncedScroll = createDebouncedFunction(handleScroll);
-    // console.log("handle scroll changed");
-    // console.log(debouncedScroll);
     scrollTarget.current = scrollContainerRef.current;
     if (scrollTarget.current) {
       // console.log("inside decounce ");
@@ -133,9 +124,20 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
       hasAlreadyCalled.current = false;
     }
   }, [dataLength]);
+  useEffect(() => {
+    if (isFirstRender.current && children) {
+      bottomReferenceDiv.current?.scrollIntoView();
+
+      isFirstRender.current = false;
+    }
+  }, [children, chatroomId, bottomReferenceDiv]);
   return (
     <div ref={scrollContainerRef} className="lm-dual-scroll-container">
       {children}
+      <div
+        ref={bottomReferenceDiv}
+        className="lm-dual-scroll-container-bottom-block"
+      ></div>
     </div>
   );
 };
@@ -145,6 +147,7 @@ interface ScrollContainerProps {
   callNextOnTop: boolean;
   callNextOnBottom: boolean;
   dataLength: number;
+  bottomReferenceDiv: MutableRefObject<HTMLDivElement | null>;
 }
 
 export type VoidFn = () => void;

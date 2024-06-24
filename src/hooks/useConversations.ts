@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  MutableRefObject,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
 import { onValue, ref } from "firebase/database";
 import { CONVERSATIONS_PAGINATE_BY } from "../constants/Constants";
@@ -16,6 +23,7 @@ interface UseConversations {
   getChatroomConversationsOnTopScroll: UnknownGetConversationFunction;
   getChatroomConversationsOnBottomScroll: UnknownGetConversationFunction;
   loadMore: boolean;
+  bottomReferenceDiv: MutableRefObject<HTMLDivElement | null>;
 }
 
 export default function useConversations(): UseConversations {
@@ -25,9 +33,11 @@ export default function useConversations(): UseConversations {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
   const { currentUser } = useContext(UserProviderContext);
-
   const [conversations, setConversations] = useState<Conversation[] | null>([]);
   const [loadMore, setLoadMore] = useState<boolean>(true);
+  const newChatroomConversationsLoaded = useRef<boolean>(false);
+  const lastMessageRef = useRef<number | null>(null);
+  const bottomReferenceDiv = useRef<HTMLDivElement | null>(null);
   // const params = useParams();
 
   const getChatroomDetails = useCallback(async () => {
@@ -48,8 +58,8 @@ export default function useConversations(): UseConversations {
           chatroomID: parseInt(chatroomId!.toString()),
           paginateBy: CONVERSATIONS_PAGINATE_BY || 50,
           topNavigate: false,
-          conversationID: conversations?.length
-            ? conversations[0].id
+          conversationID: lastMessageRef.current
+            ? parseInt(lastMessageRef.current.toString())
             : undefined,
           scrollDirection: 0,
           include: false,
@@ -58,12 +68,15 @@ export default function useConversations(): UseConversations {
           if (!chatroomConversationsCall.data.conversations.length) {
             setLoadMore(false);
           } else {
+            console.log("A");
             setConversations((currentConversations) => {
               const newConversations = [
                 ...chatroomConversationsCall.data.conversations,
                 ...(currentConversations || []),
               ];
-              console.log(newConversations);
+              if (newConversations.length) {
+                lastMessageRef.current = newConversations[0].id;
+              }
               return newConversations;
             });
           }
@@ -72,7 +85,7 @@ export default function useConversations(): UseConversations {
       } catch (error) {
         return logError(error);
       }
-    }, [chatroomId, conversations, lmChatclient]);
+    }, [chatroomId, lmChatclient]);
   const getChatroomConversationsOnBottomScroll = useCallback(
     async (
       conversationId: number | string | undefined,
@@ -91,7 +104,7 @@ export default function useConversations(): UseConversations {
         return logError(error);
       }
     },
-    [lmChatclient],
+    [chatroomId, lmChatclient],
   );
   const getChatroomConversationsWithID = useCallback(
     async (conversationId: number | string | undefined) => {
@@ -134,6 +147,8 @@ export default function useConversations(): UseConversations {
 
   function resetConversations() {
     setConversations(null);
+    lastMessageRef.current = null;
+    newChatroomConversationsLoaded.current = false;
   }
 
   function logError(error: unknown): null {
@@ -153,7 +168,7 @@ export default function useConversations(): UseConversations {
     async function fetchChannel() {
       try {
         await getChatroomConversationsOnTopScroll();
-
+        newChatroomConversationsLoaded.current = true;
         // set the loader to false
         setLoader!(false);
       } catch (error) {
@@ -161,15 +176,12 @@ export default function useConversations(): UseConversations {
       }
     }
     fetchChannel();
-    return () => {
-      resetConversations();
-    };
   }, [
     chatroomId,
-    // getChatroomConversationsOnTopScroll,
     getChatroomDetails,
     currentUser,
     setLoader,
+    getChatroomConversationsOnTopScroll,
   ]);
   useEffect(() => {
     const db = lmChatclient?.fbInstance();
@@ -188,19 +200,7 @@ export default function useConversations(): UseConversations {
           include: true,
         });
         const targetConversation = chatroomConversationsCall.data.conversations;
-        if (
-          !conversations?.some((conversation) => {
-            if (conversation.id === targetConversation[0].id) {
-              return true;
-            } else {
-              return false;
-            }
-          })
-        ) {
-          return [...(conversations || []), ...targetConversation];
-        } else {
-          return conversations;
-        }
+        return targetConversation;
       } catch (error) {
         return logError(error);
       }
@@ -208,28 +208,71 @@ export default function useConversations(): UseConversations {
     const query = ref(db, `collabcards/${chatroomId}`);
     return onValue(query, async (snapshot) => {
       try {
-        if (snapshot.exists()) {
+        if (snapshot.exists() && newChatroomConversationsLoaded.current) {
           // uncomment to stop the scroll to bottom when new conversations come and user is on a searched conversation
           // if (sessionStorage.getItem(SEARCHED_CONVERSATION_ID) !== null) {
           //   return;
           // }
-
           const collabcardId = snapshot.val().collabcard.answer_id;
-          // const conversations =
-          await getChatroomConversationsWithID(collabcardId);
+          getChatroomConversationsWithID(collabcardId)
+            .then((targetConversation) => {
+              setConversations((currentConversations) => {
+                console.log("B");
+                const targetConversationObject = targetConversation[0];
+                console.log(
+                  `the current conversations are: ${currentConversations}`,
+                );
+                console.log(currentConversations);
+                console.log(
+                  `the targetConversation is: ${targetConversationObject}`,
+                );
+                const alreadyHasIt = currentConversations?.some(
+                  (conversationObject) => {
+                    if (
+                      conversationObject.id.toString() ===
+                      targetConversationObject.id.toString()
+                    ) {
+                      return true;
+                    } else {
+                      return false;
+                    }
+                  },
+                );
+                console.log(`The value for alreadyHasIt is: ${alreadyHasIt}`);
+                if (alreadyHasIt) {
+                  return currentConversations;
+                } else {
+                  return [
+                    ...(currentConversations || []),
+                    ...(targetConversation || []),
+                  ];
+                }
+              });
+            })
+            .catch(console.log);
         }
       } catch (error) {
         console.log(error);
       }
     });
-  }, [chatroomId, conversations, lmChatclient]);
-
+  }, [chatroomId, lmChatclient]);
+  useEffect(() => {
+    return () => {
+      resetConversations();
+    };
+  }, [chatroomId]);
+  useEffect(() => {
+    if (conversations) {
+      bottomReferenceDiv.current?.scrollIntoView();
+    }
+  }, [conversations]);
   return {
     conversations,
     setConversations,
     getChatroomConversationsOnBottomScroll,
     getChatroomConversationsOnTopScroll,
     loadMore,
+    bottomReferenceDiv,
   };
 }
 export type UnknownReturnFunction = (...props: unknown[]) => unknown;
