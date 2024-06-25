@@ -41,7 +41,7 @@ export default function useConversations(): UseConversations {
   const lastMessageRef = useRef<number | null>(null);
   const bottomReferenceDiv = useRef<HTMLDivElement | null>(null);
   // const [showLoader, setShowLoader] = useState<boolean>(false);
-  const showLoader = useRef<boolean>(false);
+  const showLoader = useRef<boolean>(true);
   // const params = useParams();
 
   const getChatroomDetails = useCallback(async () => {

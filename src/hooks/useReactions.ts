@@ -7,7 +7,7 @@ import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 
 export function useReactions(): UseReactionReturns {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
-  const { message } = useContext(LMMessageContext);
+  const { message, addReactionLocally } = useContext(LMMessageContext);
   const { chatroom } = useContext(LMChatChatroomContext);
   const addReaction = async (emoji: EmojiData) => {
     try {
@@ -16,6 +16,7 @@ export function useReactions(): UseReactionReturns {
         chatroomId: parseInt(chatroom?.chatroom.id.toString() || ""),
         reaction: emoji.native,
       });
+      addReactionLocally(emoji);
       console.log(call);
     } catch (error) {
       console.log(error);

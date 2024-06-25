@@ -10,7 +10,8 @@
     "lint:fix": "eslint --fix .",
     "preview": "vite preview",
     "prepare": "husky install",
-    "test": "jest"
+    "test": "jest",
+    "build-deploy-run": "npm run build && firebase deploy && npm run dev"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.600.0",
@@ -19,6 +20,7 @@
     "@emoji-mart/react": "^1.1.1",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@giphy/react-components": "^9.5.0",
     "@likeminds.community/chat-js-beta": "^1.1.114",
     "@mui/icons-material": "^5.15.20",
     "@mui/material": "^5.15.10",

@@ -3,6 +3,7 @@ import Conversation from "../../types/models/conversations";
 import LMMessageContext from "../../context/MessageContext";
 import Message from "../LMMessage/Message";
 import UserProviderContext from "../../context/UserProviderContext";
+import { EmojiData } from "../../types/models/emojiData";
 interface LMMessageMiddlewareProps {
   message: Conversation;
   index: number;
@@ -29,6 +30,14 @@ const LMMessageMiddleware = (props: LMMessageMiddlewareProps) => {
       setLocalMessageCopy(newMessage);
     }
   }
+  function addReactionLocally(emoji: EmojiData) {
+    const currentLocalMessage = { ...localMessageCopy };
+    currentLocalMessage.reactions?.push({
+      user: currentUser,
+      reaction: emoji.native,
+    });
+    setLocalMessageCopy(currentLocalMessage as Conversation);
+  }
   return (
     <LMMessageContext.Provider
       value={{
@@ -36,6 +45,7 @@ const LMMessageMiddleware = (props: LMMessageMiddlewareProps) => {
         index,
         deleteMessage: deleteMessage,
         editMessageLocally: editMessageLocally,
+        addReactionLocally: addReactionLocally,
       }}
     >
       <Message />
