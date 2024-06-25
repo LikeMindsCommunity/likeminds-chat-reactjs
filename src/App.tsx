@@ -19,6 +19,7 @@ const LMAppLayout = () => {
     .setPlatformCode("rt")
     .setVersionCode(35)
     .build();
+  console.log(myClient);
   return (
     <LMClientOverlayProvider client={myClient}>
       <Outlet />

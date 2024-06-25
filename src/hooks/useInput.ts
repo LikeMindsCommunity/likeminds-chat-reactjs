@@ -75,7 +75,6 @@ export function useInput(): UseInputReturns {
     },
     [chatroom?.chatroom.id, lmChatclient, tagSearchKey],
   );
-
   const postMessage = async () => {
     try {
       if (!chatroom) {
@@ -126,7 +125,6 @@ export function useInput(): UseInputReturns {
         console.log(conversation);
         const attachment = attachmentsList[index];
         const { name, size, type } = attachment;
-
         if (type.includes(FileType.video)) {
           const video = document.createElement("video");
           const canvas = document.createElement("canvas");

@@ -23,6 +23,7 @@ export default function useUserProvider(
   const [lmChatUserCurrentCommunity, setLmChatUserCurrentCommunity] =
     useState<unknown>(null);
   useEffect(() => {
+    console.log(lmChatclient);
     if (!lmChatclient) {
       return;
     }

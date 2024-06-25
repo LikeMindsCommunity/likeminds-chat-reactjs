@@ -60,13 +60,21 @@ const Input = () => {
             <AttachmentsSelector />
           </div>
           <div className="lm-channel-icon lm-cursor-pointer">
+<<<<<<< HEAD
             {/* <img src={giffyIcon} alt="giffy" /> */}
             {/* <GiSelector /> */}
+=======
+            <img src={giffyIcon} alt="giffy" />
+>>>>>>> c4355b1f20b2fab279d024e35495da1cf25b15c1
           </div>
 
           <LMChatTextArea />
           {/* <input type="text" placeholder="Type a message" /> */}
+<<<<<<< HEAD
           <div className="lm-channel-icon send lm-cursor-pointer">
+=======
+          <div className="lm-channel-icon send">
+>>>>>>> c4355b1f20b2fab279d024e35495da1cf25b15c1
             <img src={sendIcon} alt="sendIcon" onClick={postMessage} />
           </div>
         </div>

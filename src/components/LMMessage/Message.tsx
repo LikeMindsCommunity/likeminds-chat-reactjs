@@ -22,7 +22,6 @@ const Message = () => {
   const imageUrl = message?.member.imageUrl;
   const name = message?.member.name;
   const avatarContent = getAvatar({ imageUrl, name });
-
   function renderDatePill() {
     if (index === 0) {
       return <div className="data-pill">{message?.date}</div>;
