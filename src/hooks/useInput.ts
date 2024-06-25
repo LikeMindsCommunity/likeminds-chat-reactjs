@@ -19,11 +19,15 @@ import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { PostConversationResponse } from "../types/api-responses/postConversationResponse";
 import { FileType } from "../types/enums/Filetype";
 import { CustomActions } from "../customActions";
+import { useParams } from "react-router-dom";
 
 export function useInput(): UseInputReturns {
+  const { id: chatroomId } = useParams();
   //contexts
   const { lmChatclient } = useContext(GlobalClientProviderContext);
-  const { chatroom, conversationToedit } = useContext(LMChatChatroomContext);
+  const { chatroom, conversationToedit, setConversationToEdit } = useContext(
+    LMChatChatroomContext,
+  );
   // state
   const [inputText, setInputText] = useState<string>("");
   const [tagSearchKey, setTagSearchKey] = useState<string | null>(null);
@@ -42,6 +46,7 @@ export function useInput(): UseInputReturns {
   const inputBoxRef = useRef<HTMLDivElement | null>(null);
   const inputWrapperRef = useRef<HTMLDivElement | null>(null);
   const taggingListPageCount = useRef<number>(1);
+  const chatroomInputTextRef = useRef<Record<string, string>>({});
 
   //   api calls
   const fetchTaggingList = useCallback(
@@ -76,26 +81,34 @@ export function useInput(): UseInputReturns {
       if (!chatroom) {
         return;
       }
-      if (conversationToedit) {
-        const call: any = await lmChatclient?.editConversation({
-          conversationId: conversationToedit.id,
-          text: Utils.extractTextFromNode(inputBoxRef.current!),
-        });
-        dispatchEvent(
-          new CustomEvent(CustomActions.EDIT_ACTION_COMPLETED, {
-            detail: call.data.conversation,
-          }),
-        );
-        if (call.success) {
-          console.log(call);
-        }
-        setFocusOnInputField();
+      const messageText = Utils.extractTextFromNode(
+        inputBoxRef.current!,
+      ).trim();
+      if (!messageText || !messageText.length) {
         return;
       }
+      if (Utils.extractTextFromNode(inputBoxRef.current!).trim())
+        if (conversationToedit) {
+          const call: any = await lmChatclient?.editConversation({
+            conversationId: conversationToedit.id,
+            text: messageText,
+          });
+          setConversationToEdit(null);
+          dispatchEvent(
+            new CustomEvent(CustomActions.EDIT_ACTION_COMPLETED, {
+              detail: call.data.conversation,
+            }),
+          );
+          if (call.success) {
+            console.log(call);
+          }
+          setFocusOnInputField();
+          return;
+        }
       // sending the text part of the conversation
       const chatroomData = chatroom.chatroom;
       const postConversationCallConfig: PostConversation = {
-        text: Utils.extractTextFromNode(inputBoxRef.current!),
+        text: messageText,
         chatroomId: parseInt(chatroomData.id.toString()),
         hasFiles: false,
       };
@@ -114,12 +127,6 @@ export function useInput(): UseInputReturns {
         const attachment = attachmentsList[index];
         const { name, size, type } = attachment;
 
-        // const uploadConfig: Media = {
-        //   messageId: parseInt(conversation.id.toString(), 10),
-        //   chatroomId: chatroomData.id,
-        //   file: attachment,
-        //   index: index,
-        // };
         if (type.includes(FileType.video)) {
           const video = document.createElement("video");
           const canvas = document.createElement("canvas");
@@ -146,29 +153,25 @@ export function useInput(): UseInputReturns {
                     [blobEl!],
                     conversation.id.toString().concat("thumbnail.jpeg"),
                   );
-                  // const thumbnailConfig = {
-                  //   messageId: parseInt(conversation.id.toString(), 10),
-                  //   chatroomId: chatroomData.id,
-                  //   file: thumbnailFile,
-                  // };
 
-                  // lmChatclient
-                  //   ?.uploadMedia(thumbnailConfig)
                   Utils.uploadMedia(
                     attachment,
                     conversation.id.toString(),
+                    chatroom.chatroom.id.toString(),
                   ).then(() => {
                     const thumbnailUrl = Utils.generateFileUrl(
+                      chatroom.chatroom.id.toString(),
                       conversation.id.toString(),
                       thumbnailFile,
                     );
-                    // lmChatclient
-                    //   ?.uploadMedia(uploadConfig)
+
                     Utils.uploadMedia(
                       attachment,
                       conversation.id.toString(),
+                      chatroom.chatroom.id.toString(),
                     ).then(() => {
                       const fileUrl = Utils.generateFileUrl(
+                        chatroom.chatroom.id.toString(),
                         conversation.id.toString(),
                         attachment,
                       );
@@ -207,39 +210,42 @@ export function useInput(): UseInputReturns {
 
           video.load();
         } else {
-          await Utils.uploadMedia(attachment, conversation.id.toString()).then(
-            () => {
-              const fileUrl = Utils.generateFileUrl(
-                conversation.id.toString(),
-                attachment,
-              );
-              const onUploadConfig: {
-                conversationId: number;
-                filesCount: number;
-                index: number;
-                meta: { size: number };
-                name: string;
-                type: string;
-                url: string;
-                thumbnail_url: null | string;
-              } = {
-                conversationId: parseInt(
-                  postConversationsCall.data.id.toString(),
-                  10,
-                ),
-                filesCount: 1,
-                index,
-                meta: { size: size },
-                name: name,
-                // type: type,
-                type: type.includes(FileType.image) ? FileType.image : "pdf",
-                url: fileUrl,
-                thumbnail_url: null,
-              };
+          await Utils.uploadMedia(
+            attachment,
+            conversation.id.toString(),
+            chatroom.chatroom.id.toString(),
+          ).then(() => {
+            const fileUrl = Utils.generateFileUrl(
+              chatroom.chatroom.id.toString(),
+              conversation.id.toString(),
+              attachment,
+            );
+            const onUploadConfig: {
+              conversationId: number;
+              filesCount: number;
+              index: number;
+              meta: { size: number };
+              name: string;
+              type: string;
+              url: string;
+              thumbnail_url: null | string;
+            } = {
+              conversationId: parseInt(
+                postConversationsCall.data.id.toString(),
+                10,
+              ),
+              filesCount: 1,
+              index,
+              meta: { size: size },
+              name: name,
+              // type: type,
+              type: type.includes(FileType.image) ? FileType.image : "pdf",
+              url: fileUrl,
+              thumbnail_url: null,
+            };
 
-              lmChatclient?.putMultimedia(onUploadConfig);
-            },
-          );
+            lmChatclient?.putMultimedia(onUploadConfig);
+          });
         }
       }
     } catch (error) {
@@ -248,6 +254,27 @@ export function useInput(): UseInputReturns {
   };
 
   // normal functions
+  const emptyInputField = () => {
+    while (inputBoxRef.current?.firstChild) {
+      inputBoxRef.current.removeChild(inputBoxRef.current?.firstChild);
+    }
+  };
+  const manageInputOnChatroomChange = useCallback(() => {
+    const text = chatroomInputTextRef.current[chatroomId || ""];
+    if (text && inputBoxRef && inputBoxRef.current) {
+      inputBoxRef.current.innerHTML = Utils.convertTextToHTML(text).innerHTML;
+      setInputText(() => text);
+    }
+  }, [chatroomId]);
+  const storeInputOnChatroomLeave = useCallback((chatroomId: string) => {
+    if (inputBoxRef && inputBoxRef.current) {
+      chatroomInputTextRef.current[chatroomId] = Utils.extractTextFromNode(
+        inputBoxRef.current,
+      );
+      emptyInputField();
+      setInputText(() => "");
+    }
+  }, []);
   const setFocusOnInputField = () => {
     while (inputBoxRef.current?.firstChild) {
       inputBoxRef.current.removeChild(inputBoxRef.current?.firstChild);
@@ -371,6 +398,12 @@ export function useInput(): UseInputReturns {
       ).innerHTML;
     }
   }, [conversationToedit]);
+  useEffect(() => {
+    manageInputOnChatroomChange();
+    return () => {
+      storeInputOnChatroomLeave(chatroomId || "");
+    };
+  }, [chatroomId, manageInputOnChatroomChange, storeInputOnChatroomLeave]);
 
   return {
     inputBoxRef,

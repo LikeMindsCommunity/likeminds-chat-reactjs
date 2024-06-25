@@ -6,7 +6,7 @@ import Emojis from "./Emojis";
 import { Slide } from "@mui/material";
 import MediaCarousel from "./Carousel";
 import AttachmentsSelector from "./AttachmentsSelector";
-import GiSelector from "./GiSelector";
+// import GiSelector from "./GiSelector";
 
 const Input = () => {
   const {
@@ -61,7 +61,7 @@ const Input = () => {
           </div>
           <div className="lm-channel-icon lm-cursor-pointer">
             {/* <img src={giffyIcon} alt="giffy" /> */}
-            <GiSelector />
+            {/* <GiSelector /> */}
           </div>
 
           <LMChatTextArea />

@@ -4,19 +4,23 @@ import {
   GetReportTagsChatResponse,
   ReportTagMessage,
 } from "../../types/api-responses/getReportTagsResponseChatResponse";
-import { OneArgVoidReturns } from "../../hooks/useInput";
+import { OneArgVoidReturns, ZeroArgVoidReturns } from "../../hooks/useInput";
+import ReportTagComponent from "./ReportTagComponent";
 
 const ReportTagsDialog = ({
   reportCallback,
+  closeDialog,
 }: {
   reportCallback: OneArgVoidReturns<{
     id: string | number;
     reason: string | null;
   }>;
+  closeDialog: ZeroArgVoidReturns;
 }) => {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const [reportTags, setReportTags] = useState<ReportTagMessage[]>([]);
-
+  const [selectedTag, setSelectedTag] = useState<ReportTagMessage | null>(null);
+  const [newReasonTagText, setNewReasonTagText] = useState<string>("");
   useEffect(() => {
     async function getTags() {
       try {
@@ -36,13 +40,8 @@ const ReportTagsDialog = ({
   return (
     <div>
       <div className="lmReportPostWrapper">
-        <div className="lmReportPostWrapper__header">Report Post</div>
-        {/* <img
-          src={closeIcon}
-          className="lmReportPostWrapper__header__closeIcon"
-          alt="close-icon"
-          onClick={closeReportDialog}
-        /> */}
+        <div className="lmReportPostWrapper__header">Report Message</div>
+
         <div className="lmReportPostWrapper__body">
           <div className="lmReportPostWrapper__body__content">
             <div className="lmReportPostWrapper__body__content--texted">
@@ -52,29 +51,21 @@ const ReportTagsDialog = ({
             <div className="lmReportPostWrapper__body__content__types">
               {reportTags.map((tag) => {
                 return (
-                  <span
-                    lm-feed-component-id={`lm-feed-report-tag-vwxyz`}
-                    // className={`${selectedTag?.id === tag.id ? "active" : ""}`}
-                    key={tag.id}
-                    onClick={() => {
-                      reportCallback({
-                        id: tag.id,
-                        reason: tag.name,
-                      });
-                    }}
-                  >
-                    {tag.name}
-                  </span>
+                  <ReportTagComponent
+                    selectedTag={selectedTag}
+                    setSelectedTag={setSelectedTag}
+                    tag={tag}
+                  />
                 );
               })}
             </div>
 
-            {/* <div className="lmReportPostWrapper__body__content__actions">
+            <div className="lmReportPostWrapper__body__content__actions">
               {selectedTag?.id === 11 ? (
                 <input
-                  value={otherReason}
+                  value={newReasonTagText}
                   onChange={(e) => {
-                    setOtherReasons(e.target.value);
+                    setNewReasonTagText(e.target.value);
                   }}
                   placeholder="Enter the reason here..."
                   type="text"
@@ -83,34 +74,30 @@ const ReportTagsDialog = ({
                 />
               ) : null}
               <button
-                onClick={report}
+                onClick={() => {
+                  if (selectedTag?.id === 11) {
+                    reportCallback({
+                      id: selectedTag.id,
+                      reason: newReasonTagText,
+                    });
+                  } else {
+                    reportCallback({
+                      id: selectedTag!.id,
+                      reason: selectedTag!.name,
+                    });
+                  }
+                  closeDialog();
+                }}
                 disabled={!selectedTag}
                 className="lmReportPostWrapper__body__content__actions--btnReport"
                 lm-feed-component-id={`lm-feed-report-submit-klmno`}
               >
                 Report
               </button>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>
-
-      {/* {reportTags.map((tag) => {
-        return (
-          <div
-            key={tag.id}
-            onClick={() => {
-              reportCallback({
-                id: tag.id,
-                reason: tag.name,
-              });
-            }}
-            className=""
-          >
-            {tag.name}
-          </div>
-        );
-      })} */}
     </div>
   );
 };

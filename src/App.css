@@ -148,10 +148,17 @@ body {
 }
 
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-weight: 400;
   font-size: 12px;
   line-height: 16px;
   color: #666;
+}
+
+.channel-info-gap {
+  flex-grow: 1;
 }
 
 /* LM-Left-panel  */
@@ -739,23 +746,25 @@ body {
 }
 
 .lm-media .pdf {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    color: black;
-    padding: 8px;
-    background: #f9f9f9;
-    border-radius: 8px; 
-    gap: 5px;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: black;
+  padding: 8px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  gap: 5px;
 }
-.lm-media .pdf img{
-    width: 24px; 
+
+.lm-media .pdf img {
+  width: 24px;
 }
-.lm-media .pdf .pdfName{
-    width: 100px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+
+.lm-media .pdf .pdfName {
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .lm-participant-card .lm-participant-card-detail .desc {
@@ -847,9 +856,9 @@ body {
 }
 
 .lmReportPostWrapper__body__content__types span.active {
-  border: 0.0625rem solid var(--primary-color);
+  border: 0.0625rem solid rgba(0, 0, 0, 0.87);
   /* 1px */
-  color: var(--primary-color);
+  color: rgba(0, 0, 0, 0.87);
 }
 
 .lmReportPostWrapper__body__content__actions {

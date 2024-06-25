@@ -48,7 +48,7 @@ function MessageOptions() {
   return (
     <div>
       <Dialog open={dialogOpen} onClose={closeDialog}>
-        <ReportTagsDialog reportCallback={onReport} />
+        <ReportTagsDialog reportCallback={onReport} closeDialog={closeDialog} />
       </Dialog>
       <Menu
         anchorEl={menuAnchor}

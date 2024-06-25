@@ -40,7 +40,11 @@ const Message = () => {
           {!isSender ? (
             <div className="name">{message?.member.name}</div>
           ) : null}
-          <div className="lm-delete-msg">{ConstantStrings.MESSAGE_DELETED}</div>
+          <div className="lm-delete-msg">
+            {message.deleted_by_member.uuid === currentUser?.uuid
+              ? ConstantStrings.MESSAGE_DELETED_BY_SELF
+              : ConstantStrings.MESSAGE_DELETED_NOT_BY_SELF}
+          </div>
           <div className="time">{message?.created_at}</div>
         </div>
 
@@ -84,9 +88,11 @@ const Message = () => {
 
                 {/* text msg */}
                 <div className="msg">
-                  {Utils.parseAnser(message?.answer || "") !==
+                  {Utils.parseAndReplaceTags(message?.answer || "") !==
                   "* This is a gif message. Please update your app *" ? (
-                    <div>{Utils.parseAnser(message?.answer || "")}</div>
+                    <div>
+                      {Utils.parseAndReplaceTags(message?.answer || "")}
+                    </div>
                   ) : null}
                 </div>
                 <div className="time">
@@ -133,7 +139,7 @@ const Message = () => {
               <div className="data-pill">{message?.date}</div>
 
               <div className="data-pill">
-                {Utils.parseAnser(message?.answer || "")}
+                {Utils.parseAndReplaceTags(message?.answer || "")}
               </div>
             </div>
           </div>

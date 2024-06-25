@@ -4,6 +4,7 @@ import GlobalClientProviderContext from "../context/GlobalClientProviderContext"
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import UserProviderContext from "../context/UserProviderContext";
 import { useNavigate } from "react-router-dom";
+import { CustomActions } from "../customActions";
 
 function useChatroomMenuOptions(): UseChatroomMenuOptions {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
@@ -57,6 +58,9 @@ function useChatroomMenuOptions(): UseChatroomMenuOptions {
       });
       if (call.success) {
         setNewChatroom(null);
+        dispatchEvent(
+          new CustomEvent(CustomActions.CHATROOM_LEAVE_ACTION_COMPLETED),
+        );
         navigate("/");
       }
       console.log(call);

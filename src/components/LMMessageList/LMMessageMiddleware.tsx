@@ -1,4 +1,5 @@
-import React, { memo, useContext, useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useContext, useEffect, useState } from "react";
 import Conversation from "../../types/models/conversations";
 import LMMessageContext from "../../context/MessageContext";
 import Message from "../LMMessage/Message";
@@ -32,10 +33,18 @@ const LMMessageMiddleware = (props: LMMessageMiddlewareProps) => {
   }
   function addReactionLocally(emoji: EmojiData) {
     const currentLocalMessage = { ...localMessageCopy };
+    const currentUserUUID = currentUser?.uuid;
+    console.log(currentLocalMessage);
+    currentLocalMessage.reactions =
+      currentLocalMessage?.reactions?.filter(
+        (reaction: any) => reaction?.user?.uuid !== currentUserUUID,
+      ) || [];
+    console.log(currentLocalMessage);
     currentLocalMessage.reactions?.push({
       user: currentUser,
       reaction: emoji.native,
     });
+    console.log(currentLocalMessage);
     setLocalMessageCopy(currentLocalMessage as Conversation);
   }
   return (
