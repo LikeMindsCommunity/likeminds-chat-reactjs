@@ -26,12 +26,14 @@ function MessageOptions() {
       title: "Report",
       clickFunction: () => {
         openDialog();
+        closeMenu();
       },
     },
     {
       title: "Delete",
       clickFunction: () => {
         onDelete();
+        closeMenu();
       },
     },
 
@@ -39,13 +41,14 @@ function MessageOptions() {
       title: "Edit Message",
       clickFunction: () => {
         onEdit();
+        closeMenu();
       },
     },
   ];
   return (
     <div>
       <Dialog open={dialogOpen} onClose={closeDialog}>
-        <ReportTagsDialog reportCallback={onReport} />
+        <ReportTagsDialog reportCallback={onReport} closeDialog={closeDialog} />
       </Dialog>
       <Menu
         anchorEl={menuAnchor}

@@ -14,22 +14,30 @@ body {
 
 /* LM - Styles */
 
-.d-flex {
+.lm-d-flex {
   display: flex;
   width: 100%;
   height: 100vh;
 }
 
 .lm-left-panel {
-  flex: 30%;
+  flex: 0 0 25%;
+  height: 100%;
 }
 
 .lm-chat-panel {
-  flex: 70%;
+  height: 100%;
+  flex: 0 0 75%;
 }
+
 .lm-cursor-pointer {
   cursor: pointer;
 }
+
+.lm-cursor-pointer {
+  cursor: pointer;
+}
+
 .justify-content-around {
   justify-content: space-around;
 }
@@ -45,7 +53,7 @@ body {
   width: 100%;
   height: 100vh;
   overflow: auto;
-  border-right:1px solid #e6ebf5;
+  border-right: 1px solid #e6ebf5;
 }
 
 .lm-channel-list .lm-channel-list-header {
@@ -79,11 +87,13 @@ body {
   gap: 20px;
 }
 
-.lm-channel-list .lm-channel-list-body .channel-media:hover, .lm-channel-list .lm-channel-list-body .channel-media.selected{
+.lm-channel-list .lm-channel-list-body .channel-media:hover,
+.lm-channel-list .lm-channel-list-body .channel-media.selected {
   /* background-color: #f5f5f5; */
   background-color: #e6ebf5;
   transition: 0.3s all ease-in-out;
 }
+
 .lm-channel-list .lm-channel-list-body .channel-media .channel-icon {
   width: 54px;
   height: 54px;
@@ -107,8 +117,7 @@ body {
 
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc {
   padding: 18px 0;
-  /* border-bottom: 1px solid #e0e0e0; */
-  width: 83%;
+  width: 81%;
 }
 
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-title {
@@ -120,11 +129,12 @@ body {
   justify-content: space-between;
   align-items: center;
 }
-.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-title button { 
+
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-title button {
   background: #00897b;
   border-radius: 8px;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 16px;
   color: #ffffff;
   display: flex;
@@ -132,19 +142,27 @@ body {
   justify-content: center;
   border: none;
   cursor: pointer;
-  padding: 8px 20px;
+  padding: 8px 16px;
 }
-.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-title button.joined { 
+
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-title button.joined {
   background: #fff;
   color: #00897b;
   border: 1px solid #00897b;
 }
 
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-weight: 400;
   font-size: 12px;
   line-height: 16px;
   color: #666;
+}
+
+.channel-info-gap {
+  flex-grow: 1;
 }
 
 /* LM-Left-panel  */
@@ -168,6 +186,11 @@ body {
   border-radius: 50%;
   overflow: hidden;
   margin: 0 20px 0 0;
+  background: #f5f5f5;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  border: 1px solid #e0e0e0;
 }
 
 .lm-channel-header .lm-channel-img img {
@@ -287,19 +310,21 @@ body {
 
 .lm-chat-card {
   display: flex;
-  align-items: end;
+  align-items: center;
   gap: 10px;
 }
-.lm-chat-card .actions{
+
+.lm-chat-card .actions {
   display: none;
-  gap: 10px; 
+  gap: 10px;
   color: #666;
 }
 
-.lm-chat-card:hover .actions{
+.lm-chat-card:hover .actions {
   display: flex;
   transition: all 0.5s ease-in-out;
 }
+
 .lm-channel .lmUserData {
   width: 40px;
   height: 40px;
@@ -347,7 +372,7 @@ body {
 
 .lm-channel .conversation .time {
   color: #8a8a8e;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 400;
   line-height: 18px;
   text-align: right;
@@ -378,7 +403,7 @@ body {
   position: relative;
 }
 
-.lm-input-carousel .slider-wrapper .slider{
+.lm-input-carousel .slider-wrapper .slider {
   display: flex;
 }
 
@@ -472,7 +497,7 @@ body {
   white-space: nowrap;
 }
 
-.lm-d-flex {
+.lm-lm-d-flex {
   display: flex;
 }
 
@@ -480,7 +505,7 @@ body {
   justify-content: center;
 }
 
-.lm-date-data{
+.lm-date-data {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -498,6 +523,8 @@ body {
   padding: 12px;
   font-size: 14px;
   font-weight: 400;
+  max-height: 80px;
+  overflow-y: auto;
 }
 
 .lm-chat-text-area__input-box:focus {
@@ -603,6 +630,8 @@ body {
   position: relative;
   overflow-y: scroll;
   height: 100vh;
+  display: block;
+  width: 100%;
 }
 
 .gifContainer {
@@ -632,6 +661,13 @@ body {
   color: #000;
   line-height: 23px;
   font-weight: 400;
+  display: flex;
+  gap: 20px;
+}
+
+.lm-participant-header .heading .back-icon {
+  font-size: 20px;
+  cursor: pointer;
 }
 
 .lm-participant-header .counts {
@@ -654,32 +690,42 @@ body {
 .lm-participant-card {
   display: flex;
   gap: 20px;
+  align-items: center;
+}
+
+.lm-delete-msg {
+  color: #9b9b9b;
+  font-weight: 300;
+  font-style: italic;
+  font-size: 12px;
 }
 
 .lm-participant-card .lm-participant-card-user {
-    width: 54px;
-    height: 54px;
-    border-radius: 50%;
-    overflow: hidden;
-    justify-content: center;
-    align-items: center;
-    background-color: #f5f5f5;
-    color: #333;
-    font-size: 16px;
-    display: flex;
-    text-transform: capitalize;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  color: #333;
+  font-size: 16px;
+  display: flex;
+  text-transform: capitalize;
 }
-.lm-participant-card .lm-participant-card-user img{
+
+.lm-participant-card .lm-participant-card-user img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
 .lm-participant-card .lm-participant-card-detail {
-  width: 100%;
+  width: 94%;
   display: flex;
   flex-direction: column;
   gap: 5px;
+  text-transform: capitalize;
 }
 
 .lm-participant-card .lm-participant-card-detail .name {
@@ -687,6 +733,42 @@ body {
   font-weight: 500;
   color: #000;
   line-height: 18px;
+}
+
+.lm-media {
+  max-width: 200px;
+  max-height: 200px;
+  overflow: hidden;
+
+
+}
+
+.lm-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.lm-media .pdf {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: black;
+  padding: 8px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  gap: 5px;
+}
+
+.lm-media .pdf img {
+  width: 24px;
+}
+
+.lm-media .pdf .pdfName {
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .lm-participant-card .lm-participant-card-detail .desc {
@@ -702,7 +784,6 @@ body {
 
 .lmReportPostWrapper {
   max-width: 25rem;
-  /* 400px */
   width: 100%;
   background: var(--light-color);
   position: relative;
@@ -779,9 +860,9 @@ body {
 }
 
 .lmReportPostWrapper__body__content__types span.active {
-  border: 0.0625rem solid var(--primary-color);
+  border: 0.0625rem solid rgba(0, 0, 0, 0.87);
   /* 1px */
-  color: var(--primary-color);
+  color: rgba(0, 0, 0, 0.87);
 }
 
 .lmReportPostWrapper__body__content__actions {
@@ -832,6 +913,96 @@ body {
   /* 12px 15px */
   cursor: pointer;
 }
- 
+
 
 /* // Report Post Dialog */
+
+/* media.css */
+/* app.css */
+.lm-media .thumbnail-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 10px;
+}
+
+.lm-media .thumbnail-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+}
+
+.lm-media .thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.lm-media .single-media {
+  max-width: 100%;
+  height: auto;
+  cursor: pointer;
+}
+
+.lm-media .more-attachments-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5em;
+}
+
+/* 
+.carousel-media {
+  max-height: 250px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto;
+} */
+
+.lm-media video {
+  max-height: 300px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.lm-modal-media {
+  width: 100%;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
+
+.lm-modal-media img,
+.lm-modal-media video {
+  max-height: 300px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.modal-header {
+  border: none;
+}
+
+/* .lm-chat-message-reactions-holder {
+  display: flex;
+  flex-direction: row-reverse;
+} */
+.lm-channel-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}

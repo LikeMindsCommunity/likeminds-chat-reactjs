@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import InfiniteScroll from "react-infinite-scroll-component";
 import useChatroomList from "../../hooks/useChatroomsList";
-import searchIcon from "./../../assets/img/search.svg";
-import { getAvatar } from "../../shared/components/LMUserMedia";
+import { useNavigate, useParams } from "react-router-dom";
+import { ConstantStrings } from "../../enums/common-strings";
 
 function LMChannelList() {
   const {
@@ -12,8 +12,11 @@ function LMChannelList() {
     getExploreGroupChatrooms,
     exploreGroupChatrooms,
     loadMoreExploreGroupChatrooms,
+    joinAChatroom,
+    groupChatroomConversationsMeta,
   } = useChatroomList();
-
+  const navigate = useNavigate();
+  const { id: chatroomId } = useParams();
   return (
     <div className="lm-channel-list">
       <div>
@@ -35,7 +38,13 @@ function LMChannelList() {
         >
           {groupChatroomsList?.map((chatroom) => {
             return (
-              <div className="channel-media">
+              <div
+                key={chatroom.id.toString()}
+                className={`channel-media ${chatroomId?.toString() === chatroom.id.toString() ? "selected" : null}`}
+                onClick={() => {
+                  navigate(`/chat/${chatroom.id}`);
+                }}
+              >
                 <div className="channel-icon">
                   {chatroom.chatroom_image_url ? (
                     <>
@@ -50,9 +59,19 @@ function LMChannelList() {
                 </div>
                 <div className="channel-desc">
                   <div className="channel-title">{chatroom.header}</div>
-                  {/* <div className="channel-info">
-                    Direct messaging request received.
-                  </div> */}
+                  <div className="channel-info">
+                    <div className="channel-last-conversation">
+                      {
+                        groupChatroomConversationsMeta[
+                          chatroom.last_conversation_id
+                        ]?.answer
+                      }
+                    </div>
+                    <div className="channel-info-gap"></div>
+                    <div className="channel-unseen-convo-count">
+                      {chatroom.unseen_count}
+                    </div>
+                  </div>
                 </div>
               </div>
             );
@@ -77,7 +96,7 @@ function LMChannelList() {
         >
           {exploreGroupChatrooms?.map((chatroom) => {
             return (
-              <div className="channel-media">
+              <div className="channel-media" key={chatroom.id.toString()}>
                 <div className="channel-icon">
                   {chatroom.chatroom_image_url ? (
                     <>
@@ -94,7 +113,17 @@ function LMChannelList() {
                   <div className="channel-title">
                     <div>{chatroom.header}</div>
                     <div>
-                      <button>Join</button>
+                      <button
+                        disabled={chatroom.follow_status ? true : false}
+                        onClick={() => {
+                          joinAChatroom(chatroom.id.toString());
+                        }}
+                        className={chatroom.follow_status ? "joined" : ""}
+                      >
+                        {chatroom.follow_status
+                          ? ConstantStrings.CHATROOM_ALREADY_JOINED_BUTTON_STRING
+                          : ConstantStrings.CHATROOM_NOT_ALREADY_JOINED_BUTTON_STRING}
+                      </button>
                       {/* <button className="joined">Join</button> */}
                     </div>
                   </div>

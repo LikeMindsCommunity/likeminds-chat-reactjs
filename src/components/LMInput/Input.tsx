@@ -1,5 +1,4 @@
 import sendIcon from "./../../assets/img/send.svg";
-import giffyIcon from "./../../assets/img/giffy.png";
 import { useInput } from "../../hooks/useInput";
 import InputContext from "../../context/InputContext";
 import LMChatTextArea from "./LMChatTextArea";
@@ -7,6 +6,7 @@ import Emojis from "./Emojis";
 import { Slide } from "@mui/material";
 import MediaCarousel from "./Carousel";
 import AttachmentsSelector from "./AttachmentsSelector";
+// import GiSelector from "./GiSelector";
 
 const Input = () => {
   const {
@@ -60,12 +60,13 @@ const Input = () => {
             <AttachmentsSelector />
           </div>
           <div className="lm-channel-icon lm-cursor-pointer">
-            <img src={giffyIcon} alt="giffy" />
+            {/* <img src={giffyIcon} alt="giffy" /> */}
+            {/* <GiSelector /> */}
           </div>
 
           <LMChatTextArea />
           {/* <input type="text" placeholder="Type a message" /> */}
-          <div className="lm-channel-icon send">
+          <div className="lm-channel-icon send lm-cursor-pointer">
             <img src={sendIcon} alt="sendIcon" onClick={postMessage} />
           </div>
         </div>

@@ -1,14 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
 import LMMessageContext from "../context/MessageContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
+import { CustomActions } from "../customActions";
+import Conversation from "../types/models/conversations";
 
 export function useMessageOptions(): UseMessageOptionsReturn {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
+
   const { setConversationToEdit } = useContext(LMChatChatroomContext);
-  const { message } = useContext(LMMessageContext);
+  const { message, deleteMessage, editMessageLocally } =
+    useContext(LMMessageContext);
   const onReport = async ({
     id,
     reason,
@@ -34,6 +38,9 @@ export function useMessageOptions(): UseMessageOptionsReturn {
         conversationIds: [parseInt(message!.id.toString())],
         reason: "none",
       });
+
+      console.log(message);
+      deleteMessage();
       console.log(deleteCall);
     } catch (error) {
       console.log(error);
@@ -67,6 +74,13 @@ export function useMessageOptions(): UseMessageOptionsReturn {
       console.log(error);
     }
   };
+  useEffect(() => {
+    addEventListener(CustomActions.EDIT_ACTION_COMPLETED, (newEvent) => {
+      const detail = (newEvent as CustomEvent).detail;
+      console.log(detail);
+      editMessageLocally(detail as unknown as Conversation);
+    });
+  });
   return {
     onReport,
     onDelete,

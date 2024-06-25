@@ -1,5 +1,14 @@
-import React, { MutableRefObject } from "react";
-
+import React, { MutableRefObject, ReactNode } from "react";
+import {
+  S3Client,
+  PutObjectCommand,
+  PutObjectOutput,
+  PutObjectRequest,
+} from "@aws-sdk/client-s3";
+import { fromCognitoIdentityPool } from "@aws-sdk/credential-provider-cognito-identity";
+// import { LMAppAwsKeys } from "./constants/lmAppAwsKeys";
+import { FileType } from "../types/enums/Filetype";
+import { FileTypeInitials } from "../enums/file-type-initials";
 type StringTagType = {
   text: string;
   type: number;
@@ -7,9 +16,91 @@ type StringTagType = {
 };
 
 export class Utils {
+  private static poolId = "ap-south-1:181963ba-f2db-450b-8199-964a941b38c2";
+  private static bucketName = "beta-likeminds-media";
+  private static region = "ap-south-1";
+  private static bucketUrl = "https://beta-likeminds-media.s3.amazonaws.com/";
   static REGEX_USER_SPLITTING = /<<[^<>>]*>>/g;
   static REGEX_USER_TAGGING =
     /<<(?<name>[^<>|]+)\|route:\/\/(?<route>[^<>]+(\?.+)?)>>/g;
+  static parseAndReplaceTags = (text: string): ReactNode => {
+    if (!text) {
+      return null; // Return null if text is empty
+    }
+
+    const tagRegex = /<<([^|]+)\|([^>]+)>>/g;
+    const lines = text.split(/\r?\n/); // Split text into lines
+    const elements: ReactNode[] = [];
+
+    lines.forEach((line, lineIndex) => {
+      if (lineIndex > 0) {
+        // Add line break between lines
+        elements.push(<br key={`br-${lineIndex}`} />);
+      }
+
+      let lastIndex = 0;
+
+      line.replace(tagRegex, (match, name, route, index) => {
+        // Add the text before the tag
+        if (index > lastIndex) {
+          elements.push(line.substring(lastIndex, index));
+        }
+
+        // Add the user info tag as a clickable span
+        elements.push(
+          <span
+            key={`${lineIndex}-${index}`}
+            // onClick={() => handleRouteClick(route)}
+            className="userTag"
+          >
+            {name}
+          </span>,
+        );
+
+        // Update the lastIndex
+        lastIndex = index + match.length;
+
+        return match;
+      });
+
+      // Add the remaining text after the last tag
+      if (lastIndex < line.length) {
+        elements.push(line.substring(lastIndex));
+      }
+    });
+
+    // Convert URLs to anchor tags
+    const textWithLinks = elements.map((element, index) => {
+      if (typeof element === "string") {
+        // Convert string to a React fragment containing anchor tags for URLs
+        return (
+          <React.Fragment key={index}>
+            {element.split(/\b(https?:\/\/\S+|www\.\S+)\b/g).map((part, i) => {
+              if (i % 2 === 0) {
+                return part; // Regular text
+              } else {
+                const url = part.startsWith("http") ? part : `http://${part}`;
+                return (
+                  <a
+                    key={i}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {part}
+                  </a>
+                );
+              }
+            })}
+          </React.Fragment>
+        );
+      }
+      return element;
+    });
+
+    return textWithLinks;
+  };
+
   static parseAnser(answer: string): JSX.Element[] {
     const user_splitted_string = answer.split(this.REGEX_USER_SPLITTING);
     const users_matched = answer.match(this.REGEX_USER_TAGGING);
@@ -231,6 +322,123 @@ export class Utils {
       console.error("The provided element is not contenteditable.");
     }
   }
+  static convertTextToHTML(text: string) {
+    const regex =
+      /<<.*?>>|(?:https?|ftp):\/\/[^\s/$.?#].[^\s]*|www\.[^\s/$.?#].[^\s]*/g;
+    const matches = text?.match(regex) || [];
+    const splits = text?.split(regex);
+
+    const container = document.createElement("div");
+
+    for (let i = 0; i < splits?.length; i++) {
+      const splitNode = document.createTextNode(splits[i]);
+      container.appendChild(splitNode);
+
+      if (matches[i]) {
+        const text = matches[i];
+        const getInfoPattern = /<<([^|]+)\|([^>>]+)>>/;
+        const match = text.match(getInfoPattern);
+        const userObject: MatchPattern = {
+          type: 1,
+        };
+        if (match) {
+          const userName = match[1];
+          const userId = match[2];
+          userObject.displayName = userName;
+          userObject.routeId = userId;
+        } else {
+          userObject.type = 2;
+          userObject.link = text;
+        }
+        if (userObject.type === 1) {
+          // const matchText = matches[i].slice(2, -2); // Remove '<<' and '>>'
+          const linkNode = document.createElement("a");
+          linkNode.href = "#"; // You can set the appropriate URL here
+          linkNode.textContent = userObject.displayName!;
+          linkNode.id = userObject.routeId!;
+          container.appendChild(linkNode);
+        } else {
+          const linkNode = document.createElement("a");
+          linkNode.href = userObject.link!; // You can set the appropriate URL here
+          linkNode.textContent = userObject.link!;
+          container.appendChild(linkNode);
+        }
+      }
+    }
+
+    return container;
+  }
+  static getAWS(): S3Client {
+    const credentials = fromCognitoIdentityPool({
+      identityPoolId: this.poolId,
+      clientConfig: {
+        region: this.region,
+      },
+    });
+
+    const s3Client = new S3Client({ region: this.region, credentials });
+    return s3Client;
+  }
+
+  static async uploadMedia(
+    media: File,
+    conversationId: string,
+    chatroomId: string,
+  ): Promise<PutObjectOutput> {
+    const s3Client = this.getAWS();
+    const { Key, Bucket, Body, ACL, ContentType } = this.buildUploadParams(
+      media,
+      conversationId,
+      chatroomId,
+    );
+    const command = new PutObjectCommand({
+      Key,
+      Bucket,
+      Body,
+      ACL,
+      ContentType,
+    });
+    return s3Client.send(command);
+  }
+
+  private static buildUploadParams(
+    media: File,
+    conversationId: string,
+    chatroomId: string,
+  ): PutObjectRequest {
+    const key = this.generateKey(chatroomId, conversationId, media);
+    console.log(key);
+    return {
+      // Key: `files/post/${userUniqueId}/${media.name}`,
+      Key: key,
+      Bucket: this.bucketName,
+      Body: media,
+      ACL: "public-read-write",
+      ContentType: media.type.includes(FileType.image)
+        ? FileType.image
+        : media.type.includes(FileType.video)
+          ? FileType.video
+          : "pdf",
+    };
+  }
+  static generateKey(chatroomId: string, conversationId: string, media: File) {
+    const conversationInitials = media.type.includes(FileType.image)
+      ? FileTypeInitials.IMAGE
+      : media.type.includes(FileType.video)
+        ? FileTypeInitials.VIDEO
+        : media.type.includes(FileType.document)
+          ? FileTypeInitials.PDF
+          : FileTypeInitials.OTHERS;
+    return `files/collabcard/${chatroomId}/conversation/${conversationId}/${conversationInitials}${Date.now()}.${media.name.split(".").reverse()[0]}`;
+  }
+  static generateFileUrl(
+    chatroomId: string,
+    conversationId: string,
+    media: File,
+  ) {
+    const key = this.generateKey(chatroomId, conversationId, media);
+    return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${key}`;
+  }
 }
 export interface TagInfo {
   tagString: string;
@@ -239,3 +447,9 @@ export interface TagInfo {
 }
 // normal text strings: 0
 // taggingStrings: 1
+interface MatchPattern {
+  type: number;
+  displayName?: string;
+  routeId?: string;
+  link?: string;
+}

@@ -9,6 +9,7 @@ import ScrollContainer from "../DualSidePagination/ScrollContainer";
 import useConversations from "../../hooks/useConversations";
 import LMMessageMiddleware from "./LMMessageMiddleware";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { CircularProgress } from "@mui/material";
 // import DmReqBlock from "./DmReqBlock";
 
 const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
@@ -21,10 +22,19 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       conversations,
       getChatroomConversationsOnBottomScroll,
       getChatroomConversationsOnTopScroll,
-      loadMore,
+      showLoader,
+      bottomReferenceDiv,
     } = useConversations();
-    if (!conversations?.length) {
-      return null;
+    // if (!conversations?.length) {
+    //   return null;
+    // }
+    if (showLoader.current) {
+      console.log(showLoader);
+      return (
+        <div className="lm-channel-loader">
+          <CircularProgress />
+        </div>
+      );
     }
     return (
       <div className="lm-channel">
@@ -33,9 +43,11 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
             conversations,
             getChatroomConversationsOnBottomScroll,
             getChatroomConversationsOnTopScroll,
+            bottomReferenceDiv,
           }}
         >
           <ScrollContainer
+            bottomReferenceDiv={bottomReferenceDiv}
             dataLength={conversations?.length || 0}
             nextOnScrollBottom={() => {
               console.log("bottom scroll function call");
