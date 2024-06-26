@@ -7,8 +7,11 @@ import { ConstantStrings } from "../../enums/common-strings";
 // Icons
 
 import joinIcon from "../../assets/img/icon_join.svg";
+import document from "../../assets/img/document.svg";
 import joinedIcon from "../../assets/img/icon_joined.svg";
 import { Utils } from "../../utils/helpers";
+import { useContext } from "react";
+import UserProviderContext from "../../context/UserProviderContext";
 
 function LMChannelList() {
   const {
@@ -20,8 +23,11 @@ function LMChannelList() {
     loadMoreExploreGroupChatrooms,
     joinAChatroom,
     groupChatroomConversationsMeta,
+    groupChatroomMember,
     markReadAChatroom,
   } = useChatroomList();
+  const { currentUser } = useContext(UserProviderContext);
+
   const navigate = useNavigate();
   const { id: chatroomId } = useParams();
   return (
@@ -66,20 +72,40 @@ function LMChannelList() {
                   )}
                 </div>
                 <div className="channel-desc">
-                  <div>
-                    <div className="channel-title">{chatroom.header}</div>
-                    <div className="channel-info">
-                      <div className="channel-last-conversation">
-                        {Utils.parseAnser(
-                          groupChatroomConversationsMeta[
-                            chatroom.last_conversation_id
-                          ]?.answer,
-                        )}
-                      </div>
-                      {/* {chatroom.date} */}
+                  <div className="channel-title">
+                    <div>{chatroom.header}</div>
+                    <div className="time">
+                      {
+                        groupChatroomConversationsMeta[
+                          chatroom.last_conversation_id
+                        ]?.created_at
+                      }
                     </div>
                   </div>
-                  {chatroom?.unseen_count.length > 0 ? (
+                  <div className="channel-info">
+                    <div className="channel-last-conversation">
+                      {chatroom?.user_id === currentUser?.id
+                        ? "You"
+                        : groupChatroomMember[chatroom.user_id].name.split(
+                            " ",
+                          )[0]}
+                      :&nbsp;{" "}
+                      {groupChatroomConversationsMeta[
+                        chatroom.last_conversation_id
+                      ].attachment_count ? (
+                        <>
+                          <img src={document} alt="document" />
+                        </>
+                      ) : null}
+                      {Utils.parseAnser(
+                        groupChatroomConversationsMeta[
+                          chatroom.last_conversation_id
+                        ]?.answer,
+                      )}
+                    </div>
+                  </div>
+
+                  {chatroom?.unseen_count?.length > 0 ? (
                     <div className="channel-unseen-convo-count">
                       {chatroom.unseen_count}
                     </div>

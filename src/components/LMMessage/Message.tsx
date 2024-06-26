@@ -11,6 +11,10 @@ import { ConstantStrings } from "../../enums/common-strings";
 import LMMessageContext from "../../context/MessageContext";
 import MediaRenderer from "../../shared/components/MediaRenderer";
 
+// Icons
+
+import linkImg from "../../assets/img/link-img.svg";
+
 const Message = () => {
   const { message, index } = useContext(LMMessageContext);
   console.log(message);
@@ -23,6 +27,12 @@ const Message = () => {
   const imageUrl = message?.member.imageUrl;
   const name = message?.member.name;
   const avatarContent = getAvatar({ imageUrl, name });
+
+  const handleImageError = (e) => {
+    e.target.src = linkImg; // Fallback image URL
+    e.target.onerror = null; // Prevent infinite loop if the fallback also fails
+  };
+
   function renderDatePill() {
     if (index === 0) {
       return <div className="data-pill">{message?.date}</div>;
@@ -56,8 +66,6 @@ const Message = () => {
             <Reactions />
           </div>
         </div>
-
-        {/* <div className="data-pill">{message?.date}</div> */}
       </div>
     );
   }
@@ -66,7 +74,6 @@ const Message = () => {
       return (
         <>
           <div className={`lm-chat-card ${message?.state}`}>
-            {/* {message?.state} */}
             {renderDatePill()}
           </div>
           <div className={`lm-chat-card ${messageClass} ${message?.state}`}>
@@ -78,21 +85,29 @@ const Message = () => {
                 {!isSender ? (
                   <div className="name">{message?.member.name}</div>
                 ) : null}
-
                 {/* media */}
                 <div className="lm-media">
                   {message.has_files && message.attachments?.length > 0 ? (
                     <MediaRenderer attachments={message.attachments} />
                   ) : null}
                 </div>
-
                 {/* OG Tags */}
-                <div className="lm-og-tags">
-                  <div className="lm-og-title">{message?.og_tags?.title}</div>
-                  <div className="lm-og-desc">
-                    {message?.og_tags?.description}
+
+                {message.og_tags ? (
+                  <div className="lm-og-tags">
+                    <div className="lm-og-img">
+                      <img
+                        src={message.og_tags.image || linkImg}
+                        alt="image"
+                        onError={handleImageError}
+                      />
+                    </div>
+                    <div className="lm-og-title">{message?.og_tags?.title}</div>
+                    <div className="lm-og-desc">
+                      {message?.og_tags?.description}
+                    </div>
                   </div>
-                </div>
+                ) : null}
                 {/* OG Tags */}
 
                 {/* text msg */}

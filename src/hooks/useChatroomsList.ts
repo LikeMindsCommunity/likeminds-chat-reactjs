@@ -7,6 +7,7 @@ import {
   ChatroomData,
   ConversationMeta,
   GetChatroomsSyncResponse,
+  UserMeta,
 } from "../types/api-responses/getChatroomSync";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import {
@@ -22,6 +23,7 @@ interface ChatroomProviderInterface {
   loadMoreDmChatrooms: boolean;
   groupChatroomsList: ChatroomData[] | null;
   groupChatroomConversationsMeta: Record<string, ConversationMeta>;
+  groupChatroomMember: Record<string, UserMeta>;
   loadMoreGroupChatrooms: boolean;
   getChatroomsMine: ZeroArgVoidReturns;
   getExploreGroupChatrooms: ZeroArgVoidReturns;
@@ -48,6 +50,9 @@ export default function useChatroomList(): ChatroomProviderInterface {
   const [groupChatrooms, setGroupChatrooms] = useState<ChatroomData[]>([]);
   const [groupChatroomConversationsMeta, setgroupChatroomConversationsMeta] =
     useState<Record<string, ConversationMeta>>({});
+  const [groupChatroomMember, setgroupChatroomMember] = useState<
+    Record<string, UserMeta>
+  >({});
   const [groupChatroomsPageCount, setGroupChatroomsPageCount] =
     useState<number>(1);
   const [loadMoreGroupChatrooms, setLoadMoreGroupChatrooms] =
@@ -225,6 +230,12 @@ export default function useChatroomList(): ChatroomProviderInterface {
             ...getChatroomsMineCall.data.conversation_meta,
           };
         });
+        setgroupChatroomMember((currentConversationsMeta) => {
+          return {
+            ...currentConversationsMeta,
+            ...getChatroomsMineCall.data.user_meta,
+          };
+        });
       }
     } catch (error) {
       console.log(error);
@@ -276,6 +287,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
     loadMoreExploreGroupChatrooms,
     joinAChatroom,
     groupChatroomConversationsMeta,
+    groupChatroomMember,
     markReadAChatroom,
   };
 }
