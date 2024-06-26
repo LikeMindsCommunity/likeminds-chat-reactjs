@@ -22,6 +22,7 @@ const Message = () => {
   const imageUrl = message?.member.imageUrl;
   const name = message?.member.name;
   const avatarContent = getAvatar({ imageUrl, name });
+  console.log(message);
   function renderDatePill() {
     if (index === 0) {
       return <div className="data-pill">{message?.date}</div>;
@@ -95,7 +96,7 @@ const Message = () => {
                   ) : null}
                 </div>
                 <div className="time">
-                  {message.isEdited ? (
+                  {message.is_edited ? (
                     <div className="error-message">Edited</div>
                   ) : null}
                   {message?.created_at}
