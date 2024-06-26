@@ -34,20 +34,26 @@ const GiphySearch: React.FC = () => {
 
   return (
     <div className="lm-giphy-box">
-      <h1>Giphy Search</h1>
-      <input
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search for GIFs"
-      />
-      <button onClick={handleSearch} disabled={loading}>
-        {loading ? "Searching..." : "Search"}
-      </button>
+      <div className="lm-giphy-search">
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search for GIFs"
+        />
+        <button onClick={handleSearch} disabled={loading}>
+          {loading ? "Searching..." : "Search"}
+        </button>
+      </div>
       {error && <p>{error}</p>}
-      <div>
+      <div className="lmGifContainer">
         {gifs.map((gif) => (
-          <img key={gif.id} src={gif.images.fixed_height.url} alt={gif.title} />
+          <img
+            key={gif.id}
+            src={gif.images.fixed_height.url}
+            alt={gif.title}
+            className="lm-giphy-img"
+          />
         ))}
       </div>
     </div>
