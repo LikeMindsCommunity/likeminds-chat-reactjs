@@ -64,12 +64,12 @@ export function useInput(): UseInputReturns {
           setMatchedTagMembersList((previousState) => {
             return [
               ...previousState,
-              ...(call.data?.members || call.data.community_member || []),
+              ...(call.data?.members || call.data.community_members || []),
             ];
           });
           incrementPageNo();
         }
-        if (!call.data.members?.length && call.data.community_member?.length) {
+        if (!call.data.members?.length && call.data.community_members?.length) {
           setFetchMoreTags(false);
         }
       } catch (error) {
@@ -421,6 +421,7 @@ export function useInput(): UseInputReturns {
     documentsMediaList,
     imagesAndVideosMediaList,
     postMessage,
+    getTaggingMembers: fetchTaggingList,
   };
 }
 
@@ -439,6 +440,7 @@ export interface UseInputReturns {
   imagesAndVideosMediaList: File[] | null;
   documentsMediaList: File[] | null;
   postMessage: ZeroArgVoidReturns;
+  getTaggingMembers: OneOptionalArgVoidReturns<number>;
 }
 // single compulsary argument
 export type onChangeUpdateInputText = (
@@ -448,6 +450,7 @@ export type onKeydownEvent = (change: KeyboardEvent<HTMLDivElement>) => void;
 export type ZeroArgVoidReturns = () => void;
 export type OneArgVoidReturns<T> = (arg: T) => void;
 export type TwoArgVoidReturns<T, S> = (argOne: T, ardTwo: S) => void;
+export type OneOptionalArgVoidReturns<T> = (arg?: T) => void;
 
 // "files/collabcard/$chatroom_id/conversation/$conversation_id/initials of media/current time in milliseconds.fileextension"
 // var initial = when (mediaType) {
