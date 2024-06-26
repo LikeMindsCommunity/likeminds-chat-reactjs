@@ -4,6 +4,11 @@ import useChatroomList from "../../hooks/useChatroomsList";
 import { useNavigate, useParams } from "react-router-dom";
 import { ConstantStrings } from "../../enums/common-strings";
 
+// Icons
+
+import joinIcon from "../../assets/img/icon_join.svg";
+import joinedIcon from "../../assets/img/icon_joined.svg";
+
 function LMChannelList() {
   const {
     groupChatroomsList,
@@ -37,6 +42,7 @@ function LMChannelList() {
           scrollableTarget="lm-channel-list-group"
         >
           {groupChatroomsList?.map((chatroom) => {
+            console.log(chatroom);
             return (
               <div
                 key={chatroom.id.toString()}
@@ -58,20 +64,24 @@ function LMChannelList() {
                   )}
                 </div>
                 <div className="channel-desc">
-                  <div className="channel-title">{chatroom.header}</div>
-                  <div className="channel-info">
-                    <div className="channel-last-conversation">
-                      {
-                        groupChatroomConversationsMeta[
-                          chatroom.last_conversation_id
-                        ]?.answer
-                      }
+                  <div>
+                    <div className="channel-title">{chatroom.header}</div>
+                    <div className="channel-info">
+                      <div className="channel-last-conversation">
+                        {
+                          groupChatroomConversationsMeta[
+                            chatroom.last_conversation_id
+                          ]?.answer
+                        }
+                      </div>
+                      {/* {chatroom.date} */}
                     </div>
-                    <div className="channel-info-gap"></div>
+                  </div>
+                  {chatroom?.unseen_count.length > 0 ? (
                     <div className="channel-unseen-convo-count">
                       {chatroom.unseen_count}
                     </div>
-                  </div>
+                  ) : null}
                 </div>
               </div>
             );
@@ -112,20 +122,24 @@ function LMChannelList() {
                 <div className="channel-desc">
                   <div className="channel-title">
                     <div>{chatroom.header}</div>
-                    <div>
-                      <button
-                        disabled={chatroom.follow_status ? true : false}
-                        onClick={() => {
-                          joinAChatroom(chatroom.id.toString());
-                        }}
-                        className={chatroom.follow_status ? "joined" : ""}
-                      >
-                        {chatroom.follow_status
-                          ? ConstantStrings.CHATROOM_ALREADY_JOINED_BUTTON_STRING
-                          : ConstantStrings.CHATROOM_NOT_ALREADY_JOINED_BUTTON_STRING}
-                      </button>
-                      {/* <button className="joined">Join</button> */}
-                    </div>
+                  </div>
+                  <div>
+                    <button
+                      disabled={chatroom.follow_status ? true : false}
+                      onClick={() => {
+                        joinAChatroom(chatroom.id.toString());
+                      }}
+                      className={chatroom.follow_status ? "joined" : ""}
+                    >
+                      {chatroom.follow_status ? (
+                        <img src={joinedIcon} alt={joinedIcon} />
+                      ) : (
+                        <img src={joinIcon} alt={joinIcon} />
+                      )}
+                      {chatroom.follow_status
+                        ? ConstantStrings.CHATROOM_ALREADY_JOINED_BUTTON_STRING
+                        : ConstantStrings.CHATROOM_NOT_ALREADY_JOINED_BUTTON_STRING}
+                    </button>
                   </div>
                 </div>
               </div>

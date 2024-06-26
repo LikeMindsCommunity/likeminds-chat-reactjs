@@ -118,6 +118,8 @@ body {
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc {
   padding: 18px 0;
   width: 81%;
+  display: flex;
+  justify-content: space-between;
 }
 
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-title {
@@ -128,9 +130,13 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
-.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-title button {
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc button {
   background: #00897b;
   border-radius: 8px;
   font-weight: 500;
@@ -142,10 +148,11 @@ body {
   justify-content: center;
   border: none;
   cursor: pointer;
-  padding: 8px 16px;
+  padding: 8px 15px;
+  gap: 3px;
 }
 
-.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-title button.joined {
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc button.joined {
   background: #fff;
   color: #00897b;
   border: 1px solid #00897b;
@@ -153,16 +160,56 @@ body {
 
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-info {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  /* justify-content: center; */
+  /* align-items: center; */
   font-weight: 400;
   font-size: 12px;
   line-height: 16px;
   color: #666;
 }
 
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-info .channel-last-conversation{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.channel-unseen-convo-count{height: 16px;
+  width: 16px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #f00;
+  font-size: 11px;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  line-height: 17px;
+  font-weight: 400;}
+
 .channel-info-gap {
   flex-grow: 1;
+}
+
+/* .lm-chat-message-reactions-holder{ */
+.lm-chat-message-reaction{
+  width: max-content;
+  margin-bottom: 10px;
+  height: 1.75rem;
+  /* margin: 0 0.25rem 0 0; */
+  padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+  border-radius: 24px;
+  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.12);
+  border: solid 1px #acb7c0;
+  background-color: #fff;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.reaction-con{
+  font-size: 14px;
 }
 
 /* LM-Left-panel  */
@@ -372,6 +419,7 @@ body {
 
 .lm-channel .conversation .name {
   font-size: 12px;
+  text-transform: capitalize;
   font-weight: 500;
   line-height: 16px;
   color: #837fba;
@@ -393,6 +441,9 @@ body {
   font-weight: 400;
   line-height: 18px;
   text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .lm-channel .conversation.receiver {
@@ -769,6 +820,7 @@ body {
 .lm-media img {
   width: 100%;
   height: 100%;
+  border-radius: 5px;
   object-fit: contain;
 }
 
@@ -945,13 +997,14 @@ body {
 .lm-media .thumbnail-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-gap: 10px;
+  grid-gap: 5px;
 }
 
 .lm-media .thumbnail-wrapper {
   position: relative;
-  width: 100px;
-  height: 100px;
+  border-radius: 5px;
+  /* width: 100px;
+  height: 100px; */
   overflow: hidden;
 }
 
@@ -1001,9 +1054,9 @@ body {
 
 .lm-modal-media {
   width: 100%;
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
+  /* display: flex !important; */
+  /* justify-content: center; */
+  /* align-items: center; */
 }
 
 .lm-modal-media img,
@@ -1030,6 +1083,35 @@ body {
   height: 100vh;
 }
 
+
+.lm-carousel-header{
+  width: 100%;
+  display: flex;
+  gap: 10px;
+}
+.lm-carousel-header .lm-profile{
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  color: #333;
+  font-size: 16px;
+}
+.lm-carousel-header .lm-profile img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lm-carousel-header .lm-profile-info{ display: flex; flex-direction: column;}
+.lm-carousel-header .lm-profile-info .lm-name{ font-size: 16px; color: #333;}
+.lm-carousel-header .lm-profile-info .lm-desc{ font-size: 14px; color: #666; font-weight: 400;}
+ 
 .none {
   display: none !important;
 }

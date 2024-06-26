@@ -2,15 +2,20 @@ import React, { useContext, useState } from "react";
 import { Modal, Carousel } from "react-bootstrap";
 import LMMessageContext from "../../context/MessageContext";
 import pdfIcon from "../../assets/img/pdf-document.svg";
+import { getAvatar } from "./LMUserMedia";
 
 const MediaRenderer = ({ attachments }) => {
   const [show, setShow] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  // const {message} = useContext(LMMessageContext)
+  const { message } = useContext(LMMessageContext);
+  console.log(message);
   const handleShow = (index) => {
     setCurrentIndex(index);
     setShow(true);
   };
+  const imageUrl = message?.member.imageUrl;
+  const name = message?.member.name;
+  const avatarContent = getAvatar({ imageUrl, name });
 
   const handleClose = () => setShow(false);
 
@@ -57,7 +62,6 @@ const MediaRenderer = ({ attachments }) => {
         </video>
       );
     } else if (fileType === "pdf") {
-      console.log(attachment.name);
       return (
         <div>
           <a href={attachment.url} target="_blank" className="pdf">
@@ -83,7 +87,7 @@ const MediaRenderer = ({ attachments }) => {
   };
 
   return (
-    <div className="lm-media">
+    <div className="">
       {attachments.length === 1 ? (
         renderMedia(attachments[0], 0)
       ) : (
@@ -103,7 +107,17 @@ const MediaRenderer = ({ attachments }) => {
 
       <Modal show={show} onHide={handleClose} size="lg" centered>
         <Modal.Header closeButton>
-          {/* <Modal.Title>Attachments</Modal.Title> */}
+          <Modal.Title>
+            <div className="lm-carousel-header">
+              <div className="lm-profile">{avatarContent}</div>
+              <div className="lm-profile-info">
+                <div className="lm-name">{message?.member.name}</div>
+                <div className="lm-desc">
+                  {message?.date} at {message?.created_at}
+                </div>
+              </div>
+            </div>
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Carousel
