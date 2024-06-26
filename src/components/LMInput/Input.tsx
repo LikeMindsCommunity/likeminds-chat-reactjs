@@ -6,7 +6,7 @@ import Emojis from "./Emojis";
 import { Slide } from "@mui/material";
 import MediaCarousel from "./Carousel";
 import AttachmentsSelector from "./AttachmentsSelector";
-import giffyIcon from "./../../assets/img/giffy.png";
+// import giffyIcon from "./../../assets/img/giffy.png";
 import GiSelector from "./GiSelector";
 // import ReactGiphySearchbox from "react-giphy-searchbox";
 // import GiphySearchBox from "react-giphy-searchbox";
@@ -28,6 +28,8 @@ const Input = () => {
     imagesAndVideosMediaList,
     documentsMediaList,
     postMessage,
+    removeOgTag,
+    getTaggingMembers,
   } = useInput();
   return (
     // Defalut view
@@ -47,6 +49,8 @@ const Input = () => {
         imagesAndVideosMediaList,
         documentsMediaList,
         postMessage,
+        getTaggingMembers,
+        removeOgTag,
       }}
     >
       <div className="lm-channel-footer-wrapper">

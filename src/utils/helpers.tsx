@@ -543,6 +543,11 @@ export class Utils {
       );
     }
   }
+  static detectLinks(text: string) {
+    const regex = /\b(?:https?:\/\/)?(?:[\w.]+\.\w+)(?:(?<=\\n)|\b)/g;
+    const links = text?.match(regex);
+    return links ? links : [];
+  }
 }
 export interface TagInfo {
   tagString: string;

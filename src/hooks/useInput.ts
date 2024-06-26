@@ -20,6 +20,10 @@ import { PostConversationResponse } from "../types/api-responses/postConversatio
 import { FileType } from "../types/enums/Filetype";
 import { CustomActions } from "../customActions";
 import { useParams } from "react-router-dom";
+import {
+  GetOgTagResponse,
+  OgTag,
+} from "../types/api-responses/getOgTagResponse";
 
 export function useInput(): UseInputReturns {
   const { id: chatroomId } = useParams();
@@ -41,7 +45,7 @@ export function useInput(): UseInputReturns {
     null,
   );
   const [fetchMoreTags, setFetchMoreTags] = useState<boolean>(true);
-
+  const [ogTags, setOgTags] = useState<OgTag | null>(null);
   // refs
   const inputBoxRef = useRef<HTMLDivElement | null>(null);
   const inputWrapperRef = useRef<HTMLDivElement | null>(null);
@@ -255,6 +259,9 @@ export function useInput(): UseInputReturns {
   };
 
   // normal functions
+  const removeOgTag = () => {
+    setOgTags(null);
+  };
   const emptyInputField = () => {
     while (inputBoxRef.current?.firstChild) {
       inputBoxRef.current.removeChild(inputBoxRef.current?.firstChild);
@@ -405,7 +412,32 @@ export function useInput(): UseInputReturns {
       storeInputOnChatroomLeave(chatroomId || "");
     };
   }, [chatroomId, manageInputOnChatroomChange, storeInputOnChatroomLeave]);
+  useEffect(() => {
+    const checkForLinksTimeout = setTimeout(async () => {
+      try {
+        const linksDetected = Utils.detectLinks(inputText || "");
+        if (linksDetected.length) {
+          const firstLinkDetected = linksDetected[0];
+          if (firstLinkDetected.toString() !== ogTags?.url.toString()) {
+            const getOgTagData: GetOgTagResponse =
+              await lmChatclient?.decodeUrl({ url: firstLinkDetected });
+            if (getOgTagData?.success) {
+              setOgTags(getOgTagData.data.og_tags);
+            }
+          }
+        } else {
+          if (ogTags !== null) {
+            setOgTags(null);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }, 500);
 
+    return () => clearTimeout(checkForLinksTimeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lmChatclient, inputText]);
   return {
     inputBoxRef,
     inputWrapperRef,
@@ -422,6 +454,7 @@ export function useInput(): UseInputReturns {
     imagesAndVideosMediaList,
     postMessage,
     getTaggingMembers: fetchTaggingList,
+    removeOgTag,
   };
 }
 
@@ -441,6 +474,7 @@ export interface UseInputReturns {
   documentsMediaList: File[] | null;
   postMessage: ZeroArgVoidReturns;
   getTaggingMembers: OneOptionalArgVoidReturns<number>;
+  removeOgTag: ZeroArgVoidReturns;
 }
 // single compulsary argument
 export type onChangeUpdateInputText = (
