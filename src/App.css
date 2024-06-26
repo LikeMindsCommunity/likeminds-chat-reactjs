@@ -120,6 +120,7 @@ body {
   width: 81%;
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
 }
 
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-title {
@@ -134,6 +135,12 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+}
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .time {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #666; 
 }
 
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc button {
@@ -171,6 +178,9 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 220px;
+}
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-info .channel-last-conversation img{
+  width: 16px;
 }
 
 .channel-unseen-convo-count {
@@ -771,7 +781,7 @@ body {
   background-color: #fff;
   flex-direction: column;
   gap: 20px;
-  height: 100vh;
+  height: 92vh;
   overflow-y: scroll;
 
 
@@ -1326,18 +1336,31 @@ body {
   overflow: hidden;
   background-color: rgba(155, 155, 155, 0.1);
   font-size:12px;
+  padding: 10px;
+  margin: 0 0 5px 0;
 }
 
-.lm-og-title{
-  padding: 0 5px;
+.lm-og-title{ 
   font-weight: 500;
   color: #000000;
 }
+.lm-og-img{ 
+  overflow: hidden;
+  max-height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.lm-og-img img{ 
+  width: 20%;
+  height: 100%;
+  object-fit: cover;
+  padding: 20px 0;
+}
 
-.lm-og-desc{
-  padding: 0 5px;
+.lm-og-desc{ 
   color: #666666;
-white-space: nowrap;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
