@@ -1241,6 +1241,41 @@ body {
 
 
 /* Giphy */
+.lm-giphy-box {
+  padding: 0px;
+}
+.lm-giphy-box .lm-giphy-search{
+  width: 100%;
+  margin-bottom: 10px;
+  display: flex;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.lm-giphy-box .lm-giphy-search input{
+  border: none;
+  width: 95%;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+.lm-giphy-box .lm-giphy-search button{
+  font-size: 12px;
+  border: 0px;
+  padding: 8px 20px;
+}
+.lmGifContainer{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-height: 150px;
+}
+.lmGifContainer .lm-giphy-img{
+  max-width: 120px;
+}
+.lm-input-giffy{ 
+  position: relative;
+}
+ 
 .lm-input-giffy{ 
   position: relative;
 }
@@ -1255,6 +1290,10 @@ body {
   border: 1px solid #e0e0e0;
   background-color: #fff;
   min-height: 150px;
+  overflow-y: auto;
+}
+
+/* .fullscreen-menu .MuiPaper-root {
 }
 
 .fullscreen-menu .MuiPaper-root {
@@ -1265,7 +1304,8 @@ body {
   max-height: none;
   left: 0 !important;
   top: 0 !important;
-}
+} */
+
 /* Giphy */
 
 .lm-content-modal {
@@ -1383,6 +1423,7 @@ white-space: nowrap;
   align-items: center;
 }
 
+ 
 .lm-giphy-box{
   padding: 20px;
 }
