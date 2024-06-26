@@ -105,7 +105,14 @@ const MediaRenderer = ({ attachments }) => {
         </div>
       )}
 
-      <Modal show={show} onHide={handleClose} size="lg" centered>
+      <Modal
+        show={show}
+        onHide={handleClose}
+        size="lg"
+        backdrop={false}
+        dialogClassName="lm-dialog-modal"
+        contentClassName="lm-content-modal"
+      >
         <Modal.Header closeButton>
           <Modal.Title>
             <div className="lm-carousel-header">
