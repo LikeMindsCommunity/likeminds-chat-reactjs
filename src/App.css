@@ -308,6 +308,7 @@ body {
 }
 
 .relative-container {
+  height: 100%;
   position: relative;
 }
 
@@ -698,9 +699,9 @@ body {
 
 /* Error */
 .lm-dual-scroll-container {
+  height: 100%;
   position: relative;
   overflow-y: scroll;
-  height: 100vh;
   display: block;
   width: 100%;
 }

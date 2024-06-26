@@ -145,7 +145,7 @@ export default function useConversations(): UseConversations {
         return logError(error);
       }
     },
-    [lmChatclient],
+    [chatroomId, lmChatclient],
   );
 
   function resetConversations() {

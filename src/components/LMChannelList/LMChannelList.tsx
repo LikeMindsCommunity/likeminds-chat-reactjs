@@ -42,7 +42,6 @@ function LMChannelList() {
           scrollableTarget="lm-channel-list-group"
         >
           {groupChatroomsList?.map((chatroom) => {
-            console.log(chatroom);
             return (
               <div
                 key={chatroom.id.toString()}

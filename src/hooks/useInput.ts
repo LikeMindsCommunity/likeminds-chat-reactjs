@@ -117,6 +117,7 @@ export function useInput(): UseInputReturns {
         text: messageText,
         chatroomId: parseInt(chatroomData.id.toString()),
         hasFiles: false,
+        ogTags: ogTags || undefined,
       };
       const attachmentsList =
         imagesAndVideosMediaList || documentsMediaList || [];
