@@ -387,6 +387,17 @@ body {
   color: #666;
 }
 
+ 
+.lm-chat-card .userTag {
+  color: #007aff;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.data-pill .userTag {
+  color: #fff;
+}
+
 .lm-chat-card:hover .actions {
   display: flex;
   transition: all 0.5s ease-in-out;
@@ -1062,7 +1073,7 @@ body {
 .lm-modal-media {
   width: 100%;
   text-align: center;
-  height: 250px; 
+  max-height: 450px; 
 }
 
 .lm-modal-media img,
@@ -1150,6 +1161,8 @@ body {
 
 .carousel-indicators{
   display: none;
+}
+
 .taggingBox {
   top: 74% !important;
   left: 0px !important;
@@ -1181,4 +1194,24 @@ body {
 .taggingTile span,
 .postTaggingTile span {
   text-transform: capitalize;
+}
+
+ 
+.lm-dialog-modal{
+  position: absolute;
+  right: 0;
+  top: 0px;
+  border-radius: 0;
+  width: 100%;
+}
+
+ 
+.lm-content-modal{
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  top: 34px;
+  height: 86vh;
+  right: 281px;
+  width: 1080px;
 }
