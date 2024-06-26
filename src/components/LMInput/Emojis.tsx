@@ -24,6 +24,14 @@ const Emojis = () => {
           vertical: "bottom",
           horizontal: "center",
         }}
+        sx={{
+          padding: "0",
+        }}
+        MenuListProps={{
+          sx: {
+            padding: 0,
+          },
+        }}
       >
         <Picker data={data} onEmojiSelect={onEmojiSelect} />
       </Menu>

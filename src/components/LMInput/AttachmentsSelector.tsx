@@ -25,6 +25,13 @@ const AttachmentsSelector = () => {
           vertical: "top",
           horizontal: "left",
         }}
+        transformOrigin={{
+          horizontal: "left",
+          vertical: "bottom",
+        }}
+        sx={{
+          padding: "0",
+        }}
       >
         <div className="lm-upload-media-dialog">
           <MenuItem className="lm-chat-input-attachment-label">

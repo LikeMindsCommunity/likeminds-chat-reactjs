@@ -8,6 +8,7 @@ import { ConstantStrings } from "../../enums/common-strings";
 
 import joinIcon from "../../assets/img/icon_join.svg";
 import joinedIcon from "../../assets/img/icon_joined.svg";
+import { Utils } from "../../utils/helpers";
 
 function LMChannelList() {
   const {
@@ -19,6 +20,7 @@ function LMChannelList() {
     loadMoreExploreGroupChatrooms,
     joinAChatroom,
     groupChatroomConversationsMeta,
+    markReadAChatroom,
   } = useChatroomList();
   const navigate = useNavigate();
   const { id: chatroomId } = useParams();
@@ -47,6 +49,7 @@ function LMChannelList() {
                 key={chatroom.id.toString()}
                 className={`channel-media ${chatroomId?.toString() === chatroom.id.toString() ? "selected" : null}`}
                 onClick={() => {
+                  markReadAChatroom(chatroom.id);
                   navigate(`/chat/${chatroom.id}`);
                 }}
               >
@@ -67,11 +70,11 @@ function LMChannelList() {
                     <div className="channel-title">{chatroom.header}</div>
                     <div className="channel-info">
                       <div className="channel-last-conversation">
-                        {
+                        {Utils.parseAnser(
                           groupChatroomConversationsMeta[
                             chatroom.last_conversation_id
-                          ]?.answer
-                        }
+                          ]?.answer,
+                        )}
                       </div>
                       {/* {chatroom.date} */}
                     </div>
