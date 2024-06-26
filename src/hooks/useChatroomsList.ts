@@ -218,7 +218,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
     if (!lmChatclient) {
       return;
     }
-    console.log(currentCommunity);
+
     const fb = lmChatclient?.fbInstance();
 
     const query = ref(fb, `community/${currentCommunity.id}`);
@@ -229,7 +229,6 @@ export default function useChatroomList(): ChatroomProviderInterface {
         const chatroomId = snapshot.val().chatroom_id;
         // if (chatroomId != id) refreshHomeFeed();
         refreshGroupChatrooms(chatroomId);
-        console.log(chatroomId);
       }
     });
   }, [currentCommunity, lmChatclient, refreshGroupChatrooms]);

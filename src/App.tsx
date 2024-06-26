@@ -17,7 +17,7 @@ const LMAppLayout = () => {
     "ac8ee360-dedb-462f-93f1-fd400ca343a7",
   )
     .setPlatformCode("rt")
-    .setVersionCode(35)
+    .setVersionCode(45)
     .build();
   console.log(myClient);
   return (

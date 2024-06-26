@@ -62,11 +62,14 @@ export function useInput(): UseInputReturns {
         );
         if (call.success) {
           setMatchedTagMembersList((previousState) => {
-            return [...previousState, ...call.data.members];
+            return [
+              ...previousState,
+              ...(call.data?.members || call.data.community_member || []),
+            ];
           });
           incrementPageNo();
         }
-        if (!call.data.members.length) {
+        if (!call.data.members?.length && call.data.community_member?.length) {
           setFetchMoreTags(false);
         }
       } catch (error) {

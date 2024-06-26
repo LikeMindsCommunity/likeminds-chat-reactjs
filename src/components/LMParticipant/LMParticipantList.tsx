@@ -1,11 +1,17 @@
-import React, { useContext } from "react";
+import React from "react";
 import { useParticipants } from "../../hooks/useParticipants";
 
 // icons
 import backIcon from "../../assets/img/back-navigation-arrow.svg";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const LMParticipantList = () => {
-  const { participantsList, navigateBackToChatroom } = useParticipants();
+  const {
+    participantsList,
+    navigateBackToChatroom,
+    getMembers,
+    loadMoreParticipants,
+  } = useParticipants();
   return (
     <div className="lm-participant-wrapper">
       <div className="lm-participant-header">
@@ -17,26 +23,35 @@ const LMParticipantList = () => {
         </div>
         <div className="counts">{participantsList.length} Participants</div>
       </div>
-      <div className="lm-participant-body">
-        {participantsList.map((participant) => {
-          return (
-            <div className="lm-participant-card">
-              <div className="lm-participant-card-user">
-                {participant.image_url ? (
-                  <>
-                    <img src={participant.image_url} alt="" />
-                  </>
-                ) : (
-                  <>{participant.name[0]}</>
-                )}
+      <div className="lm-participant-body" id="lm-participant-scroller">
+        <InfiniteScroll
+          dataLength={participantsList.length}
+          next={getMembers}
+          hasMore={loadMoreParticipants}
+          loader={null}
+          scrollableTarget="lm-participant-scroller"
+        >
+          {participantsList.map((participant) => {
+            return (
+              <div className="lm-participant-card">
+                <div className="lm-participant-card-user">
+                  {participant.image_url ? (
+                    <>
+                      <img src={participant.image_url} alt="" />
+                    </>
+                  ) : (
+                    <>{participant.name[0]}</>
+                  )}
+                </div>
+                <div className="lm-participant-card-detail">
+                  <div className="name">{participant.name}</div>
+
+                  <div className="desc">{participant.custom_title}</div>
+                </div>
               </div>
-              <div className="lm-participant-card-detail">
-                <div className="name">{participant.name}</div>
-                <div className="desc">{participant.custom_title}</div>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </InfiniteScroll>
       </div>
     </div>
   );
