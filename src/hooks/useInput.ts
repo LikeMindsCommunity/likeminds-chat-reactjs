@@ -25,6 +25,7 @@ import {
   GetOgTagResponse,
   OgTag,
 } from "../types/api-responses/getOgTagResponse";
+import { Gif } from "../types/models/GifObject";
 
 export function useInput(): UseInputReturns {
   const { id: chatroomId } = useParams();
@@ -47,6 +48,7 @@ export function useInput(): UseInputReturns {
   );
   const [fetchMoreTags, setFetchMoreTags] = useState<boolean>(true);
   const [ogTags, setOgTags] = useState<OgTag | null>(null);
+  const [gifMedia, setGifMedia] = useState<Gif | null>(null);
   // refs
   const inputBoxRef = useRef<HTMLDivElement | null>(null);
   const inputWrapperRef = useRef<HTMLDivElement | null>(null);
@@ -134,6 +136,26 @@ export function useInput(): UseInputReturns {
         await lmChatclient?.postConversation(postConversationCallConfig);
       setFocusOnInputField();
       removeOgTag();
+      if (gifMedia) {
+        const onUploadConfig = {
+          conversationId: parseInt(
+            postConversationsCall.data.conversation.id.toString(),
+            10,
+          ),
+          filesCount: 1,
+          index: 0,
+          meta: {
+            size: parseInt(gifMedia.images.fixed_height.size.toString()),
+            // size: parseInt(giphyUrl?.images?.fixed_height?.size?.toString()),
+          },
+          name: gifMedia?.title,
+          type: gifMedia?.type,
+          url: gifMedia?.images?.fixed_height?.url,
+          thumbnailUrl: gifMedia?.images["480w_still"]?.url,
+        };
+        lmChatclient?.putMultimedia(onUploadConfig);
+        return;
+      }
       for (let index = 0; index < attachmentsList.length; index++) {
         const conversation = postConversationsCall.data.conversation;
         const attachment = attachmentsList[index];

@@ -9,8 +9,9 @@ import Emojis from "./Emojis";
 import { Collapse, IconButton, Slide } from "@mui/material";
 import MediaCarousel from "./Carousel";
 import AttachmentsSelector from "./AttachmentsSelector";
-import giffyIcon from "./../../assets/img/giffy.png";
-import GiphySearch from "./GiphySearch";
+// import giffyIcon from "./../../assets/img/giffy.png";
+// import GiphySearch from "./GiphySearch";
+import GiSelector from "./GiSelector";
 
 const Input = () => {
   const {
@@ -103,9 +104,10 @@ const Input = () => {
           </div>
         </Slide>
 
-        <div className="lm-giphy-container">
+        {/* <div className="lm-giphy-container">
           <GiphySearch />
-        </div>
+          <GiSelector />
+        </div> */}
 
         <div className="lm-channel-footer">
           <div className="lm-channel-icon lm-cursor-pointer">
@@ -115,7 +117,8 @@ const Input = () => {
             <AttachmentsSelector />
           </div>
           <div className="lm-channel-icon lm-cursor-pointer">
-            <img src={giffyIcon} alt="giffy" />
+            {/* <img src={giffyIcon} alt="giffy" /> */}
+            {/* <GiSelector /> */}
           </div>
 
           <LMChatTextArea />
