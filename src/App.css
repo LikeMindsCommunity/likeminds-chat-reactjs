@@ -616,6 +616,7 @@ body {
   width: 100%;
   display: flex;
   align-items: center;
+  position: relative;
 }
 
 .lm-channel-footer .disable-input {
@@ -1224,3 +1225,32 @@ body {
   /* right: 281px; */
   /* width: 1080px; */
 }
+
+
+/* Giphy */
+.lm-input-giffy{ 
+  position: relative;
+}
+.lm-input-giffy img{ 
+  width: 26px !important;
+}
+
+.lm-input-giffy .lm-giphy-container{
+  position: relative;
+  width: 100%;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+  min-height: 150px;
+}
+
+.fullscreen-menu .MuiPaper-root {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  max-width: none;
+  max-height: none;
+  left: 0 !important;
+  top: 0 !important;
+}
+/* Giphy */
