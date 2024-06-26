@@ -13,6 +13,7 @@ const GiSelector: React.FC = () => {
         open={Boolean(menuAnchor)}
         anchorEl={menuAnchor}
         onClose={closeMenu}
+        classes={{ paper: "fullscreen-menu" }}
         anchorOrigin={{
           vertical: "top",
           horizontal: "left",
