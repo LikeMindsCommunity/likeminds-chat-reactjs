@@ -26,6 +26,7 @@ interface UseConversations {
   showLoader: MutableRefObject<boolean>;
   // showLoader: boolean;
   bottomReferenceDiv: MutableRefObject<HTMLDivElement | null>;
+  messageListContainerRef: MutableRefObject<HTMLDivElement | null>;
 }
 
 export default function useConversations(): UseConversations {
@@ -40,6 +41,7 @@ export default function useConversations(): UseConversations {
   const newChatroomConversationsLoaded = useRef<boolean>(false);
   const lastMessageRef = useRef<number | null>(null);
   const bottomReferenceDiv = useRef<HTMLDivElement | null>(null);
+  const messageListContainerRef = useRef<HTMLDivElement | null>(null);
   // const [showLoader, setShowLoader] = useState<boolean>(false);
   const showLoader = useRef<boolean>(true);
   // const params = useParams();
@@ -145,7 +147,7 @@ export default function useConversations(): UseConversations {
         return logError(error);
       }
     },
-    [lmChatclient],
+    [chatroomId, lmChatclient],
   );
 
   function resetConversations() {
@@ -275,6 +277,7 @@ export default function useConversations(): UseConversations {
     loadMore,
     showLoader,
     bottomReferenceDiv,
+    messageListContainerRef,
   };
 }
 export type UnknownReturnFunction = (...props: unknown[]) => unknown;

@@ -35,7 +35,7 @@ function isScrollTopBeyondThresholdLimits(
     return false;
   }
   const { scrollTop, clientHeight, scrollHeight } = targetElement;
-  if (scrollTop < 0.3 * scrollHeight && !scrollDirection) {
+  if (scrollTop < 0.7 * scrollHeight && !scrollDirection) {
     return true;
   } else {
     return false;
