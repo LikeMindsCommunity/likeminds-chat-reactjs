@@ -2,7 +2,7 @@ import React, { MutableRefObject, ReactNode } from "react";
 import {
   S3Client,
   PutObjectCommand,
-  PutObjectOutput,
+  // PutObjectOutput,
   PutObjectRequest,
 } from "@aws-sdk/client-s3";
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-provider-cognito-identity";
@@ -385,7 +385,7 @@ export class Utils {
     media: File,
     conversationId: string,
     chatroomId: string,
-  ): Promise<PutObjectOutput> {
+  ): Promise<unknown> {
     const s3Client = this.getAWS();
     const { Key, Bucket, Body, ACL, ContentType } = this.buildUploadParams(
       media,
@@ -399,7 +399,8 @@ export class Utils {
       ACL,
       ContentType,
     });
-    return s3Client.send(command);
+    await s3Client.send(command);
+    return Key || "";
   }
 
   private static buildUploadParams(
@@ -432,13 +433,8 @@ export class Utils {
           : FileTypeInitials.OTHERS;
     return `files/collabcard/${chatroomId}/conversation/${conversationId}/${conversationInitials}${Date.now()}.${media.name.split(".").reverse()[0]}`;
   }
-  static generateFileUrl(
-    chatroomId: string,
-    conversationId: string,
-    media: File,
-  ) {
-    const key = this.generateKey(chatroomId, conversationId, media);
-    return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${key}`;
+  static generateFileUrl(keyName: string) {
+    return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${keyName}`;
   }
   static returnCSSForTagging(
     refObject: React.MutableRefObject<HTMLDivElement | null>,

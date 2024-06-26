@@ -10,7 +10,6 @@ const MediaRenderer = ({ attachments }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { message } = useContext(LMMessageContext);
   const { messageListContainerRef } = useContext(MessageListContext);
-  console.log(message);
   const handleShow = (index) => {
     setCurrentIndex(index);
     setShow(true);

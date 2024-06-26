@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ChangeEvent,
@@ -90,7 +91,11 @@ export function useInput(): UseInputReturns {
       const messageText = Utils.extractTextFromNode(
         inputBoxRef.current!,
       ).trim();
-      if (!messageText || !messageText.length) {
+      if (
+        (!messageText || !messageText.length) &&
+        !imagesAndVideosMediaList?.length &&
+        imagesAndVideosMediaList?.length
+      ) {
         return;
       }
       if (Utils.extractTextFromNode(inputBoxRef.current!).trim())
@@ -131,7 +136,6 @@ export function useInput(): UseInputReturns {
       removeOgTag();
       for (let index = 0; index < attachmentsList.length; index++) {
         const conversation = postConversationsCall.data.conversation;
-        console.log(conversation);
         const attachment = attachmentsList[index];
         const { name, size, type } = attachment;
         if (type.includes(FileType.video)) {
@@ -165,22 +169,17 @@ export function useInput(): UseInputReturns {
                     attachment,
                     conversation.id.toString(),
                     chatroom.chatroom.id.toString(),
-                  ).then(() => {
-                    const thumbnailUrl = Utils.generateFileUrl(
-                      chatroom.chatroom.id.toString(),
-                      conversation.id.toString(),
-                      thumbnailFile,
-                    );
-
+                  ).then((response: any) => {
+                    const thumbnailUrl = Utils.generateFileUrl(response);
+                    // const thumbnailUrl = response;
                     Utils.uploadMedia(
                       attachment,
                       conversation.id.toString(),
                       chatroom.chatroom.id.toString(),
-                    ).then(() => {
+                    ).then((response) => {
+                      // const fileUrl = response;
                       const fileUrl = Utils.generateFileUrl(
-                        chatroom.chatroom.id.toString(),
-                        conversation.id.toString(),
-                        attachment,
+                        response as unknown as string,
                       );
                       const onUploadConfig: {
                         conversationId: number;
@@ -201,7 +200,7 @@ export function useInput(): UseInputReturns {
                         meta: { size: size },
                         name: name,
                         type: "video",
-                        url: fileUrl,
+                        url: (fileUrl as string) || "",
                         thumbnailUrl: thumbnailUrl,
                       };
 
@@ -221,12 +220,10 @@ export function useInput(): UseInputReturns {
             attachment,
             conversation.id.toString(),
             chatroom.chatroom.id.toString(),
-          ).then(() => {
-            const fileUrl = Utils.generateFileUrl(
-              chatroom.chatroom.id.toString(),
-              conversation.id.toString(),
-              attachment,
-            );
+          ).then((response: any) => {
+            console.log(response);
+            // const fileUrl = response;
+            const fileUrl = Utils.generateFileUrl(response);
             const onUploadConfig: {
               conversationId: number;
               filesCount: number;
@@ -247,13 +244,15 @@ export function useInput(): UseInputReturns {
               name: name,
               // type: type,
               type: type.includes(FileType.image) ? FileType.image : "pdf",
-              url: fileUrl,
+              url: fileUrl || "",
               thumbnail_url: null,
             };
 
             lmChatclient?.putMultimedia(onUploadConfig);
           });
         }
+        setImagesAndVideosMediaList([]);
+        setDocumentMediaList([]);
       }
     } catch (error) {
       console.log(error);
