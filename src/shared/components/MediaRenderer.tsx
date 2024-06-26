@@ -3,11 +3,13 @@ import { Modal, Carousel } from "react-bootstrap";
 import LMMessageContext from "../../context/MessageContext";
 import pdfIcon from "../../assets/img/pdf-document.svg";
 import { getAvatar } from "./LMUserMedia";
+import MessageListContext from "../../context/MessageListContext";
 
 const MediaRenderer = ({ attachments }) => {
   const [show, setShow] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const { message } = useContext(LMMessageContext);
+  const { messageListContainerRef } = useContext(MessageListContext);
   console.log(message);
   const handleShow = (index) => {
     setCurrentIndex(index);
@@ -105,7 +107,15 @@ const MediaRenderer = ({ attachments }) => {
         </div>
       )}
 
-      <Modal show={show} onHide={handleClose} size="lg" centered>
+      <Modal
+        show={show}
+        onHide={handleClose}
+        size="lg"
+        backdrop={false}
+        dialogClassName="lm-dialog-modal"
+        contentClassName="lm-content-modal"
+        container={messageListContainerRef.current}
+      >
         <Modal.Header closeButton>
           <Modal.Title>
             <div className="lm-carousel-header">

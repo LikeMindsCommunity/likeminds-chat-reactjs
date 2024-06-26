@@ -388,6 +388,17 @@ body {
   color: #666;
 }
 
+ 
+.lm-chat-card .userTag {
+  color: #007aff;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.data-pill .userTag {
+  color: #fff;
+}
+
 .lm-chat-card:hover .actions {
   display: flex;
   transition: all 0.5s ease-in-out;
@@ -750,15 +761,15 @@ body {
 }
 
 .lm-participant-body {
-  width: 100%;
-  /* float: left; */
+  width: 100%; 
   padding: 20px;
   display: flex;
   background-color: #fff;
   flex-direction: column;
   gap: 20px;
-  height: 500px;
-  overflow: scroll;
+  height: 100vh;
+  overflow-y: scroll;
+
 
 }
 
@@ -766,7 +777,7 @@ body {
   display: flex;
   gap: 20px;
   align-items: center;
-  padding: 1px 0;
+  padding: 10px 0;
 }
 
 .lm-delete-msg {
@@ -814,11 +825,10 @@ body {
 }
 
 .lm-media {
-  max-width: 200px;
-  max-height: 200px;
+  max-width: 210px;
+  max-height: 210px;
   overflow: hidden;
-
-
+  border-radius: 5px;
 }
 
 .lm-media img {
@@ -848,6 +858,8 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 12px;
+  font-weight: 400;
 }
 
 .lm-participant-card .lm-participant-card-detail .desc {
@@ -1007,9 +1019,11 @@ body {
 .lm-media .thumbnail-wrapper {
   position: relative;
   border-radius: 5px;
+  overflow: hidden;
+  height: 100px;
+  width: 100px;
   /* width: 100px;
   height: 100px; */
-  overflow: hidden;
 }
 
 .lm-media .thumbnail {
@@ -1017,6 +1031,7 @@ body {
   height: 100%;
   object-fit: cover;
   cursor: pointer;
+  border-radius: 5px;
 }
 
 .lm-media .single-media {
@@ -1058,9 +1073,8 @@ body {
 
 .lm-modal-media {
   width: 100%;
-  /* display: flex !important; */
-  /* justify-content: center; */
-  /* align-items: center; */
+  text-align: center;
+  max-height: 450px; 
 }
 
 .lm-modal-media img,
@@ -1075,11 +1089,7 @@ body {
 .modal-header {
   border: none;
 }
-
-/* .lm-chat-message-reactions-holder {
-  display: flex;
-  flex-direction: row-reverse;
-} */
+ 
 .lm-channel-loader {
   display: flex;
   justify-content: center;
@@ -1134,6 +1144,26 @@ body {
   display: none !important;
 }
 
+
+.carousel-control-next-icon,
+.carousel-control-prev-icon{
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  background-repeat: no-repeat;
+  background-position: 56%;
+  background-size: 60% 60%;
+  background-color: #000;
+  border-radius: 50%; 
+}
+.carousel-control-prev-icon{   
+  background-position: 40%;
+}
+
+.carousel-indicators{
+  display: none;
+}
+
 .taggingBox {
   top: 74% !important;
   left: 0px !important;
@@ -1165,4 +1195,24 @@ body {
 .taggingTile span,
 .postTaggingTile span {
   text-transform: capitalize;
+}
+
+ 
+.lm-dialog-modal{
+  position: absolute;
+  right: 0;
+  top: 0px;
+  border-radius: 0;
+  width: 100%;
+}
+
+ 
+.lm-content-modal{
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  top: 34px;
+  height: 86vh;
+  right: 281px;
+  width: 1080px;
 }

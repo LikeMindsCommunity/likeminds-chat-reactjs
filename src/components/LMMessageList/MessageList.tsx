@@ -20,14 +20,14 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
         bottomReferenceDiv.current.scrollIntoView(false);
       }
     };
-    // const { conversations, getChatroomConversationsOnTopScroll } =
-    //   useContext(MessageListContext);
+
     const {
       conversations,
       getChatroomConversationsOnBottomScroll,
       getChatroomConversationsOnTopScroll,
       showLoader,
       bottomReferenceDiv,
+      messageListContainerRef,
     } = useConversations();
 
     if (showLoader.current) {
@@ -38,7 +38,7 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       );
     }
     return (
-      <div className="lm-channel">
+      <div className="lm-channel" ref={messageListContainerRef}>
         {/* <span className="scroll-to-bottom-shortcut">
           <IconButton onClick={scrollToBottom}>
             <KeyboardDoubleArrowDownIcon fontSize="small" />
@@ -50,6 +50,7 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
             getChatroomConversationsOnBottomScroll,
             getChatroomConversationsOnTopScroll,
             bottomReferenceDiv,
+            messageListContainerRef,
           }}
         >
           <ScrollContainer

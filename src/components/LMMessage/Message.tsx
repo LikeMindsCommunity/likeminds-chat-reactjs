@@ -87,12 +87,22 @@ const Message = () => {
 
                 {/* text msg */}
                 <div className="msg">
-                  {Utils.parseAndReplaceTags(message?.answer || "") !==
-                  "* This is a gif message. Please update your app *" ? (
+                  {/* {message?.answer} <br /> */}
+                  {/* {message.answer.includes(
+                    "* This is a gif message. Please update your app *",
+                  )} */}
+                  {message?.answer.includes(
+                    "* This is a gif message. Please update your app *",
+                  ) ? (
+                    message?.answer.replace(
+                      "* This is a gif message. Please update your app *",
+                      "",
+                    )
+                  ) : (
                     <div>
                       {Utils.parseAndReplaceTags(message?.answer || "")}
                     </div>
-                  ) : null}
+                  )}
                 </div>
                 <div className="time">
                   {message.is_edited ? (
