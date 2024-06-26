@@ -27,9 +27,11 @@ const Header = () => {
         <div className="lm-channel-img">{avatarContent}</div>
         <div className="lm-channel-desc">
           <div className="lm-channel-title">{chatroom?.chatroom.header}</div>
-          <div className="lm-channel-participants">
-            {chatroom?.chatroom.participants_count} Participants
-          </div>
+          {chatroom?.chatroom?.participants_count ? (
+            <div className="lm-channel-participants">
+              {chatroom?.chatroom.participants_count} Participants
+            </div>
+          ) : null}
         </div>
       </div>
       <div className="lm-header-right">

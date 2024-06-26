@@ -159,9 +159,7 @@ body {
 }
 
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-info {
-  display: flex;
-  /* justify-content: center; */
-  /* align-items: center; */
+  display: flex; 
   font-weight: 400;
   font-size: 12px;
   line-height: 16px;
@@ -199,7 +197,6 @@ body {
   width: max-content;
   margin-bottom: 10px;
   height: 1.75rem;
-  /* margin: 0 0.25rem 0 0; */
   padding: 0.25rem 0.5rem 0.25rem 0.25rem;
   border-radius: 24px;
   box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.12);
@@ -486,10 +483,6 @@ body {
   position: relative;
 }
 
-.lm-input-carousel .slider-wrapper .slider {
-  display: flex;
-}
-
 .lm-input-carousel {
   position: absolute;
   bottom: 100%;
@@ -502,6 +495,9 @@ body {
   align-items: center;
   background: #000000b3;
   overflow: hidden;
+}
+.lm-input-carousel .slider-wrapper .slider {
+  display: flex;
 }
 
 .lm-input-carousel-image-element {
@@ -549,8 +545,8 @@ body {
 }
 
 .lm-upload-media-dialog {
-  /* padding: 0px 5px; */
-  /* display: flex; */
+  padding: 0px 5px;
+  display: flex;
 }
 
 .lm-chat-input-attachment-label label input {
@@ -560,7 +556,7 @@ body {
 .lm-chat-input-attachment-label label {
   cursor: pointer;
   display: flex;
-  /* flex-direction: column; */
+  flex-direction: column;
   gap: 1rem;
   justify-content: center;
   align-items: center;
@@ -624,6 +620,7 @@ body {
   width: 100%;
   display: flex;
   align-items: center;
+  position: relative;
 }
 
 .lm-channel-footer .disable-input {
@@ -654,12 +651,15 @@ body {
   margin: 0 16px 0 0;
 }
 
+.lm-channel-footer .lm-channel-icon img {
+  width: 20px;
+}
+
 .lm-channel-footer .lm-channel-icon.send {
   margin: 0 0px 0 16px;
 }
-
-.lm-channel-footer .lm-channel-icon img {
-  width: 100%;
+.lm-channel-footer .lm-channel-icon.send img{
+  width: 42px;
 }
 
 /* LM Input */
@@ -1139,7 +1139,7 @@ body {
 }
 
 .lm-carousel-header .lm-profile-info .lm-desc {
-  font-size: 14px;
+  font-size: 12px;
   color: #666;
   font-weight: 400;
 }
@@ -1170,8 +1170,8 @@ body {
 }
 
 .taggingBox {
-  top: 74% !important;
-  left: 0px !important;
+  top: -172px !important;
+  left: 140px !important;
   border-radius: 8px;
   box-shadow: 0 1px 16px 0 rgba(0, 0, 0, 0.2392156863);
   max-height: 180px;
@@ -1180,9 +1180,20 @@ body {
   position: absolute;
   width: 260px;
   z-index: 9;
+  background-color: #fff;
+  padding: 10px 0;
+}
+.taggingTile{ display: flex; padding: 5px 20px; align-items: center; cursor: pointer; gap: 10px; background-color: transparent; border: none;}
+.taggingTile .tagUserName{ 
+  font-size: 14px; 
+  font-weight: 400; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 75%;
+  text-transform: capitalize;
 }
 
-.taggingTile,
 .postTaggingTile {
   background: #fff;
   padding: 12px 15px 3px;
@@ -1202,7 +1213,12 @@ body {
   text-transform: capitalize;
 }
 
-
+ 
+.lm-channel .lm-dialog-modal{
+  /* position: absolute; */
+  /* right: 0;
+  top: 0px; */
+}
 .lm-dialog-modal {
   position: absolute;
   right: 0;
@@ -1211,6 +1227,46 @@ body {
   width: 100%;
 }
 
+ 
+.lm-channel .lm-content-modal{
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  min-height: 300px;
+  /* top: 34px; */
+  /* height: 86vh; */
+  /* right: 281px; */
+  /* width: 1080px; */
+}
+
+
+/* Giphy */
+.lm-input-giffy{ 
+  position: relative;
+}
+.lm-input-giffy img{ 
+  width: 26px !important;
+}
+
+.lm-giphy-container{
+  position: relative;
+  width: 100%;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+  min-height: 150px;
+}
+
+.fullscreen-menu .MuiPaper-root {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  max-width: none;
+  max-height: none;
+  left: 0 !important;
+  top: 0 !important;
+}
+/* Giphy */
 
 .lm-content-modal {
   border-radius: 0;
@@ -1222,11 +1278,37 @@ body {
   width: 1080px;
 }
 
+
+.lm-og-tags{
+  max-height: 275px; 
+  border-radius: 8px; 
+  margin: 0px;  
+  overflow: hidden;
+  background-color: rgba(155, 155, 155, 0.1);
+  font-size:12px;
+}
+
+.lm-og-title{
+  padding: 0 5px;
+  font-weight: 500;
+  color: #000000;
+}
+
+.lm-og-desc{
+  padding: 0 5px;
+  color: #666666;
+white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+
 .og-tag-wrapper {
   /* height: 4.25rem;
   max-height: 4.25rem; */
   padding-left: 3.2rem;
-  background: #D0D8E3;
+  background: #f5f5f5;
   display: flex;
 }
 
@@ -1299,4 +1381,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.lm-giphy-box{
+  padding: 20px;
 }

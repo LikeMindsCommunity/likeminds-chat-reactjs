@@ -504,15 +504,15 @@ export class Utils {
     contentEditableDiv.current.focus();
   }
   static setTagUserImage(user: Member) {
-    const imageLink = user?.imageUrl;
+    const imageLink = user?.imageUrl || user?.image_url;
     if (imageLink !== "") {
       return (
         <img
           src={imageLink}
           alt={""}
           style={{
-            width: "100%",
-            height: "100%",
+            width: "36px",
+            height: "36px",
             borderRadius: "50%",
           }}
         />
@@ -521,18 +521,16 @@ export class Utils {
       return (
         <div
           style={{
-            minWidth: "36px",
             width: "36px",
             height: "36px",
             borderRadius: "50%",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            backgroundColor: "#5046e5",
+            backgroundColor: "#f5f5f5",
             fontSize: "14px",
             fontWeight: "bold",
-            color: "#fff",
-            letterSpacing: "1px",
+            color: "#333",
           }}
           className="reply-editor"
         >
