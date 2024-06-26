@@ -115,7 +115,7 @@ const Input = () => {
             <AttachmentsSelector />
           </div>
           <div className="lm-channel-icon lm-cursor-pointer">
-            <img src={giffyIcon} alt="giffy" onClick={openMenu} />
+            <img src={giffyIcon} alt="giffy" />
           </div>
 
           <LMChatTextArea />

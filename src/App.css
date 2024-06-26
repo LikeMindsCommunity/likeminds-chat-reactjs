@@ -1276,6 +1276,13 @@ body {
   position: relative;
 }
  
+.lm-input-giffy{ 
+  position: relative;
+}
+.lm-input-giffy img{ 
+  width: 26px !important;
+}
+
 .lm-giphy-container{
   position: relative;
   width: 100%;
@@ -1287,6 +1294,9 @@ body {
 }
 
 /* .fullscreen-menu .MuiPaper-root {
+}
+
+.fullscreen-menu .MuiPaper-root {
   width: 100vw;
   height: 100vh;
   margin: 0;
@@ -1295,6 +1305,7 @@ body {
   left: 0 !important;
   top: 0 !important;
 } */
+
 /* Giphy */
 
 .lm-content-modal {
@@ -1413,3 +1424,6 @@ white-space: nowrap;
 }
 
  
+.lm-giphy-box{
+  padding: 20px;
+}
