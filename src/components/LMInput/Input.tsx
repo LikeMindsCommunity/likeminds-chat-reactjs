@@ -3,11 +3,13 @@ import { useInput } from "../../hooks/useInput";
 import InputContext from "../../context/InputContext";
 import LMChatTextArea from "./LMChatTextArea";
 import Emojis from "./Emojis";
-import { Slide } from "@mui/material";
+import { Collapse, IconButton, Slide } from "@mui/material";
 import MediaCarousel from "./Carousel";
 import AttachmentsSelector from "./AttachmentsSelector";
+import LinkOffIcon from "@mui/icons-material/LinkOff";
 // import giffyIcon from "./../../assets/img/giffy.png";
 import GiSelector from "./GiSelector";
+import ClearIcon from "@mui/icons-material/Clear";
 // import ReactGiphySearchbox from "react-giphy-searchbox";
 // import GiphySearchBox from "react-giphy-searchbox";
 // import GiSelector from "./GiSelector";
@@ -30,6 +32,7 @@ const Input = () => {
     postMessage,
     removeOgTag,
     getTaggingMembers,
+    ogTag,
   } = useInput();
   return (
     // Defalut view
@@ -51,9 +54,45 @@ const Input = () => {
         postMessage,
         getTaggingMembers,
         removeOgTag,
+        ogTag,
       }}
     >
       <div className="lm-channel-footer-wrapper">
+        <Collapse
+          in={Boolean(ogTag)}
+          sx={{
+            background: "#D0D8E3",
+          }}
+        >
+          <div className="og-tag-wrapper">
+            <div className="og-tag-container">
+              <div className="og-tag-icon">
+                {ogTag?.image && ogTag?.image.length ? (
+                  <img src={ogTag?.image} alt="icon" />
+                ) : (
+                  <LinkOffIcon
+                    fontSize="medium"
+                    sx={{
+                      color: "white",
+                    }}
+                  />
+                )}
+              </div>
+              <div className="og-tag-data">
+                <div className="og-tag-data-header">{ogTag?.title}</div>
+                <div className="og-tag-data-description">
+                  {ogTag?.description}
+                </div>
+                <div className="og-tag-data-url">{ogTag?.url}</div>
+              </div>
+            </div>
+            <div className="remove-og-tag-button">
+              <IconButton onClick={removeOgTag}>
+                <ClearIcon fontSize="small" />
+              </IconButton>
+            </div>
+          </div>
+        </Collapse>
         <Slide direction="up" in={true} mountOnEnter unmountOnExit>
           <div>
             <MediaCarousel />

@@ -128,6 +128,7 @@ export function useInput(): UseInputReturns {
       const postConversationsCall: PostConversationResponse =
         await lmChatclient?.postConversation(postConversationCallConfig);
       setFocusOnInputField();
+      removeOgTag();
       for (let index = 0; index < attachmentsList.length; index++) {
         const conversation = postConversationsCall.data.conversation;
         console.log(conversation);
@@ -456,6 +457,7 @@ export function useInput(): UseInputReturns {
     postMessage,
     getTaggingMembers: fetchTaggingList,
     removeOgTag,
+    ogTag: ogTags,
   };
 }
 
@@ -476,6 +478,7 @@ export interface UseInputReturns {
   postMessage: ZeroArgVoidReturns;
   getTaggingMembers: OneOptionalArgVoidReturns<number>;
   removeOgTag: ZeroArgVoidReturns;
+  ogTag: OgTag | null;
 }
 // single compulsary argument
 export type onChangeUpdateInputText = (

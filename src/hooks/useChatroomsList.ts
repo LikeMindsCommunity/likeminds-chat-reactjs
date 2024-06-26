@@ -28,6 +28,7 @@ interface ChatroomProviderInterface {
   exploreGroupChatrooms: ExploreChatroom[];
   loadMoreExploreGroupChatrooms: boolean;
   joinAChatroom: OneArgVoidReturns<string>;
+  markReadAChatroom: OneArgVoidReturns<string | number>;
 }
 
 export default function useChatroomList(): ChatroomProviderInterface {
@@ -79,6 +80,26 @@ export default function useChatroomList(): ChatroomProviderInterface {
       return exploreChatroomsCopy;
     });
   }, [chatroomId]);
+  const markReadAChatroom = async (id: string | number) => {
+    try {
+      const call = await lmChatclient?.markReadChatroom({
+        chatroomId: parseInt(id.toString()),
+      });
+      console.log(call);
+      if (call.success) {
+        setGroupChatrooms((currentGroupChatrooms) => {
+          return currentGroupChatrooms.map((chatroom) => {
+            if (chatroom.id.toString() === id.toString()) {
+              chatroom.unseen_count = 0;
+            }
+            return chatroom;
+          });
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const joinAChatroom = async (collabcardId: string) => {
     try {
       const joinCall = await lmChatclient?.followChatroom({
@@ -255,5 +276,6 @@ export default function useChatroomList(): ChatroomProviderInterface {
     loadMoreExploreGroupChatrooms,
     joinAChatroom,
     groupChatroomConversationsMeta,
+    markReadAChatroom,
   };
 }
