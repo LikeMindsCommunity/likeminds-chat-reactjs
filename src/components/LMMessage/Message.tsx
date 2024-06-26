@@ -13,6 +13,7 @@ import MediaRenderer from "../../shared/components/MediaRenderer";
 
 const Message = () => {
   const { message, index } = useContext(LMMessageContext);
+  console.log(message);
   const { conversations } = useContext(MessageListContext);
   const { currentUser } = useContext(UserProviderContext);
 
@@ -85,12 +86,17 @@ const Message = () => {
                   ) : null}
                 </div>
 
+                {/* OG Tags */}
+                <div className="lm-og-tags">
+                  <div className="lm-og-title">{message?.og_tags?.title}</div>
+                  <div className="lm-og-desc">
+                    {message?.og_tags?.description}
+                  </div>
+                </div>
+                {/* OG Tags */}
+
                 {/* text msg */}
                 <div className="msg">
-                  {/* {message?.answer} <br /> */}
-                  {/* {message.answer.includes(
-                    "* This is a gif message. Please update your app *",
-                  )} */}
                   {message?.answer.includes(
                     "* This is a gif message. Please update your app *",
                   ) ? (

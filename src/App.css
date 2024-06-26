@@ -1218,7 +1218,7 @@ body {
   /* position: absolute; */
   /* right: 0;
   top: 0px; */
-
+}
 .lm-dialog-modal {
   position: absolute;
   right: 0;
@@ -1277,6 +1277,32 @@ body {
   right: 281px;
   width: 1080px;
 }
+
+
+.lm-og-tags{
+  max-height: 275px; 
+  border-radius: 8px; 
+  margin: 0px;  
+  overflow: hidden;
+  background-color: rgba(155, 155, 155, 0.1);
+  font-size:12px;
+}
+
+.lm-og-title{
+  padding: 0 5px;
+  font-weight: 500;
+  color: #000000;
+}
+
+.lm-og-desc{
+  padding: 0 5px;
+  color: #666666;
+white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
 
 .og-tag-wrapper {
   /* height: 4.25rem;
