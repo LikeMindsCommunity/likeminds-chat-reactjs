@@ -6,6 +6,10 @@ import Emojis from "./Emojis";
 import { Slide } from "@mui/material";
 import MediaCarousel from "./Carousel";
 import AttachmentsSelector from "./AttachmentsSelector";
+import giffyIcon from "./../../assets/img/giffy.png";
+import GiSelector from "./GiSelector";
+// import ReactGiphySearchbox from "react-giphy-searchbox";
+// import GiphySearchBox from "react-giphy-searchbox";
 // import GiSelector from "./GiSelector";
 
 const Input = () => {
@@ -52,6 +56,36 @@ const Input = () => {
           </div>
         </Slide>
 
+        {/* Giphy */}
+        {/* <div className="giphyContainer">
+          <ReactGiphySearchbox
+            apiKey="9hQZNoy1wtM2b1T4BIx8B0Cwjaje3UUR"
+            poweredByGiphy={false}
+            searchPlaceholder="Search GIPHY"
+            wrapperClassName={`gifContainer `}
+            searchFormClassName="gifSearchBox"
+            masonryConfig={[
+              { columns: 2, imageWidth: 140, gutter: 10 },
+              { mq: "600px", columns: 4, imageWidth: 200, gutter: 3 },
+            ]}
+          />
+        </div> */}
+
+        {/* <ReactGiphySearchbox
+          apiKey="9hQZNoy1wtM2b1T4BIx8B0Cwjaje3UUR"
+          onSelect={(item) => console.log(item)}
+          masonryConfig={[
+            { columns: 2, imageWidth: 110, gutter: 5 },
+            { mq: "700px", columns: 3, imageWidth: 120, gutter: 5 },
+          ]}
+        /> */}
+
+        {/* <GiphySearchBox
+          apiKey="9hQZNoy1wtM2b1T4BIx8B0Cwjaje3UUR"
+          onSelect={(item: any) => console.log("Selected GIF:", item)}
+        /> */}
+        {/* Giphy */}
+
         <div className="lm-channel-footer">
           <div className="lm-channel-icon lm-cursor-pointer">
             <Emojis />
@@ -61,7 +95,7 @@ const Input = () => {
           </div>
           <div className="lm-channel-icon lm-cursor-pointer">
             {/* <img src={giffyIcon} alt="giffy" /> */}
-            {/* <GiSelector /> */}
+            <GiSelector />
           </div>
 
           <LMChatTextArea />
