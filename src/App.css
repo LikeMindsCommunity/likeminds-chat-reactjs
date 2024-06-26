@@ -159,9 +159,7 @@ body {
 }
 
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-info {
-  display: flex;
-  /* justify-content: center; */
-  /* align-items: center; */
+  display: flex; 
   font-weight: 400;
   font-size: 12px;
   line-height: 16px;
@@ -199,7 +197,6 @@ body {
   width: max-content;
   margin-bottom: 10px;
   height: 1.75rem;
-  /* margin: 0 0.25rem 0 0; */
   padding: 0.25rem 0.5rem 0.25rem 0.25rem;
   border-radius: 24px;
   box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.12);
@@ -486,10 +483,6 @@ body {
   position: relative;
 }
 
-.lm-input-carousel .slider-wrapper .slider {
-  display: flex;
-}
-
 .lm-input-carousel {
   position: absolute;
   bottom: 100%;
@@ -502,6 +495,9 @@ body {
   align-items: center;
   background: #000000b3;
   overflow: hidden;
+}
+.lm-input-carousel .slider-wrapper .slider {
+  display: flex;
 }
 
 .lm-input-carousel-image-element {
@@ -1135,7 +1131,7 @@ body {
 }
 
 .lm-carousel-header .lm-profile-info .lm-desc {
-  font-size: 14px;
+  font-size: 12px;
   color: #666;
   font-weight: 400;
 }
@@ -1165,8 +1161,8 @@ body {
 }
 
 .taggingBox {
-  top: 74% !important;
-  left: 0px !important;
+  top: -172px !important;
+  left: 140px !important;
   border-radius: 8px;
   box-shadow: 0 1px 16px 0 rgba(0, 0, 0, 0.2392156863);
   max-height: 180px;
@@ -1175,9 +1171,20 @@ body {
   position: absolute;
   width: 260px;
   z-index: 9;
+  background-color: #fff;
+  padding: 10px 0;
+}
+.taggingTile{ display: flex; padding: 5px 20px; align-items: center; cursor: pointer; gap: 10px; background-color: transparent; border: none;}
+.taggingTile .tagUserName{ 
+  font-size: 14px; 
+  font-weight: 400; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 75%;
+  text-transform: capitalize;
 }
 
-.taggingTile,
 .postTaggingTile {
   background: #fff;
   padding: 12px 15px 3px;
@@ -1198,21 +1205,22 @@ body {
 }
 
  
-.lm-dialog-modal{
-  position: absolute;
-  right: 0;
-  top: 0px;
+.lm-channel .lm-dialog-modal{
+  /* position: absolute; */
+  /* right: 0;
+  top: 0px; */
   border-radius: 0;
   width: 100%;
 }
 
  
-.lm-content-modal{
+.lm-channel .lm-content-modal{
   border-radius: 0;
   box-shadow: none;
   border: none;
-  top: 34px;
-  height: 86vh;
-  right: 281px;
-  width: 1080px;
+  min-height: 300px;
+  /* top: 34px; */
+  /* height: 86vh; */
+  /* right: 281px; */
+  /* width: 1080px; */
 }

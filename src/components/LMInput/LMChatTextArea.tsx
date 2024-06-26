@@ -41,13 +41,10 @@ const LMChatTextArea = () => {
                   className="taggingTile"
                   onClick={(e) => {
                     e.preventDefault();
-
                     const selection = window.getSelection();
-
                     if (!selection) {
                       return;
                     }
-
                     const focusNode = selection.focusNode;
 
                     if (focusNode === null) {
@@ -98,24 +95,8 @@ const LMChatTextArea = () => {
                     Utils.setCursorAtEnd(inputBoxRef);
                   }}
                 >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    {Utils.setTagUserImage(item)}
-                    <div
-                      style={{
-                        padding: "0px 0.5rem",
-                        textTransform: "capitalize",
-                        overflowY: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {item?.name}
-                    </div>
-                  </div>
+                  <div>{Utils.setTagUserImage(item)}</div>
+                  <div className="tagUserName">{item?.name}</div>
                 </button>
               );
             })}

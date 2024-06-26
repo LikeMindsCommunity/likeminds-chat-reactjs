@@ -89,7 +89,7 @@ const MediaRenderer = ({ attachments }) => {
   };
 
   return (
-    <div className="">
+    <div className="mediaBox">
       {attachments.length === 1 ? (
         renderMedia(attachments[0], 0)
       ) : (
@@ -111,7 +111,7 @@ const MediaRenderer = ({ attachments }) => {
         show={show}
         onHide={handleClose}
         size="lg"
-        backdrop={false}
+        // backdrop={false}
         dialogClassName="lm-dialog-modal"
         contentClassName="lm-content-modal"
         container={messageListContainerRef.current}
