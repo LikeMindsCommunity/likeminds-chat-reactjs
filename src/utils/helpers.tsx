@@ -9,6 +9,7 @@ import { fromCognitoIdentityPool } from "@aws-sdk/credential-provider-cognito-id
 // import { LMAppAwsKeys } from "./constants/lmAppAwsKeys";
 import { FileType } from "../types/enums/Filetype";
 import { FileTypeInitials } from "../enums/file-type-initials";
+import Member from "../types/models/member";
 type StringTagType = {
   text: string;
   type: number;
@@ -438,6 +439,114 @@ export class Utils {
   ) {
     const key = this.generateKey(chatroomId, conversationId, media);
     return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${key}`;
+  }
+  static returnCSSForTagging(
+    refObject: React.MutableRefObject<HTMLDivElement | null>,
+  ) {
+    if (!(refObject && refObject.current)) {
+      return;
+    }
+    const selection = window.getSelection();
+    if (!selection) {
+      return;
+    }
+    const resObject: {
+      left: string | number;
+      position: string;
+      top: string | number;
+    } = {
+      left: "0px",
+      position: "absolute",
+      top: "0px",
+    };
+    if (selection === null) {
+      return {};
+    }
+    const focusNodeParentBoundings =
+      selection.focusNode?.parentElement?.getBoundingClientRect();
+    resObject.top = (
+      focusNodeParentBoundings!.top -
+      refObject.current!.getBoundingClientRect()!.top +
+      30
+    )
+      .toString()
+      .concat("px");
+    const leftSubstring =
+      selection.focusNode?.parentElement?.textContent?.substring(
+        0,
+        selection.focusOffset - 1,
+      );
+    const width = Utils.getCharacterWidth(leftSubstring!);
+    if (width > 264) {
+      resObject.left = "264px";
+    } else {
+      resObject.left = width;
+    }
+    resObject.position = "absolute";
+    return resObject;
+  }
+  static setCursorAtEnd(
+    contentEditableDiv: React.MutableRefObject<HTMLDivElement | null>,
+  ): void {
+    if (!contentEditableDiv.current) return;
+
+    const range = document.createRange();
+    const selection = window.getSelection();
+
+    range.selectNodeContents(contentEditableDiv.current);
+    range.collapse(false);
+
+    if (selection) {
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+
+    contentEditableDiv.current.focus();
+  }
+  static setTagUserImage(user: Member) {
+    const imageLink = user?.imageUrl;
+    if (imageLink !== "") {
+      return (
+        <img
+          src={imageLink}
+          alt={""}
+          style={{
+            width: "100%",
+            height: "100%",
+            borderRadius: "50%",
+          }}
+        />
+      );
+    } else {
+      return (
+        <div
+          style={{
+            minWidth: "36px",
+            width: "36px",
+            height: "36px",
+            borderRadius: "50%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#5046e5",
+            fontSize: "14px",
+            fontWeight: "bold",
+            color: "#fff",
+            letterSpacing: "1px",
+          }}
+          className="reply-editor"
+        >
+          {user?.name?.split(" ").map((part: string) => {
+            return part.charAt(0)?.toUpperCase();
+          })}
+        </div>
+      );
+    }
+  }
+  static detectLinks(text: string) {
+    const regex = /\b(?:https?:\/\/)?(?:[\w.]+\.\w+)(?:(?<=\\n)|\b)/g;
+    const links = text?.match(regex);
+    return links ? links : [];
   }
 }
 export interface TagInfo {

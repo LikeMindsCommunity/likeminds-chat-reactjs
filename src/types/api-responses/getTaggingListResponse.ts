@@ -6,6 +6,6 @@ export interface GetTaggingListResponse {
   success: boolean;
   data: {
     members?: Member[];
-    community_member?: Member[];
+    community_members?: Member[];
   };
 }
