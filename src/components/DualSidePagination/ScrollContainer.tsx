@@ -6,8 +6,11 @@ import React, {
   useEffect,
   useMemo,
   useRef,
+  useState,
 } from "react";
 import { useParams } from "react-router-dom";
+import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
+import { IconButton } from "@mui/material";
 //   Debounce creator for creating a debounced variation of the original function
 function createDebouncedFunction(originalFunction: () => void) {
   let hasTheFunctionAlreadyCalled: boolean = false;
@@ -32,20 +35,6 @@ function isScrollTopBeyondThresholdLimits(
     return false;
   }
   const { scrollTop, clientHeight, scrollHeight } = targetElement;
-  // const scrollableLimit =
-  //   ((Math.abs(scrollHeight) - Math.floor(clientHeight)) * scrollThreshold) /
-  //   100;
-  // if (scrollDirection) {
-  //   return scrollTop >= Math.abs(scrollHeight) - Math.abs(scrollableLimit)
-  //     ? true
-  //     : false;
-  // } else {
-  //   return scrollTop <= Math.abs(scrollableLimit) ? true : false;
-  // }
-  console.log(`The scroll height is: ${scrollHeight}`);
-  console.log(`The scroll top is ${scrollTop}`);
-  console.log(`The scroll direction is ${scrollDirection}`);
-  console.log(scrollTop < 0.3 * scrollHeight);
   if (scrollTop < 0.3 * scrollHeight && !scrollDirection) {
     return true;
   } else {
@@ -62,6 +51,7 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
     dataLength,
     bottomReferenceDiv,
   } = props;
+  const [isScrollToBottomVisible, setIsScrollToBottomVisible] = useState(false);
   const { id: chatroomId } = useParams();
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const scrollTarget = useRef<HTMLDivElement | null>(null);
@@ -70,8 +60,12 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
   const previousScrollPosition = useRef<number>(Number.NEGATIVE_INFINITY);
   const prevDataLength = useRef<number>(0);
   const isFirstRender = useRef<boolean>(true);
-
   //   Original function for handling scroll event
+  const scrollToBottom = () => {
+    if (bottomReferenceDiv && bottomReferenceDiv.current) {
+      bottomReferenceDiv.current.scrollIntoView(false);
+    }
+  };
   const handleScroll = useCallback(async () => {
     try {
       if (hasAlreadyCalled.current) {
@@ -106,13 +100,9 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
   }, [nextOnScrollTop]);
 
   useEffect(() => {
-    console.log("calling the effect");
-    //   The debounced function which will handle the scoll event
     const debouncedScroll = createDebouncedFunction(handleScroll);
     scrollTarget.current = scrollContainerRef.current;
     if (scrollTarget.current) {
-      // console.log("inside decounce ");
-      scrollTarget.current.scrollTo(0, scrollTarget.current.scrollHeight);
       scrollTarget.current.addEventListener("scroll", debouncedScroll);
       return () => {
         scrollTarget?.current?.removeEventListener("scroll", debouncedScroll);
@@ -125,19 +115,61 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
     }
   }, [dataLength]);
   useEffect(() => {
-    if (isFirstRender.current && children) {
-      bottomReferenceDiv.current?.scrollIntoView();
+    if (isFirstRender.current && bottomReferenceDiv.current && children) {
+      setTimeout(() => {
+        bottomReferenceDiv?.current?.scrollIntoView({
+          behavior: "instant",
+        });
+      }, 500);
 
       isFirstRender.current = false;
     }
   }, [children, chatroomId, bottomReferenceDiv]);
+  // for setting the visibility of scroll to bottom
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        setIsScrollToBottomVisible(!entry.isIntersecting);
+      },
+      { root: scrollContainerRef.current, threshold: 1.0 },
+    );
+    // console.log(scrollContainerRef.current?.lastElementChild);
+    // console.log(
+    //   scrollContainerRef.current?.lastElementChild?.previousElementSibling,
+    // );
+    const target =
+      scrollContainerRef.current?.lastElementChild?.previousElementSibling;
+    // const target = bottomReferenceDiv.current;
+    if (target) {
+      observer.observe(target as Element);
+    }
+
+    return () => {
+      if (target) {
+        observer.unobserve(target as Element);
+      }
+    };
+  }, [bottomReferenceDiv, dataLength]);
+  if (!children) {
+    return null;
+  }
   return (
-    <div ref={scrollContainerRef} className="lm-dual-scroll-container">
-      {children}
-      <div
-        ref={bottomReferenceDiv}
-        className="lm-dual-scroll-container-bottom-block"
-      ></div>
+    <div className="relative-container">
+      {isScrollToBottomVisible && (
+        <span className="scroll-to-bottom-shortcut">
+          <IconButton onClick={scrollToBottom}>
+            <KeyboardDoubleArrowDownIcon fontSize="small" />
+          </IconButton>
+        </span>
+      )}
+      <div ref={scrollContainerRef} className="lm-dual-scroll-container">
+        {children}
+        <div
+          ref={bottomReferenceDiv}
+          className="lm-dual-scroll-container-bottom-block"
+        ></div>
+      </div>
     </div>
   );
 };

@@ -50,6 +50,7 @@ const Header = () => {
           {chatroom?.chatroom_actions.map((menuOption) => {
             return (
               <MenuItem
+                key={menuOption.id}
                 onClick={() => {
                   switch (menuOption.id) {
                     case ChatroomAction.ACTION_MUTE:

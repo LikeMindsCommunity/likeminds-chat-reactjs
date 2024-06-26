@@ -16,7 +16,6 @@ const LMMessageMiddleware = (props: LMMessageMiddlewareProps) => {
     null,
   );
   useEffect(() => {
-    console.log("Inside use effect");
     setLocalMessageCopy(message);
   }, [message]);
   function deleteMessage() {

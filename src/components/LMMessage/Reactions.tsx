@@ -21,8 +21,14 @@ const Reactions = () => {
         open={Boolean(menuAnchor)}
         onClose={closeMenu}
         anchorEl={menuAnchor}
+        transformOrigin={{
+          horizontal: 300,
+          vertical: "top",
+        }}
       >
-        <Picker data={data} onEmojiSelect={onEmojiSelect} />
+        <div className="message-reactions-picker-wrapper">
+          <Picker data={data} onEmojiSelect={onEmojiSelect} />
+        </div>
       </Menu>
       <span onClick={openMenu}>
         <AddReactionIcon fontSize="small" />

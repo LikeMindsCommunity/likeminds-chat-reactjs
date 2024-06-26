@@ -48,7 +48,7 @@ const Message = () => {
           <div className="time">{message?.created_at}</div>
         </div>
 
-        <div className="actions">
+        <div className={`actions ${message?.deleted_by ? "none" : ""}`}>
           <div className="lm-cursor-pointer">
             <MessageOptions />
           </div>
@@ -105,7 +105,10 @@ const Message = () => {
               <div className="lm-chat-message-reactions-holder">
                 {message.reactions.map((reaction) => {
                   return (
-                    <div className="lm-chat-message-reaction">
+                    <div
+                      className="lm-chat-message-reaction"
+                      key={reaction.member.uuid}
+                    >
                       <span className="reaction-con">{reaction.reaction}</span>
                       <span className="reaction-count"></span>
                     </div>

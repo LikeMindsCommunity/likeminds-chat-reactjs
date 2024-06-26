@@ -72,7 +72,6 @@ export default function useConversations(): UseConversations {
           if (!chatroomConversationsCall.data.conversations.length) {
             setLoadMore(false);
           } else {
-            console.log("A");
             setConversations((currentConversations) => {
               const newConversations = [
                 ...chatroomConversationsCall.data.conversations,
@@ -223,15 +222,8 @@ export default function useConversations(): UseConversations {
           getChatroomConversationsWithID(collabcardId)
             .then((targetConversation) => {
               setConversations((currentConversations) => {
-                console.log("B");
                 const targetConversationObject = targetConversation[0];
-                console.log(
-                  `the current conversations are: ${currentConversations}`,
-                );
-                console.log(currentConversations);
-                console.log(
-                  `the targetConversation is: ${targetConversationObject}`,
-                );
+
                 const alreadyHasIt = currentConversations?.some(
                   (conversationObject) => {
                     if (
@@ -244,7 +236,6 @@ export default function useConversations(): UseConversations {
                     }
                   },
                 );
-                console.log(`The value for alreadyHasIt is: ${alreadyHasIt}`);
                 if (alreadyHasIt) {
                   return currentConversations;
                 } else {
@@ -254,6 +245,13 @@ export default function useConversations(): UseConversations {
                   ];
                 }
               });
+              setTimeout(() => {
+                bottomReferenceDiv.current?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "end",
+                  inline: "nearest",
+                });
+              }, 500);
             })
             .catch(console.log);
         }
@@ -264,20 +262,11 @@ export default function useConversations(): UseConversations {
   }, [chatroomId, lmChatclient]);
   useEffect(() => {
     return () => {
-      // setShowLoader(() => {
-      //   console.log(`setting the loader to true`);
-      //   return true;
-      // });
       showLoader.current = true;
       resetConversations();
     };
   }, [chatroomId]);
-  useEffect(() => {
-    if (conversations) {
-      console.log("scrolling into view");
-      bottomReferenceDiv.current?.scrollIntoView();
-    }
-  }, [conversations]);
+
   return {
     conversations,
     setConversations,
