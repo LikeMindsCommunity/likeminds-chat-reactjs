@@ -175,6 +175,7 @@ export function useInput(): UseInputReturns {
       setFocusOnInputField();
       removeOgTag();
       if (gifMedia) {
+        setGifMedia(null);
         const onUploadConfig = {
           conversationId: parseInt(
             postConversationsCall.data.conversation.id.toString(),
@@ -451,6 +452,26 @@ export function useInput(): UseInputReturns {
   const gifSearchQuery = (query: string) => {
     setQuery(query);
   };
+  const removeMediaFromImageList = (index: number) => {
+    setImagesAndVideosMediaList((currentList) => {
+      if (!currentList) {
+        return null;
+      }
+      return currentList?.filter((mediaFile, fileIndex) => {
+        return index !== fileIndex;
+      });
+    });
+  };
+  const removeMediaFromDocumentList = (index: number) => {
+    setDocumentMediaList((currentList) => {
+      if (!currentList) {
+        return null;
+      }
+      return currentList?.filter((mediaFile, fileIndex) => {
+        return index !== fileIndex;
+      });
+    });
+  };
   // effects
   useEffect(() => {
     if (tagSearchKey !== null) {
@@ -520,6 +541,7 @@ export function useInput(): UseInputReturns {
     getTaggingMembers: fetchTaggingList,
     removeOgTag,
     ogTag: ogTags,
+    gifMedia,
     gifs: gifs,
     loadingGifs: loading,
     errorOnGifs: error,
@@ -530,6 +552,8 @@ export function useInput(): UseInputReturns {
     handleGifSearch: handleSearch,
     gifQuery: query,
     setGifMedia,
+    removeMediaFromImageList,
+    removeMediaFromDocumentList,
   };
 }
 
@@ -552,6 +576,7 @@ export interface UseInputReturns {
   removeOgTag: ZeroArgVoidReturns;
   ogTag: OgTag | null;
   setGifMedia: Dispatch<Gif | null>;
+  gifMedia: Gif | null;
   gifs: Gif[];
   loadingGifs: boolean;
   errorOnGifs: string | null;
@@ -561,6 +586,8 @@ export interface UseInputReturns {
   setOpenGifCollapse: Dispatch<boolean>;
   fetchGifs: OneArgVoidReturns<string>;
   handleGifSearch: ZeroArgVoidReturns;
+  removeMediaFromImageList: OneArgVoidReturns<number>;
+  removeMediaFromDocumentList: OneArgVoidReturns<number>;
 }
 // single compulsary argument
 export type onChangeUpdateInputText = (

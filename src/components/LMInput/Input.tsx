@@ -6,7 +6,7 @@ import { useInput } from "../../hooks/useInput";
 import InputContext from "../../context/InputContext";
 import LMChatTextArea from "./LMChatTextArea";
 import Emojis from "./Emojis";
-import { Collapse, IconButton, Slide } from "@mui/material";
+import { Collapse, IconButton } from "@mui/material";
 import MediaCarousel from "./Carousel";
 import AttachmentsSelector from "./AttachmentsSelector";
 import giffyIcon from "./../../assets/img/giffy.png";
@@ -43,6 +43,9 @@ const Input = () => {
     handleGifSearch,
     gifQuery,
     setGifMedia,
+    gifMedia,
+    removeMediaFromImageList,
+    removeMediaFromDocumentList,
   } = useInput();
 
   return (
@@ -66,6 +69,7 @@ const Input = () => {
         getTaggingMembers,
         removeOgTag,
         ogTag,
+        gifMedia,
         gifs,
         loadingGifs,
         errorOnGifs,
@@ -76,6 +80,8 @@ const Input = () => {
         handleGifSearch,
         gifQuery,
         setGifMedia,
+        removeMediaFromImageList,
+        removeMediaFromDocumentList,
       }}
     >
       <div className="lm-channel-footer-wrapper">
@@ -127,11 +133,11 @@ const Input = () => {
         </Collapse>
         {/* Media Carousel */}
 
-        <Slide direction="up" in={true} mountOnEnter unmountOnExit>
-          <div>
-            <MediaCarousel />
-          </div>
-        </Slide>
+        {/* <Slide direction="up" in={true} mountOnEnter unmountOnExit> */}
+        <div>
+          <MediaCarousel />
+        </div>
+        {/* </Slide> */}
 
         {/* <div className="lm-giphy-container">
           <GiphySearch />
@@ -159,7 +165,9 @@ const Input = () => {
           <LMChatTextArea />
 
           <div className="lm-channel-icon send lm-cursor-pointer">
-            <img src={sendIcon} alt="sendIcon" onClick={postMessage} />
+            <IconButton onClick={postMessage}>
+              <img src={sendIcon} alt="sendIcon" />
+            </IconButton>
           </div>
         </div>
       </div>

@@ -86,13 +86,13 @@ function LMChannelList() {
                     <div className="channel-last-conversation">
                       {chatroom?.user_id === currentUser?.id
                         ? "You"
-                        : groupChatroomMember[chatroom.user_id].name.split(
+                        : groupChatroomMember[chatroom.user_id]?.name.split(
                             " ",
                           )[0]}
                       :&nbsp;{" "}
                       {groupChatroomConversationsMeta[
                         chatroom.last_conversation_id
-                      ].attachment_count ? (
+                      ]?.attachment_count ? (
                         <>
                           <img src={document} alt="document" />
                         </>
@@ -100,7 +100,7 @@ function LMChannelList() {
                       {Utils.parseAnser(
                         groupChatroomConversationsMeta[
                           chatroom.last_conversation_id
-                        ]?.answer,
+                        ]?.answer || "",
                       )}
                     </div>
                   </div>

@@ -1,10 +1,12 @@
 import React, { useContext, useEffect } from "react";
 import InputContext from "../../context/InputContext";
+import { IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 const GiphySearch: React.FC = () => {
   const {
     gifs,
-
+    gifMedia,
     loadingGifs,
     errorOnGifs,
     gifSearchQuery,
@@ -20,7 +22,18 @@ const GiphySearch: React.FC = () => {
     const url = `https://api.giphy.com/v1/gifs/trending?api_key=${apiKey}&limit=100`;
     fetchGifs(url);
   }, []);
-
+  if (gifMedia) {
+    return (
+      <div className="selected-gif-view-container">
+        <div className="remove-selected-gif-icon">
+          <IconButton onClick={() => setGifMedia(null)}>
+            <CloseIcon />
+          </IconButton>
+        </div>
+        <img src={gifMedia?.images?.fixed_height?.url} alt="gif" />
+      </div>
+    );
+  }
   return (
     <div className="lm-giphy-box">
       <div className="lm-giphy-search">
