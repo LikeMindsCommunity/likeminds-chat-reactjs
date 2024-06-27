@@ -14,7 +14,7 @@ import Input from "./components/LMInput/Input";
 
 const LMAppLayout = () => {
   const myClient: LMClient = LMChatClient.setApiKey(
-    "ac8ee360-dedb-462f-93f1-fd400ca343a7",
+    "5f567ca1-9d74-4a1b-be8b-a7a81fef796f",
   )
     .setPlatformCode("rt")
     .setVersionCode(45)

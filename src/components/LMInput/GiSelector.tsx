@@ -1,8 +1,9 @@
 import React from "react";
-import { Menu } from "@mui/material";
+import { Menu, MenuItem } from "@mui/material";
 import giffyIcon from "../../assets/img/giffy.png";
 import { useMenu } from "../../hooks/useMenu";
 import GiphySearch from "./GiphySearch";
+// import { ReactGiffySearchComponent } from "./ReactGiffySearchComponent";
 
 const GiSelector: React.FC = () => {
   const { menuAnchor, openMenu, closeMenu } = useMenu();
@@ -23,9 +24,13 @@ const GiSelector: React.FC = () => {
           horizontal: "center",
         }}
       >
-        <div className="lm-giphy-container">
-          <GiphySearch />
-        </div>
+        <MenuItem>
+          <div className="lm-giphy-container">
+            <GiphySearch />
+
+            {/* <ReactGiffySearchComponent /> */}
+          </div>
+        </MenuItem>
       </Menu>
       <img src={giffyIcon} alt="giffy" onClick={openMenu} />
     </div>

@@ -9,9 +9,10 @@ import Emojis from "./Emojis";
 import { Collapse, IconButton, Slide } from "@mui/material";
 import MediaCarousel from "./Carousel";
 import AttachmentsSelector from "./AttachmentsSelector";
-// import giffyIcon from "./../../assets/img/giffy.png";
+import giffyIcon from "./../../assets/img/giffy.png";
 // import GiphySearch from "./GiphySearch";
-import GiSelector from "./GiSelector";
+
+import GiphySearch from "./GiphySearch";
 
 const Input = () => {
   const {
@@ -32,7 +33,18 @@ const Input = () => {
     removeOgTag,
     getTaggingMembers,
     ogTag,
+    gifs,
+    loadingGifs,
+    errorOnGifs,
+    gifSearchQuery,
+    openGifCollapse,
+    setOpenGifCollapse,
+    fetchGifs,
+    handleGifSearch,
+    gifQuery,
+    setGifMedia,
   } = useInput();
+
   return (
     // Defalut view
     <InputContext.Provider
@@ -54,6 +66,16 @@ const Input = () => {
         getTaggingMembers,
         removeOgTag,
         ogTag,
+        gifs,
+        loadingGifs,
+        errorOnGifs,
+        gifSearchQuery,
+        openGifCollapse,
+        setOpenGifCollapse,
+        fetchGifs,
+        handleGifSearch,
+        gifQuery,
+        setGifMedia,
       }}
     >
       <div className="lm-channel-footer-wrapper">
@@ -95,7 +117,14 @@ const Input = () => {
         </Collapse>
 
         {/* OG Tags */}
+        {/* Gif Collapse */}
+        <Collapse in={openGifCollapse}>
+          <div className="lm-giphy-container">
+            <GiphySearch />
 
+            {/* <ReactGiffySearchComponent /> */}
+          </div>
+        </Collapse>
         {/* Media Carousel */}
 
         <Slide direction="up" in={true} mountOnEnter unmountOnExit>
@@ -117,7 +146,13 @@ const Input = () => {
             <AttachmentsSelector />
           </div>
           <div className="lm-channel-icon lm-cursor-pointer">
-            {/* <img src={giffyIcon} alt="giffy" /> */}
+            <img
+              src={giffyIcon}
+              alt="giffy"
+              onClick={() => {
+                setOpenGifCollapse(!openGifCollapse);
+              }}
+            />
             {/* <GiSelector /> */}
           </div>
 

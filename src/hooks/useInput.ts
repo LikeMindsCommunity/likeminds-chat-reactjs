@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ChangeEvent,
+  Dispatch,
   KeyboardEvent,
   MutableRefObject,
   useCallback,
@@ -55,7 +56,40 @@ export function useInput(): UseInputReturns {
   const taggingListPageCount = useRef<number>(1);
   const chatroomInputTextRef = useRef<Record<string, string>>({});
 
+  // Gifs
+  const [query, setQuery] = useState("");
+  const [gifs, setGifs] = useState<Gif[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [openGifCollapse, setOpenGifCollapse] = useState<boolean>(false);
+  const apiKey = "9hQZNoy1wtM2b1T4BIx8B0Cwjaje3UUR";
+
+  // useEffect(() => {
+  //   // Fetch trending GIFs initially
+  //   const url = `https://api.giphy.com/v1/gifs/trending?api_key=${apiKey}&limit=10`;
+  //   fetchGifs(url);
+  // }, []);
+
   //   api calls
+  const fetchGifs = async (url: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(url);
+      const result = await response.json();
+      setGifs(result.data);
+    } catch (err) {
+      setError("Failed to fetch GIFs. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = async () => {
+    const url = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${query}&limit=100`;
+    fetchGifs(url);
+  };
+
   const fetchTaggingList = useCallback(
     async (pg?: number) => {
       try {
@@ -131,6 +165,10 @@ export function useInput(): UseInputReturns {
       if (attachmentsList.length) {
         postConversationCallConfig.hasFiles = true;
         postConversationCallConfig.attachmentCount = attachmentsList.length;
+      }
+      if (gifMedia) {
+        postConversationCallConfig.hasFiles = true;
+        postConversationCallConfig.attachmentCount = 1;
       }
       const postConversationsCall: PostConversationResponse =
         await lmChatclient?.postConversation(postConversationCallConfig);
@@ -410,6 +448,9 @@ export function useInput(): UseInputReturns {
     });
     setDocumentMediaList(mediaListCopy);
   };
+  const gifSearchQuery = (query: string) => {
+    setQuery(query);
+  };
   // effects
   useEffect(() => {
     if (tagSearchKey !== null) {
@@ -479,6 +520,16 @@ export function useInput(): UseInputReturns {
     getTaggingMembers: fetchTaggingList,
     removeOgTag,
     ogTag: ogTags,
+    gifs: gifs,
+    loadingGifs: loading,
+    errorOnGifs: error,
+    gifSearchQuery: gifSearchQuery,
+    openGifCollapse: openGifCollapse,
+    setOpenGifCollapse: setOpenGifCollapse,
+    fetchGifs: fetchGifs,
+    handleGifSearch: handleSearch,
+    gifQuery: query,
+    setGifMedia,
   };
 }
 
@@ -500,6 +551,16 @@ export interface UseInputReturns {
   getTaggingMembers: OneOptionalArgVoidReturns<number>;
   removeOgTag: ZeroArgVoidReturns;
   ogTag: OgTag | null;
+  setGifMedia: Dispatch<Gif | null>;
+  gifs: Gif[];
+  loadingGifs: boolean;
+  errorOnGifs: string | null;
+  gifQuery: string;
+  gifSearchQuery: OneArgVoidReturns<string>;
+  openGifCollapse: boolean;
+  setOpenGifCollapse: Dispatch<boolean>;
+  fetchGifs: OneArgVoidReturns<string>;
+  handleGifSearch: ZeroArgVoidReturns;
 }
 // single compulsary argument
 export type onChangeUpdateInputText = (
