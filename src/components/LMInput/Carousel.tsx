@@ -7,7 +7,7 @@ const MediaCarousel = () => {
   const { imagesAndVideosMediaList, documentsMediaList } =
     useContext(InputContext);
   // carousel for images
-  if (imagesAndVideosMediaList) {
+  if (imagesAndVideosMediaList && imagesAndVideosMediaList?.length) {
     return (
       <div className="lm-input-carousel">
         <Carousel>
@@ -21,7 +21,7 @@ const MediaCarousel = () => {
         </Carousel>
       </div>
     );
-  } else if (documentsMediaList) {
+  } else if (documentsMediaList && documentsMediaList?.length) {
     <Carousel>
       {documentsMediaList.map((file) => {
         return renderLocalDocument(file);
