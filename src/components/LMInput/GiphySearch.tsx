@@ -1,35 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { Gif } from "../../types/models/GifObject";
+import React, { useContext, useEffect } from "react";
+import InputContext from "../../context/InputContext";
 
 const GiphySearch: React.FC = () => {
-  const [query, setQuery] = useState("");
-  const [gifs, setGifs] = useState<Gif[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    gifs,
+
+    loadingGifs,
+    errorOnGifs,
+    gifSearchQuery,
+    fetchGifs,
+    handleGifSearch,
+    gifQuery,
+    setGifMedia,
+  } = useContext(InputContext);
   const apiKey = "9hQZNoy1wtM2b1T4BIx8B0Cwjaje3UUR";
-
-  const fetchGifs = async (url: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(url);
-      const result = await response.json();
-      setGifs(result.data);
-    } catch (err) {
-      setError("Failed to fetch GIFs. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSearch = async () => {
-    const url = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${query}&limit=10`;
-    fetchGifs(url);
-  };
 
   useEffect(() => {
     // Fetch trending GIFs initially
-    const url = `https://api.giphy.com/v1/gifs/trending?api_key=${apiKey}&limit=10`;
+    const url = `https://api.giphy.com/v1/gifs/trending?api_key=${apiKey}&limit=100`;
     fetchGifs(url);
   }, []);
 
@@ -38,15 +26,15 @@ const GiphySearch: React.FC = () => {
       <div className="lm-giphy-search">
         <input
           type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          value={gifQuery}
+          onChange={(e) => gifSearchQuery(e.target.value)}
           placeholder="Search for GIFs"
         />
-        <button onClick={handleSearch} disabled={loading}>
-          {loading ? "Searching..." : "Search"}
+        <button onClick={handleGifSearch} disabled={loadingGifs}>
+          {loadingGifs ? "Searching..." : "Search"}
         </button>
       </div>
-      {error && <p>{error}</p>}
+      {errorOnGifs && <p>{errorOnGifs}</p>}
       <div className="lmGifContainer">
         {gifs.map((gif) => (
           <img
@@ -54,7 +42,10 @@ const GiphySearch: React.FC = () => {
             src={gif.images.fixed_height.url}
             alt={gif.title}
             className="lm-giphy-img"
-            onClick={() => console.log(gif)}
+            onClick={() => {
+              console.log(gif);
+              setGifMedia(gif);
+            }}
           />
         ))}
       </div>

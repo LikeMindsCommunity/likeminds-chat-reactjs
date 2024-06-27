@@ -31,6 +31,7 @@ const MessageReactionHolder = () => {
           <Tabs
             value={selectedReaction}
             onChange={(_, newValue) => {
+              console.log(newValue);
               setSelectedReaction(newValue);
             }}
           >
@@ -54,7 +55,9 @@ const MessageReactionHolder = () => {
             {selectedReaction.length !== 0
               ? messageReactionMap[selectedReaction].map((reactions) => {
                   return (
-                    <div className="reactionUser">{reactions.member.name}</div>
+                    <div key={reactions.member.uuid} className="reactionUser">
+                      {reactions.member.name}
+                    </div>
                   );
                 })
               : message.reactions.map((reactions) => {
