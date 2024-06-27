@@ -33,8 +33,6 @@ const MediaRenderer = ({ attachments }) => {
 
     const fileType = attachment.url.split(".").pop().toLowerCase();
     const fileTypeOhter = fileType.split("&")[0];
-    // gif&ct=g
-    console.log(fileTypeOhter);
     const className = isThumbnail ? "thumbnail" : "carousel-media";
 
     // console.log(`Rendering attachment at index ${index}:`, attachment);
@@ -81,18 +79,8 @@ const MediaRenderer = ({ attachments }) => {
             <div className="pdfName">{attachment.name}</div>
           </a>
         </div>
-        // <embed
-        //   src={attachment.url}
-        //   type="application/pdf"
-        //   width="100"
-        //   height="100"
-        //   key={index}
-        //   className={className}
-        //   onClick={() => handleShow(index)}
-        // />
       );
     } else {
-      // console.log(message)
       console.error(`Unsupported file type at index ${index}: ${fileType}`);
       return null;
     }
