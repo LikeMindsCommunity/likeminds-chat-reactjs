@@ -150,8 +150,7 @@ function LMChannelList() {
                 <div className="channel-desc">
                   <div className="channel-title">
                     <div>{chatroom.header}</div>
-                  </div>
-                  <div>
+
                     <button
                       disabled={chatroom.follow_status ? true : false}
                       onClick={() => {

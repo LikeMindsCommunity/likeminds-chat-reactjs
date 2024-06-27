@@ -1407,9 +1407,8 @@ body {
 
 /* Giphy */
 .lm-giphy-box {
-  padding: 0px;
-  height: 200px;
-  overflow-y: none;
+  padding: 20px;
+  height: 300px;
 }
 
 .lm-giphy-box .lm-giphy-search {
@@ -1438,7 +1437,8 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-  max-height: 150px;
+  max-height: 230px;
+  overflow-y: auto;
 }
 
 .lmGifContainer .lm-giphy-img {
@@ -1462,10 +1462,7 @@ body {
   width: 100%;
   border: 1px solid #e0e0e0;
   background-color: #fff;
-  /* min-height: 150px; */
-  /* max-height: 4000px; */
   overflow-y: auto;
-  /* margin-bottom: 400px; */
 }
 
 /* .fullscreen-menu .MuiPaper-root {
@@ -1639,10 +1636,6 @@ body {
   align-items: center;
 }
 
-.lm-giphy-box {
-  padding: 20px;
-}
-
 .selected-gif-view-container {
   padding: 8px;
   height: calc(100vh - 124px);
@@ -1653,7 +1646,7 @@ body {
 }
 
 .selected-gif-view-container img {
-  height: 100%;
+  height: 50%;
 }
 
 .remove-selected-gif-icon {
