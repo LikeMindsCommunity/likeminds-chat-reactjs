@@ -1,5 +1,5 @@
 import React from "react";
-import { Menu, PaperProps } from "@mui/material";
+import { Menu } from "@mui/material";
 import giffyIcon from "../../assets/img/giffy.png";
 import { useMenu } from "../../hooks/useMenu";
 import GiphySearch from "./GiphySearch";
@@ -15,12 +15,12 @@ const GiSelector: React.FC = () => {
         onClose={closeMenu}
         classes={{ paper: "fullscreen-menu" }}
         anchorOrigin={{
-          vertical: "top",
-          horizontal: "left",
+          vertical: "center",
+          horizontal: "center",
         }}
         transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
+          vertical: "bottom",
+          horizontal: "center",
         }}
       >
         <div className="lm-giphy-container">

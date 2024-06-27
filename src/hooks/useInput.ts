@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ChangeEvent,
@@ -24,6 +25,7 @@ import {
   GetOgTagResponse,
   OgTag,
 } from "../types/api-responses/getOgTagResponse";
+import { Gif } from "../types/models/GifObject";
 
 export function useInput(): UseInputReturns {
   const { id: chatroomId } = useParams();
@@ -46,6 +48,7 @@ export function useInput(): UseInputReturns {
   );
   const [fetchMoreTags, setFetchMoreTags] = useState<boolean>(true);
   const [ogTags, setOgTags] = useState<OgTag | null>(null);
+  const [gifMedia, setGifMedia] = useState<Gif | null>(null);
   // refs
   const inputBoxRef = useRef<HTMLDivElement | null>(null);
   const inputWrapperRef = useRef<HTMLDivElement | null>(null);
@@ -90,7 +93,11 @@ export function useInput(): UseInputReturns {
       const messageText = Utils.extractTextFromNode(
         inputBoxRef.current!,
       ).trim();
-      if (!messageText || !messageText.length) {
+      if (
+        (!messageText || !messageText.length) &&
+        !imagesAndVideosMediaList?.length &&
+        imagesAndVideosMediaList?.length
+      ) {
         return;
       }
       if (Utils.extractTextFromNode(inputBoxRef.current!).trim())
@@ -129,9 +136,28 @@ export function useInput(): UseInputReturns {
         await lmChatclient?.postConversation(postConversationCallConfig);
       setFocusOnInputField();
       removeOgTag();
+      if (gifMedia) {
+        const onUploadConfig = {
+          conversationId: parseInt(
+            postConversationsCall.data.conversation.id.toString(),
+            10,
+          ),
+          filesCount: 1,
+          index: 0,
+          meta: {
+            size: parseInt(gifMedia.images.fixed_height.size.toString()),
+            // size: parseInt(giphyUrl?.images?.fixed_height?.size?.toString()),
+          },
+          name: gifMedia?.title,
+          type: gifMedia?.type,
+          url: gifMedia?.images?.fixed_height?.url,
+          thumbnailUrl: gifMedia?.images["480w_still"]?.url,
+        };
+        lmChatclient?.putMultimedia(onUploadConfig);
+        return;
+      }
       for (let index = 0; index < attachmentsList.length; index++) {
         const conversation = postConversationsCall.data.conversation;
-        console.log(conversation);
         const attachment = attachmentsList[index];
         const { name, size, type } = attachment;
         if (type.includes(FileType.video)) {
@@ -165,22 +191,17 @@ export function useInput(): UseInputReturns {
                     attachment,
                     conversation.id.toString(),
                     chatroom.chatroom.id.toString(),
-                  ).then(() => {
-                    const thumbnailUrl = Utils.generateFileUrl(
-                      chatroom.chatroom.id.toString(),
-                      conversation.id.toString(),
-                      thumbnailFile,
-                    );
-
+                  ).then((response: any) => {
+                    const thumbnailUrl = Utils.generateFileUrl(response);
+                    // const thumbnailUrl = response;
                     Utils.uploadMedia(
                       attachment,
                       conversation.id.toString(),
                       chatroom.chatroom.id.toString(),
-                    ).then(() => {
+                    ).then((response) => {
+                      // const fileUrl = response;
                       const fileUrl = Utils.generateFileUrl(
-                        chatroom.chatroom.id.toString(),
-                        conversation.id.toString(),
-                        attachment,
+                        response as unknown as string,
                       );
                       const onUploadConfig: {
                         conversationId: number;
@@ -201,7 +222,7 @@ export function useInput(): UseInputReturns {
                         meta: { size: size },
                         name: name,
                         type: "video",
-                        url: fileUrl,
+                        url: (fileUrl as string) || "",
                         thumbnailUrl: thumbnailUrl,
                       };
 
@@ -221,12 +242,10 @@ export function useInput(): UseInputReturns {
             attachment,
             conversation.id.toString(),
             chatroom.chatroom.id.toString(),
-          ).then(() => {
-            const fileUrl = Utils.generateFileUrl(
-              chatroom.chatroom.id.toString(),
-              conversation.id.toString(),
-              attachment,
-            );
+          ).then((response: any) => {
+            console.log(response);
+            // const fileUrl = response;
+            const fileUrl = Utils.generateFileUrl(response);
             const onUploadConfig: {
               conversationId: number;
               filesCount: number;
@@ -247,13 +266,15 @@ export function useInput(): UseInputReturns {
               name: name,
               // type: type,
               type: type.includes(FileType.image) ? FileType.image : "pdf",
-              url: fileUrl,
+              url: fileUrl || "",
               thumbnail_url: null,
             };
 
             lmChatclient?.putMultimedia(onUploadConfig);
           });
         }
+        setImagesAndVideosMediaList([]);
+        setDocumentMediaList([]);
       }
     } catch (error) {
       console.log(error);

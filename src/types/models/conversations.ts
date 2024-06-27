@@ -13,8 +13,13 @@ export default interface Conversation {
   id: number;
   isEdited: boolean;
   member: Member;
-  reactions: unknown[]; // Replace with the appropriate type for reactions
+  reactions: Reaction[]; // Replace with the appropriate type for reactions
   state: number;
   deletedBy?: number;
   deletedByMember?: Member;
+}
+
+export interface Reaction {
+  member: Member;
+  reaction: string;
 }

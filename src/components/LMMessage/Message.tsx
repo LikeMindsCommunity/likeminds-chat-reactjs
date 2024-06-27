@@ -14,6 +14,7 @@ import MediaRenderer from "../../shared/components/MediaRenderer";
 // Icons
 
 import linkImg from "../../assets/img/link-img.svg";
+import MessageReactionHolder from "./MessageReactionHolder";
 
 const Message = () => {
   const { message, index } = useContext(LMMessageContext);
@@ -132,19 +133,7 @@ const Message = () => {
                   {message?.created_at}
                 </div>
               </div>
-              <div className="lm-chat-message-reactions-holder">
-                {message.reactions.map((reaction) => {
-                  return (
-                    <div
-                      className="lm-chat-message-reaction"
-                      key={reaction.member.uuid}
-                    >
-                      <span className="reaction-con">{reaction.reaction}</span>
-                      <span className="reaction-count"></span>
-                    </div>
-                  );
-                })}
-              </div>
+              <MessageReactionHolder />
             </div>
             <div className="actions">
               <div className="lm-cursor-pointer">

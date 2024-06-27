@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { Gif } from "../../types/models/GifObject";
 
 const GiphySearch: React.FC = () => {
   const [query, setQuery] = useState("");
-  const [gifs, setGifs] = useState<any[]>([]);
+  const [gifs, setGifs] = useState<Gif[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const apiKey = "9hQZNoy1wtM2b1T4BIx8B0Cwjaje3UUR";
@@ -53,6 +54,7 @@ const GiphySearch: React.FC = () => {
             src={gif.images.fixed_height.url}
             alt={gif.title}
             className="lm-giphy-img"
+            onClick={() => console.log(gif)}
           />
         ))}
       </div>
