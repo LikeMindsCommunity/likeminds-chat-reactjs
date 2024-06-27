@@ -154,6 +154,13 @@ body {
   color: #666;
 }
 
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .time {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #666;
+}
+
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc button {
   background: #00897b;
   border-radius: 8px;
@@ -223,6 +230,16 @@ body {
   width: 16px;
 }
 
+.lm-channel-list
+  .lm-channel-list-body
+  .channel-media
+  .channel-desc
+  .channel-info
+  .channel-last-conversation
+  img {
+  width: 16px;
+}
+
 .channel-unseen-convo-count {
   height: 16px;
   width: 16px;
@@ -246,7 +263,10 @@ body {
   padding: 20px;
   font-size: 20px;
 }
-.reactions-selection-tabs {
+<<<<<<<
+  HEAD
+  =======>>>>>>>cb49a66c012fb7dd6a58a7719f89782fdec6032a
+  .reactions-selection-tabs {
   width: 490px;
   padding: 0 17px;
   display: flex;
@@ -591,6 +611,21 @@ body {
   position: relative;
 }
 
+.input-media-carousel-holder {
+  position: relative;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.remove-media-icon {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  color: white;
+}
+
 .lm-input-carousel {
   position: absolute;
   bottom: 100%;
@@ -625,6 +660,24 @@ body {
   width: 100%;
   max-height: 415px;
   object-fit: contain;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.white-background-carousel {
+  /* background-color: wheat; */
+}
+
+.lm-input-carousel-document-element img {
+  height: 200px;
+}
+
+.lm-input-carousel-document-element .document-file-details {
+  line-height: 1.25rem;
+  color: white;
+  margin: 1rem;
 }
 
 .lm-input-carousel ul li {
@@ -665,7 +718,7 @@ body {
 .lm-chat-input-attachment-label label {
   cursor: pointer;
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   gap: 1rem;
   justify-content: center;
   align-items: center;
@@ -937,6 +990,9 @@ body {
   max-height: 210px;
   overflow: hidden;
   border-radius: 5px;
+  margin-bottom: 4px;
+  margin-left: -10px;
+  margin-right: -10px;
 }
 
 .lm-media img {
@@ -1410,7 +1466,6 @@ body {
   /* max-height: 4000px; */
   overflow-y: auto;
   /* margin-bottom: 400px; */
-
 }
 
 /* .fullscreen-menu .MuiPaper-root {
@@ -1460,6 +1515,21 @@ body {
   justify-content: center;
   align-items: center;
 }
+.lm-og-img img {
+  width: 20%;
+  height: 100%;
+  object-fit: cover;
+  padding: 20px 0;
+}
+
+.lm-og-img {
+  overflow: hidden;
+  max-height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .lm-og-img img {
   width: 20%;
   height: 100%;
@@ -1571,4 +1641,23 @@ body {
 
 .lm-giphy-box {
   padding: 20px;
+}
+
+.selected-gif-view-container {
+  padding: 8px;
+  height: calc(100vh - 124px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.selected-gif-view-container img {
+  height: 100%;
+}
+
+.remove-selected-gif-icon {
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
 }

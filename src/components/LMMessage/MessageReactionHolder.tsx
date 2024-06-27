@@ -33,7 +33,7 @@ const MessageReactionHolder = () => {
       >
         <div className="message-reactions-members-list">
           <div className="reactionHeader">
-            Reactions({Object.keys(messageReactionMap).length})
+            Reactions({message.reactions.length})
           </div>
 
           <Tabs
@@ -56,7 +56,6 @@ const MessageReactionHolder = () => {
             {selectedReaction.length !== 0
               ? messageReactionMap[selectedReaction].map((reactions) => {
                   return (
-
                     <div className="reactionUser">
                       <div className="userImg">
                         {reactions.member.imageUrl ? (
@@ -66,13 +65,21 @@ const MessageReactionHolder = () => {
                         )}
                       </div>
                       <div className="userName">{reactions.member.name}</div>
-
                     </div>
                   );
                 })
               : message.reactions.map((reactions) => {
                   return (
-                    <div className="reactionUser">{reactions.member.name}</div>
+                    <div className="reactionUser">
+                      <div className="userImg">
+                        {reactions.member.imageUrl ? (
+                          <img src={reactions.member.imageUrl} alt="image" />
+                        ) : (
+                          <div>{reactions.member.name[0]}</div>
+                        )}
+                      </div>
+                      <div className="userName">{reactions.member.name}</div>
+                    </div>
                   );
                 })}
           </div>

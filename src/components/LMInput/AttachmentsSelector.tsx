@@ -13,8 +13,12 @@ import uploadDoc from "./../../assets/img/upload-doc.svg";
 
 const AttachmentsSelector = () => {
   const { openMenu, closeMenu, menuAnchor } = useMenu();
-  const { addDocumentsMedia, addImagesAndVideosMedia } =
-    useContext(InputContext);
+  const {
+    addDocumentsMedia,
+    addImagesAndVideosMedia,
+    imagesAndVideosMediaList,
+    documentsMediaList,
+  } = useContext(InputContext);
   return (
     <div className="attachment-selecter-wrapper">
       <Menu
@@ -33,45 +37,47 @@ const AttachmentsSelector = () => {
           padding: "0",
         }}
       >
-        <div className="lm-upload-media-dialog">
-          <MenuItem className="lm-chat-input-attachment-label">
-            <label htmlFor="media">
-              <input
-                id="media"
-                type="file"
-                accept=".png, .jpeg, .jpg, .mp4"
-                onChange={(e) => {
-                  addImagesAndVideosMedia(e);
-                  closeMenu();
-                }}
-                multiple
-              />
-              <div>
-                <img src={uploadMedia} alt="media" />
-              </div>
-              <div className="title">Photos &amp; Videos</div>
-            </label>
-          </MenuItem>
+        {/* <div className="lm-upload-media-dialog"> */}
+        <MenuItem className="lm-chat-input-attachment-label">
+          <label htmlFor="media">
+            <input
+              id="media"
+              type="file"
+              accept=".png, .jpeg, .jpg, .mp4"
+              onChange={(e) => {
+                addImagesAndVideosMedia(e);
+                closeMenu();
+              }}
+              multiple
+              disabled={documentsMediaList?.length ? true : false}
+            />
+            <div>
+              <img src={uploadMedia} alt="media" />
+            </div>
+            <div className="title">Photos &amp; Videos</div>
+          </label>
+        </MenuItem>
 
-          <MenuItem className="lm-chat-input-attachment-label">
-            <label htmlFor="doc">
-              <input
-                id="doc"
-                type="file"
-                accept=".pdf"
-                onChange={(e) => {
-                  addDocumentsMedia(e);
-                  closeMenu();
-                }}
-                multiple
-              />
-              <div>
-                <img src={uploadDoc} alt="doc" />
-              </div>
-              <div className="title">Document</div>
-            </label>
-          </MenuItem>
-        </div>
+        <MenuItem className="lm-chat-input-attachment-label">
+          <label htmlFor="doc">
+            <input
+              id="doc"
+              type="file"
+              accept=".pdf"
+              onChange={(e) => {
+                addDocumentsMedia(e);
+                closeMenu();
+              }}
+              multiple
+              disabled={imagesAndVideosMediaList?.length ? true : false}
+            />
+            <div>
+              <img src={uploadDoc} alt="doc" />
+            </div>
+            <div className="title">Document</div>
+          </label>
+        </MenuItem>
+        {/* </div> */}
       </Menu>
       <img
         onClick={openMenu}
