@@ -26,8 +26,16 @@ const MessageReactionHolder = () => {
   }
   return (
     <div className="lm-chat-message-reactions-holder">
-      <Dialog open={dialogOpen} onClose={closeDialog}>
+      <Dialog
+        open={dialogOpen}
+        onClose={closeDialog}
+        className="reactions-dialog"
+      >
         <div className="message-reactions-members-list">
+          <div className="reactionHeader">
+            Reactions({Object.keys(messageReactionMap).length})
+          </div>
+
           <Tabs
             value={selectedReaction}
             onChange={(_, newValue) => {
@@ -39,24 +47,26 @@ const MessageReactionHolder = () => {
               <Tab value={""} label={"All"} />
 
               {Object.keys(messageReactionMap).map((reaction) => {
-                return (
-                  <Tab
-                    sx={{
-                      fontSize: "32px",
-                    }}
-                    value={reaction}
-                    label={reaction}
-                  />
-                );
+                return <Tab value={reaction} label={reaction} />;
               })}
             </div>
           </Tabs>
+
           <div className="reaction-users-list">
             {selectedReaction.length !== 0
               ? messageReactionMap[selectedReaction].map((reactions) => {
                   return (
-                    <div key={reactions.member.uuid} className="reactionUser">
-                      {reactions.member.name}
+
+                    <div className="reactionUser">
+                      <div className="userImg">
+                        {reactions.member.imageUrl ? (
+                          <img src={reactions.member.imageUrl} alt="image" />
+                        ) : (
+                          <div>{reactions.member.name[0]}</div>
+                        )}
+                      </div>
+                      <div className="userName">{reactions.member.name}</div>
+
                     </div>
                   );
                 })
@@ -68,6 +78,7 @@ const MessageReactionHolder = () => {
           </div>
         </div>
       </Dialog>
+
       {Object.keys(messageReactionMap).map((reaction) => {
         const reactionObject = messageReactionMap[reaction];
         return (

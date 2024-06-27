@@ -32,24 +32,33 @@ const MediaRenderer = ({ attachments }) => {
     }
 
     const fileType = attachment.url.split(".").pop().toLowerCase();
+    const fileTypeOhter = fileType.split("&")[0];
     const className = isThumbnail ? "thumbnail" : "carousel-media";
 
     // console.log(`Rendering attachment at index ${index}:`, attachment);
 
     if (
-      ["jpeg", "jpg", "png", "gif", "bmp", "tiff", "tif"].includes(fileType)
+      ["jpeg", "jpg", "png", "gif", "bmp", "tiff", "tif"].includes(fileType) ||
+      ["jpeg", "jpg", "png", "gif", "bmp", "tiff", "tif"].includes(
+        fileTypeOhter,
+      )
     ) {
       return (
-        <img
-          src={attachment.url}
-          alt="img"
-          key={index}
-          className={className}
-          onClick={() => handleShow(index)}
-          onError={handleError}
-        />
+        <>
+          <img
+            src={attachment.url}
+            alt="img"
+            key={index}
+            className={className}
+            onClick={() => handleShow(index)}
+            onError={handleError}
+          />
+        </>
       );
-    } else if (["mp4", "mov", "avi", "mkv", "wmv", "flv"].includes(fileType)) {
+    } else if (
+      ["mp4", "mov", "avi", "mkv", "wmv", "flv"].includes(fileType) ||
+      ["mp4", "mov", "avi", "mkv", "wmv", "flv"].includes(fileTypeOhter)
+    ) {
       return (
         <video
           controls
@@ -70,18 +79,8 @@ const MediaRenderer = ({ attachments }) => {
             <div className="pdfName">{attachment.name}</div>
           </a>
         </div>
-        // <embed
-        //   src={attachment.url}
-        //   type="application/pdf"
-        //   width="100"
-        //   height="100"
-        //   key={index}
-        //   className={className}
-        //   onClick={() => handleShow(index)}
-        // />
       );
     } else {
-      // console.log(message)
       console.error(`Unsupported file type at index ${index}: ${fileType}`);
       return null;
     }
