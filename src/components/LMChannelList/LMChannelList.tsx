@@ -97,11 +97,15 @@ function LMChannelList() {
                           <img src={document} alt="document" />
                         </>
                       ) : null}
-                      {Utils.parseAnser(
-                        groupChatroomConversationsMeta[
-                          chatroom.last_conversation_id
-                        ]?.answer || "",
-                      )}
+                      {groupChatroomConversationsMeta[
+                        chatroom.last_conversation_id
+                      ]
+                        ? Utils.parseAnser(
+                            groupChatroomConversationsMeta[
+                              chatroom.last_conversation_id
+                            ].answer,
+                          )
+                        : null}
                     </div>
                   </div>
 

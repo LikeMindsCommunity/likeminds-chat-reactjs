@@ -113,22 +113,23 @@ export default function useChatroomList(): ChatroomProviderInterface {
         value: true,
       });
       setExploreGroupChatrooms((currentExpolreChatrooms) => {
+        setGroupChatrooms((currentGroupChatrooms) => {
+          const currentGroupChatroomsCopy = [...currentGroupChatrooms];
+          const targetChatroom = currentExpolreChatrooms.find(
+            (chatroom) => chatroom.id.toString() === collabcardId,
+          );
+          if (targetChatroom) {
+            currentGroupChatroomsCopy.unshift(
+              targetChatroom as unknown as ChatroomData,
+            );
+          }
+          return currentGroupChatroomsCopy;
+        });
         return [...currentExpolreChatrooms].map((chatroom) => {
           if (chatroom.id.toString() === chatroomId) {
             chatroom.follow_status = true;
           }
-          setGroupChatrooms((currentGroupChatrooms) => {
-            const currentGroupChatroomsCopy = [...currentGroupChatrooms];
-            const targetChatroom = currentExpolreChatrooms.find(
-              (chatroom) => chatroom.id.toString() === collabcardId,
-            );
-            if (targetChatroom) {
-              currentGroupChatroomsCopy.unshift(
-                targetChatroom as unknown as ChatroomData,
-              );
-            }
-            return currentGroupChatroomsCopy;
-          });
+
           return chatroom;
         });
       });

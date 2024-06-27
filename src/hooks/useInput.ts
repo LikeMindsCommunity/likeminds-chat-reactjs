@@ -193,6 +193,7 @@ export function useInput(): UseInputReturns {
           thumbnailUrl: gifMedia?.images["480w_still"]?.url,
         };
         lmChatclient?.putMultimedia(onUploadConfig);
+        setOpenGifCollapse(false);
         return;
       }
       for (let index = 0; index < attachmentsList.length; index++) {
