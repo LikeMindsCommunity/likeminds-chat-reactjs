@@ -36,11 +36,11 @@ const LMMessageMiddleware = (props: LMMessageMiddlewareProps) => {
     console.log(currentLocalMessage);
     currentLocalMessage.reactions =
       currentLocalMessage?.reactions?.filter(
-        (reaction: any) => reaction?.user?.uuid !== currentUserUUID,
+        (reaction: any) => reaction?.member?.uuid !== currentUserUUID,
       ) || [];
     console.log(currentLocalMessage);
     currentLocalMessage.reactions?.push({
-      user: currentUser,
+      member: currentUser,
       reaction: emoji.native,
     });
     console.log(currentLocalMessage);
