@@ -25,6 +25,7 @@ function LMChannelList() {
     groupChatroomConversationsMeta,
     groupChatroomMember,
     markReadAChatroom,
+    onLeaveChatroom,
   } = useChatroomList();
   const { currentUser } = useContext(UserProviderContext);
 
@@ -156,9 +157,11 @@ function LMChannelList() {
                     <div>{chatroom.header}</div>
 
                     <button
-                      disabled={chatroom.follow_status ? true : false}
+                      // disabled={chatroom.follow_status ? true : false}
                       onClick={() => {
-                        joinAChatroom(chatroom.id.toString());
+                        chatroom.follow_status
+                          ? onLeaveChatroom(chatroom.id.toString())
+                          : joinAChatroom(chatroom.id.toString());
                       }}
                       className={chatroom.follow_status ? "joined" : ""}
                     >

@@ -30,13 +30,18 @@ export default function useUserProvider(
     async function setUser() {
       try {
         const initiateUserCall = await lmChatclient?.initiateUser({
-          userUniqueId: "317326b1-7241-402d-840c-2fb156b24b8f",
-          userName: "ishaan",
+          userUniqueId: "hola_amigo",
+          userName: "amigo",
           isGuest: false,
         });
         const memberStateCall = await lmChatclient?.getMemberState();
-        // console.log(memberStateCall);
-        setLmChatUser(initiateUserCall.data.user);
+        console.log(memberStateCall);
+        const user = {
+          ...initiateUserCall.data.user,
+          state: memberStateCall.data.state,
+          memberRights: memberStateCall.data.member_rights,
+        };
+        setLmChatUser(user);
         setLmChatUserCurrentCommunity(initiateUserCall.data.community);
       } catch (error) {
         console.log(error);

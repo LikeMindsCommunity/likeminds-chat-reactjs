@@ -40,11 +40,21 @@ const LMMessageMiddleware = (props: LMMessageMiddlewareProps) => {
       ) || [];
     console.log(currentLocalMessage);
     currentLocalMessage.reactions?.push({
-      member: currentUser,
+      member: currentUser!,
       reaction: emoji.native,
     });
     console.log(currentLocalMessage);
     setLocalMessageCopy(currentLocalMessage as Conversation);
+  }
+  function removeReactionLocally() {
+    setLocalMessageCopy((currentLocalCopy) => {
+      currentLocalCopy!.reactions =
+        currentLocalCopy?.reactions.filter((reaction) => {
+          return reaction.member.id.toString() !== currentUser?.id.toString();
+        }) || [];
+      console.log(currentLocalCopy);
+      return currentLocalCopy;
+    });
   }
   return (
     <LMMessageContext.Provider
@@ -54,6 +64,7 @@ const LMMessageMiddleware = (props: LMMessageMiddlewareProps) => {
         deleteMessage: deleteMessage,
         editMessageLocally: editMessageLocally,
         addReactionLocally: addReactionLocally,
+        removeReactionLocally: removeReactionLocally,
       }}
     >
       <Message />

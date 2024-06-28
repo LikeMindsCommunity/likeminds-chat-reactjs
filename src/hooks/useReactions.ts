@@ -21,10 +21,24 @@ export function useReactions(): UseReactionReturns {
       console.log(error);
     }
   };
+  const removeReaction = async (emoji: string) => {
+    try {
+      const call = await lmChatclient?.deleteReaction({
+        chatroomId: chatroom!.chatroom!.id!,
+        conversationId: message!.id!,
+        reaction: emoji,
+      });
+      console.log(call);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return {
     addReaction,
+    removeReaction,
   };
 }
 export interface UseReactionReturns {
   addReaction: OneArgVoidReturns<EmojiData>;
+  removeReaction: OneArgVoidReturns<string>;
 }

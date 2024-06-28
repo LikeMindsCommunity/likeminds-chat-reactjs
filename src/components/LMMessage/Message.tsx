@@ -18,7 +18,7 @@ import MessageReactionHolder from "./MessageReactionHolder";
 
 const Message = () => {
   const { message, index } = useContext(LMMessageContext);
-  console.log(message);
+
   const { conversations } = useContext(MessageListContext);
   const { currentUser } = useContext(UserProviderContext);
 
@@ -158,8 +158,40 @@ const Message = () => {
           </div>
           <div className="lm-chat-card">
             <div className="lm-date-data ">
-              <div className="data-pill">{message?.date}</div>
-
+              <div className="data-pill">
+                {Utils.parseAndReplaceTags(message?.answer || "")}
+              </div>
+            </div>
+          </div>
+        </>
+      );
+    }
+    case ConversationStates.CHAT_ROOM_UNFOLLOWED: {
+      return (
+        <>
+          <div className={`lm-chat-card ${message?.state}`}>
+            {/* {message?.state} */}
+            {renderDatePill()}
+          </div>
+          <div className="lm-chat-card">
+            <div className="lm-date-data ">
+              <div className="data-pill">
+                {Utils.parseAndReplaceTags(message?.answer || "")}
+              </div>
+            </div>
+          </div>
+        </>
+      );
+    }
+    case ConversationStates.CHAT_ROOM_FOLLOWED: {
+      return (
+        <>
+          <div className={`lm-chat-card ${message?.state}`}>
+            {/* {message?.state} */}
+            {renderDatePill()}
+          </div>
+          <div className="lm-chat-card">
+            <div className="lm-date-data ">
               <div className="data-pill">
                 {Utils.parseAndReplaceTags(message?.answer || "")}
               </div>

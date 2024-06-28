@@ -6,13 +6,18 @@ import { useInput } from "../../hooks/useInput";
 import InputContext from "../../context/InputContext";
 import LMChatTextArea from "./LMChatTextArea";
 import Emojis from "./Emojis";
-import { Collapse, IconButton } from "@mui/material";
+import { Alert, Collapse, IconButton } from "@mui/material";
 import MediaCarousel from "./Carousel";
 import AttachmentsSelector from "./AttachmentsSelector";
 import giffyIcon from "./../../assets/img/giffy.png";
 // import GiphySearch from "./GiphySearch";
 
 import GiphySearch from "./GiphySearch";
+import { useContext, useMemo, useState } from "react";
+import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import UserProviderContext from "../../context/UserProviderContext";
+import { MemberType } from "../../enums/member-type";
+import { ConstantStrings } from "../../enums/common-strings";
 
 const Input = () => {
   const {
@@ -47,6 +52,51 @@ const Input = () => {
     removeMediaFromImageList,
     removeMediaFromDocumentList,
   } = useInput();
+  const { currentUser } = useContext(UserProviderContext);
+  const { chatroom } = useContext(LMChatChatroomContext);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const shouldShowInputBox = useMemo(() => {
+    const canRespondInChatroom = currentUser?.memberRights?.find(
+      (right) => right.state === 3,
+    )?.is_selected
+      ? true
+      : false;
+
+    if (!canRespondInChatroom) {
+      setAlertMessage(ConstantStrings.USER_MESSAGES_RESTRICTED_BY_CM);
+      return false;
+    } else {
+      setAlertMessage(null);
+    }
+    const member_can_message = chatroom?.chatroom.member_can_message;
+    switch (member_can_message) {
+      case true:
+        setAlertMessage(null);
+        return true;
+      case false: {
+        if (currentUser?.state === MemberType.COMMUNITY_MANAGER) {
+          setAlertMessage(null);
+          return true;
+        } else {
+          setAlertMessage(ConstantStrings.ONLY_CM_MESSAGES_ALLOWED);
+          return false;
+        }
+      }
+    }
+  }, [chatroom?.chatroom, currentUser?.memberRights, currentUser?.state]);
+  if (!shouldShowInputBox) {
+    return (
+      <Alert
+        severity="warning"
+        icon={false}
+        sx={{
+          background: "white",
+        }}
+      >
+        {alertMessage}
+      </Alert>
+    );
+  }
 
   return (
     // Defalut view

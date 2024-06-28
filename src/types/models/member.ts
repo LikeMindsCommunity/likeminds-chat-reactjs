@@ -14,6 +14,15 @@ export default interface Member {
   updatedAt: number;
   userUniqueId: string;
   uuid: string;
+  memberRights: MemberRight[];
+}
+interface MemberRight {
+  id: number;
+  is_locked: boolean;
+  is_selected: boolean;
+  state: number;
+  title: string;
+  sub_title?: string;
 }
 
 export interface SdkClientInfo {

@@ -123,11 +123,7 @@ body {
   flex-direction: column;
 }
 
-.lm-channel-list
-  .lm-channel-list-body
-  .channel-media
-  .channel-desc
-  .channel-title {
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-title {
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
@@ -140,6 +136,7 @@ body {
   text-overflow: ellipsis;
   max-width: 100%;
 }
+
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc .time {
   font-size: 12px;
   font-weight: 400;
@@ -177,21 +174,13 @@ body {
   gap: 3px;
 }
 
-.lm-channel-list
-  .lm-channel-list-body
-  .channel-media
-  .channel-desc
-  button.joined {
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc button.joined {
   background: #fff;
   color: #00897b;
   border: 1px solid #00897b;
 }
 
-.lm-channel-list
-  .lm-channel-list-body
-  .channel-media
-  .channel-desc
-  .channel-info {
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-info {
   display: flex;
   font-weight: 400;
   font-size: 12px;
@@ -199,44 +188,22 @@ body {
   color: #666;
 }
 
-.lm-channel-list
-  .lm-channel-list-body
-  .channel-media
-  .channel-desc
-  .channel-info
-  .channel-last-conversation {
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-info .channel-last-conversation {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 220px;
 }
-.lm-channel-list
-  .lm-channel-list-body
-  .channel-media
-  .channel-desc
-  .channel-info
-  .channel-last-conversation
-  img {
+
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-info .channel-last-conversation img {
   width: 16px;
 }
 
-.lm-channel-list
-  .lm-channel-list-body
-  .channel-media
-  .channel-desc
-  .channel-info
-  .channel-last-conversation
-  img {
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-info .channel-last-conversation img {
   width: 16px;
 }
 
-.lm-channel-list
-  .lm-channel-list-body
-  .channel-media
-  .channel-desc
-  .channel-info
-  .channel-last-conversation
-  img {
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-info .channel-last-conversation img {
   width: 16px;
 }
 
@@ -263,10 +230,8 @@ body {
   padding: 20px;
   font-size: 20px;
 }
-<<<<<<<
-  HEAD
-  =======>>>>>>>cb49a66c012fb7dd6a58a7719f89782fdec6032a
-  .reactions-selection-tabs {
+
+.reactions-selection-tabs {
   width: 490px;
   padding: 0 17px;
   display: flex;
@@ -287,6 +252,7 @@ body {
   margin-bottom: 20px;
   /* justify-content: space-between; */
 }
+
 .reactionUser .userImg {
   width: 42px;
   height: 42px;
@@ -300,14 +266,29 @@ body {
   font-weight: 500;
   text-transform: capitalize;
 }
+
 .reactionUser .userImg img {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
+
 .reactionUser .userName {
   font-size: 16px;
   text-transform: capitalize;
+}
+
+.reactionUser .remove-emoji-text {
+  font-family: Roboto;
+  font-size: 0.875rem;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.29;
+  letter-spacing: normal;
+  color: #666;
+  cursor: pointer;
+
 }
 
 .lm-chat-message-reaction {
@@ -1445,6 +1426,10 @@ body {
   max-width: 120px;
 }
 
+.lmGifContainer .lm-giphy-img:hover {
+  transform: scale(1.05);
+}
+
 .lm-input-giffy {
   position: relative;
 }
@@ -1505,6 +1490,7 @@ body {
   font-weight: 500;
   color: #000000;
 }
+
 .lm-og-img {
   overflow: hidden;
   max-height: 100px;
@@ -1512,6 +1498,7 @@ body {
   justify-content: center;
   align-items: center;
 }
+
 .lm-og-img img {
   width: 20%;
   height: 100%;
@@ -1592,7 +1579,7 @@ body {
   align-items: center;
 }
 
-.og-tag-icon > img {
+.og-tag-icon>img {
   border-top-left-radius: 12px;
   border-bottom-left-radius: 12px;
   width: 100%;
@@ -1653,4 +1640,10 @@ body {
   position: absolute;
   top: 0.5rem;
   right: 1rem;
+}
+
+.lm-participant-card-detail .name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

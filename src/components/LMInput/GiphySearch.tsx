@@ -54,7 +54,7 @@ const GiphySearch: React.FC = () => {
             key={gif.id}
             src={gif.images.fixed_height.url}
             alt={gif.title}
-            className="lm-giphy-img"
+            className="lm-giphy-img lm-cursor-pointer"
             onClick={() => {
               console.log(gif);
               setGifMedia(gif);

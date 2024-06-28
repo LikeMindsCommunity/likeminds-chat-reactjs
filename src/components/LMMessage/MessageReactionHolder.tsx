@@ -3,10 +3,14 @@ import LMMessageContext from "../../context/MessageContext";
 import { Reaction } from "../../types/models/conversations";
 import { useDialog } from "../../hooks/useDialog";
 import { Dialog, Tab, Tabs } from "@mui/material";
+import { ConstantStrings } from "../../enums/common-strings";
+import { useReactions } from "../../hooks/useReactions";
 
 const MessageReactionHolder = () => {
   const { message } = useContext(LMMessageContext);
+  const { removeReactionLocally } = useContext(LMMessageContext);
   const { openDialog, closeDialog, dialogOpen } = useDialog();
+  const { removeReaction } = useReactions();
   const [selectedReaction, setSelectedReaction] = useState<string>("");
   const messageReactionMap = useMemo(() => {
     const messageReactions = message?.reactions;
@@ -54,7 +58,7 @@ const MessageReactionHolder = () => {
 
           <div className="reaction-users-list">
             {selectedReaction.length !== 0
-              ? messageReactionMap[selectedReaction].map((reactions) => {
+              ? messageReactionMap[selectedReaction]?.map((reactions) => {
                   return (
                     <div className="reactionUser">
                       <div className="userImg">
@@ -64,11 +68,22 @@ const MessageReactionHolder = () => {
                           <div>{reactions.member.name[0]}</div>
                         )}
                       </div>
-                      <div className="userName">{reactions.member.name}</div>
+                      <div className="userName">
+                        <div className="name">{reactions.member.name}</div>
+                        <div
+                          className="remove-emoji-text"
+                          onClick={() => {
+                            removeReactionLocally();
+                            removeReaction(reactions.reaction.toString());
+                          }}
+                        >
+                          {ConstantStrings.CLICK_TO_REMOVE_REACTION}
+                        </div>
+                      </div>
                     </div>
                   );
                 })
-              : message.reactions.map((reactions) => {
+              : message?.reactions?.map((reactions) => {
                   return (
                     <div className="reactionUser">
                       <div className="userImg">
@@ -78,7 +93,18 @@ const MessageReactionHolder = () => {
                           <div>{reactions.member.name[0]}</div>
                         )}
                       </div>
-                      <div className="userName">{reactions.member.name}</div>
+                      <div className="userName">
+                        <div className="name">{reactions.member.name}</div>
+                        <div
+                          className="remove-emoji-text"
+                          onClick={() => {
+                            removeReactionLocally();
+                            removeReaction(reactions.reaction.toString());
+                          }}
+                        >
+                          {ConstantStrings.CLICK_TO_REMOVE_REACTION}
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
