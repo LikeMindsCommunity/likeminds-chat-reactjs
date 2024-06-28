@@ -1,4 +1,3 @@
-// TODO-Sanjay
 import React, { useContext, useState } from "react";
 import InputContext from "../../context/InputContext";
 import { FileType } from "../../types/enums/Filetype";
@@ -13,7 +12,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import pdfViewIcon from "../../assets/img/pdf-document.svg";
 import crossIcon from "../../assets/img/carousel-cross-icon.svg";
 
-const MediaCarousel = () => {
+const LMMediaCarousel = () => {
   const {
     imagesAndVideosMediaList,
     documentsMediaList,
@@ -104,4 +103,4 @@ function renderLocalDocument(file: File) {
     </div>
   );
 }
-export default MediaCarousel;
+export default LMMediaCarousel;

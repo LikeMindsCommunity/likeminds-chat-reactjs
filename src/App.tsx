@@ -5,21 +5,29 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import { LMClient } from "./types/DataLayerExportsTypes";
 import Error from "./shared/components/Error";
-import Channel from "./components/channel/Channel";
+
 import LMParticipantList from "./components/LMParticipant/LMParticipantList";
-//import LMChatChatroom from "./components/channel/LMChatChatroom";
-import Header from "./components/Header/Header";
-import MessageList from "./components/LMMessageList/MessageList";
+import Header from "./components/LMHeader/LMHeader";
+import MessageList from "./components/LMMessageList/LMMessageList";
 import Input from "./components/LMInput/Input";
+import LMChannel from "./components/LMChannel/LMChannel";
+import {
+  CHANNEL_PATH,
+  ID_PATH,
+  PARTICIPANTS_PATH,
+  ROOT_PATH,
+} from "./shared/constants/lm.routes.constant";
+import {
+  API_KEY,
+  PLATFORM_CODE,
+  VERSION_CODE,
+} from "./shared/constants/lm.api.constant";
 
 const LMAppLayout = () => {
-  const myClient: LMClient = LMChatClient.setApiKey(
-    "ac8ee360-dedb-462f-93f1-fd400ca343a7",
-  )
-    .setPlatformCode("rt")
-    .setVersionCode(45)
+  const myClient: LMClient = LMChatClient.setApiKey(API_KEY)
+    .setPlatformCode(PLATFORM_CODE)
+    .setVersionCode(VERSION_CODE)
     .build();
-  console.log(myClient);
   return (
     <LMClientOverlayProvider client={myClient}>
       <Outlet />
@@ -30,15 +38,15 @@ const LMAppLayout = () => {
 // Routing
 export const appRoute = createBrowserRouter([
   {
-    path: "/",
+    path: ROOT_PATH,
     element: <LMAppLayout />,
     children: [
       {
-        path: "/",
-        element: <Channel />,
+        path: ROOT_PATH,
+        element: <LMChannel />,
         children: [
           {
-            path: "chat/:id",
+            path: CHANNEL_PATH + "/" + ID_PATH,
             element: (
               <>
                 <Header />
@@ -48,7 +56,7 @@ export const appRoute = createBrowserRouter([
             ),
           },
           {
-            path: "participants/:id",
+            path: PARTICIPANTS_PATH + "/" + ID_PATH,
             element: <LMParticipantList />,
           },
         ],
@@ -57,10 +65,5 @@ export const appRoute = createBrowserRouter([
     errorElement: <Error />,
   },
 ]);
-
-// const root = ReactDOM.createRoot(
-//   document.getElementById("root") as HTMLElement,
-// );
-// root.render(<RouterProvider router={appRoute} />);
 
 export default LMAppLayout;

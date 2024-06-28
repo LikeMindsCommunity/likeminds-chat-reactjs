@@ -1,15 +1,14 @@
 import { useContext } from "react";
+import { Menu, MenuItem } from "@mui/material";
 
-// Icons
-
-import menuIcon from "./../../assets/img/overflow-menu.svg";
+import useChatroomMenuOptions from "../../hooks/useChatroomMenuOptions";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
 import { getAvatar } from "../../shared/components/LMUserMedia";
-
-import { useMenu } from "../../hooks/useMenu";
-import { Menu, MenuItem } from "@mui/material";
-import useChatroomMenuOptions from "../../hooks/useChatroomMenuOptions";
 import { ChatroomAction } from "../../enums/chatroom-actions";
+import { useMenu } from "../../hooks/useMenu";
+
+// Icons
+import menuIcon from "./../../assets/img/overflow-menu.svg";
 
 const Header = () => {
   const { chatroom } = useContext(LMChatChatroomContext);
@@ -21,8 +20,6 @@ const Header = () => {
   const avatarContent = getAvatar({ imageUrl, name });
   return (
     <div className="lm-channel-header">
-      {/* <LMParticipantList /> */}
-
       <div className="lm-header-left">
         <div className="lm-channel-img">{avatarContent}</div>
         <div className="lm-channel-desc">

@@ -1,8 +1,5 @@
 import React, { useContext } from "react";
 import { useMenu } from "../../hooks/useMenu";
-// TODO change to default icons
-// import PermMediaIcon from "@mui/icons-material/PermMedia";
-// import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import { Menu, MenuItem } from "@mui/material";
 import InputContext from "../../context/InputContext";
 
@@ -11,7 +8,7 @@ import attachmentIcon from "./../../assets/img/attachment.svg";
 import uploadMedia from "./../../assets/img/upload-media.svg";
 import uploadDoc from "./../../assets/img/upload-doc.svg";
 
-const AttachmentsSelector = () => {
+const LMAttachmentsSelector = () => {
   const { openMenu, closeMenu, menuAnchor } = useMenu();
   const {
     addDocumentsMedia,
@@ -89,4 +86,4 @@ const AttachmentsSelector = () => {
   );
 };
 
-export default AttachmentsSelector;
+export default LMAttachmentsSelector;

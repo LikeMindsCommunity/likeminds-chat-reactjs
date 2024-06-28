@@ -3,7 +3,7 @@ import InputContext from "../../context/InputContext";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-const GiphySearch: React.FC = () => {
+const LMGiphySearch: React.FC = () => {
   const {
     gifs,
     gifMedia,
@@ -66,4 +66,4 @@ const GiphySearch: React.FC = () => {
   );
 };
 
-export default GiphySearch;
+export default LMGiphySearch;

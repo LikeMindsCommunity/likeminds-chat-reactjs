@@ -19,7 +19,7 @@ import { GiphyFetch } from "@giphy/js-fetch-api";
 // use @giphy/js-fetch-api to fetch gifs
 // apply for a new Web SDK key. Use a separate key for every platform (Android, iOS, Web)
 
-export const ReactGiffySearchComponent = () => {
+export const LMReactGiffySearchComponent = () => {
   const gf = new GiphyFetch("95y3zXD0UBxE5tNIHHfqhp09n00yiWOG");
 
   const searchTerm = "dogs";

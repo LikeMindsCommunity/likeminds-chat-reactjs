@@ -5,13 +5,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ConstantStrings } from "../../enums/common-strings";
 
 // Icons
-
 import joinIcon from "../../assets/img/icon_join.svg";
 import document from "../../assets/img/document.svg";
 import joinedIcon from "../../assets/img/icon_joined.svg";
 import { Utils } from "../../utils/helpers";
 import { useContext } from "react";
 import UserProviderContext from "../../context/UserProviderContext";
+import { CHANNEL_PATH } from "../../shared/constants/lm.routes.constant";
 
 function LMChannelList() {
   const {
@@ -57,7 +57,7 @@ function LMChannelList() {
                 className={`channel-media ${chatroomId?.toString() === chatroom.id.toString() ? "selected" : null}`}
                 onClick={() => {
                   markReadAChatroom(chatroom.id);
-                  navigate(`/chat/${chatroom.id}`);
+                  navigate(`/${CHANNEL_PATH}/${chatroom.id}`);
                 }}
               >
                 <div className="channel-icon">
@@ -143,7 +143,7 @@ function LMChannelList() {
                 className="channel-media"
                 key={chatroom.id.toString()}
                 onClick={() => {
-                  navigate(`/chat/${chatroom.id}`);
+                  navigate(`/${CHANNEL_PATH}/${chatroom.id}`);
                 }}
               >
                 <div className="channel-icon">
@@ -163,7 +163,6 @@ function LMChannelList() {
                     <div>{chatroom.header}</div>
 
                     <button
-                      // disabled={chatroom.follow_status ? true : false}
                       onClick={(e) => {
                         e.stopPropagation();
                         chatroom.follow_status

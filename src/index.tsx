@@ -1,15 +1,15 @@
-import LMChatChatroom from "./components/channel/LMChatChatroom";
-import Channel from "./components/channel/Channel";
+import Input from "./components/LMInput/Input";
+import Header from "./components/LMHeader/LMHeader";
+import Emojis from "./components/LMInput/LMEmojis";
+import GiSelector from "./components/LMInput/LMGifSelector";
+import LMChannel from "./components/LMChannel/LMChannel";
+import MediaCarousel from "./components/LMInput/LMCarousel";
+import GiphySearch from "./components/LMInput/LMGiphySearch";
+import LMChatChatroom from "./components/LMChannel/LMChatChatroom";
 import ScrollContainer from "./components/DualSidePagination/ScrollContainer";
-import Header from "./components/Header/Header";
 import LMChannelList from "./components/LMChannelList/LMChannelList";
 import LMClientOverlayProvider from "./components/LMChatProvider/LMClientOverlayProvider";
-import AttachmentsSelector from "./components/LMInput/AttachmentsSelector";
-import MediaCarousel from "./components/LMInput/Carousel";
-import Emojis from "./components/LMInput/Emojis";
-import GiphySearch from "./components/LMInput/GiphySearch";
-import GiSelector from "./components/LMInput/GiSelector";
-import Input from "./components/LMInput/Input";
+import AttachmentsSelector from "./components/LMInput/LMAttachmentsSelector";
 import LMChatTextArea from "./components/LMInput/LMChatTextArea";
 import { ReactGiffySearchComponent } from "./components/LMInput/ReactGiffySearchComponent";
 import Loader from "./components/LMLoader/Loader";
@@ -21,14 +21,14 @@ import MessageReactionHolder from "./components/LMMessage/MessageReactionHolder"
 import Reactions from "./components/LMMessage/Reactions";
 import ReportTagComponent from "./components/LMMessage/ReportTagComponent";
 import ReportTagsDialog from "./components/LMMessage/ReportTags";
-import DmReqBlock from "./components/LMMessageList/DmReqBlock";
+import DmReqBlock from "./components/LMMessageList/LMDMReqBlock";
 import LMMessageMiddleware from "./components/LMMessageList/LMMessageMiddleware";
-import MessageList from "./components/LMMessageList/MessageList";
+import MessageList from "./components/LMMessageList/LMMessageList";
 import LMParticipantList from "./components/LMParticipant/LMParticipantList";
 
 export {
+  LMChannel,
   LMChatChatroom,
-  Channel,
   ScrollContainer,
   Header,
   LMChannelList,

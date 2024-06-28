@@ -8,6 +8,7 @@ import {
   ViewParticipantsResponse,
 } from "../types/api-responses/viewParticipants";
 import { useNavigate, useParams } from "react-router-dom";
+import { CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
 
 export function useParticipants(): UseParticipantsReturns {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
@@ -19,7 +20,7 @@ export function useParticipants(): UseParticipantsReturns {
   const { id: chatroomId } = useParams();
   const navigate = useNavigate();
   const navigateBackToChatroom = useCallback(() => {
-    navigate(`/chat/${chatroomId}`);
+    navigate(`/${CHANNEL_PATH}/${chatroomId}`);
   }, [chatroomId, navigate]);
   const getMembers = useCallback(async () => {
     try {

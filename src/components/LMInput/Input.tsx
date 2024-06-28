@@ -5,14 +5,14 @@ import sendIcon from "./../../assets/img/send.svg";
 import { useInput } from "../../hooks/useInput";
 import InputContext from "../../context/InputContext";
 import LMChatTextArea from "./LMChatTextArea";
-import Emojis from "./Emojis";
+import Emojis from "./LMEmojis";
 import { Alert, Collapse, IconButton } from "@mui/material";
-import MediaCarousel from "./Carousel";
-import AttachmentsSelector from "./AttachmentsSelector";
+import MediaCarousel from "./LMCarousel";
+import AttachmentsSelector from "./LMAttachmentsSelector";
 import giffyIcon from "./../../assets/img/giffy.png";
 // import GiphySearch from "./GiphySearch";
 
-import GiphySearch from "./GiphySearch";
+import GiphySearch from "./LMGiphySearch";
 import { useContext, useMemo, useState } from "react";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
 import UserProviderContext from "../../context/UserProviderContext";

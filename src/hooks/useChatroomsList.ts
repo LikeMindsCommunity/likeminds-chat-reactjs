@@ -18,6 +18,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import UserProviderContext from "../context/UserProviderContext";
 import { onValue, ref } from "firebase/database";
 import { CustomActions } from "../customActions";
+import { CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
 interface ChatroomProviderInterface {
   dmChatroomList: DMChatroomResponse[] | null;
   loadMoreDmChatrooms: boolean;
@@ -160,8 +161,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
         });
       });
 
-      navigate(`/chat/${collabcardId}`);
-      console.log(joinCall);
+      navigate(`/${CHANNEL_PATH}/${collabcardId}`);
     } catch (error) {
       console.log(error);
     }

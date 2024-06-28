@@ -7,7 +7,7 @@ import { EmojiData } from "../../types/models/emojiData";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 
-const Emojis = () => {
+const LMEmojis = () => {
   const { menuAnchor, openMenu, closeMenu } = useMenu();
   const { addEmojiToText } = useContext(InputContext);
   const onEmojiSelect = (emojiData: EmojiData, mouseEvent: MouseEvent) => {
@@ -40,4 +40,4 @@ const Emojis = () => {
   );
 };
 
-export default Emojis;
+export default LMEmojis;

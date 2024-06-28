@@ -9,7 +9,7 @@ import LMMessageMiddleware from "./LMMessageMiddleware";
 
 import { CircularProgress } from "@mui/material";
 
-const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
+const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
   (props) => {
     const { MessageComponent } = props;
     const scrollToBottom = () => {
@@ -78,4 +78,4 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
   },
 );
 
-export default MessageList;
+export default LMMessageList;

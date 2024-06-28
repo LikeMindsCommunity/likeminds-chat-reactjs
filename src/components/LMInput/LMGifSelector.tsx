@@ -2,10 +2,10 @@ import React from "react";
 import { Menu, MenuItem } from "@mui/material";
 import giffyIcon from "../../assets/img/giffy.png";
 import { useMenu } from "../../hooks/useMenu";
-import GiphySearch from "./GiphySearch";
+import GiphySearch from "./LMGiphySearch";
 // import { ReactGiffySearchComponent } from "./ReactGiffySearchComponent";
 
-const GiSelector: React.FC = () => {
+const LMGifSelector: React.FC = () => {
   const { menuAnchor, openMenu, closeMenu } = useMenu();
 
   return (
@@ -37,4 +37,4 @@ const GiSelector: React.FC = () => {
   );
 };
 
-export default GiSelector;
+export default LMGifSelector;

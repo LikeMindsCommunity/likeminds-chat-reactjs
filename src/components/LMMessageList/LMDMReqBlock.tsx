@@ -1,4 +1,4 @@
-function DmReqBlock() {
+function LMDmReqBlock() {
   return (
     <div className="dmReqBlock">
       <p>
@@ -14,4 +14,4 @@ function DmReqBlock() {
   );
 }
 
-export default DmReqBlock;
+export default LMDmReqBlock;

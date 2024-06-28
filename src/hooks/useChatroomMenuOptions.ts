@@ -5,6 +5,10 @@ import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import UserProviderContext from "../context/UserProviderContext";
 import { useNavigate } from "react-router-dom";
 import { CustomActions } from "../customActions";
+import {
+  PARTICIPANTS_PATH,
+  ROOT_PATH,
+} from "../shared/constants/lm.routes.constant";
 
 function useChatroomMenuOptions(): UseChatroomMenuOptions {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
@@ -44,7 +48,6 @@ function useChatroomMenuOptions(): UseChatroomMenuOptions {
           );
         }
       }
-      console.log(call);
     } catch (error) {
       console.log(error);
     }
@@ -63,9 +66,8 @@ function useChatroomMenuOptions(): UseChatroomMenuOptions {
             detail: chatroom?.chatroom.id,
           }),
         );
-        navigate("/");
+        navigate(ROOT_PATH);
       }
-      console.log(call);
     } catch (error) {
       console.log(error);
     }
@@ -73,7 +75,7 @@ function useChatroomMenuOptions(): UseChatroomMenuOptions {
   const onViewParticipants = async () => {
     try {
       //
-      navigate(`/participants/${chatroom?.chatroom.id}`);
+      navigate(`/${PARTICIPANTS_PATH}/${chatroom?.chatroom.id}`);
     } catch (error) {
       console.log(error);
     }
