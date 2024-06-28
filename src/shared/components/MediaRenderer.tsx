@@ -18,6 +18,7 @@ const MediaRenderer = ({ attachments }) => {
   const name = message?.member.name;
   const avatarContent = getAvatar({ imageUrl, name });
 
+  console.log(messageListContainerRef);
   const handleClose = () => setShow(false);
 
   const handleError = (e) => {
@@ -108,11 +109,13 @@ const MediaRenderer = ({ attachments }) => {
       <Modal
         show={show}
         onHide={handleClose}
-        size="lg"
-        // backdrop={false}
+        centered
+        // size="lg"
+        backdrop={false}
         dialogClassName="lm-dialog-modal"
-        contentClassName="lm-content-modal"
+        contentClassName="lm-dialog-content-modal"
         container={messageListContainerRef.current}
+        // container={messageListContainerRef.current}
       >
         <Modal.Header closeButton>
           <Modal.Title>
@@ -128,18 +131,20 @@ const MediaRenderer = ({ attachments }) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Carousel
-            activeIndex={currentIndex}
-            onSelect={(selectedIndex) => setCurrentIndex(selectedIndex)}
-            indicators={attachments.length > 1}
-            controls={attachments.length > 1}
-          >
-            {attachments.map((attachment, index) => (
-              <Carousel.Item key={index} className="lm-modal-media">
-                {renderMedia(attachment, index)}
-              </Carousel.Item>
-            ))}
-          </Carousel>
+          <div className="modal-content-wrapper">
+            <Carousel
+              activeIndex={currentIndex}
+              onSelect={(selectedIndex) => setCurrentIndex(selectedIndex)}
+              indicators={attachments.length > 1}
+              controls={attachments.length > 1}
+            >
+              {attachments.map((attachment, index) => (
+                <Carousel.Item key={index} className="lm-modal-media">
+                  {renderMedia(attachment, index)}
+                </Carousel.Item>
+              ))}
+            </Carousel>
+          </div>
         </Modal.Body>
       </Modal>
     </div>

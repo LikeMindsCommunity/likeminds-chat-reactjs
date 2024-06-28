@@ -96,16 +96,24 @@ const Message = () => {
 
                 {message.og_tags ? (
                   <div className="lm-og-tags">
-                    <div className="lm-og-img">
-                      <img
-                        src={message.og_tags.image || linkImg}
-                        alt="image"
-                        onError={handleImageError}
-                      />
-                    </div>
-                    <div className="lm-og-title">{message?.og_tags?.title}</div>
-                    <div className="lm-og-desc">
-                      {message?.og_tags?.description}
+                    {message.og_tags.image ? (
+                      <>
+                        <div className="lm-og-img">
+                          <img
+                            src={message.og_tags.image || linkImg}
+                            alt="image"
+                            onError={handleImageError}
+                          />
+                        </div>
+                      </>
+                    ) : null}
+                    <div className="lm-og-content">
+                      <div className="lm-og-title">
+                        {message?.og_tags?.title}
+                      </div>
+                      <div className="lm-og-desc">
+                        {message?.og_tags?.description}
+                      </div>
                     </div>
                   </div>
                 ) : null}
