@@ -10,7 +10,7 @@ import { fromCognitoIdentityPool } from "@aws-sdk/credential-provider-cognito-id
 import { FileType } from "../types/enums/Filetype";
 import { FileTypeInitials } from "../enums/file-type-initials";
 import Member from "../types/models/member";
-import { supportedTLDs, validMatchingString } from "./TLDs";
+import { validMatchingString } from "./TLDs";
 type StringTagType = {
   text: string;
   type: number;
