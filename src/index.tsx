@@ -21,6 +21,10 @@ import MessageReactionHolder from "./components/LMMessage/MessageReactionHolder"
 import Reactions from "./components/LMMessage/Reactions";
 import ReportTagComponent from "./components/LMMessage/ReportTagComponent";
 import ReportTagsDialog from "./components/LMMessage/ReportTags";
+import DmReqBlock from "./components/LMMessageList/DmReqBlock";
+import LMMessageMiddleware from "./components/LMMessageList/LMMessageMiddleware";
+import MessageList from "./components/LMMessageList/MessageList";
+import LMParticipantList from "./components/LMParticipant/LMParticipantList";
 
 export {
   LMChatChatroom,
@@ -46,4 +50,8 @@ export {
   Reactions,
   ReportTagComponent,
   ReportTagsDialog,
+  DmReqBlock,
+  LMMessageMiddleware,
+  MessageList,
+  LMParticipantList,
 };

@@ -8,9 +8,6 @@ import useConversations from "../../hooks/useConversations";
 import LMMessageMiddleware from "./LMMessageMiddleware";
 
 import { CircularProgress } from "@mui/material";
-import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
-import { IconButton } from "@mui/material";
-// import DmReqBlock from "./DmReqBlock";
 
 const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
   (props) => {
@@ -39,11 +36,6 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
     }
     return (
       <div className="lm-channel" ref={messageListContainerRef}>
-        {/* <span className="scroll-to-bottom-shortcut">
-          <IconButton onClick={scrollToBottom}>
-            <KeyboardDoubleArrowDownIcon fontSize="small" />
-          </IconButton>
-        </span> */}
         <MessageListContext.Provider
           value={{
             conversations,
@@ -57,11 +49,11 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
             bottomReferenceDiv={bottomReferenceDiv}
             dataLength={conversations?.length || 0}
             nextOnScrollBottom={() => {
-              console.log("bottom scroll function call");
+              // console.log("bottom scroll function call");
             }}
             nextOnScrollTop={() => {
               if (getChatroomConversationsOnTopScroll) {
-                console.log("calling");
+                // console.log("calling");
                 getChatroomConversationsOnTopScroll();
               }
             }}
@@ -87,22 +79,3 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
 );
 
 export default MessageList;
-
-{
-  /* <div className="data-pill">
-  This is the beginning of your direct message with Marvin McKinny
-</div>
-
-<div className="data-pill">Jan 4</div>
-
-<div className="conversation receiver">
-  <div className="name">Name</div>
-  <div className="msg">Can we connect sometime?</div>
-  <div className="time">10:30</div>
-</div>
-
-<div className="conversation sender">
-  <div className="msg">Sender's message goes here</div>
-  <div className="time">10:30</div>
-</div> */
-}
