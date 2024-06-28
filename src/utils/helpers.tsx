@@ -2,13 +2,14 @@ import React, { MutableRefObject, ReactNode } from "react";
 import {
   S3Client,
   PutObjectCommand,
-  PutObjectOutput,
+  // PutObjectOutput,
   PutObjectRequest,
 } from "@aws-sdk/client-s3";
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-provider-cognito-identity";
 // import { LMAppAwsKeys } from "./constants/lmAppAwsKeys";
 import { FileType } from "../types/enums/Filetype";
 import { FileTypeInitials } from "../enums/file-type-initials";
+import Member from "../types/models/member";
 type StringTagType = {
   text: string;
   type: number;
@@ -102,6 +103,7 @@ export class Utils {
   };
 
   static parseAnser(answer: string): JSX.Element[] {
+    console.log(answer);
     const user_splitted_string = answer.split(this.REGEX_USER_SPLITTING);
     const users_matched = answer.match(this.REGEX_USER_TAGGING);
     const combinedMatchesArray: StringTagType[] = [];
@@ -384,7 +386,7 @@ export class Utils {
     media: File,
     conversationId: string,
     chatroomId: string,
-  ): Promise<PutObjectOutput> {
+  ): Promise<unknown> {
     const s3Client = this.getAWS();
     const { Key, Bucket, Body, ACL, ContentType } = this.buildUploadParams(
       media,
@@ -398,7 +400,8 @@ export class Utils {
       ACL,
       ContentType,
     });
-    return s3Client.send(command);
+    await s3Client.send(command);
+    return Key || "";
   }
 
   private static buildUploadParams(
@@ -431,13 +434,114 @@ export class Utils {
           : FileTypeInitials.OTHERS;
     return `files/collabcard/${chatroomId}/conversation/${conversationId}/${conversationInitials}${Date.now()}.${media.name.split(".").reverse()[0]}`;
   }
-  static generateFileUrl(
-    chatroomId: string,
-    conversationId: string,
-    media: File,
+  static generateFileUrl(keyName: string) {
+    return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${keyName}`;
+  }
+  static returnCSSForTagging(
+    refObject: React.MutableRefObject<HTMLDivElement | null>,
   ) {
-    const key = this.generateKey(chatroomId, conversationId, media);
-    return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${key}`;
+    if (!(refObject && refObject.current)) {
+      return;
+    }
+    const selection = window.getSelection();
+    if (!selection) {
+      return;
+    }
+    const resObject: {
+      left: string | number;
+      position: string;
+      top: string | number;
+    } = {
+      left: "0px",
+      position: "absolute",
+      top: "0px",
+    };
+    if (selection === null) {
+      return {};
+    }
+    const focusNodeParentBoundings =
+      selection.focusNode?.parentElement?.getBoundingClientRect();
+    resObject.top = (
+      focusNodeParentBoundings!.top -
+      refObject.current!.getBoundingClientRect()!.top +
+      30
+    )
+      .toString()
+      .concat("px");
+    const leftSubstring =
+      selection.focusNode?.parentElement?.textContent?.substring(
+        0,
+        selection.focusOffset - 1,
+      );
+    const width = Utils.getCharacterWidth(leftSubstring!);
+    if (width > 264) {
+      resObject.left = "264px";
+    } else {
+      resObject.left = width;
+    }
+    resObject.position = "absolute";
+    return resObject;
+  }
+  static setCursorAtEnd(
+    contentEditableDiv: React.MutableRefObject<HTMLDivElement | null>,
+  ): void {
+    if (!contentEditableDiv.current) return;
+
+    const range = document.createRange();
+    const selection = window.getSelection();
+
+    range.selectNodeContents(contentEditableDiv.current);
+    range.collapse(false);
+
+    if (selection) {
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+
+    contentEditableDiv.current.focus();
+  }
+  static setTagUserImage(user: Member) {
+    const imageLink = user?.imageUrl || user?.image_url;
+    if (imageLink !== "") {
+      return (
+        <img
+          src={imageLink}
+          alt={""}
+          style={{
+            width: "36px",
+            height: "36px",
+            borderRadius: "50%",
+          }}
+        />
+      );
+    } else {
+      return (
+        <div
+          style={{
+            width: "36px",
+            height: "36px",
+            borderRadius: "50%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#f5f5f5",
+            fontSize: "14px",
+            fontWeight: "bold",
+            color: "#333",
+          }}
+          className="reply-editor"
+        >
+          {user?.name?.split(" ").map((part: string) => {
+            return part.charAt(0)?.toUpperCase();
+          })}
+        </div>
+      );
+    }
+  }
+  static detectLinks(text: string) {
+    const regex = /\b(?:https?:\/\/)?(?:[\w.]+\.\w+)(?:(?<=\\n)|\b)/g;
+    const links = text?.match(regex);
+    return links ? links : [];
   }
 }
 export interface TagInfo {

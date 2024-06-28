@@ -9,6 +9,7 @@ interface LMMessageContextInterface {
   deleteMessage: ZeroArgVoidReturns;
   editMessageLocally: OneArgVoidReturns<Conversation>;
   addReactionLocally: OneArgVoidReturns<EmojiData>;
+  removeReactionLocally: ZeroArgVoidReturns;
 }
 
 const LMMessageContext = React.createContext<LMMessageContextInterface>(

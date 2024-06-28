@@ -59,7 +59,9 @@ function useChatroomMenuOptions(): UseChatroomMenuOptions {
       if (call.success) {
         setNewChatroom(null);
         dispatchEvent(
-          new CustomEvent(CustomActions.CHATROOM_LEAVE_ACTION_COMPLETED),
+          new CustomEvent(CustomActions.CHATROOM_LEAVE_ACTION_COMPLETED, {
+            detail: chatroom?.chatroom.id,
+          }),
         );
         navigate("/");
       }

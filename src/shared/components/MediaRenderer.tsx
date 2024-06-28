@@ -2,15 +2,21 @@ import React, { useContext, useState } from "react";
 import { Modal, Carousel } from "react-bootstrap";
 import LMMessageContext from "../../context/MessageContext";
 import pdfIcon from "../../assets/img/pdf-document.svg";
+import { getAvatar } from "./LMUserMedia";
+import MessageListContext from "../../context/MessageListContext";
 
 const MediaRenderer = ({ attachments }) => {
   const [show, setShow] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  // const {message} = useContext(LMMessageContext)
+  const { message } = useContext(LMMessageContext);
+  const { messageListContainerRef } = useContext(MessageListContext);
   const handleShow = (index) => {
     setCurrentIndex(index);
     setShow(true);
   };
+  const imageUrl = message?.member.imageUrl;
+  const name = message?.member.name;
+  const avatarContent = getAvatar({ imageUrl, name });
 
   const handleClose = () => setShow(false);
 
@@ -26,24 +32,33 @@ const MediaRenderer = ({ attachments }) => {
     }
 
     const fileType = attachment.url.split(".").pop().toLowerCase();
+    const fileTypeOhter = fileType.split("&")[0];
     const className = isThumbnail ? "thumbnail" : "carousel-media";
 
     // console.log(`Rendering attachment at index ${index}:`, attachment);
 
     if (
-      ["jpeg", "jpg", "png", "gif", "bmp", "tiff", "tif"].includes(fileType)
+      ["jpeg", "jpg", "png", "gif", "bmp", "tiff", "tif"].includes(fileType) ||
+      ["jpeg", "jpg", "png", "gif", "bmp", "tiff", "tif"].includes(
+        fileTypeOhter,
+      )
     ) {
       return (
-        <img
-          src={attachment.url}
-          alt="img"
-          key={index}
-          className={className}
-          onClick={() => handleShow(index)}
-          onError={handleError}
-        />
+        <>
+          <img
+            src={attachment.url}
+            alt="img"
+            key={index}
+            className={className}
+            onClick={() => handleShow(index)}
+            onError={handleError}
+          />
+        </>
       );
-    } else if (["mp4", "mov", "avi", "mkv", "wmv", "flv"].includes(fileType)) {
+    } else if (
+      ["mp4", "mov", "avi", "mkv", "wmv", "flv"].includes(fileType) ||
+      ["mp4", "mov", "avi", "mkv", "wmv", "flv"].includes(fileTypeOhter)
+    ) {
       return (
         <video
           controls
@@ -57,7 +72,6 @@ const MediaRenderer = ({ attachments }) => {
         </video>
       );
     } else if (fileType === "pdf") {
-      console.log(attachment.name);
       return (
         <div>
           <a href={attachment.url} target="_blank" className="pdf">
@@ -65,25 +79,15 @@ const MediaRenderer = ({ attachments }) => {
             <div className="pdfName">{attachment.name}</div>
           </a>
         </div>
-        // <embed
-        //   src={attachment.url}
-        //   type="application/pdf"
-        //   width="100"
-        //   height="100"
-        //   key={index}
-        //   className={className}
-        //   onClick={() => handleShow(index)}
-        // />
       );
     } else {
-      // console.log(message)
       console.error(`Unsupported file type at index ${index}: ${fileType}`);
       return null;
     }
   };
 
   return (
-    <div className="lm-media">
+    <div className="mediaBox">
       {attachments.length === 1 ? (
         renderMedia(attachments[0], 0)
       ) : (
@@ -101,9 +105,27 @@ const MediaRenderer = ({ attachments }) => {
         </div>
       )}
 
-      <Modal show={show} onHide={handleClose} size="lg" centered>
+      <Modal
+        show={show}
+        onHide={handleClose}
+        size="lg"
+        // backdrop={false}
+        dialogClassName="lm-dialog-modal"
+        contentClassName="lm-content-modal"
+        container={messageListContainerRef.current}
+      >
         <Modal.Header closeButton>
-          {/* <Modal.Title>Attachments</Modal.Title> */}
+          <Modal.Title>
+            <div className="lm-carousel-header">
+              <div className="lm-profile">{avatarContent}</div>
+              <div className="lm-profile-info">
+                <div className="lm-name">{message?.member.name}</div>
+                <div className="lm-desc">
+                  {message?.date} at {message?.created_at}
+                </div>
+              </div>
+            </div>
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Carousel

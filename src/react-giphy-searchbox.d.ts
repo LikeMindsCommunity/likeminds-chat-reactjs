@@ -1,21 +1,23 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-declare module "react-giphy-searchbox" {
-  import { ComponentType } from "react";
+declare module "react-giphy-searchbox";
 
-  interface GiphySearchboxProps {
-    apiKey: string;
-    // Define other props here as needed
-    onSelect?: (item: any) => void;
-    masonryConfig?: Array<{
-      columns: number;
-      imageWidth: number;
-      gutter: number;
-    }>;
-    gifPerPage?: number;
-    rating?: string;
-    searchPlaceholder?: string;
-  }
+// /* eslint-disable @typescript-eslint/no-explicit-any */
+// declare module "react-giphy-searchbox" {
+//   import { ComponentType } from "react";
 
-  const GiphySearchbox: ComponentType<GiphySearchboxProps>;
-  export default GiphySearchbox;
-}
+//   interface GiphySearchboxProps {
+//     apiKey: string;
+//     // Define other props here as needed
+//     onSelect?: (item: any) => void;
+//     masonryConfig?: Array<{
+//       columns: number;
+//       imageWidth: number;
+//       gutter: number;
+//     }>;
+//     gifPerPage?: number;
+//     rating?: string;
+//     searchPlaceholder?: string;
+//   }
+
+//   const GiphySearchbox: ComponentType<GiphySearchboxProps>;
+//   export default GiphySearchbox;
+// }

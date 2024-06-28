@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ChangeEvent,
+  Dispatch,
   KeyboardEvent,
   MutableRefObject,
   useCallback,
@@ -20,6 +22,11 @@ import { PostConversationResponse } from "../types/api-responses/postConversatio
 import { FileType } from "../types/enums/Filetype";
 import { CustomActions } from "../customActions";
 import { useParams } from "react-router-dom";
+import {
+  GetOgTagResponse,
+  OgTag,
+} from "../types/api-responses/getOgTagResponse";
+import { Gif } from "../types/models/GifObject";
 
 export function useInput(): UseInputReturns {
   const { id: chatroomId } = useParams();
@@ -41,14 +48,48 @@ export function useInput(): UseInputReturns {
     null,
   );
   const [fetchMoreTags, setFetchMoreTags] = useState<boolean>(true);
-
+  const [ogTags, setOgTags] = useState<OgTag | null>(null);
+  const [gifMedia, setGifMedia] = useState<Gif | null>(null);
   // refs
   const inputBoxRef = useRef<HTMLDivElement | null>(null);
   const inputWrapperRef = useRef<HTMLDivElement | null>(null);
   const taggingListPageCount = useRef<number>(1);
   const chatroomInputTextRef = useRef<Record<string, string>>({});
 
+  // Gifs
+  const [query, setQuery] = useState("");
+  const [gifs, setGifs] = useState<Gif[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [openGifCollapse, setOpenGifCollapse] = useState<boolean>(false);
+  const apiKey = "9hQZNoy1wtM2b1T4BIx8B0Cwjaje3UUR";
+
+  // useEffect(() => {
+  //   // Fetch trending GIFs initially
+  //   const url = `https://api.giphy.com/v1/gifs/trending?api_key=${apiKey}&limit=10`;
+  //   fetchGifs(url);
+  // }, []);
+
   //   api calls
+  const fetchGifs = async (url: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(url);
+      const result = await response.json();
+      setGifs(result.data);
+    } catch (err) {
+      setError("Failed to fetch GIFs. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = async () => {
+    const url = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${query}&limit=100`;
+    fetchGifs(url);
+  };
+
   const fetchTaggingList = useCallback(
     async (pg?: number) => {
       try {
@@ -62,11 +103,14 @@ export function useInput(): UseInputReturns {
         );
         if (call.success) {
           setMatchedTagMembersList((previousState) => {
-            return [...previousState, ...call.data.members];
+            return [
+              ...previousState,
+              ...(call.data?.members || call.data.community_members || []),
+            ];
           });
           incrementPageNo();
         }
-        if (!call.data.members.length) {
+        if (!call.data.members?.length && call.data.community_members?.length) {
           setFetchMoreTags(false);
         }
       } catch (error) {
@@ -83,7 +127,11 @@ export function useInput(): UseInputReturns {
       const messageText = Utils.extractTextFromNode(
         inputBoxRef.current!,
       ).trim();
-      if (!messageText || !messageText.length) {
+      if (
+        (!messageText || !messageText.length) &&
+        !imagesAndVideosMediaList?.length &&
+        imagesAndVideosMediaList?.length
+      ) {
         return;
       }
       if (Utils.extractTextFromNode(inputBoxRef.current!).trim())
@@ -110,6 +158,7 @@ export function useInput(): UseInputReturns {
         text: messageText,
         chatroomId: parseInt(chatroomData.id.toString()),
         hasFiles: false,
+        ogTags: ogTags || undefined,
       };
       const attachmentsList =
         imagesAndVideosMediaList || documentsMediaList || [];
@@ -117,12 +166,38 @@ export function useInput(): UseInputReturns {
         postConversationCallConfig.hasFiles = true;
         postConversationCallConfig.attachmentCount = attachmentsList.length;
       }
+      if (gifMedia) {
+        postConversationCallConfig.hasFiles = true;
+        postConversationCallConfig.attachmentCount = 1;
+      }
       const postConversationsCall: PostConversationResponse =
         await lmChatclient?.postConversation(postConversationCallConfig);
       setFocusOnInputField();
+      removeOgTag();
+      if (gifMedia) {
+        setGifMedia(null);
+        const onUploadConfig = {
+          conversationId: parseInt(
+            postConversationsCall.data.conversation.id.toString(),
+            10,
+          ),
+          filesCount: 1,
+          index: 0,
+          meta: {
+            size: parseInt(gifMedia.images.fixed_height.size.toString()),
+            // size: parseInt(giphyUrl?.images?.fixed_height?.size?.toString()),
+          },
+          name: gifMedia?.title,
+          type: gifMedia?.type,
+          url: gifMedia?.images?.fixed_height?.url,
+          thumbnailUrl: gifMedia?.images["480w_still"]?.url,
+        };
+        lmChatclient?.putMultimedia(onUploadConfig);
+        setOpenGifCollapse(false);
+        return;
+      }
       for (let index = 0; index < attachmentsList.length; index++) {
         const conversation = postConversationsCall.data.conversation;
-        console.log(conversation);
         const attachment = attachmentsList[index];
         const { name, size, type } = attachment;
         if (type.includes(FileType.video)) {
@@ -156,22 +231,17 @@ export function useInput(): UseInputReturns {
                     attachment,
                     conversation.id.toString(),
                     chatroom.chatroom.id.toString(),
-                  ).then(() => {
-                    const thumbnailUrl = Utils.generateFileUrl(
-                      chatroom.chatroom.id.toString(),
-                      conversation.id.toString(),
-                      thumbnailFile,
-                    );
-
+                  ).then((response: any) => {
+                    const thumbnailUrl = Utils.generateFileUrl(response);
+                    // const thumbnailUrl = response;
                     Utils.uploadMedia(
                       attachment,
                       conversation.id.toString(),
                       chatroom.chatroom.id.toString(),
-                    ).then(() => {
+                    ).then((response) => {
+                      // const fileUrl = response;
                       const fileUrl = Utils.generateFileUrl(
-                        chatroom.chatroom.id.toString(),
-                        conversation.id.toString(),
-                        attachment,
+                        response as unknown as string,
                       );
                       const onUploadConfig: {
                         conversationId: number;
@@ -192,7 +262,7 @@ export function useInput(): UseInputReturns {
                         meta: { size: size },
                         name: name,
                         type: "video",
-                        url: fileUrl,
+                        url: (fileUrl as string) || "",
                         thumbnailUrl: thumbnailUrl,
                       };
 
@@ -212,12 +282,10 @@ export function useInput(): UseInputReturns {
             attachment,
             conversation.id.toString(),
             chatroom.chatroom.id.toString(),
-          ).then(() => {
-            const fileUrl = Utils.generateFileUrl(
-              chatroom.chatroom.id.toString(),
-              conversation.id.toString(),
-              attachment,
-            );
+          ).then((response: any) => {
+            console.log(response);
+            // const fileUrl = response;
+            const fileUrl = Utils.generateFileUrl(response);
             const onUploadConfig: {
               conversationId: number;
               filesCount: number;
@@ -238,13 +306,15 @@ export function useInput(): UseInputReturns {
               name: name,
               // type: type,
               type: type.includes(FileType.image) ? FileType.image : "pdf",
-              url: fileUrl,
+              url: fileUrl || "",
               thumbnail_url: null,
             };
 
             lmChatclient?.putMultimedia(onUploadConfig);
           });
         }
+        setImagesAndVideosMediaList([]);
+        setDocumentMediaList([]);
       }
     } catch (error) {
       console.log(error);
@@ -252,6 +322,9 @@ export function useInput(): UseInputReturns {
   };
 
   // normal functions
+  const removeOgTag = () => {
+    setOgTags(null);
+  };
   const emptyInputField = () => {
     while (inputBoxRef.current?.firstChild) {
       inputBoxRef.current.removeChild(inputBoxRef.current?.firstChild);
@@ -377,6 +450,29 @@ export function useInput(): UseInputReturns {
     });
     setDocumentMediaList(mediaListCopy);
   };
+  const gifSearchQuery = (query: string) => {
+    setQuery(query);
+  };
+  const removeMediaFromImageList = (index: number) => {
+    setImagesAndVideosMediaList((currentList) => {
+      if (!currentList) {
+        return null;
+      }
+      return currentList?.filter((mediaFile, fileIndex) => {
+        return index !== fileIndex;
+      });
+    });
+  };
+  const removeMediaFromDocumentList = (index: number) => {
+    setDocumentMediaList((currentList) => {
+      if (!currentList) {
+        return null;
+      }
+      return currentList?.filter((mediaFile, fileIndex) => {
+        return index !== fileIndex;
+      });
+    });
+  };
   // effects
   useEffect(() => {
     if (tagSearchKey !== null) {
@@ -402,7 +498,32 @@ export function useInput(): UseInputReturns {
       storeInputOnChatroomLeave(chatroomId || "");
     };
   }, [chatroomId, manageInputOnChatroomChange, storeInputOnChatroomLeave]);
+  useEffect(() => {
+    const checkForLinksTimeout = setTimeout(async () => {
+      try {
+        const linksDetected = Utils.detectLinks(inputText || "");
+        if (linksDetected.length) {
+          const firstLinkDetected = linksDetected[0];
+          if (firstLinkDetected.toString() !== ogTags?.url.toString()) {
+            const getOgTagData: GetOgTagResponse =
+              await lmChatclient?.decodeUrl({ url: firstLinkDetected });
+            if (getOgTagData?.success) {
+              setOgTags(getOgTagData.data.og_tags);
+            }
+          }
+        } else {
+          if (ogTags !== null) {
+            setOgTags(null);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }, 500);
 
+    return () => clearTimeout(checkForLinksTimeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lmChatclient, inputText]);
   return {
     inputBoxRef,
     inputWrapperRef,
@@ -418,6 +539,22 @@ export function useInput(): UseInputReturns {
     documentsMediaList,
     imagesAndVideosMediaList,
     postMessage,
+    getTaggingMembers: fetchTaggingList,
+    removeOgTag,
+    ogTag: ogTags,
+    gifMedia,
+    gifs: gifs,
+    loadingGifs: loading,
+    errorOnGifs: error,
+    gifSearchQuery: gifSearchQuery,
+    openGifCollapse: openGifCollapse,
+    setOpenGifCollapse: setOpenGifCollapse,
+    fetchGifs: fetchGifs,
+    handleGifSearch: handleSearch,
+    gifQuery: query,
+    setGifMedia,
+    removeMediaFromImageList,
+    removeMediaFromDocumentList,
   };
 }
 
@@ -436,6 +573,22 @@ export interface UseInputReturns {
   imagesAndVideosMediaList: File[] | null;
   documentsMediaList: File[] | null;
   postMessage: ZeroArgVoidReturns;
+  getTaggingMembers: OneOptionalArgVoidReturns<number>;
+  removeOgTag: ZeroArgVoidReturns;
+  ogTag: OgTag | null;
+  setGifMedia: Dispatch<Gif | null>;
+  gifMedia: Gif | null;
+  gifs: Gif[];
+  loadingGifs: boolean;
+  errorOnGifs: string | null;
+  gifQuery: string;
+  gifSearchQuery: OneArgVoidReturns<string>;
+  openGifCollapse: boolean;
+  setOpenGifCollapse: Dispatch<boolean>;
+  fetchGifs: OneArgVoidReturns<string>;
+  handleGifSearch: ZeroArgVoidReturns;
+  removeMediaFromImageList: OneArgVoidReturns<number>;
+  removeMediaFromDocumentList: OneArgVoidReturns<number>;
 }
 // single compulsary argument
 export type onChangeUpdateInputText = (
@@ -445,6 +598,7 @@ export type onKeydownEvent = (change: KeyboardEvent<HTMLDivElement>) => void;
 export type ZeroArgVoidReturns = () => void;
 export type OneArgVoidReturns<T> = (arg: T) => void;
 export type TwoArgVoidReturns<T, S> = (argOne: T, ardTwo: S) => void;
+export type OneOptionalArgVoidReturns<T> = (arg?: T) => void;
 
 // "files/collabcard/$chatroom_id/conversation/$conversation_id/initials of media/current time in milliseconds.fileextension"
 // var initial = when (mediaType) {

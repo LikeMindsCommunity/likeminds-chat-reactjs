@@ -26,6 +26,7 @@ interface UseConversations {
   showLoader: MutableRefObject<boolean>;
   // showLoader: boolean;
   bottomReferenceDiv: MutableRefObject<HTMLDivElement | null>;
+  messageListContainerRef: MutableRefObject<HTMLDivElement | null>;
 }
 
 export default function useConversations(): UseConversations {
@@ -40,6 +41,7 @@ export default function useConversations(): UseConversations {
   const newChatroomConversationsLoaded = useRef<boolean>(false);
   const lastMessageRef = useRef<number | null>(null);
   const bottomReferenceDiv = useRef<HTMLDivElement | null>(null);
+  const messageListContainerRef = useRef<HTMLDivElement | null>(null);
   // const [showLoader, setShowLoader] = useState<boolean>(false);
   const showLoader = useRef<boolean>(true);
   // const params = useParams();
@@ -72,7 +74,6 @@ export default function useConversations(): UseConversations {
           if (!chatroomConversationsCall.data.conversations.length) {
             setLoadMore(false);
           } else {
-            console.log("A");
             setConversations((currentConversations) => {
               const newConversations = [
                 ...chatroomConversationsCall.data.conversations,
@@ -146,7 +147,7 @@ export default function useConversations(): UseConversations {
         return logError(error);
       }
     },
-    [lmChatclient],
+    [chatroomId, lmChatclient],
   );
 
   function resetConversations() {
@@ -223,15 +224,8 @@ export default function useConversations(): UseConversations {
           getChatroomConversationsWithID(collabcardId)
             .then((targetConversation) => {
               setConversations((currentConversations) => {
-                console.log("B");
                 const targetConversationObject = targetConversation[0];
-                console.log(
-                  `the current conversations are: ${currentConversations}`,
-                );
-                console.log(currentConversations);
-                console.log(
-                  `the targetConversation is: ${targetConversationObject}`,
-                );
+
                 const alreadyHasIt = currentConversations?.some(
                   (conversationObject) => {
                     if (
@@ -244,7 +238,6 @@ export default function useConversations(): UseConversations {
                     }
                   },
                 );
-                console.log(`The value for alreadyHasIt is: ${alreadyHasIt}`);
                 if (alreadyHasIt) {
                   return currentConversations;
                 } else {
@@ -254,6 +247,13 @@ export default function useConversations(): UseConversations {
                   ];
                 }
               });
+              setTimeout(() => {
+                bottomReferenceDiv.current?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "end",
+                  inline: "nearest",
+                });
+              }, 500);
             })
             .catch(console.log);
         }
@@ -264,20 +264,11 @@ export default function useConversations(): UseConversations {
   }, [chatroomId, lmChatclient]);
   useEffect(() => {
     return () => {
-      // setShowLoader(() => {
-      //   console.log(`setting the loader to true`);
-      //   return true;
-      // });
       showLoader.current = true;
       resetConversations();
     };
   }, [chatroomId]);
-  useEffect(() => {
-    if (conversations) {
-      console.log("scrolling into view");
-      bottomReferenceDiv.current?.scrollIntoView();
-    }
-  }, [conversations]);
+
   return {
     conversations,
     setConversations,
@@ -286,6 +277,7 @@ export default function useConversations(): UseConversations {
     loadMore,
     showLoader,
     bottomReferenceDiv,
+    messageListContainerRef,
   };
 }
 export type UnknownReturnFunction = (...props: unknown[]) => unknown;

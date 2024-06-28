@@ -8,6 +8,7 @@ interface MessageListContextInterface {
   getChatroomConversationsOnTopScroll?: UnknownGetConversationFunction;
   getChatroomConversationsOnBottomScroll?: UnknownGetConversationFunction;
   bottomReferenceDiv: MutableRefObject<HTMLDivElement | null>;
+  messageListContainerRef: MutableRefObject<HTMLDivElement | null>;
 }
 
 const MessageListContext = React.createContext<MessageListContextInterface>(

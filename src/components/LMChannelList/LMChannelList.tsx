@@ -4,6 +4,15 @@ import useChatroomList from "../../hooks/useChatroomsList";
 import { useNavigate, useParams } from "react-router-dom";
 import { ConstantStrings } from "../../enums/common-strings";
 
+// Icons
+
+import joinIcon from "../../assets/img/icon_join.svg";
+import document from "../../assets/img/document.svg";
+import joinedIcon from "../../assets/img/icon_joined.svg";
+import { Utils } from "../../utils/helpers";
+import { useContext } from "react";
+import UserProviderContext from "../../context/UserProviderContext";
+
 function LMChannelList() {
   const {
     groupChatroomsList,
@@ -14,7 +23,12 @@ function LMChannelList() {
     loadMoreExploreGroupChatrooms,
     joinAChatroom,
     groupChatroomConversationsMeta,
+    groupChatroomMember,
+    markReadAChatroom,
+    onLeaveChatroom,
   } = useChatroomList();
+  const { currentUser } = useContext(UserProviderContext);
+
   const navigate = useNavigate();
   const { id: chatroomId } = useParams();
   return (
@@ -42,6 +56,7 @@ function LMChannelList() {
                 key={chatroom.id.toString()}
                 className={`channel-media ${chatroomId?.toString() === chatroom.id.toString() ? "selected" : null}`}
                 onClick={() => {
+                  markReadAChatroom(chatroom.id);
                   navigate(`/chat/${chatroom.id}`);
                 }}
               >
@@ -58,20 +73,48 @@ function LMChannelList() {
                   )}
                 </div>
                 <div className="channel-desc">
-                  <div className="channel-title">{chatroom.header}</div>
-                  <div className="channel-info">
-                    <div className="channel-last-conversation">
+                  <div className="channel-title">
+                    <div>{chatroom.header}</div>
+                    <div className="time">
                       {
                         groupChatroomConversationsMeta[
                           chatroom.last_conversation_id
-                        ]?.answer
+                        ]?.created_at
                       }
                     </div>
-                    <div className="channel-info-gap"></div>
+                  </div>
+                  <div className="channel-info">
+                    <div className="channel-last-conversation">
+                      {chatroom?.user_id === currentUser?.id
+                        ? "You"
+                        : groupChatroomMember[chatroom.user_id]?.name.split(
+                            " ",
+                          )[0]}
+                      :&nbsp;{" "}
+                      {groupChatroomConversationsMeta[
+                        chatroom.last_conversation_id
+                      ]?.attachment_count ? (
+                        <>
+                          <img src={document} alt="document" />
+                        </>
+                      ) : null}
+                      {groupChatroomConversationsMeta[
+                        chatroom.last_conversation_id
+                      ]
+                        ? Utils.parseAnser(
+                            groupChatroomConversationsMeta[
+                              chatroom.last_conversation_id
+                            ].answer,
+                          )
+                        : null}
+                    </div>
+                  </div>
+
+                  {chatroom?.unseen_count?.length > 0 ? (
                     <div className="channel-unseen-convo-count">
                       {chatroom.unseen_count}
                     </div>
-                  </div>
+                  ) : null}
                 </div>
               </div>
             );
@@ -112,20 +155,25 @@ function LMChannelList() {
                 <div className="channel-desc">
                   <div className="channel-title">
                     <div>{chatroom.header}</div>
-                    <div>
-                      <button
-                        disabled={chatroom.follow_status ? true : false}
-                        onClick={() => {
-                          joinAChatroom(chatroom.id.toString());
-                        }}
-                        className={chatroom.follow_status ? "joined" : ""}
-                      >
-                        {chatroom.follow_status
-                          ? ConstantStrings.CHATROOM_ALREADY_JOINED_BUTTON_STRING
-                          : ConstantStrings.CHATROOM_NOT_ALREADY_JOINED_BUTTON_STRING}
-                      </button>
-                      {/* <button className="joined">Join</button> */}
-                    </div>
+
+                    <button
+                      // disabled={chatroom.follow_status ? true : false}
+                      onClick={() => {
+                        chatroom.follow_status
+                          ? onLeaveChatroom(chatroom.id.toString())
+                          : joinAChatroom(chatroom.id.toString());
+                      }}
+                      className={chatroom.follow_status ? "joined" : ""}
+                    >
+                      {chatroom.follow_status ? (
+                        <img src={joinedIcon} alt={joinedIcon} />
+                      ) : (
+                        <img src={joinIcon} alt={joinIcon} />
+                      )}
+                      {chatroom.follow_status
+                        ? ConstantStrings.CHATROOM_ALREADY_JOINED_BUTTON_STRING
+                        : ConstantStrings.CHATROOM_NOT_ALREADY_JOINED_BUTTON_STRING}
+                    </button>
                   </div>
                 </div>
               </div>

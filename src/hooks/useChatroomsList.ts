@@ -7,6 +7,7 @@ import {
   ChatroomData,
   ConversationMeta,
   GetChatroomsSyncResponse,
+  UserMeta,
 } from "../types/api-responses/getChatroomSync";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import {
@@ -22,12 +23,15 @@ interface ChatroomProviderInterface {
   loadMoreDmChatrooms: boolean;
   groupChatroomsList: ChatroomData[] | null;
   groupChatroomConversationsMeta: Record<string, ConversationMeta>;
+  groupChatroomMember: Record<string, UserMeta>;
   loadMoreGroupChatrooms: boolean;
   getChatroomsMine: ZeroArgVoidReturns;
   getExploreGroupChatrooms: ZeroArgVoidReturns;
   exploreGroupChatrooms: ExploreChatroom[];
   loadMoreExploreGroupChatrooms: boolean;
   joinAChatroom: OneArgVoidReturns<string>;
+  markReadAChatroom: OneArgVoidReturns<string | number>;
+  onLeaveChatroom: OneArgVoidReturns<string>;
 }
 
 export default function useChatroomList(): ChatroomProviderInterface {
@@ -47,6 +51,9 @@ export default function useChatroomList(): ChatroomProviderInterface {
   const [groupChatrooms, setGroupChatrooms] = useState<ChatroomData[]>([]);
   const [groupChatroomConversationsMeta, setgroupChatroomConversationsMeta] =
     useState<Record<string, ConversationMeta>>({});
+  const [groupChatroomMember, setgroupChatroomMember] = useState<
+    Record<string, UserMeta>
+  >({});
   const [groupChatroomsPageCount, setGroupChatroomsPageCount] =
     useState<number>(1);
   const [loadMoreGroupChatrooms, setLoadMoreGroupChatrooms] =
@@ -60,25 +67,70 @@ export default function useChatroomList(): ChatroomProviderInterface {
     useState<number>(1);
   const [loadMoreExploreGroupChatrooms, setLoadMoreExploreGroupChatrooms] =
     useState<boolean>(true);
-  const chatroolLeaveActionListener = useCallback(() => {
-    setGroupChatrooms((currentGroupChatroom) => {
-      const groupChatroomsCopy = [...currentGroupChatroom].filter(
-        (chatroom) => chatroom.id.toString() !== chatroomId,
-      );
-      return groupChatroomsCopy;
-    });
-    setExploreGroupChatrooms((currentExploreChatrooms) => {
-      const exploreChatroomsCopy = [...currentExploreChatrooms].map(
-        (chatroom) => {
-          if (chatroom.id.toString() === chatroomId) {
-            chatroom.follow_status = false;
-          }
-          return chatroom;
-        },
-      );
-      return exploreChatroomsCopy;
-    });
-  }, [chatroomId]);
+  const chatroolLeaveActionListener = useCallback(
+    (eventObject: Event) => {
+      setGroupChatrooms((currentGroupChatroom) => {
+        const chatroomId = (eventObject as CustomEvent).detail;
+        console.log(chatroomId);
+        const groupChatroomsCopy = [...currentGroupChatroom].filter(
+          (chatroom) => chatroom.id.toString() !== chatroomId,
+        );
+        return groupChatroomsCopy;
+      });
+      setExploreGroupChatrooms((currentExploreChatrooms) => {
+        const exploreChatroomsCopy = [...currentExploreChatrooms].map(
+          (chatroom) => {
+            if (chatroom.id.toString() === chatroomId) {
+              chatroom.follow_status = false;
+            }
+            return chatroom;
+          },
+        );
+        return exploreChatroomsCopy;
+      });
+    },
+    [chatroomId],
+  );
+  const markReadAChatroom = async (id: string | number) => {
+    try {
+      const call = await lmChatclient?.markReadChatroom({
+        chatroomId: parseInt(id.toString()),
+      });
+      console.log(call);
+      if (call.success) {
+        setGroupChatrooms((currentGroupChatrooms) => {
+          return currentGroupChatrooms.map((chatroom) => {
+            if (chatroom.id.toString() === id.toString()) {
+              chatroom.unseen_count = 0;
+            }
+            return chatroom;
+          });
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const onLeaveChatroom = async (chatroomId: string) => {
+    try {
+      const call = await lmChatclient?.followChatroom({
+        collabcardId: parseInt(chatroomId),
+        memberId: parseInt(currentUser?.id.toString() || "0"),
+        value: false,
+      });
+      if (call.success) {
+        dispatchEvent(
+          new CustomEvent(CustomActions.CHATROOM_LEAVE_ACTION_COMPLETED, {
+            detail: chatroomId,
+          }),
+        );
+        navigate("/");
+      }
+      console.log(call);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const joinAChatroom = async (collabcardId: string) => {
     try {
       const joinCall = await lmChatclient?.followChatroom({
@@ -87,22 +139,22 @@ export default function useChatroomList(): ChatroomProviderInterface {
         value: true,
       });
       setExploreGroupChatrooms((currentExpolreChatrooms) => {
+        setGroupChatrooms((currentGroupChatrooms) => {
+          const currentGroupChatroomsCopy = [...currentGroupChatrooms];
+          const targetChatroom = currentExpolreChatrooms.find(
+            (chatroom) => chatroom.id.toString() === collabcardId,
+          );
+          if (targetChatroom) {
+            currentGroupChatroomsCopy.unshift(
+              targetChatroom as unknown as ChatroomData,
+            );
+          }
+          return currentGroupChatroomsCopy;
+        });
         return [...currentExpolreChatrooms].map((chatroom) => {
-          if (chatroom.id.toString() === chatroomId) {
+          if (chatroom.id.toString() === collabcardId?.toString()) {
             chatroom.follow_status = true;
           }
-          setGroupChatrooms((currentGroupChatrooms) => {
-            const currentGroupChatroomsCopy = [...currentGroupChatrooms];
-            const targetChatroom = currentExpolreChatrooms.find(
-              (chatroom) => chatroom.id.toString() === collabcardId,
-            );
-            if (targetChatroom) {
-              currentGroupChatroomsCopy.unshift(
-                targetChatroom as unknown as ChatroomData,
-              );
-            }
-            return currentGroupChatroomsCopy;
-          });
           return chatroom;
         });
       });
@@ -204,6 +256,12 @@ export default function useChatroomList(): ChatroomProviderInterface {
             ...getChatroomsMineCall.data.conversation_meta,
           };
         });
+        setgroupChatroomMember((currentConversationsMeta) => {
+          return {
+            ...currentConversationsMeta,
+            ...getChatroomsMineCall.data.user_meta,
+          };
+        });
       }
     } catch (error) {
       console.log(error);
@@ -218,7 +276,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
     if (!lmChatclient) {
       return;
     }
-    console.log(currentCommunity);
+
     const fb = lmChatclient?.fbInstance();
 
     const query = ref(fb, `community/${currentCommunity.id}`);
@@ -229,7 +287,6 @@ export default function useChatroomList(): ChatroomProviderInterface {
         const chatroomId = snapshot.val().chatroom_id;
         // if (chatroomId != id) refreshHomeFeed();
         refreshGroupChatrooms(chatroomId);
-        console.log(chatroomId);
       }
     });
   }, [currentCommunity, lmChatclient, refreshGroupChatrooms]);
@@ -255,6 +312,9 @@ export default function useChatroomList(): ChatroomProviderInterface {
     exploreGroupChatrooms,
     loadMoreExploreGroupChatrooms,
     joinAChatroom,
+    onLeaveChatroom,
     groupChatroomConversationsMeta,
+    groupChatroomMember,
+    markReadAChatroom,
   };
 }

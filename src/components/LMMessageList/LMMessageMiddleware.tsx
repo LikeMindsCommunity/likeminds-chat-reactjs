@@ -16,7 +16,6 @@ const LMMessageMiddleware = (props: LMMessageMiddlewareProps) => {
     null,
   );
   useEffect(() => {
-    console.log("Inside use effect");
     setLocalMessageCopy(message);
   }, [message]);
   function deleteMessage() {
@@ -37,15 +36,25 @@ const LMMessageMiddleware = (props: LMMessageMiddlewareProps) => {
     console.log(currentLocalMessage);
     currentLocalMessage.reactions =
       currentLocalMessage?.reactions?.filter(
-        (reaction: any) => reaction?.user?.uuid !== currentUserUUID,
+        (reaction: any) => reaction?.member?.uuid !== currentUserUUID,
       ) || [];
     console.log(currentLocalMessage);
     currentLocalMessage.reactions?.push({
-      user: currentUser,
+      member: currentUser!,
       reaction: emoji.native,
     });
     console.log(currentLocalMessage);
     setLocalMessageCopy(currentLocalMessage as Conversation);
+  }
+  function removeReactionLocally() {
+    setLocalMessageCopy((currentLocalCopy) => {
+      currentLocalCopy!.reactions =
+        currentLocalCopy?.reactions.filter((reaction) => {
+          return reaction.member.id.toString() !== currentUser?.id.toString();
+        }) || [];
+      console.log(currentLocalCopy);
+      return currentLocalCopy;
+    });
   }
   return (
     <LMMessageContext.Provider
@@ -55,6 +64,7 @@ const LMMessageMiddleware = (props: LMMessageMiddlewareProps) => {
         deleteMessage: deleteMessage,
         editMessageLocally: editMessageLocally,
         addReactionLocally: addReactionLocally,
+        removeReactionLocally: removeReactionLocally,
       }}
     >
       <Message />

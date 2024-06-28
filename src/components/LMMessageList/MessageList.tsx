@@ -2,34 +2,35 @@
 import React, { PropsWithChildren, memo, useContext } from "react";
 import { MessageListProps } from "../../types/prop-types/MessageListProps";
 import MessageListContext from "../../context/MessageListContext";
-import MessageContext from "../../context/MessageContext";
-import Message from "../LMMessage/Message";
 import Conversation from "../../types/models/conversations";
 import ScrollContainer from "../DualSidePagination/ScrollContainer";
 import useConversations from "../../hooks/useConversations";
 import LMMessageMiddleware from "./LMMessageMiddleware";
-import InfiniteScroll from "react-infinite-scroll-component";
+
 import { CircularProgress } from "@mui/material";
+import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
+import { IconButton } from "@mui/material";
 // import DmReqBlock from "./DmReqBlock";
 
 const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
   (props) => {
     const { MessageComponent } = props;
+    const scrollToBottom = () => {
+      if (bottomReferenceDiv && bottomReferenceDiv.current) {
+        bottomReferenceDiv.current.scrollIntoView(false);
+      }
+    };
 
-    // const { conversations, getChatroomConversationsOnTopScroll } =
-    //   useContext(MessageListContext);
     const {
       conversations,
       getChatroomConversationsOnBottomScroll,
       getChatroomConversationsOnTopScroll,
       showLoader,
       bottomReferenceDiv,
+      messageListContainerRef,
     } = useConversations();
-    // if (!conversations?.length) {
-    //   return null;
-    // }
+
     if (showLoader.current) {
-      console.log(showLoader);
       return (
         <div className="lm-channel-loader">
           <CircularProgress />
@@ -37,13 +38,19 @@ const MessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       );
     }
     return (
-      <div className="lm-channel">
+      <div className="lm-channel" ref={messageListContainerRef}>
+        {/* <span className="scroll-to-bottom-shortcut">
+          <IconButton onClick={scrollToBottom}>
+            <KeyboardDoubleArrowDownIcon fontSize="small" />
+          </IconButton>
+        </span> */}
         <MessageListContext.Provider
           value={{
             conversations,
             getChatroomConversationsOnBottomScroll,
             getChatroomConversationsOnTopScroll,
             bottomReferenceDiv,
+            messageListContainerRef,
           }}
         >
           <ScrollContainer

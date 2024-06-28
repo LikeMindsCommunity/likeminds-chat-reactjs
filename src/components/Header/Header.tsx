@@ -27,9 +27,11 @@ const Header = () => {
         <div className="lm-channel-img">{avatarContent}</div>
         <div className="lm-channel-desc">
           <div className="lm-channel-title">{chatroom?.chatroom.header}</div>
-          <div className="lm-channel-participants">
-            {chatroom?.chatroom.participants_count} Participants
-          </div>
+          {chatroom?.chatroom?.participants_count ? (
+            <div className="lm-channel-participants">
+              {chatroom?.chatroom.participants_count} Participants
+            </div>
+          ) : null}
         </div>
       </div>
       <div className="lm-header-right">
@@ -50,6 +52,7 @@ const Header = () => {
           {chatroom?.chatroom_actions.map((menuOption) => {
             return (
               <MenuItem
+                key={menuOption.id}
                 onClick={() => {
                   switch (menuOption.id) {
                     case ChatroomAction.ACTION_MUTE:
