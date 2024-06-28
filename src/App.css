@@ -752,6 +752,10 @@ body {
   overflow-y: auto;
 }
 
+.lm-chat-text-area__input-box>p {
+  margin-bottom: 0;
+}
+
 .lm-chat-text-area__input-box:focus {
   outline: none;
 }
