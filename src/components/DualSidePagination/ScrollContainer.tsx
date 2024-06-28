@@ -55,12 +55,11 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
   const { id: chatroomId } = useParams();
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const scrollTarget = useRef<HTMLDivElement | null>(null);
-  // const bottomReferenceDiv = useRef<HTMLDivElement | null>(null);
   const hasAlreadyCalled = useRef<boolean>(false);
   const previousScrollPosition = useRef<number>(Number.NEGATIVE_INFINITY);
   const prevDataLength = useRef<number>(0);
   const isFirstRender = useRef<boolean>(true);
-  //   Original function for handling scroll event
+
   const scrollToBottom = () => {
     if (bottomReferenceDiv && bottomReferenceDiv.current) {
       bottomReferenceDiv.current.scrollIntoView(false);
@@ -134,13 +133,10 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
       },
       { root: scrollContainerRef.current, threshold: 1.0 },
     );
-    // console.log(scrollContainerRef.current?.lastElementChild);
-    // console.log(
-    //   scrollContainerRef.current?.lastElementChild?.previousElementSibling,
-    // );
+
     const target =
       scrollContainerRef.current?.lastElementChild?.previousElementSibling;
-    // const target = bottomReferenceDiv.current;
+
     if (target) {
       observer.observe(target as Element);
     }
@@ -155,7 +151,7 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
     return null;
   }
   return (
-    <div className="relative-container">
+    <>
       {isScrollToBottomVisible && (
         <span className="scroll-to-bottom-shortcut">
           <IconButton onClick={scrollToBottom}>
@@ -170,7 +166,7 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
           className="lm-dual-scroll-container-bottom-block"
         ></div>
       </div>
-    </div>
+    </>
   );
 };
 interface ScrollContainerProps {

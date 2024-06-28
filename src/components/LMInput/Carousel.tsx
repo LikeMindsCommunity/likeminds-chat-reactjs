@@ -3,11 +3,16 @@ import React, { useContext, useState } from "react";
 import InputContext from "../../context/InputContext";
 import { FileType } from "../../types/enums/Filetype";
 import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
 import CloseIcon from "@mui/icons-material/Close";
-import pdfViewIcon from "../../assets/img/pdf-document.svg";
 import { IconButton } from "@mui/material";
-// import pdfViewIcon from "../../assets/img/Iconpdf_view_icon.png";
+
+// Styles
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+// Icons
+
+import pdfViewIcon from "../../assets/img/pdf-document.svg";
+import crossIcon from "../../assets/img/carousel-cross-icon.svg";
+
 const MediaCarousel = () => {
   const {
     imagesAndVideosMediaList,
@@ -25,7 +30,7 @@ const MediaCarousel = () => {
             <IconButton
               onClick={() => removeMediaFromImageList(currentSelectedIndex)}
             >
-              <CloseIcon fontSize="medium" />
+              <img src={crossIcon} alt="cancel" />
             </IconButton>
           </span>
           <Carousel
