@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useContext, useEffect, useState } from "react";
+import React, { memo, useContext, useEffect, useState } from "react";
 import Conversation from "../../types/models/conversations";
 import LMMessageContext from "../../context/MessageContext";
 import Message from "../LMMessage/Message";
@@ -9,7 +9,7 @@ interface LMMessageMiddlewareProps {
   message: Conversation;
   index: number;
 }
-const LMMessageMiddleware = (props: LMMessageMiddlewareProps) => {
+const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
   const { message, index } = props;
   const { currentUser } = useContext(UserProviderContext);
   const [localMessageCopy, setLocalMessageCopy] = useState<Conversation | null>(
@@ -70,6 +70,6 @@ const LMMessageMiddleware = (props: LMMessageMiddlewareProps) => {
       <Message />
     </LMMessageContext.Provider>
   );
-};
+});
 
 export default LMMessageMiddleware;

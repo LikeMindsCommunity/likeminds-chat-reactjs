@@ -139,7 +139,13 @@ function LMChannelList() {
         >
           {exploreGroupChatrooms?.map((chatroom) => {
             return (
-              <div className="channel-media" key={chatroom.id.toString()}>
+              <div
+                className="channel-media"
+                key={chatroom.id.toString()}
+                onClick={() => {
+                  navigate(`/chat/${chatroom.id}`);
+                }}
+              >
                 <div className="channel-icon">
                   {chatroom.chatroom_image_url ? (
                     <>
@@ -158,7 +164,8 @@ function LMChannelList() {
 
                     <button
                       // disabled={chatroom.follow_status ? true : false}
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         chatroom.follow_status
                           ? onLeaveChatroom(chatroom.id.toString())
                           : joinAChatroom(chatroom.id.toString());

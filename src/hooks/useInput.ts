@@ -313,8 +313,8 @@ export function useInput(): UseInputReturns {
             lmChatclient?.putMultimedia(onUploadConfig);
           });
         }
-        setImagesAndVideosMediaList([]);
-        setDocumentMediaList([]);
+        setImagesAndVideosMediaList(null);
+        setDocumentMediaList(null);
       }
     } catch (error) {
       console.log(error);

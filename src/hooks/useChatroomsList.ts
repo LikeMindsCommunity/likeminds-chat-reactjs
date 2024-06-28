@@ -67,30 +67,29 @@ export default function useChatroomList(): ChatroomProviderInterface {
     useState<number>(1);
   const [loadMoreExploreGroupChatrooms, setLoadMoreExploreGroupChatrooms] =
     useState<boolean>(true);
-  const chatroolLeaveActionListener = useCallback(
-    (eventObject: Event) => {
-      setGroupChatrooms((currentGroupChatroom) => {
-        const chatroomId = (eventObject as CustomEvent).detail;
-        console.log(chatroomId);
-        const groupChatroomsCopy = [...currentGroupChatroom].filter(
-          (chatroom) => chatroom.id.toString() !== chatroomId,
-        );
-        return groupChatroomsCopy;
-      });
-      setExploreGroupChatrooms((currentExploreChatrooms) => {
-        const exploreChatroomsCopy = [...currentExploreChatrooms].map(
-          (chatroom) => {
-            if (chatroom.id.toString() === chatroomId) {
-              chatroom.follow_status = false;
-            }
-            return chatroom;
-          },
-        );
-        return exploreChatroomsCopy;
-      });
-    },
-    [chatroomId],
-  );
+  const chatroolLeaveActionListener = useCallback((eventObject: Event) => {
+    setGroupChatrooms((currentGroupChatroom) => {
+      const chatroomId = (eventObject as CustomEvent).detail;
+      console.log(chatroomId);
+      const groupChatroomsCopy = [...currentGroupChatroom].filter(
+        (chatroom) => chatroom.id.toString() !== chatroomId,
+      );
+      return groupChatroomsCopy;
+    });
+    setExploreGroupChatrooms((currentExploreChatrooms) => {
+      const chatroomId = (eventObject as CustomEvent).detail;
+      console.log(chatroomId);
+      const exploreChatroomsCopy = [...currentExploreChatrooms].map(
+        (chatroom) => {
+          if (chatroom.id.toString() === chatroomId) {
+            chatroom.follow_status = false;
+          }
+          return chatroom;
+        },
+      );
+      return exploreChatroomsCopy;
+    });
+  }, []);
   const markReadAChatroom = async (id: string | number) => {
     try {
       const call = await lmChatclient?.markReadChatroom({
@@ -111,20 +110,22 @@ export default function useChatroomList(): ChatroomProviderInterface {
       console.log(error);
     }
   };
-  const onLeaveChatroom = async (chatroomId: string) => {
+  const onLeaveChatroom = async (chatroomID: string) => {
     try {
       const call = await lmChatclient?.followChatroom({
-        collabcardId: parseInt(chatroomId),
+        collabcardId: parseInt(chatroomID),
         memberId: parseInt(currentUser?.id.toString() || "0"),
         value: false,
       });
       if (call.success) {
         dispatchEvent(
           new CustomEvent(CustomActions.CHATROOM_LEAVE_ACTION_COMPLETED, {
-            detail: chatroomId,
+            detail: chatroomID,
           }),
         );
-        navigate("/");
+        if (chatroomID.toString() === chatroomId?.toString()) {
+          navigate("/");
+        }
       }
       console.log(call);
     } catch (error) {

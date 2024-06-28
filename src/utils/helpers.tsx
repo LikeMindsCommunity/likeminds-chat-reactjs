@@ -10,6 +10,7 @@ import { fromCognitoIdentityPool } from "@aws-sdk/credential-provider-cognito-id
 import { FileType } from "../types/enums/Filetype";
 import { FileTypeInitials } from "../enums/file-type-initials";
 import Member from "../types/models/member";
+import { supportedTLDs, validMatchingString } from "./TLDs";
 type StringTagType = {
   text: string;
   type: number;
@@ -69,17 +70,28 @@ export class Utils {
         elements.push(line.substring(lastIndex));
       }
     });
-
+    // const validTLDs = supportedTLDs;
     // Convert URLs to anchor tags
     const textWithLinks = elements.map((element, index) => {
       if (typeof element === "string") {
+        // const regexString = /\b(https?:\/\/\S+|www\.\S+)\b/g
+
+        // const regexString = `\\b(?!(?:https?:\\/\\/|www\\.)\\S+)(?:https?:\\/\\/|www\\.)?\\S+\\.(?:${validTLDs.join("|")})\\b`;
+
+        // // Creating a RegExp object
+        // const regex = new RegExp(regexString, "gi");
+        const regex = /(https?:\/\/\S+|www\.\S+|\b\w+\.\w+\S*)\b/g;
+
         // Convert string to a React fragment containing anchor tags for URLs
         return (
           <React.Fragment key={index}>
-            {element.split(/\b(https?:\/\/\S+|www\.\S+)\b/g).map((part, i) => {
+            {element.split(regex).map((part, i) => {
               if (i % 2 === 0) {
                 return part; // Regular text
               } else {
+                if (!part.match(validMatchingString)) {
+                  return part;
+                }
                 const url = part.startsWith("http") ? part : `http://${part}`;
                 return (
                   <a
