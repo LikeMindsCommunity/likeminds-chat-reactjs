@@ -11,7 +11,7 @@ import LMChannelList from "./components/LMChannelList/LMChannelList";
 import LMClientOverlayProvider from "./components/LMChatProvider/LMClientOverlayProvider";
 import AttachmentsSelector from "./components/LMInput/LMAttachmentsSelector";
 import LMChatTextArea from "./components/LMInput/LMChatTextArea";
-import { ReactGiffySearchComponent } from "./components/LMInput/ReactGiffySearchComponent";
+import { LMReactGiffySearchComponent } from "./components/LMInput/ReactGiffySearchComponent";
 import Loader from "./components/LMLoader/Loader";
 import LMMessageBubble from "./components/LMMessage/LMMessageBubble";
 import LMNormalMessage from "./components/LMMessage/LMNormalMessage";
@@ -40,7 +40,6 @@ export {
   GiSelector,
   Input,
   LMChatTextArea,
-  ReactGiffySearchComponent,
   Loader,
   LMMessageBubble,
   LMNormalMessage,
@@ -54,4 +53,5 @@ export {
   LMMessageMiddleware,
   MessageList,
   LMParticipantList,
+  LMReactGiffySearchComponent,
 };
