@@ -13,7 +13,12 @@ body {
 }
 
 /* LM - Styles */
-
+.lm-channel-block{
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
 .lm-d-flex {
   display: flex;
   width: 100%;
@@ -22,6 +27,10 @@ body {
 
 .lm-left-panel {
   flex: 0 0 25%;
+  height: 100%;
+}
+.lm-right-panel {
+  flex: 0 0 75%;
   height: 100%;
 }
 
@@ -51,8 +60,7 @@ body {
 /* LM-Left-panel  */
 .lm-channel-list {
   width: 100%;
-  height: 100vh;
-  overflow: auto;
+  height: 100vh; 
   border-right: 1px solid #e6ebf5;
 }
 
@@ -406,17 +414,12 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
-
-.lm-dual-scroll-container {
-  padding: 0 1rem;
-  /* position: relative; */
-}
-
+ 
 .relative-container {
-  height: 100%;
-  position: relative;
+  /* height: 100%;
+  position: relative; */
 }
 
 .scroll-to-bottom-shortcut {
