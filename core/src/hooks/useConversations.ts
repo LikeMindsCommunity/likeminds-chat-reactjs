@@ -150,6 +150,30 @@ export default function useConversations(): UseConversations {
     [chatroomId, lmChatclient],
   );
 
+  const unBlockUserInDM = useCallback(async () => {
+    // add login for showing input field
+    try {
+      const call = await lmChatclient?.blockMember({
+        chatroomId: parseInt(chatroomId!),
+        status: 1,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [chatroomId, lmChatclient]);
+
+  const blockUserInDM = useCallback(async () => {
+    // add login for hiding input field
+    try {
+      const call = await lmChatclient?.blockMember({
+        chatroomId: parseInt(chatroomId!),
+        status: 0,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [chatroomId, lmChatclient]);
+
   function resetConversations() {
     setConversations(null);
     lastMessageRef.current = null;
