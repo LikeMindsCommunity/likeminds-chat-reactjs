@@ -20,7 +20,7 @@ import {
   ROOT_PATH,
 } from "./shared/constants/lm.routes.constant";
 
-import { LMChatProps } from "./types/prop-types/LMChatProps";
+// import { LMChatProps } from "./types/prop-types/LMChatProps";
 import LMChatClient from "@likeminds.community/chat-js-beta";
 
 const LMAppLayout = () => {

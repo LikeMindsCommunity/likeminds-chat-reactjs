@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   OneArgVoidReturns,
   TwoArgVoidReturns,
@@ -72,7 +72,10 @@ export function useCreatePoll(): UseCreatePoll {
       console.log(error);
     }
   };
-  const changePollText = (text: string) => {
+  const changePollText = (
+    changeEvent: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    const text = changeEvent.target.value;
     setPollText(text);
   };
   return {
@@ -96,7 +99,7 @@ interface UseCreatePoll {
   updatePollOption: TwoArgVoidReturns<string, number>;
   removePollOption: OneArgVoidReturns<number>;
   createPollConversation: ZeroArgVoidReturns;
-  changePollText: OneArgVoidReturns<string>;
+  changePollText: OneArgVoidReturns<React.ChangeEvent<HTMLTextAreaElement>>;
   pollText: string;
   setPollExpirationDate: OneArgVoidReturns<Date>;
   pollExpirationDate: Date;

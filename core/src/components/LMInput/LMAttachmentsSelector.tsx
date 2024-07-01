@@ -9,6 +9,7 @@ import uploadMedia from "../../assets/img/upload-media.svg";
 import uploadDoc from "../../assets/img/upload-doc.svg";
 import PollIcon from "../../assets/img/Location.png";
 import { useDialog } from "../../hooks/useDialog";
+import LMPollCreationDialog from "./LMPollCreationDialog";
 
 const LMAttachmentsSelector = () => {
   const { openMenu, closeMenu, menuAnchor } = useMenu();
@@ -21,7 +22,9 @@ const LMAttachmentsSelector = () => {
   const { openDialog, closeDialog, dialogOpen } = useDialog();
   return (
     <div className="attachment-selecter-wrapper">
-      <Dialog open={dialogOpen} onClose={closeDialog}></Dialog>
+      <Dialog open={dialogOpen} onClose={closeDialog}>
+        <LMPollCreationDialog />
+      </Dialog>
       <Menu
         open={Boolean(menuAnchor)}
         onClose={closeMenu}
@@ -80,18 +83,7 @@ const LMAttachmentsSelector = () => {
         </MenuItem>
         {/* Option for poll */}
         <MenuItem className="lm-chat-input-attachment-label">
-          <label htmlFor="doc" onClick={openDialog}>
-            {/* <input
-              id="doc"
-              type="file"
-              accept=".pdf"
-              onChange={(e) => {
-                addDocumentsMedia(e);
-                closeMenu();
-              }}
-              multiple
-              disabled={imagesAndVideosMediaList?.length ? true : false}
-            /> */}
+          <label onClick={openDialog}>
             <div>
               <img src={PollIcon} alt="poll" />
             </div>
