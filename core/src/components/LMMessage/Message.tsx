@@ -15,6 +15,7 @@ import MediaRenderer from "../../shared/components/MediaRenderer";
 
 import linkImg from "../../assets/img/link-img.svg";
 import MessageReactionHolder from "./MessageReactionHolder";
+import LMMicroPoll from "./LMMicroPoll";
 
 const Message = () => {
   const { message, index } = useContext(LMMessageContext);
@@ -73,6 +74,9 @@ const Message = () => {
   switch (message?.state) {
     case ConversationStates.NORMAL: {
       return (
+        // <>
+        //   <LMMicroPoll />
+        // </>
         <>
           <div className={`lm-chat-card ${message?.state}`}>
             {renderDatePill()}
