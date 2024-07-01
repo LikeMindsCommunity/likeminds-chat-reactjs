@@ -222,7 +222,6 @@ const Message = () => {
       // </div>
     }
   }
-  // return <div>{message?.toString()}</div>;
 };
 
 export default Message;

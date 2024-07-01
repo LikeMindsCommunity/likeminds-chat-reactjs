@@ -2,7 +2,7 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
 import { DMChatroomResponse } from "../types/models/ChatroomResponse";
-import { GetHomeFeedRequest } from "@likeminds.community/chat-js/dist/pages/home-feed/types";
+import { GetHomeFeedRequest } from "@likeminds.community/chat-js-beta/dist/pages/home-feed/types";
 import {
   ChatroomData,
   ConversationMeta,
