@@ -47,9 +47,9 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
     setLocalMessageCopy(currentLocalMessage as Conversation);
   }
   function removeReactionLocally() {
-    setLocalMessageCopy((currentLocalCopy) => {
+    setLocalMessageCopy((currentLocalCopy: any) => {
       currentLocalCopy!.reactions =
-        currentLocalCopy?.reactions.filter((reaction) => {
+        currentLocalCopy?.reactions.filter((reaction: any) => {
           return reaction.member.id.toString() !== currentUser?.id.toString();
         }) || [];
       console.log(currentLocalCopy);
@@ -59,7 +59,7 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
   return (
     <LMMessageContext.Provider
       value={{
-        message: localMessageCopy || null,
+        message: localMessageCopy as Conversation,
         index,
         deleteMessage: deleteMessage,
         editMessageLocally: editMessageLocally,

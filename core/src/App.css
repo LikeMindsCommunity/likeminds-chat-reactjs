@@ -1633,14 +1633,94 @@ body {
 
 
 /* Poll View */
-.lm-poll{
+.lm-poll-wrapper {
+  width: 424px;
+  height: 614px;
+  padding: 48px;
+  padding-bottom: 16px;
+}
+
+.lm-poll-heading {
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 18px;
+  text-align: left;
+  margin-bottom: 14px;
+}
+
+.poll-creation-textarea {
+  margin-bottom: 16px;
+}
+
+.poll-options-head-text {
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  text-align: left;
+  margin-bottom: 5px;
+}
+
+.poll-option-wrapper {
+  position: relative;
+}
+
+.poll-option-text-input {
+  border: 1px solid #D0D8E2;
+  height: 58px;
+  padding: 16px;
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.poll-option-remove {
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  right: 16px;
+
+}
+
+.poll-option-add-more {
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: #00897B;
+  border: 1px solid #D0D8E2;
+  border-radius: 10px;
+  padding: 16px;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.poll-option-add-more span {
+  margin-left: 6px;
+}
+
+.poll-expires-heading {
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  text-align: left;
+  color: #ACB7C0;
+  margin-bottom: 5px;
+}
+
+
+/* Poll View */
+.lm-poll {
   width: 382px;
 }
 
-.lm-poll .user-profile{
+.lm-poll .user-profile {
   margin: 0 0 0px 0;
 }
-.lm-poll .user-profile .info{
+
+.lm-poll .user-profile .info {
   font-size: 12px;
   font-weight: 400;
   line-height: 16px;

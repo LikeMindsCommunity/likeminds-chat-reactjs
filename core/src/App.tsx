@@ -20,20 +20,20 @@ import {
   ROOT_PATH,
 } from "./shared/constants/lm.routes.constant";
 
-import { LMChatProps } from "./types/prop-types/LMChatProps";
+// import { LMChatProps } from "./types/prop-types/LMChatProps";
 import LMChatClient from "@likeminds.community/chat-js-beta";
 
 const LMAppLayout = () => {
   const lmChatClient = LMChatClient.setApiKey(
-    "2db78d4b-5523-4350-9a44-1020299aebad",
+    "5f567ca1-9d74-4a1b-be8b-a7a81fef796f",
   )
     .setPlatformCode("rt")
     .setVersionCode(40)
     .build();
 
   const userDetails = {
-    uuid: "new-chat-client-user",
-    username: "new client",
+    uuid: "317326b1-7241-402d-840c-2fb156b24b8f",
+    username: "",
     isGuest: false,
   };
 

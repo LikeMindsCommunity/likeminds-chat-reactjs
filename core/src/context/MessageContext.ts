@@ -1,10 +1,10 @@
 import React from "react";
-import Conversation from "../types/models/conversations";
+import { Conversation } from "../types/models/conversations";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "../hooks/useInput";
 import { EmojiData } from "../types/models/emojiData";
 
 interface LMMessageContextInterface {
-  message: Conversation | null;
+  message: Conversation;
   index: number;
   deleteMessage: ZeroArgVoidReturns;
   editMessageLocally: OneArgVoidReturns<Conversation>;

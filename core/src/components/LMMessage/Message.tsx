@@ -72,6 +72,13 @@ const Message = () => {
     );
   }
   switch (message?.state) {
+    case ConversationStates.MICRO_POLL: {
+      return (
+        <>
+          <LMMicroPoll />
+        </>
+      );
+    }
     case ConversationStates.NORMAL: {
       return (
         // <>

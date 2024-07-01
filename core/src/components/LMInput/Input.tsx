@@ -53,7 +53,7 @@ const Input = () => {
     removeMediaFromDocumentList,
   } = useInput();
   const { currentUser } = useContext(UserProviderContext);
-  const { chatroom } = useContext(LMChatChatroomContext);
+  const { chatroom, conversationToReply } = useContext(LMChatChatroomContext);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const shouldShowInputBox = useMemo(() => {
     const canRespondInChatroom = currentUser?.memberRights?.find(
@@ -135,7 +135,7 @@ const Input = () => {
       }}
     >
       <div className="lm-channel-footer-wrapper">
-        {/* OG Tags */}
+        {/* Collapseable for OG Tags */}
         <Collapse
           in={Boolean(ogTag)}
           sx={{
@@ -172,27 +172,24 @@ const Input = () => {
           </div>
         </Collapse>
 
-        {/* OG Tags */}
-        {/* Gif Collapse */}
+        {/* Collapseable for Gif  */}
         <Collapse in={openGifCollapse}>
           <div className="lm-giphy-container">
             <GiphySearch />
-
-            {/* <ReactGiffySearchComponent /> */}
           </div>
         </Collapse>
-        {/* Media Carousel */}
 
-        {/* <Slide direction="up" in={true} mountOnEnter unmountOnExit> */}
+        <Collapse
+          in={Boolean(conversationToReply)}
+          sx={{
+            background: "#D0D8E3",
+          }}
+        ></Collapse>
+
+        {/* Media Carousel */}
         <div>
           <MediaCarousel />
         </div>
-        {/* </Slide> */}
-
-        {/* <div className="lm-giphy-container">
-          <GiphySearch />
-          <GiSelector />
-        </div> */}
 
         <div className="lm-channel-footer">
           <div className="lm-channel-icon lm-cursor-pointer">
