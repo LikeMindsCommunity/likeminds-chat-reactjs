@@ -1,4 +1,9 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter,
+  createBrowserRouter,
+  Route,
+  Routes,
+} from "react-router-dom";
 import LMClientOverlayProvider from "./components/LMChatProvider/LMClientOverlayProvider";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
@@ -16,11 +21,25 @@ import {
 } from "./shared/constants/lm.routes.constant";
 
 import { LMChatProps } from "./types/prop-types/LMChatProps";
+import LMChatClient from "@likeminds.community/chat-js-beta";
 
-const LMAppLayout = ({ client, userDetails }: LMChatProps) => {
+const LMAppLayout = () => {
+  const lmChatClient = LMChatClient.setApiKey(
+    "2db78d4b-5523-4350-9a44-1020299aebad",
+  )
+    .setPlatformCode("rt")
+    .setVersionCode(40)
+    .build();
+
+  const userDetails = {
+    uuid: "new-chat-client-user",
+    username: "new client",
+    isGuest: false,
+  };
+
   return (
     <BrowserRouter>
-      <LMClientOverlayProvider client={client} userDetails={userDetails}>
+      <LMClientOverlayProvider client={lmChatClient} userDetails={userDetails}>
         {/* <Outlet /> */}
         <Routes>
           <Route path={ROOT_PATH} element={<LMChannel />}>
@@ -46,34 +65,34 @@ const LMAppLayout = ({ client, userDetails }: LMChatProps) => {
 };
 
 // Routing
-// export const appRoute = createBrowserRouter([
-//   {
-//     path: ROOT_PATH,
-//     element: <LMAppLayout />,
-//     children: [
-//       {
-//         path: ROOT_PATH,
-//         element: <LMChannel />,
-//         children: [
-//           {
-//             path: CHANNEL_PATH + "/" + ID_PATH,
-//             element: (
-//               <>
-//                 <Header />
-//                 <MessageList />
-//                 <Input />
-//               </>
-//             ),
-//           },
-//           {
-//             path: PARTICIPANTS_PATH + "/" + ID_PATH,
-//             element: <LMParticipantList />,
-//           },
-//         ],
-//       },
-//     ],
-//     errorElement: <Error />,
-//   },
-// ]);
+export const appRoute = createBrowserRouter([
+  {
+    path: ROOT_PATH,
+    element: <LMAppLayout />,
+    children: [
+      {
+        path: ROOT_PATH,
+        element: <LMChannel />,
+        children: [
+          {
+            path: CHANNEL_PATH + "/" + ID_PATH,
+            element: (
+              <>
+                <Header />
+                <MessageList />
+                <Input />
+              </>
+            ),
+          },
+          {
+            path: PARTICIPANTS_PATH + "/" + ID_PATH,
+            element: <LMParticipantList />,
+          },
+        ],
+      },
+    ],
+    errorElement: null,
+  },
+]);
 
 export default LMAppLayout;
