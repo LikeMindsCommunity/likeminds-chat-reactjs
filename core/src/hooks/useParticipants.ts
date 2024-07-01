@@ -10,6 +10,10 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
 
+/**
+ * Custom hook that provides functionality related to participants/members of a chatroom.
+ * @returns {UseParticipantsReturns} An object containing the participants list, a flag indicating whether there are more participants to load, a function to fetch the members/participants of a chatroom, and a function to navigate back to the chatroom.
+ */
 export function useParticipants(): UseParticipantsReturns {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { chatroom } = useContext(LMChatChatroomContext);
@@ -19,9 +23,16 @@ export function useParticipants(): UseParticipantsReturns {
     useState<boolean>(true);
   const { id: chatroomId } = useParams();
   const navigate = useNavigate();
+  /**
+   * Navigates back to the chatroom.
+   */
   const navigateBackToChatroom = useCallback(() => {
     navigate(`/${CHANNEL_PATH}/${chatroomId}`);
   }, [chatroomId, navigate]);
+  /**
+   * Fetches the members/participants of a chatroom.
+   * @returns {Promise<void>} A promise that resolves when the members/participants are fetched.
+   */
   const getMembers = useCallback(async () => {
     try {
       const getMembersCall: ViewParticipantsResponse =
@@ -47,6 +58,7 @@ export function useParticipants(): UseParticipantsReturns {
       console.log(error);
     }
   }, [chatroom?.chatroom.id, chatroom?.chatroom.is_secret, lmChatclient]);
+
   useEffect(() => {
     getMembers();
   }, [getMembers]);

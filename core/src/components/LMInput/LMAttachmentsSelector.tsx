@@ -1,12 +1,14 @@
 import React, { useContext } from "react";
 import { useMenu } from "../../hooks/useMenu";
-import { Menu, MenuItem } from "@mui/material";
+import { Dialog, Menu, MenuItem } from "@mui/material";
 import InputContext from "../../context/InputContext";
 
 // Icons
 import attachmentIcon from "../../assets/img/attachment.svg";
 import uploadMedia from "../../assets/img/upload-media.svg";
 import uploadDoc from "../../assets/img/upload-doc.svg";
+import PollIcon from "../../assets/img/Location.png";
+import { useDialog } from "../../hooks/useDialog";
 
 const LMAttachmentsSelector = () => {
   const { openMenu, closeMenu, menuAnchor } = useMenu();
@@ -16,8 +18,10 @@ const LMAttachmentsSelector = () => {
     imagesAndVideosMediaList,
     documentsMediaList,
   } = useContext(InputContext);
+  const { openDialog, closeDialog, dialogOpen } = useDialog();
   return (
     <div className="attachment-selecter-wrapper">
+      <Dialog open={dialogOpen} onClose={closeDialog}></Dialog>
       <Menu
         open={Boolean(menuAnchor)}
         onClose={closeMenu}
@@ -72,6 +76,26 @@ const LMAttachmentsSelector = () => {
               <img src={uploadDoc} alt="doc" />
             </div>
             <div className="title">Document</div>
+          </label>
+        </MenuItem>
+        {/* Option for poll */}
+        <MenuItem className="lm-chat-input-attachment-label">
+          <label htmlFor="doc" onClick={openDialog}>
+            {/* <input
+              id="doc"
+              type="file"
+              accept=".pdf"
+              onChange={(e) => {
+                addDocumentsMedia(e);
+                closeMenu();
+              }}
+              multiple
+              disabled={imagesAndVideosMediaList?.length ? true : false}
+            /> */}
+            <div>
+              <img src={PollIcon} alt="poll" />
+            </div>
+            <div className="title">Polls</div>
           </label>
         </MenuItem>
         {/* </div> */}
