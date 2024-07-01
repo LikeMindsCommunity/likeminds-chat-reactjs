@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import MessageContext from "../../context/MessageContext";
-import pollIcon from "../../assets/img/poll-icon.svg";
 
 const LMMicroPoll = () => {
   const { message } = useContext(MessageContext);
