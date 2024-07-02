@@ -6,8 +6,9 @@ import { PollMultipleSelectState } from "../enums/poll-type";
 
 export function usePoll(): UsePoll {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
-  const { message } = useContext(LMMessageContext);
-
+  const { message, addPollOptionLocally } = useContext(LMMessageContext);
+  const [temporaryAddOptionText, setTemporaryAddOptionText] =
+    useState<string>("");
   const [selectedPollOptions, setSelectedPollOptions] = useState<
     SelectedPollOption[]
   >([]);
@@ -29,9 +30,12 @@ export function usePoll(): UsePoll {
    * Handles the selection or unselection of a poll option.
    * @param clickedEvent - The click event that triggered the selection.
    */
-  const selectPollOption = (clickedEvent: React.MouseEvent) => {
+  const selectPollOption = (clickedEvent: React.MouseEvent<HTMLDivElement>) => {
+    const pollOptionValue = clickedEvent.currentTarget.id;
+    console.log(pollOptionValue);
     setSelectedPollOptions((currentSelectedOptions) => {
       // function to select or unselect the option
+      currentSelectedOptions = [...currentSelectedOptions];
       function addOrRemoveOption(
         isOptionAlreadySelected: boolean,
         pollOptionValue: string,
@@ -47,7 +51,7 @@ export function usePoll(): UsePoll {
           return currentSelectedOptions;
         }
       }
-      const pollOptionValue = clickedEvent.currentTarget.id;
+
       const isOptionAlreadySelected = currentSelectedOptions.some(
         (selectedOptions) => selectedOptions.id === pollOptionValue,
       );
@@ -90,20 +94,23 @@ export function usePoll(): UsePoll {
         polls: selectedPollOptions,
         conversationId: message?.id,
       });
+      setTemporaryAddOptionText("");
       console.log(call);
     } catch (error) {
       console.log(error);
     }
   };
-  const addOptionOnPoll: OneArgVoidReturns<string> = async (pollOption) => {
+  const addOptionOnPoll: ZeroArgVoidReturns = async () => {
     try {
       const call = await lmChatclient?.addPollOption({
         conversationId: message?.id,
         poll: {
-          text: pollOption,
+          text: temporaryAddOptionText,
         },
       });
-      console.log(call);
+      if (call.success) {
+        addPollOptionLocally(call.data.poll);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -124,13 +131,19 @@ export function usePoll(): UsePoll {
     addOptionOnPoll,
     getPollUsers,
     selectPollOption,
+    temporaryAddOptionText,
+    setTemporaryAddOptionText,
+    selectedPollOptions,
   };
 }
 interface UsePoll {
   submitPoll: ZeroArgVoidReturns;
-  addOptionOnPoll: OneArgVoidReturns<string>;
+  addOptionOnPoll: ZeroArgVoidReturns;
   getPollUsers: OneArgVoidReturns<number>;
-  selectPollOption: OneArgVoidReturns<React.MouseEvent>;
+  selectPollOption: OneArgVoidReturns<React.MouseEvent<HTMLDivElement>>;
+  temporaryAddOptionText: string;
+  setTemporaryAddOptionText: React.Dispatch<React.SetStateAction<string>>;
+  selectedPollOptions: SelectedPollOption[];
 }
 interface SelectedPollOption {
   id: string;

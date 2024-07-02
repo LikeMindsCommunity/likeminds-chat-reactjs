@@ -1,45 +1,109 @@
 import React, { useContext } from "react";
 import MessageContext from "../../context/MessageContext";
 import pollIcon from "../../assets/img/poll-icon.svg";
+import { usePoll } from "../../hooks/usePolls";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { useDialog } from "../../hooks/useDialog";
+import { Dialog } from "@mui/material";
+dayjs.extend(relativeTime);
 const LMMicroPoll = () => {
   const { message } = useContext(MessageContext);
+  const {
+    selectPollOption,
+    selectedPollOptions,
+    temporaryAddOptionText,
+    setTemporaryAddOptionText,
+    addOptionOnPoll,
+    submitPoll,
+  } = usePoll();
+  const { openDialog, dialogOpen, closeDialog } = useDialog();
+
   return (
     <div className="conversation reciever">
-      {/* <div className="msg">{message?.answer}</div> */}
       <div className="lm-poll">
         <div className="user-profile">
-          <div className="name">Sachin</div>
-          <div className="info">Instant poll * Open voting</div>
+          <div className="name">{message.member.name}</div>
+          <div className="info">{message.poll_type_text}</div>
         </div>
         <div className="poll-header">
           <div className="poll-icon">
             <img src={pollIcon} alt="Poll Icon" />
           </div>
-          <button className="ends">Ends in 1 day</button>
+          <button className="ends">{`Ends in ${dayjs(message.expiry_time).fromNow()}`}</button>
         </div>
-        <div className="poll-title">
-          What percentage of the indian population has hair fall issue?
-        </div>
-        <div className="pollOptions">
-          <div className="pollOption bg">
-            <div className="option">Sketch</div>
+        <div className="poll-title">{message.answer}</div>
+        {message.polls.map((poll) => {
+          return (
+            <div className={`pollOptions lm-cursor-pointer`} key={poll.id}>
+              <div
+                onClick={(e) => {
+                  selectPollOption(e);
+                }}
+                id={poll.id.toString()}
+                className={`pollOption  ${selectedPollOptions.some((selectedOption) => selectedOption.id.toString() === poll.id.toString()) ? "pollOptionSelected" : ""}
+                 ${poll.is_selected ? "pollOptionSubmitted" : ""}`}
+              >
+                {poll.text}
+              </div>
+              <div className="votes">{`${poll.no_votes} votes`}</div>
+            </div>
+          );
+        })}
+
+        {message.allow_add_option ? (
+          <div className="add-option-to-poll" onClick={openDialog}>
+            <div className="option">Add Option</div>
           </div>
-          <div className="votes"> 5 votes </div>
+        ) : null}
+
+        <div className="totalVotes">{message.poll_answer_text}</div>
+        <div className="lm-poll-submit">
+          <button
+            onClick={submitPoll}
+            className={`lm-poll-submit-button lm-cursor-pointer lm-poll-submit-button-active`}
+          >
+            Submit
+          </button>
         </div>
-        <div className="pollOptions text-grey">
-          <div className="pollOption bg-grey">
-            <div className="option">Sketch</div>
-          </div>
-          <div className="votes text-grey"> 3 votes </div>
-        </div>
-        <div className="pollOptions text-grey">
-          <div className="pollOption bg-grey">
-            <div className="option">Sketch</div>
-          </div>
-          <div className="votes text-grey"> 2 votes </div>
-        </div>
-        <div className="totalVotes">You and 15 others voted.</div>
       </div>
+      <Dialog open={dialogOpen} onClose={closeDialog}>
+        <div className="lm-poll-response-add-option-dialog">
+          <div className="lm-poll-response-add-option-dialog-header">
+            <div className="lm-poll-response-add-option-dialog-header-title">
+              Add new poll option
+            </div>
+
+            <div className="lm-poll-response-add-option-dialog-header-close lm-cursor-pointer">
+              <span onClick={closeDialog}>X</span>
+            </div>
+          </div>
+          <div className="lm-poll-response-add-option-dialog-body">
+            <div className="lm-poll-response-add-option-dialog-body-text">
+              Enter an option that you think is missing in this poll. This can
+              not be undone.
+            </div>
+            <input
+              className="lm-poll-response-add-option-input"
+              type="text"
+              placeholder="Type your option"
+              value={temporaryAddOptionText}
+              onChange={(e) => {
+                setTemporaryAddOptionText(e.target.value);
+              }}
+            />
+            <button
+              onClick={() => {
+                addOptionOnPoll();
+                closeDialog();
+              }}
+              className="lm-poll-response-add-option-submit "
+            >
+              SUBMIT
+            </button>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 };
