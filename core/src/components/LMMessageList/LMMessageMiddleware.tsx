@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { memo, useContext, useEffect, useState } from "react";
-import Conversation from "../../types/models/conversations";
+import Conversation, {
+  Poll,
+  PollOptionNew,
+} from "../../types/models/conversations";
 import LMMessageContext from "../../context/MessageContext";
 import Message from "../LMMessage/Message";
 import UserProviderContext from "../../context/UserProviderContext";
@@ -21,7 +24,7 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
   function deleteMessage() {
     const currentLocalMessage = { ...localMessageCopy };
     currentLocalMessage["deleted_by"] = currentUser?.id;
-    currentLocalMessage["deleted_by_member"] = currentUser;
+    currentLocalMessage["deleted_by_member"] = currentUser!;
     setLocalMessageCopy(currentLocalMessage as Conversation);
   }
   function editMessageLocally(newMessage: Conversation) {
@@ -56,6 +59,22 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
       return currentLocalCopy;
     });
   }
+  function addPollOptionLocally(pollOption: PollOptionNew) {
+    setLocalMessageCopy((currentLocalCopy: Conversation | null) => {
+      if (!currentLocalCopy) {
+        return currentLocalCopy;
+      }
+      currentLocalCopy = { ...currentLocalCopy };
+      const newPollOption: Poll = {
+        ...pollOption,
+        is_selected: false,
+        no_votes: 0,
+        percentage: 0,
+      };
+      currentLocalCopy.polls.push(newPollOption);
+      return currentLocalCopy as Conversation;
+    });
+  }
   return (
     <LMMessageContext.Provider
       value={{
@@ -65,6 +84,7 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
         editMessageLocally: editMessageLocally,
         addReactionLocally: addReactionLocally,
         removeReactionLocally: removeReactionLocally,
+        addPollOptionLocally: addPollOptionLocally,
       }}
     >
       <Message />

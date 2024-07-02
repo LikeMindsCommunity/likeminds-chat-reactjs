@@ -8,8 +8,9 @@ import GlobalClientProviderContext from "../context/GlobalClientProviderContext"
 import ConversationStates from "../enums/conversation-states";
 import { useParams } from "react-router-dom";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
+import { SelectChangeEvent } from "@mui/material";
 
-export function useCreatePoll(): UseCreatePoll {
+export function useCreatePoll(closeDialog?: ZeroArgVoidReturns): UseCreatePoll {
   const { id: chatroomId } = useParams();
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { conversationToReply } = useContext(LMChatChatroomContext);
@@ -18,31 +19,94 @@ export function useCreatePoll(): UseCreatePoll {
     useState<AdvancedPollOptions>({
       ALLOW_ANONYMOUS_VOTING: false,
       ALLOW_VOTERS_TO_ADD_OPTIONS: false,
-      MULTIPLE_SELECTION_NO: 0,
+      MULTIPLE_SELECTION_NO: 1,
       MULTIPLE_SELECTION_STATE: 0,
       SHOW_LIVE_RESULTS: false,
     });
-  const [pollOptions, setPollOptions] = useState<string[]>(["", ""]);
-  const [pollExpirationDate, setPollExpirationDate] = useState<Date>(
-    new Date(),
+  const [pollOptions, setPollOptions] = useState<PollOption[]>([
+    {
+      text: "",
+    },
+    {
+      text: "",
+    },
+  ]);
+  const [pollExpirationDate, setPollExpirationDate] = useState<number | null>(
+    null,
   );
-
+  const updatePollExpirationDate = (
+    expiryDateInMilliseconds: number | null,
+  ) => {
+    setPollExpirationDate(expiryDateInMilliseconds);
+  };
   const addPollOption = () => {
     setPollOptions((currentPollOptions) => {
-      currentPollOptions.push("");
+      currentPollOptions = [...currentPollOptions];
+      console.log("clicked");
+      currentPollOptions.push({
+        text: "",
+      });
+      console.log(currentPollOptions);
       return currentPollOptions;
     });
   };
   const removePollOption = (index: number) => {
     setPollOptions((currentPollOptions) => {
+      currentPollOptions = [...currentPollOptions];
       currentPollOptions.splice(index, 1);
       return currentPollOptions;
     });
   };
   const updatePollOption = (text: string, index: number) => {
     setPollOptions((currentPollOptions) => {
-      currentPollOptions[index] = text;
+      currentPollOptions = [...currentPollOptions];
+      currentPollOptions[index].text = text;
       return currentPollOptions;
+    });
+  };
+  const updateAdvancedOptions = (
+    clickedEvent:
+      | React.ChangeEvent<HTMLInputElement>
+      | SelectChangeEvent<number>,
+  ) => {
+    setAdvancedPollOptions((currentOptions) => {
+      const option = clickedEvent.currentTarget
+        ? clickedEvent.target.name
+        : clickedEvent.target.name;
+      switch (option) {
+        case "ALLOW_VOTERS_TO_ADD_OPTIONS":
+          return {
+            ...currentOptions,
+            ALLOW_VOTERS_TO_ADD_OPTIONS:
+              !currentOptions.ALLOW_VOTERS_TO_ADD_OPTIONS,
+          };
+        case "ALLOW_ANONYMOUS_VOTING":
+          return {
+            ...currentOptions,
+            ALLOW_ANONYMOUS_VOTING: !currentOptions.ALLOW_ANONYMOUS_VOTING,
+          };
+        case "SHOW_LIVE_RESULTS":
+          return {
+            ...currentOptions,
+            SHOW_LIVE_RESULTS: !currentOptions.SHOW_LIVE_RESULTS,
+          };
+        case "MULTIPLE_SELECTION_STATE":
+          return {
+            ...currentOptions,
+            MULTIPLE_SELECTION_STATE: parseInt(
+              clickedEvent.target.value.toString(),
+            ),
+          };
+        case "MULTIPLE_SELECTION_NO":
+          return {
+            ...currentOptions,
+            MULTIPLE_SELECTION_NO: parseInt(
+              clickedEvent.target.value.toString(),
+            ),
+          };
+        default:
+          return currentOptions;
+      }
     });
   };
   const createPollConversation = async () => {
@@ -57,7 +121,7 @@ export function useCreatePoll(): UseCreatePoll {
           : undefined,
         polls: pollOptions.map((option) => {
           return {
-            text: option,
+            text: option.text,
           };
         }),
         pollType: advancedPollOptions.SHOW_LIVE_RESULTS ? 1 : 0,
@@ -65,8 +129,11 @@ export function useCreatePoll(): UseCreatePoll {
         multipleSelectNo: advancedPollOptions.MULTIPLE_SELECTION_NO,
         isAnonymous: advancedPollOptions.ALLOW_ANONYMOUS_VOTING,
         allowAddOption: advancedPollOptions.ALLOW_VOTERS_TO_ADD_OPTIONS,
-        expiryTime: pollExpirationDate.getMilliseconds(),
+        expiryTime: pollExpirationDate,
       });
+      if (closeDialog) {
+        closeDialog();
+      }
       console.log(call);
     } catch (error) {
       console.log(error);
@@ -86,31 +153,37 @@ export function useCreatePoll(): UseCreatePoll {
     createPollConversation,
     changePollText,
     pollText,
-    setPollExpirationDate,
+    updatePollExpirationDate,
     pollExpirationDate,
     advancedOptions: advancedPollOptions,
-    setAdvancedOptions: setAdvancedPollOptions,
+    updateAdvancedOptions,
   };
 }
 
-interface UseCreatePoll {
-  pollOptions: string[];
+export interface UseCreatePoll {
+  pollOptions: PollOption[];
   addPollOption: ZeroArgVoidReturns;
   updatePollOption: TwoArgVoidReturns<string, number>;
   removePollOption: OneArgVoidReturns<number>;
   createPollConversation: ZeroArgVoidReturns;
   changePollText: OneArgVoidReturns<React.ChangeEvent<HTMLTextAreaElement>>;
   pollText: string;
-  setPollExpirationDate: OneArgVoidReturns<Date>;
-  pollExpirationDate: Date;
+  updatePollExpirationDate: OneArgVoidReturns<number | null>;
+  pollExpirationDate: number | null;
   advancedOptions: AdvancedPollOptions;
-  setAdvancedOptions: OneArgVoidReturns<AdvancedPollOptions>;
+  updateAdvancedOptions: OneArgVoidReturns<
+    React.ChangeEvent<HTMLInputElement> | SelectChangeEvent<number>
+  >;
 }
 
-interface AdvancedPollOptions {
+export interface AdvancedPollOptions {
   ALLOW_VOTERS_TO_ADD_OPTIONS: boolean;
   ALLOW_ANONYMOUS_VOTING: boolean;
   SHOW_LIVE_RESULTS: boolean;
   MULTIPLE_SELECTION_STATE: number;
   MULTIPLE_SELECTION_NO: number;
+}
+
+interface PollOption {
+  text: string;
 }

@@ -41,6 +41,12 @@ export interface Poll {
   percentage: number;
   member: Member;
 }
+export interface PollOptionNew {
+  id: number;
+  member: Member;
+  text: string;
+  user_id: number;
+}
 export interface Reaction {
   member: Member;
   reaction: string;

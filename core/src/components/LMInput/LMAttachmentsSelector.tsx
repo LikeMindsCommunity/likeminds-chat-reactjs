@@ -23,7 +23,7 @@ const LMAttachmentsSelector = () => {
   return (
     <div className="attachment-selecter-wrapper">
       <Dialog open={dialogOpen} onClose={closeDialog}>
-        <LMPollCreationDialog />
+        <LMPollCreationDialog closeDialog={closeDialog} />
       </Dialog>
       <Menu
         open={Boolean(menuAnchor)}
