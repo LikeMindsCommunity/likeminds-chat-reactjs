@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useContext, useEffect, useState } from "react";
 import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
-import { DMChatroomResponse } from "../types/models/ChatroomResponse";
+import { DMChannel } from "../types/models/ChatroomResponse";
 import { GetHomeFeedRequest } from "@likeminds.community/chat-js-beta/dist/pages/home-feed/types";
 import {
   ChatroomData,
@@ -20,7 +20,7 @@ import { onValue, ref } from "firebase/database";
 import { CustomActions } from "../customActions";
 import { CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
 interface ChatroomProviderInterface {
-  dmChatroomList: DMChatroomResponse[] | null;
+  dmChatroomList: DMChannel[] | null;
   loadMoreDmChatrooms: boolean;
   groupChatroomsList: ChatroomData[] | null;
   groupChatroomConversationsMeta: Record<string, ConversationMeta>;
@@ -33,19 +33,18 @@ interface ChatroomProviderInterface {
   joinAChatroom: OneArgVoidReturns<string>;
   markReadAChatroom: OneArgVoidReturns<string | number>;
   onLeaveChatroom: OneArgVoidReturns<string>;
+  checkForDmTab: () => Promise<HideDMTabInfo | null>;
+  approveDMRequest: OneArgVoidReturns<string>;
+  rejectDMRequest: OneArgVoidReturns<string>;
 }
 
 export default function useChatroomList(): ChatroomProviderInterface {
   const navigate = useNavigate();
   const { id: chatroomId } = useParams();
-  //   const { chatroomId, setChatroom } = useContext(ChatroomProviderContext);
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { currentUser, currentCommunity } = useContext(UserProviderContext);
   //   states for dm chatrooms
-  const [dmChatrooms, setDmChatrooms] = useState<DMChatroomResponse[] | null>(
-    null,
-  );
-
+  const [dmChatrooms, setDmChatrooms] = useState<DMChannel[] | null>(null);
   const [dmChatroomsPageCount, setDmChatroomsPageCount] = useState<number>(1);
   const [loadMoreDmChatrooms, setLoadMoreDmChatrooms] = useState<boolean>(true);
   //   state for groupchat chatrooms should come here
@@ -228,6 +227,28 @@ export default function useChatroomList(): ChatroomProviderInterface {
       console.log(error);
     }
   }
+  async function approveDMRequest(id: string) {
+    try {
+      const call = await lmChatclient?.inviteAction({
+        channelId: id,
+        inviteStatus: 1,
+      });
+      console.log(call);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async function rejectDMRequest(id: string) {
+    try {
+      const call = await lmChatclient?.inviteAction({
+        channelId: id,
+        inviteStatus: 2,
+      });
+      console.log(call);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   const getChatroomsMine = useCallback(async () => {
     try {
       const getChatroomsMineCall: GetChatroomsSyncResponse =
@@ -268,8 +289,19 @@ export default function useChatroomList(): ChatroomProviderInterface {
       console.log(error);
     }
   }, [groupChatroomsPageCount, lmChatclient]);
+  const checkForDmTab: () => Promise<HideDMTabInfo | null> = async () => {
+    try {
+      const call = await lmChatclient?.checkDMTab();
+      if (call.success) {
+        return call.data as HideDMTabInfo;
+      }
+      return null;
+    } catch (error) {
+      return null;
+    }
+  };
   useEffect(() => {
-    // getDmChannelList();
+    getDmChannelList();
     getChatroomsMine();
     getExploreGroupChatrooms();
   }, []);
@@ -317,5 +349,15 @@ export default function useChatroomList(): ChatroomProviderInterface {
     groupChatroomConversationsMeta,
     groupChatroomMember,
     markReadAChatroom,
+    checkForDmTab,
+    approveDMRequest,
+    rejectDMRequest,
   };
+}
+
+export interface HideDMTabInfo {
+  hide_dm_tab: boolean;
+  is_cm: boolean;
+  unread_dm_count: number;
+  hide_dm_text: string | undefined;
 }
