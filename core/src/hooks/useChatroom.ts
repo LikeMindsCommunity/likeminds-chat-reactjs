@@ -19,6 +19,8 @@ interface UseChatroom {
   setConversationToReply: React.Dispatch<Conversation | null>;
   setConversationToEdit: React.Dispatch<Conversation | null>;
   canUserReplyPrivately: ReplyDmQueries;
+  searchedConversationId: number | null;
+  setSearchedConversationId: React.Dispatch<number | null>;
 }
 
 export default function useChatroom(): UseChatroom {
@@ -34,6 +36,9 @@ export default function useChatroom(): UseChatroom {
     useState<Conversation | null>(null);
   const [canUserReplyPrivately, setCanUserReplyPrivately] =
     useState<ReplyDmQueries>(ReplyDmQueries.REPLY_PRIVATELY_NOT_ALLOWED);
+  const [searchedConversationId, setSearchedConversationId] = useState<
+    number | null
+  >(null);
   const checkDMStatus = useCallback(async () => {
     try {
       const checkDMStatusCall = await lmChatclient?.checkDMStatus({
@@ -126,6 +131,8 @@ export default function useChatroom(): UseChatroom {
     setConversationToEdit,
     setConversationToReply,
     canUserReplyPrivately,
+    searchedConversationId,
+    setSearchedConversationId,
   };
 }
 export type UnknownReturnFunction = (...props: unknown[]) => unknown;

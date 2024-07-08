@@ -113,6 +113,7 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
             callNextOnTop={true}
           >
             {conversations?.map((conversation: Conversation, index: number) => {
+              console.log(conversation);
               return (
                 <LMMessageMiddleware
                   message={conversation}

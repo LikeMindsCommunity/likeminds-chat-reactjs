@@ -13,6 +13,8 @@ const LMChatChatroom: React.FC = () => {
     setConversationToReply,
     setChatroom,
     canUserReplyPrivately,
+    searchedConversationId,
+    setSearchedConversationId,
   } = useChatroom();
   console.log(chatroom);
 
@@ -26,6 +28,8 @@ const LMChatChatroom: React.FC = () => {
         chatroom,
         setNewChatroom: setChatroom,
         canUserReplyPrivately,
+        searchedConversationId,
+        setSearchedConversationId,
       }}
     >
       <Outlet />

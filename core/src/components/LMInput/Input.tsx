@@ -154,10 +154,10 @@ const Input = () => {
     if (chatRequestState === null) {
       return null;
     }
-    const targetDmUser =
-      currentChatroom?.member.id.toString() === currentUser?.id.toString()
-        ? currentChatroom?.chatroom_with_user
-        : currentChatroom?.member;
+    // const targetDmUser =
+    //   currentChatroom?.member.id.toString() === currentUser?.id.toString()
+    //     ? currentChatroom?.chatroom_with_user
+    //     : currentChatroom?.member;
     const isRequestSender =
       chatroom?.chatroom.chat_requested_by?.id.toString() ===
       currentUser.id.toString()
@@ -337,6 +337,20 @@ const Input = () => {
         <div>
           <MediaCarousel />
         </div>
+
+        {/* Message response  */}
+        {/* <div className="lm-response-block">
+          <div className="lm-response">
+            <div className="lm-res-name">User Name</div>
+            <div className="lm-res-msg">skdfj slkdfjslkdj fslkdfjlskfjd</div>
+          </div>
+          <div className="lm-response-cancel">
+            <IconButton onClick={() => {}}>
+              <ClearIcon fontSize="small" />
+            </IconButton>
+          </div>
+        </div> */}
+        {/* Message response  */}
 
         <div className="lm-channel-footer">
           <div className="lm-channel-icon lm-cursor-pointer">
