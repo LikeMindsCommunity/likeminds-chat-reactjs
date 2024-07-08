@@ -11,4 +11,6 @@ export interface LMChatChatroomContextInterface {
   chatroom: ChatroomCollabcard | null;
   setNewChatroom: React.Dispatch<ChatroomCollabcard | null>;
   canUserReplyPrivately: ReplyDmQueries;
+  searchedConversationId: number | null;
+  setSearchedConversationId: React.Dispatch<number | null>;
 }

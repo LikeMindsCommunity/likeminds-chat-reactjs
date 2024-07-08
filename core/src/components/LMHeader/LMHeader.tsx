@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { Menu, MenuItem } from "@mui/material";
 
 import useChatroomMenuOptions from "../../hooks/useChatroomMenuOptions";
@@ -10,22 +10,75 @@ import { useMenu } from "../../hooks/useMenu";
 // Icons
 import menuIcon from "../../assets/img/overflow-menu.svg";
 import searchIcon from "../../assets/img/search.svg";
+import { ChatroomTypes } from "../../enums/chatroom-types";
+import UserProviderContext from "../../context/UserProviderContext";
 
 const Header = () => {
   const { chatroom } = useContext(LMChatChatroomContext);
+  const { currentUser } = useContext(UserProviderContext);
   const { onMute, onLeaveChatroom, onViewParticipants, onBlock, onUnBlock } =
     useChatroomMenuOptions();
   const { menuAnchor, openMenu, closeMenu } = useMenu();
-  const imageUrl = chatroom?.chatroom.chatroom_image_url;
-  const name = chatroom?.chatroom.header;
-  const avatarContent = getAvatar({ imageUrl, name });
+
+  const getChatroomReciever = useCallback(() => {
+    if (!chatroom) {
+      return null;
+    }
+    if (chatroom.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+      return null;
+    }
+    const recieverUser =
+      chatroom.chatroom.member.id.toString() === currentUser.id.toString()
+        ? chatroom.chatroom.chatroom_with_user
+        : chatroom.chatroom.member;
+    return recieverUser;
+  }, [chatroom, currentUser]);
+  const chatroomAvatar = useMemo(() => {
+    if (chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+      const recieverUser = getChatroomReciever();
+      if (recieverUser) {
+        const imageUrl = recieverUser?.image_url;
+        const name = recieverUser?.name;
+        const avatarContent = getAvatar({ imageUrl, name });
+        return avatarContent;
+      } else {
+        return null;
+      }
+    } else {
+      const imageUrl = chatroom?.chatroom.chatroom_image_url;
+      const name = chatroom?.chatroom.header;
+      const avatarContent = getAvatar({ imageUrl, name });
+      return avatarContent;
+    }
+  }, [
+    chatroom?.chatroom.chatroom_image_url,
+    chatroom?.chatroom.header,
+    chatroom?.chatroom.type,
+    getChatroomReciever,
+  ]);
+  const chatroomTitle = useMemo(() => {
+    if (!chatroom) return "";
+    const chatroomType = chatroom?.chatroom.type;
+
+    if (chatroomType === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+      const recieverUser = getChatroomReciever();
+      if (recieverUser) {
+        return recieverUser.name;
+      } else {
+        return "";
+      }
+    } else {
+      return chatroom?.chatroom.header;
+    }
+  }, [chatroom, getChatroomReciever]);
   return (
     <div className="lm-channel-header">
       <div className="lm-header-left">
-        <div className="lm-channel-img">{avatarContent}</div>
+        <div className="lm-channel-img">{chatroomAvatar}</div>
         <div className="lm-channel-desc">
-          <div className="lm-channel-title">{chatroom?.chatroom.header}</div>
-          {chatroom?.chatroom?.participants_count ? (
+          <div className="lm-channel-title">{chatroomTitle}</div>
+          {chatroom?.chatroom?.participants_count &&
+          chatroom.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM ? (
             <div className="lm-channel-participants">
               {chatroom?.chatroom.participants_count} Participants
             </div>

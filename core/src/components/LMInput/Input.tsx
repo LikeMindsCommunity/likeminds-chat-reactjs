@@ -153,10 +153,10 @@ const Input = () => {
     if (chatRequestState === null) {
       return null;
     }
-    const targetDmUser =
-      currentChatroom?.member.id.toString() === currentUser?.id.toString()
-        ? currentChatroom?.chatroom_with_user
-        : currentChatroom?.member;
+    // const targetDmUser =
+    //   currentChatroom?.member.id.toString() === currentUser?.id.toString()
+    //     ? currentChatroom?.chatroom_with_user
+    //     : currentChatroom?.member;
     const isRequestSender =
       chatroom?.chatroom.chat_requested_by?.id.toString() ===
       currentUser.id.toString()
