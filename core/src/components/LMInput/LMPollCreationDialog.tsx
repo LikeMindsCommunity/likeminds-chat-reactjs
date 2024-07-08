@@ -6,6 +6,7 @@ import { DateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import createPollTick from "../../assets/img/create-poll-tick.png";
+import cancelIcon from "../../assets/img/cancel-icon.svg";
 import dayjs from "dayjs";
 import {
   Collapse,
@@ -39,7 +40,15 @@ const LMPollCreationDialog = ({ closeDialog }: LMPollCreationDialogProps) => {
   };
   return (
     <div className="lm-poll-wrapper">
-      <p className="lm-poll-heading">New Poll</p>
+      <div className="lm-poll-heading">
+        New Poll
+        <img
+          src={cancelIcon}
+          alt="close"
+          className="close-icon"
+          onClick={closeDialog}
+        />
+      </div>
       <div className="lm-poll-creation-body">
         <textarea
           name="poll-creation-textarea"

@@ -86,7 +86,14 @@ body {
   padding: 15px 0;
   width: 100%;
   height: 43vh;
-  overflow-y: scroll;
+  overflow-y: auto;
+}
+
+.lm-channel-list .lm-channel-list-body#lm-channel-list-dm {
+  padding: 15px 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .lm-channel-list .lm-channel-list-body .channel-media {
@@ -239,6 +246,14 @@ body {
 .reactionHeader {
   padding: 20px;
   font-size: 20px;
+  position: relative;
+}
+
+.reactionHeader img {
+  cursor: pointer;
+  position: absolute;
+  right: 20px;
+  top: 20px;
 }
 
 .reactions-selection-tabs {
@@ -302,7 +317,8 @@ body {
 
 .lm-chat-message-reaction {
   width: max-content;
-  margin-bottom: 10px;
+  float: left;
+  margin: 0 5px 10px 0;
   height: 1.75rem;
   padding: 0.25rem 0.5rem 0.25rem 0.25rem;
   border-radius: 24px;
@@ -339,6 +355,7 @@ body {
   display: flex;
   justify-content: space-between;
   background: #f6f7f9;
+  position: relative;
 }
 
 .lm-channel-header .lm-header-left {
@@ -531,12 +548,48 @@ body {
   min-width: 180px;
   width: auto;
   border-radius: 15px;
-  padding: 14px 14px 8px 14px;
-  margin: 0 0 2px 0;
+  padding: 8px 12px;
+  margin: 0 0 3px 0;
   background-color: #fff;
   word-wrap: break-word;
   display: flex;
   flex-direction: column;
+}
+
+.lm-reply-wrapper {
+  background-color: rgba(208, 216, 226, 0.5);
+  border-radius: 8px;
+  border-left: 3px solid #008274;
+  padding: 5px;
+  margin: 0 0 5px 0;
+}
+
+.lm-reply-wrapper-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.lm-reply-wrapper-content-name {
+  font-size: 13px;
+  color: #11c5b2;
+  font-weight: bold;
+  max-width: 380px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.lm-reply-wrapper-content-msg {
+  margin: 0;
+  font-size: 13px;
+  color: #666666;
+  word-break: break-word;
+  max-width: 380px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
 }
 
 .lm-channel .conversation .name {
@@ -565,21 +618,28 @@ body {
   text-align: right;
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 2px;
+  align-items: center;
+}
+
+.lm-channel .conversation .edited-bullet {
+  background-color: #9b9b9b;
+  border-radius: 50%;
+  width: 4px;
+  height: 4px;
+  margin: 0 4px;
 }
 
 .lm-channel .conversation.receiver {
   background-color: #fff;
   float: left;
   clear: both;
-  /* margin-right: auto; */
 }
 
 .lm-channel .conversation.sender {
   background-color: #e1fefb;
   float: right;
   clear: both;
-  /* margin-left: auto; */
 }
 
 .lm-chat-card.sender {
@@ -774,7 +834,6 @@ body {
   display: flex;
   align-items: center;
   position: relative;
-  background-color: #D0D8E2;
 }
 
 .lm-channel-footer .disable-input {
@@ -1436,6 +1495,8 @@ body {
 
 .lmGifContainer .lm-giphy-img {
   max-width: 120px;
+  object-fit: contain;
+  background: #f0f0f0;
 }
 
 .lmGifContainer .lm-giphy-img:hover {
@@ -1638,19 +1699,25 @@ body {
 /* Poll View */
 .lm-poll-wrapper {
   width: 424px;
-  height: 614px;
+  /* height: 614px; */
   padding: 48px;
   padding-bottom: 16px;
   position: relative;
 }
 
 .lm-poll-heading {
-  font-family: Roboto;
   font-size: 16px;
   font-weight: 500;
   line-height: 18px;
   text-align: left;
   margin-bottom: 14px;
+  position: relative;
+}
+
+.lm-poll-heading img {
+  position: absolute;
+  top: -30px;
+  right: -30px;
 }
 
 .poll-creation-textarea {
@@ -1726,19 +1793,24 @@ body {
   margin-bottom: 16px !important;
 }
 
+.lm-chatroom-menu-item {
+  font-size: 14px !important;
+  color: rgba(0, 0, 0, .87) !important;
+  padding: 10px 16px !important;
+}
+
 .poll-advanced-option-toggle {
-  font-family: Roboto;
   font-size: 12px;
   font-weight: 400;
   line-height: 20px;
   text-align: center;
   color: #ACB7C0;
-
+  cursor: pointer;
 
 }
 
 .poll-advanced-option-text {
-  font-family: Roboto;
+
   font-size: 16px;
   font-weight: 400;
   line-height: 20px;
@@ -2241,4 +2313,42 @@ input.disabled-state {
   font-size: 16px;
   border: none;
   outline: none;
-}
+
+  .lm-add-emoji {
+    width: 22px;
+  }
+
+
+  .lm-channel-header .search-input-wrapper {
+    position: absolute;
+    left: 13px;
+    top: 9px;
+    width: 98%;
+  }
+
+  .search-input-wrapper input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .search-results-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: white;
+    z-index: 1000;
+  }
+
+  .search-result-item {
+    padding: 8px;
+    cursor: pointer;
+  }
+
+  .search-result-item:hover {
+    background: #f0f0f0;
+  }

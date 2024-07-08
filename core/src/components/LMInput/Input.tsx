@@ -76,6 +76,7 @@ const Input = () => {
       setAlertMessage(null);
     }
     const member_can_message = chatroom?.chatroom.member_can_message;
+
     switch (member_can_message) {
       case true:
         setAlertMessage(null);
