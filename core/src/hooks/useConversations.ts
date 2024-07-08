@@ -16,6 +16,8 @@ import Conversation from "../types/models/conversations";
 import UserProviderContext from "../context/UserProviderContext";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { useParams } from "react-router-dom";
+import { CustomActions } from "../customActions";
+import { ZeroArgVoidReturns } from "./useInput";
 
 interface UseConversations {
   conversations: Conversation[] | null;
@@ -27,6 +29,7 @@ interface UseConversations {
   // showLoader: boolean;
   bottomReferenceDiv: MutableRefObject<HTMLDivElement | null>;
   messageListContainerRef: MutableRefObject<HTMLDivElement | null>;
+  unBlockUserInDM: ZeroArgVoidReturns;
 }
 
 export default function useConversations(): UseConversations {
@@ -157,6 +160,14 @@ export default function useConversations(): UseConversations {
         chatroomId: parseInt(chatroomId!),
         status: 1,
       });
+      if (call.success) {
+        dispatchEvent(
+          new CustomEvent(
+            CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED,
+            call.data.conversation,
+          ),
+        );
+      }
     } catch (error) {
       console.log(error);
     }
@@ -192,6 +203,23 @@ export default function useConversations(): UseConversations {
 
     return null;
   }
+  const handleDMUserActionsConversations = useCallback(
+    (conversation: Conversation) => {
+      setConversations((currentConversations) => {
+        console.log(currentConversations);
+        console.log(conversation);
+        if (!currentConversations) {
+          console.log("Executing with no conversations");
+          return currentConversations;
+        }
+        currentConversations = [...currentConversations];
+        currentConversations.push(conversation);
+        console.log(currentConversations);
+        return currentConversations;
+      });
+    },
+    [],
+  );
 
   useEffect(() => {
     async function fetchChannel() {
@@ -214,6 +242,7 @@ export default function useConversations(): UseConversations {
     setLoader,
     getChatroomConversationsOnTopScroll,
   ]);
+
   useEffect(() => {
     const db = lmChatclient?.fbInstance();
     if (!db) {
@@ -287,6 +316,28 @@ export default function useConversations(): UseConversations {
     });
   }, [chatroomId, lmChatclient]);
   useEffect(() => {
+    console.log("\x1b[36m%s\x1b[0m", "Executing hook");
+
+    document.addEventListener(
+      CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED,
+      (eventObject) => {
+        console.log("We reached here");
+        const detail = (eventObject as CustomEvent).detail;
+        handleDMUserActionsConversations(detail);
+      },
+    );
+    return () => {
+      document.removeEventListener(
+        CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED,
+        (eventObject) => {
+          console.log("We reached here");
+          const detail = (eventObject as CustomEvent).detail;
+          handleDMUserActionsConversations(detail);
+        },
+      );
+    };
+  }, []);
+  useEffect(() => {
     return () => {
       showLoader.current = true;
       resetConversations();
@@ -302,6 +353,7 @@ export default function useConversations(): UseConversations {
     showLoader,
     bottomReferenceDiv,
     messageListContainerRef,
+    unBlockUserInDM,
   };
 }
 export type UnknownReturnFunction = (...props: unknown[]) => unknown;

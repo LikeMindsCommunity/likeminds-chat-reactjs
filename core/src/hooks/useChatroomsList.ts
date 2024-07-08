@@ -202,31 +202,32 @@ export default function useChatroomList(): ChatroomProviderInterface {
       console.log(error);
     }
   };
-  async function getDmChannelList() {
-    try {
-      //
-      const dmChatroomList = await getDMChatroomsList();
-      setDmChatroomsPageCount(dmChatroomsPageCount + 1);
-      if (dmChatroomList.length === 0) {
-        setLoadMoreDmChatrooms(false);
-      }
-      const newDmChatroomsList = [...dmChatrooms!, ...dmChatroomList];
-      setDmChatrooms(newDmChatroomsList);
-    } catch (error) {
-      //
-    }
-  }
-  async function getDMChatroomsList() {
-    try {
-      const newChatrooms = await lmChatclient?.fetchDMFeed({
-        page: dmChatroomsPageCount,
-      });
-      console.log(newChatrooms);
-      return newChatrooms.data.dm_chatrooms;
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  // async function getDmChannelList() {
+  //   try {
+  //     //
+  //     const dmChatroomList = await getDMChatroomsList();
+  //     setDmChatroomsPageCount(dmChatroomsPageCount + 1);
+  //     if (dmChatroomList.length === 0) {
+  //       setLoadMoreDmChatrooms(false);
+  //     }
+  //     const newDmChatroomsList = [...dmChatrooms!, ...dmChatroomList];
+  //     setDmChatrooms(newDmChatroomsList);
+  //   } catch (error) {
+  //     //
+  //   }
+  // }
+  // async function getDMChatroomsList() {
+  //   try {
+  //     const newChatrooms = await lmChatclient?.fetchDMFeed({
+  //       page: dmChatroomsPageCount,
+
+  //     });
+  //     console.log(newChatrooms);
+  //     return newChatrooms.data.dm_chatrooms;
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
   async function approveDMRequest(id: string) {
     try {
       const call = await lmChatclient?.inviteAction({
@@ -301,7 +302,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
     }
   };
   useEffect(() => {
-    getDmChannelList();
+    // getDmChannelList();
     getChatroomsMine();
     getExploreGroupChatrooms();
   }, []);

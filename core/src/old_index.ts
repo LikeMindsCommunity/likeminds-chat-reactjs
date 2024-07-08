@@ -7,7 +7,7 @@ import MediaCarousel from "./components/LMInput/LMCarousel";
 import GiphySearch from "./components/LMInput/LMGiphySearch";
 import LMChatChatroom from "./components/LMChannel/LMChatChatroom";
 import ScrollContainer from "./components/DualSidePagination/ScrollContainer";
-import LMChannelList from "./components/LMChannelList/LMChannelList";
+import LMGroupChatChannelList from "./components/LMChannelList/LMGroupChatChannelList";
 import LMClientOverlayProvider from "./components/LMChatProvider/LMClientOverlayProvider";
 import AttachmentsSelector from "./components/LMInput/LMAttachmentsSelector";
 import LMChatTextArea from "./components/LMInput/LMChatTextArea";
@@ -33,7 +33,7 @@ export {
   LMChatChatroom,
   ScrollContainer,
   Header,
-  LMChannelList,
+  LMGroupChatChannelList as LMChannelList,
   LMClientOverlayProvider,
   AttachmentsSelector,
   MediaCarousel,

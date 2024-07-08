@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from "react";
-import MessageContext from "../../context/MessageContext";
+import React, { useContext } from "react";
+
 import ConversationStates from "../../enums/conversation-states";
 import { Utils } from "../../utils/helpers";
 import { getAvatar } from "../../shared/components/LMUserMedia";
@@ -17,12 +17,16 @@ import linkImg from "../../assets/img/link-img.svg";
 import MessageReactionHolder from "./MessageReactionHolder";
 import LMMicroPoll from "./LMMicroPoll";
 
+import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import { ChatRequestStates } from "../../enums/chat-request-states";
+import { ChatroomTypes } from "../../enums/chatroom-types";
+
 const Message = () => {
   const { message, index } = useContext(LMMessageContext);
 
-  const { conversations } = useContext(MessageListContext);
+  const { conversations, unBlockUserInDM } = useContext(MessageListContext);
   const { currentUser } = useContext(UserProviderContext);
-
+  const { chatroom } = useContext(LMChatChatroomContext);
   const isSender = message?.member?.uuid === currentUser?.uuid;
   const messageClass = isSender ? "sender" : "receiver";
 
@@ -34,7 +38,25 @@ const Message = () => {
     e.target.src = linkImg; // Fallback image URL
     e.target.onerror = null; // Prevent infinite loop if the fallback also fails
   };
-
+  function renderTapToUndo() {
+    if (
+      chatroom?.chatroom.chat_request_state.toString() ===
+      ChatRequestStates.REJECTED_STATE
+    )
+      if (
+        currentUser.id.toString() ===
+        chatroom?.chatroom.chatroom_with_user?.id.toString()
+      ) {
+        return (
+          <span
+            className="undo-dm-blocked lm-cursor-pointer"
+            onClick={unBlockUserInDM}
+          >
+            Tap to undo
+          </span>
+        );
+      }
+  }
   function renderDatePill() {
     if (index === 0) {
       return <div className="data-pill">{message?.date}</div>;
@@ -42,6 +64,28 @@ const Message = () => {
       if (conversations![index - 1].date !== message?.date) {
         return <div className="data-pill">{message?.date}</div>;
       }
+    }
+  }
+  function renderStateHeaderMessage() {
+    if (chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+      const chatroomuser =
+        chatroom.chatroom.member.id.toString() === currentUser?.id.toString()
+          ? chatroom.chatroom.chatroom_with_user
+          : chatroom.chatroom.member;
+      return (
+        <div className="data-pill">
+          {/* {Utils.parseAndReplaceTags(message?.answer || "")} */}
+          {`This is the very beginning of your direct message with ${
+            chatroomuser?.name
+          }`}
+        </div>
+      );
+    } else {
+      return (
+        <div className="data-pill">
+          {Utils.parseAndReplaceTags(message?.answer || "")}
+        </div>
+      );
     }
   }
   if (message?.deleted_by) {
@@ -165,6 +209,7 @@ const Message = () => {
         </>
       );
     }
+
     case ConversationStates.CHAT_ROOM_HEADER: {
       return (
         <>
@@ -173,11 +218,7 @@ const Message = () => {
             {renderDatePill()}
           </div>
           <div className="lm-chat-card">
-            <div className="lm-date-data ">
-              <div className="data-pill">
-                {Utils.parseAndReplaceTags(message?.answer || "")}
-              </div>
-            </div>
+            <div className="lm-date-data ">{renderStateHeaderMessage()}</div>
           </div>
         </>
       );
@@ -216,12 +257,32 @@ const Message = () => {
         </>
       );
     }
-    case 11:
+    case ConversationStates.ADD_ALL_MEMBERS:
       return (
         <div className={`lm-chat-card ${message?.state}`}>
-          <div className="data-pill">{message?.date}</div>
+          <div className="data-pill">{message?.answer}</div>
         </div>
       );
+    case ConversationStates.DIRECT_MESSAGE_MEMBER_REQUEST_REJECTED: {
+      return (
+        <div className={`lm-chat-card ${message?.state}`}>
+          <div className="data-pill">
+            {message?.answer}
+            {renderTapToUndo()}
+          </div>
+        </div>
+      );
+    }
+    case ConversationStates.DIRECT_MESSAGE_MEMBER_REQUEST_APPROVED: {
+      return (
+        <div className={`lm-chat-card ${message?.state}`}>
+          <div className="data-pill">
+            {" "}
+            {Utils.parseAndReplaceTags(message?.answer || "")}
+          </div>
+        </div>
+      );
+    }
     default: {
       return null;
       // <div className={`lm-chat-card ${message?.state}`}>
