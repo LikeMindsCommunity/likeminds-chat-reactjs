@@ -7,6 +7,8 @@ import {
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "../../hooks/useInput";
 import ReportTagComponent from "./ReportTagComponent";
 
+import canceIcon from "../../assets/img/cancel-icon.svg";
+
 const ReportTagsDialog = ({
   reportCallback,
   closeDialog,
@@ -40,7 +42,12 @@ const ReportTagsDialog = ({
   return (
     <div>
       <div className="lmReportPostWrapper">
-        <div className="lmReportPostWrapper__header">Report Message</div>
+        <div className="lmReportPostWrapper__header">
+          Report Message
+          <div className="lmReportPostWrapper__header__closeIcon">
+            <img src={canceIcon} alt="canceIcon" />
+          </div>
+        </div>
 
         <div className="lmReportPostWrapper__body">
           <div className="lmReportPostWrapper__body__content">

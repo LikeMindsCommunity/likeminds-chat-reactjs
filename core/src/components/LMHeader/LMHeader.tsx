@@ -9,6 +9,7 @@ import { useMenu } from "../../hooks/useMenu";
 
 // Icons
 import menuIcon from "../../assets/img/overflow-menu.svg";
+import searchIcon from "../../assets/img/search.svg";
 
 const Header = () => {
   const { chatroom } = useContext(LMChatChatroomContext);
@@ -32,10 +33,10 @@ const Header = () => {
         </div>
       </div>
       <div className="lm-header-right">
-        {/* <div className="lm-channel-icon">
+        <div className="lm-channel-icon">
           <img src={searchIcon} alt="searchIcon" />
         </div>
-        <div className="lm-channel-icon">
+        {/* <div className="lm-channel-icon">
           <img src={shareIcon} alt="shareIcon" />
         </div> */}
         <div className="lm-channel-icon">

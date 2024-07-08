@@ -8,6 +8,7 @@ import { ConstantStrings } from "../../enums/common-strings";
 import joinIcon from "../../assets/img/icon_join.svg";
 import document from "../../assets/img/document.svg";
 import joinedIcon from "../../assets/img/icon_joined.svg";
+import searchIcon from "../../assets/img/search.svg";
 import { Utils } from "../../utils/helpers";
 import { useContext } from "react";
 import UserProviderContext from "../../context/UserProviderContext";
@@ -36,9 +37,9 @@ function LMChannelList() {
       <div>
         <div className="lm-channel-list-header">
           <div className="title">Chatrooms</div>
-          {/* <div className="icon">
+          <div className="icon">
             <img src={searchIcon} alt="searchIcon" />
-          </div> */}
+          </div>
         </div>
       </div>
 
