@@ -125,6 +125,9 @@ const Message = () => {
     }
     case ConversationStates.NORMAL: {
       return (
+        // <>
+        //   <LMMicroPoll />
+        // </>
         <>
           <div className={`lm-chat-card ${message?.state}`}>
             {renderDatePill()}

@@ -34,6 +34,7 @@ body {
 .lm-right-panel {
   flex: 0 0 75%;
   height: 100%;
+  /* background: url(../../core//src/assets/img/no-chat-selected.svg) no-repeat center center; */
 }
 
 .lm-chat-panel {
@@ -703,7 +704,7 @@ body {
 .lm-chat-input-attachment-label label {
   cursor: pointer;
   display: flex;
-  /* flex-direction: column; */
+  flex-direction: column;
   gap: 1rem;
   justify-content: center;
   align-items: center;
@@ -1003,6 +1004,8 @@ body {
   background: #f9f9f9;
   border-radius: 8px;
   gap: 5px;
+  width: 100%;
+  justify-content: center;
 }
 
 .lm-media .pdf img {
@@ -1032,7 +1035,7 @@ body {
 .lmReportPostWrapper {
   max-width: 25rem;
   width: 100%;
-  background: var(--light-color);
+  background: #fff;
   position: relative;
 }
 
@@ -1052,10 +1055,8 @@ body {
 
 .lmReportPostWrapper__header__closeIcon {
   position: absolute;
-  top: 1rem;
-  /* 16px */
-  right: 1rem;
-  /* 16px */
+  top: 0; 
+  right: 16px;
   cursor: pointer;
 }
 
@@ -1134,8 +1135,8 @@ body {
 .lmReportPostWrapper__body__content__actions--btnReport {
   width: 100%;
   border: none;
-  color: var(--light-color);
-  background-color: var(--primary-color);
+  color: #fff;
+  background-color: #FB1609;
   font-weight: 500;
   font-size: 1.25rem;
   /* 20px */
@@ -1149,7 +1150,7 @@ body {
 .lmReportPostWrapper__body__content__actions--btnReport:disabled {
   width: 100%;
   border: none;
-  color: var(--light-color);
+  color: #fff;
   background-color: #e6ebf5;
   font-weight: 500;
   font-size: 1.25rem;
@@ -1176,12 +1177,11 @@ body {
   border-radius: 5px;
   overflow: hidden;
   height: 100px;
-  width: 100px;
-  /* width: 100px;
-  height: 100px; */
+  width: 100px; 
 }
 
 .lm-media .thumbnail {
+  display: flex;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -1350,7 +1350,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 75%;
-  text-transform: capitalize;
+  /* text-transform: capitalize; */
 }
 
 .postTaggingTile {
@@ -1633,6 +1633,9 @@ body {
   text-overflow: ellipsis;
 }
 
+
+
+/* Poll View */
 .lm-poll-wrapper {
   width: 424px;
   height: 614px;
@@ -1785,15 +1788,13 @@ body {
   line-height: 16px;
   color: #9B9B9B;
 }
-
-.lm-poll .poll-header {
+.lm-poll .poll-header{
   display: flex;
   justify-content: space-between;
   margin: 5px 0;
   align-items: center;
 }
-
-.lm-poll .poll-header button {
+.lm-poll .poll-header button{
   background-color: #06C3AF;
   border: none;
   border-radius: 25px;
@@ -1803,75 +1804,69 @@ body {
   font-weight: 500;
   color: #fff;
 }
-
-.lm-poll .poll-header button.ends {
-  background-color: #D0021B;
+.lm-poll .poll-header button.ends{
+  background-color: #D0021B; 
 }
-
-.lm-poll .poll-title {
+.lm-poll .poll-title{
   color: #020202;
   font-size: 14px;
   font-weight: 400;
   line-height: 18px;
-  width: 100%;
+  width: 100%; 
   word-wrap: break-word;
   margin: 10px 0;
 }
-
-.lm-poll .pollOptions {
+.lm-poll .pollOptions{
   display: flex;
   flex-direction: column;
   margin: 0 0 15px 0;
 }
 
-.lm-poll .pollOptions .pollOption {
+.lm-poll .pollOptions .pollOption{
   width: 100%;
   float: left;
   border-radius: 8px;
-  /* border: 1px solid #06C3AF; */
-  border: 1px solid #D0D8E2;
+  border: 1px solid #06C3AF;
+  /* border: 1px solid #D0D8E2; */
   padding: 8px 10px;
   font-size: 14px;
   font-weight: 400;
   line-height: 18px;
-  /* color: #06C3AF; */
-  background-color: #fff;
+  color: #06C3AF;
+  /* background-color: #fff; */
   border-radius: 8px;
 }
 
 .pollOptionSelected {
-  border: 1px solid #075e54 !important;
+  border: 1px solid #cffdf9 !important;
 }
 
 .pollOptionSubmitted {
-  border: 1px solid #075e54;
-  background-color: #075e54 !important;
+  border: 1px solid #cffdf9;
+  background-color: #cffdf9 !important;
 }
 
 .lm-poll .pollOptions .pollOption.bg {
   background: #cdf3ef;
 }
-
-.lm-poll .pollOptions .pollOption.bg-grey {
+ 
+.lm-poll .pollOptions .pollOption.bg-grey{
   color: #000;
   background: #D0D8E2;
   border-color: #D0D8E2;
   background: #d0d8e2;
 }
-
-.lm-poll .pollOptions .votes {
+.lm-poll .pollOptions .votes{
   font-size: 12px;
   font-weight: 400;
   line-height: 14px;
   color: #075e54;
   margin: 5px 0 0 8px;
 }
-
-.lm-poll .pollOptions .votes.text-grey {
+.lm-poll .pollOptions .votes.text-grey{
   color: #666;
 }
-
-.lm-poll .totalVotes {
+.lm-poll .totalVotes{
   color: #06C3AF;
   font-size: 13px;
   font-weight: 400;
@@ -1976,6 +1971,99 @@ body {
 
 /* Poll View */
 
+/* lm voter tabs */
+.lm-voter-tabs{ 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-size: 14px;
+  font-weight: 400;
+}
+.lm-voter-tabs .counts{
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+  color: #06c3af;
+}
+
+.react-tabs__tab-list{ 
+  display: flex;
+  justify-content: space-around;
+}
+.react-tabs__tab--selected{
+  border-radius: 0% !important;
+  background: none;
+  border-color: transparent;
+  color: #333; 
+  border: none !important;
+  border-bottom: 2px solid #06c3af !important;
+}
+.lm-voters{
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  margin: 0 0 10px 0;
+  align-items: center;
+}
+.lm-voters .lm-voter-img{
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #e0e0e0;
+  border: 1px solid #ccc;
+}
+.lm-voters .lm-voter-img img{ width: 54px; height: 54px; object-fit: contain;}
+.lm-voters .lm-voter{
+  width: 80%;
+  border-bottom: 1px solid #f6f7f9;
+  padding: 0 0 10px 0;
+}
+.lm-voters .lm-voter .lm-voter-name{
+  font-weight: 500;
+  color: #000000;
+  text-transform: capitalize;
+  margin-top: 5px;
+  font-size: 14px;
+}
+.lm-voters .lm-voter .lm-voter-desc{
+  color: #666;
+  font-size: 14px;
+  font-weight: 400;
+}
+  /* lm voter tabs */
+
+  
+
+/* Message Response */
+.lm-response-block{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba(208, 216, 226, 0.5); 
+  overflow: hidden;  
+  padding: 0px 80px;
+}
+.lm-response{
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-left: 3px solid #008274;
+  padding: 5px 10px;
+}
+.lm-response-cancel{
+  width: 36px;
+  margin: 0 0 0 10px;
+}
+.lm-res-name{
+  font-size: 13px;
+  color: #11c5b2;  
+  font-weight: bold; 
+}
 /* Message reply input view */
 .lm-input-message-reply {
   height: 64px;
@@ -2004,6 +2092,31 @@ body {
   text-align: left;
 }
 
+.lm-res-msg{
+      font-size: 13px;
+      color: #666666;
+      word-break: break-word;
+}
+/* Message Response */
+
+/* No Chatroom */
+.noChatRoom{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px; 
+  color: rgba(72, 79, 103, 0.7);
+}
+.noChatRoom img{
+  width: 256px;
+  margin: 100px 0 20px 0;
+}
+ 
+/* No Chatroom */
 .lm-input-message-text {
   font-size: 13px;
   color: #666666;

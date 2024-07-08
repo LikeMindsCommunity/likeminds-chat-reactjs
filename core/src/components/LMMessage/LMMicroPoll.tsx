@@ -1,11 +1,17 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import MessageContext from "../../context/MessageContext";
-import pollIcon from "../../assets/img/poll-icon.svg";
 import { usePoll } from "../../hooks/usePolls";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useDialog } from "../../hooks/useDialog";
 import { Dialog } from "@mui/material";
+
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs"; // Assuming you are using react-tabs
+
+import "react-tabs/style/react-tabs.css";
+import modalCancelIcon from "../../assets/img/cancel-icon.svg";
+import pollIcon from "../../assets/img/poll-icon.svg";
+
 dayjs.extend(relativeTime);
 const LMMicroPoll = () => {
   const { message } = useContext(MessageContext);
@@ -20,6 +26,14 @@ const LMMicroPoll = () => {
     calculateSubmitButtonVisibility,
   } = usePoll();
   const { openDialog, dialogOpen, closeDialog } = useDialog();
+  const [tabIndex, setTabIndex] = useState(0);
+  // const { openVoteCountDialog, voteCountDialogOpen, closeVoteCountDialog } =
+  //   useDialog();
+
+  const [value, setValue] = React.useState("1");
+  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    setValue(newValue);
+  };
 
   return (
     <div className="conversation reciever">
@@ -59,6 +73,7 @@ const LMMicroPoll = () => {
           </div>
         )}
 
+        {/* <div className="totalVotes" onClick={openDialog}> */}
         <div className="totalVotes">{message.poll_answer_text}</div>
         {calculateSubmitButtonVisibility() && (
           <div className="lm-poll-submit">
@@ -71,6 +86,7 @@ const LMMicroPoll = () => {
           </div>
         )}
       </div>
+
       <Dialog open={dialogOpen} onClose={closeDialog}>
         <div className="lm-poll-response-add-option-dialog">
           <div className="lm-poll-response-add-option-dialog-header">
@@ -79,7 +95,9 @@ const LMMicroPoll = () => {
             </div>
 
             <div className="lm-poll-response-add-option-dialog-header-close lm-cursor-pointer">
-              <span onClick={closeDialog}>X</span>
+              <span onClick={closeDialog}>
+                <img src={modalCancelIcon} alt="Close" />
+              </span>
             </div>
           </div>
           <div className="lm-poll-response-add-option-dialog-body">
@@ -101,13 +119,124 @@ const LMMicroPoll = () => {
                 addOptionOnPoll();
                 closeDialog();
               }}
-              className="lm-poll-response-add-option-submit "
+              className="lm-poll-response-add-option-submit"
             >
               SUBMIT
             </button>
           </div>
         </div>
       </Dialog>
+
+      {/* Total Vote counts */}
+      <Dialog open={dialogOpen} onClose={closeDialog}>
+        <div className="lm-poll-response-add-option-dialog">
+          <div className="lm-poll-response-add-option-dialog-header">
+            <div className="lm-poll-response-add-option-dialog-header-title">
+              Poll Results
+            </div>
+            <div className="lm-poll-response-add-option-dialog-header-close lm-cursor-pointer">
+              <span onClick={closeDialog}>
+                <img src={modalCancelIcon} alt="Close" />
+              </span>
+            </div>
+          </div>
+          <div className="">
+            <Tabs
+              selectedIndex={tabIndex}
+              onSelect={(index) => setTabIndex(index)}
+            >
+              <TabList>
+                <Tab>
+                  <div className="lm-voter-tabs">
+                    <div className="counts">10</div>
+                    <div>Options</div>
+                  </div>
+                </Tab>
+                <Tab>
+                  <div className="lm-voter-tabs">
+                    <div className="counts">5</div>
+                    <div>Options 2</div>
+                  </div>
+                </Tab>
+                <Tab>
+                  <div className="lm-voter-tabs">
+                    <div className="counts">0</div>
+                    <div>Options 3</div>
+                  </div>
+                </Tab>
+              </TabList>
+
+              <TabPanel>
+                <div className="lm-voters">
+                  <div className="lm-voter-img">
+                    <img src={pollIcon} />
+                  </div>
+                  <div className="lm-voter">
+                    <div className="lm-voter-name">Rajesh K</div>
+                    <div className="lm-voter-desc">
+                      I am scientist with big interest in how data shapes our
+                      lives.
+                    </div>
+                  </div>
+                </div>
+                <div className="lm-voters">
+                  <div className="lm-voter-img">
+                    <img src={pollIcon} />
+                  </div>
+                  <div className="lm-voter">
+                    <div className="lm-voter-name">Rajesh K</div>
+                    <div className="lm-voter-desc">
+                      I am scientist with big interest in how data shapes our
+                      lives.
+                    </div>
+                  </div>
+                </div>
+                <div className="lm-voters">
+                  <div className="lm-voter-img">
+                    <img src={pollIcon} />
+                  </div>
+                  <div className="lm-voter">
+                    <div className="lm-voter-name">Rajesh K</div>
+                    <div className="lm-voter-desc">
+                      I am scientist with big interest in how data shapes our
+                      lives.
+                    </div>
+                  </div>
+                </div>
+              </TabPanel>
+              <TabPanel>
+                <div className="lm-voters">
+                  <div className="lm-voter-img">
+                    <img src={pollIcon} />
+                  </div>
+                  <div className="lm-voter">
+                    <div className="lm-voter-name">Rajesh K</div>
+                    <div className="lm-voter-desc">
+                      I am scientist with big interest in how data shapes our
+                      lives.
+                    </div>
+                  </div>
+                </div>
+              </TabPanel>
+              <TabPanel>
+                <div className="lm-voters">
+                  <div className="lm-voter-img">
+                    <img src={pollIcon} />
+                  </div>
+                  <div className="lm-voter">
+                    <div className="lm-voter-name">Rajesh K</div>
+                    <div className="lm-voter-desc">
+                      I am scientist with big interest in how data shapes our
+                      lives.
+                    </div>
+                  </div>
+                </div>
+              </TabPanel>
+            </Tabs>
+          </div>
+        </div>
+      </Dialog>
+      {/* Total Vote counts */}
     </div>
   );
 };
