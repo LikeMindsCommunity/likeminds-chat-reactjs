@@ -76,6 +76,7 @@ const Input = () => {
       setAlertMessage(null);
     }
     const member_can_message = chatroom?.chatroom.member_can_message;
+
     switch (member_can_message) {
       case true:
         setAlertMessage(null);
@@ -336,20 +337,6 @@ const Input = () => {
         <div>
           <MediaCarousel />
         </div>
-
-        {/* Message response  */}
-        {/* <div className="lm-response-block">
-          <div className="lm-response">
-            <div className="lm-res-name">User Name</div>
-            <div className="lm-res-msg">skdfj slkdfjslkdj fslkdfjlskfjd</div>
-          </div>
-          <div className="lm-response-cancel">
-            <IconButton onClick={() => {}}>
-              <ClearIcon fontSize="small" />
-            </IconButton>
-          </div>
-        </div> */}
-        {/* Message response  */}
 
         <div className="lm-channel-footer">
           <div className="lm-channel-icon lm-cursor-pointer">

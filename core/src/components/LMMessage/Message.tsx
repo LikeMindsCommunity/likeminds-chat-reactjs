@@ -14,6 +14,7 @@ import MediaRenderer from "../../shared/components/MediaRenderer";
 // Icons
 
 import linkImg from "../../assets/img/link-img.svg";
+import replyIcon from "../../assets/img/reply.png";
 import MessageReactionHolder from "./MessageReactionHolder";
 import LMMicroPoll from "./LMMicroPoll";
 
@@ -23,7 +24,6 @@ import { ChatroomTypes } from "../../enums/chatroom-types";
 
 const Message = () => {
   const { message, index } = useContext(LMMessageContext);
-
   const { conversations, unBlockUserInDM } = useContext(MessageListContext);
   const { currentUser } = useContext(UserProviderContext);
   const { chatroom } = useContext(LMChatChatroomContext);
@@ -103,7 +103,6 @@ const Message = () => {
           </div>
           <div className="time">{message?.created_at}</div>
         </div>
-
         <div className={`actions ${message?.deleted_by ? "none" : ""}`}>
           <div className="lm-cursor-pointer">
             <MessageOptions />
@@ -125,9 +124,6 @@ const Message = () => {
     }
     case ConversationStates.NORMAL: {
       return (
-        // <>
-        //   <LMMicroPoll />
-        // </>
         <>
           <div className={`lm-chat-card ${message?.state}`}>
             {renderDatePill()}
@@ -175,6 +171,19 @@ const Message = () => {
                 {/* OG Tags */}
 
                 {/* text msg */}
+                {message?.reply_conversation_object && (
+                  <div className="lm-reply-wrapper">
+                    <div className="lm-reply-wrapper-content">
+                      <div className="lm-reply-wrapper-content-name">
+                        {message.reply_conversation_object.member.name}
+                      </div>
+                      <div className="lm-reply-wrapper-content-msg">
+                        {message.reply_conversation_object.answer}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="msg">
                   {message?.answer.includes(
                     "* This is a gif message. Please update your app *",
@@ -200,10 +209,18 @@ const Message = () => {
             </div>
             <div className="actions">
               <div className="lm-cursor-pointer">
-                <MessageOptions />
+                <img
+                  src={replyIcon}
+                  alt="reply icon"
+                  className="lm-add-emoji"
+                />
               </div>
+
               <div className="lm-cursor-pointer">
                 <Reactions />
+              </div>
+              <div className="lm-cursor-pointer">
+                <MessageOptions />
               </div>
             </div>
 

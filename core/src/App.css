@@ -86,7 +86,14 @@ body {
   padding: 15px 0;
   width: 100%;
   height: 43vh;
-  overflow-y: scroll;
+  overflow-y: auto;
+}
+
+.lm-channel-list .lm-channel-list-body#lm-channel-list-dm {
+  padding: 15px 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .lm-channel-list .lm-channel-list-body .channel-media {
@@ -531,12 +538,45 @@ body {
   min-width: 180px;
   width: auto;
   border-radius: 15px;
-  padding: 14px 14px 8px 14px;
-  margin: 0 0 2px 0;
+  padding: 5px 8px ;
+  margin: 0 0 3px 0;
   background-color: #fff;
   word-wrap: break-word;
   display: flex;
   flex-direction: column;
+}
+
+.lm-reply-wrapper{ 
+  background-color: rgba(208, 216, 226, 0.5);
+  border-radius: 8px;
+  border-left: 3px solid #008274;
+  padding: 5px;
+  margin: 0 0 5px 0;
+}
+.lm-reply-wrapper-content{
+  display: flex;
+  flex-direction: column;
+}
+.lm-reply-wrapper-content-name{
+  font-size: 13px;
+  color: #11c5b2; 
+  font-weight: bold;
+  max-width: 380px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+.lm-reply-wrapper-content-msg{
+  margin: 0;
+  font-size: 13px;
+  color: #666666;
+  word-break: break-word;
+  max-width: 380px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
 }
 
 .lm-channel .conversation .name {
@@ -572,14 +612,12 @@ body {
   background-color: #fff;
   float: left;
   clear: both;
-  /* margin-right: auto; */
 }
 
 .lm-channel .conversation.sender {
   background-color: #e1fefb;
   float: right;
   clear: both;
-  /* margin-left: auto; */
 }
 
 .lm-chat-card.sender {
@@ -773,8 +811,7 @@ body {
   width: 100%;
   display: flex;
   align-items: center;
-  position: relative;
-  background-color: #D0D8E2;
+  position: relative; 
 }
 
 .lm-channel-footer .disable-input {
@@ -1434,8 +1471,10 @@ body {
   overflow-y: auto;
 }
 
-.lmGifContainer .lm-giphy-img {
+.lmGifContainer .lm-giphy-img { 
   max-width: 120px;
+  object-fit: contain;
+  background: #f0f0f0;
 }
 
 .lmGifContainer .lm-giphy-img:hover {
@@ -2193,4 +2232,8 @@ input.disabled-state {
   background-color: #ffffff;
   outline: none;
   font-size: 14px;
+}
+
+.lm-add-emoji{
+  width: 22px;
 }
