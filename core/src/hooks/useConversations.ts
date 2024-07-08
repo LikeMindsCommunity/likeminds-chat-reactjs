@@ -18,6 +18,8 @@ import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { useParams } from "react-router-dom";
 import { CustomActions } from "../customActions";
 import { ZeroArgVoidReturns } from "./useInput";
+import { ChatroomAction } from "../enums/chatroom-actions";
+import { ChatroomCollabcard } from "../types/api-responses/getChatroomResponse";
 
 interface UseConversations {
   conversations: Conversation[] | null;
@@ -39,6 +41,7 @@ export default function useConversations(): UseConversations {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
   const { currentUser } = useContext(UserProviderContext);
+  const { chatroom, setNewChatroom } = useContext(LMChatChatroomContext);
   const [conversations, setConversations] = useState<Conversation[] | null>([]);
   const [loadMore, setLoadMore] = useState<boolean>(true);
   const newChatroomConversationsLoaded = useRef<boolean>(false);
@@ -161,17 +164,49 @@ export default function useConversations(): UseConversations {
         status: 1,
       });
       if (call.success) {
-        dispatchEvent(
-          new CustomEvent(
-            CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED,
-            call.data.conversation,
-          ),
+        const newChatroom = { ...chatroom };
+        console.log(newChatroom);
+        if (!(newChatroom && newChatroom.chatroom)) {
+          console.log("No chatroom found");
+          return;
+        }
+        newChatroom.chatroom.chat_request_state = 1;
+        if (
+          newChatroom?.chatroom_actions?.some(
+            (option) => option.id === ChatroomAction.ACTION_UNBLOCK_CHATROOM,
+          )
+        ) {
+          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+            (options) => {
+              if (options.id === ChatroomAction.ACTION_UNBLOCK_CHATROOM) {
+                return { id: 27, title: "Block" };
+              } else {
+                return options;
+              }
+            },
+          );
+        } else {
+          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+            (options) => {
+              if (options.id === ChatroomAction.ACTION_BLOCK_CHATROOM) {
+                return { id: 28, title: "Unblock" };
+              } else {
+                return options;
+              }
+            },
+          );
+        }
+        setNewChatroom(newChatroom as ChatroomCollabcard);
+        document.dispatchEvent(
+          new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
+            detail: call.data.conversation,
+          }),
         );
       }
     } catch (error) {
       console.log(error);
     }
-  }, [chatroomId, lmChatclient]);
+  }, [chatroom, chatroomId, lmChatclient, setNewChatroom]);
 
   const blockUserInDM = useCallback(async () => {
     // add login for hiding input field
