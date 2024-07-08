@@ -18,7 +18,6 @@ const MediaRenderer = ({ attachments }) => {
   const name = message?.member.name;
   const avatarContent = getAvatar({ imageUrl, name });
 
-  // console.log(messageListContainerRef);
   const handleClose = () => setShow(false);
 
   const handleError = (e) => {
@@ -33,32 +32,28 @@ const MediaRenderer = ({ attachments }) => {
     }
 
     const fileType = attachment.url.split(".").pop().toLowerCase();
-    const fileTypeOhter = fileType.split("&")[0];
+    const fileTypeOther = fileType.split("&")[0];
     const className = isThumbnail ? "thumbnail" : "carousel-media";
-
-    // console.log(`Rendering attachment at index ${index}:`, attachment);
 
     if (
       ["jpeg", "jpg", "png", "gif", "bmp", "tiff", "tif"].includes(fileType) ||
       ["jpeg", "jpg", "png", "gif", "bmp", "tiff", "tif"].includes(
-        fileTypeOhter,
+        fileTypeOther,
       )
     ) {
       return (
-        <>
-          <img
-            src={attachment.url}
-            alt="img"
-            key={index}
-            className={className}
-            onClick={() => handleShow(index)}
-            onError={handleError}
-          />
-        </>
+        <img
+          src={attachment.url}
+          alt="img"
+          key={index}
+          className={className}
+          onClick={() => handleShow(index)}
+          onError={handleError}
+        />
       );
     } else if (
       ["mp4", "mov", "avi", "mkv", "wmv", "flv"].includes(fileType) ||
-      ["mp4", "mov", "avi", "mkv", "wmv", "flv"].includes(fileTypeOhter)
+      ["mp4", "mov", "avi", "mkv", "wmv", "flv"].includes(fileTypeOther)
     ) {
       return (
         <video
@@ -74,10 +69,10 @@ const MediaRenderer = ({ attachments }) => {
       );
     } else if (fileType === "pdf") {
       return (
-        <div>
+        <div key={index} className={className}>
           <a href={attachment.url} target="_blank" className="pdf">
             <img src={pdfIcon} alt="pdf" />
-            <div className="pdfName">{attachment.name}</div>
+            {!isThumbnail && <div className="pdfName">{attachment.name}</div>}
           </a>
         </div>
       );
@@ -110,12 +105,10 @@ const MediaRenderer = ({ attachments }) => {
         show={show}
         onHide={handleClose}
         centered
-        // size="lg"
         backdrop={false}
         dialogClassName="lm-dialog-modal"
         contentClassName="lm-dialog-content-modal"
         container={messageListContainerRef.current}
-        // container={messageListContainerRef.current}
       >
         <Modal.Header closeButton>
           <Modal.Title>
