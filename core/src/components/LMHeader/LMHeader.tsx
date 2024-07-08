@@ -12,7 +12,7 @@ import menuIcon from "../../assets/img/overflow-menu.svg";
 
 const Header = () => {
   const { chatroom } = useContext(LMChatChatroomContext);
-  const { onMute, onLeaveChatroom, onViewParticipants } =
+  const { onMute, onLeaveChatroom, onViewParticipants, onBlock, onUnBlock } =
     useChatroomMenuOptions();
   const { menuAnchor, openMenu, closeMenu } = useMenu();
   const imageUrl = chatroom?.chatroom.chatroom_image_url;
@@ -60,6 +60,10 @@ const Header = () => {
                       return onLeaveChatroom();
                     case ChatroomAction.ACTION_VIEW_PARTICIPANTS:
                       return onViewParticipants();
+                    case ChatroomAction.ACTION_BLOCK_CHATROOM:
+                      return onBlock();
+                    case ChatroomAction.ACTION_UNBLOCK_CHATROOM:
+                      return onUnBlock();
                   }
                 }}
               >

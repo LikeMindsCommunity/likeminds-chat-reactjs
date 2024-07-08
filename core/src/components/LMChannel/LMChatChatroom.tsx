@@ -11,6 +11,7 @@ const LMChatChatroom = () => {
     setConversationToEdit,
     setConversationToReply,
     setChatroom,
+    canUserReplyPrivately,
   } = useChatroom();
   return (
     <LMChatChatroomContext.Provider
@@ -21,6 +22,7 @@ const LMChatChatroom = () => {
         setConversationToReply,
         chatroom,
         setNewChatroom: setChatroom,
+        canUserReplyPrivately,
       }}
     >
       <Outlet />

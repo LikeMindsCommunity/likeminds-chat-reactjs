@@ -1,6 +1,7 @@
 import React from "react";
 import { ChatroomCollabcard } from "../api-responses/getChatroomResponse";
 import Conversation from "../models/conversations";
+import { ReplyDmQueries } from "../../enums/reply-dm-queries";
 
 export interface LMChatChatroomContextInterface {
   conversationToReply: Conversation | null;
@@ -9,4 +10,5 @@ export interface LMChatChatroomContextInterface {
   setConversationToEdit: React.Dispatch<Conversation | null>;
   chatroom: ChatroomCollabcard | null;
   setNewChatroom: React.Dispatch<ChatroomCollabcard | null>;
+  canUserReplyPrivately: ReplyDmQueries;
 }

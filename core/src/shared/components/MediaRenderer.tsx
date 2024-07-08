@@ -18,7 +18,7 @@ const MediaRenderer = ({ attachments }) => {
   const name = message?.member.name;
   const avatarContent = getAvatar({ imageUrl, name });
 
-  console.log(messageListContainerRef);
+  // console.log(messageListContainerRef);
   const handleClose = () => setShow(false);
 
   const handleError = (e) => {

@@ -21,7 +21,7 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@giphy/react-components": "^9.5.0",
-    "@likeminds.community/chat-js-beta": "^1.1.116",
+    "@likeminds.community/chat-js-beta": "^1.1.120",
     "@mui/icons-material": "^5.15.20",
     "@mui/material": "^5.15.10",
     "@mui/x-date-pickers": "^7.8.0",

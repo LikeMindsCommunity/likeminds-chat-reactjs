@@ -16,6 +16,8 @@ const LMMicroPoll = () => {
     setTemporaryAddOptionText,
     addOptionOnPoll,
     submitPoll,
+    calculateAddPollOptionButtonVisibility,
+    calculateSubmitButtonVisibility,
   } = usePoll();
   const { openDialog, dialogOpen, closeDialog } = useDialog();
 
@@ -51,21 +53,23 @@ const LMMicroPoll = () => {
           );
         })}
 
-        {message.allow_add_option ? (
+        {calculateAddPollOptionButtonVisibility() && (
           <div className="add-option-to-poll" onClick={openDialog}>
             <div className="option">Add Option</div>
           </div>
-        ) : null}
+        )}
 
         <div className="totalVotes">{message.poll_answer_text}</div>
-        <div className="lm-poll-submit">
-          <button
-            onClick={submitPoll}
-            className={`lm-poll-submit-button lm-cursor-pointer lm-poll-submit-button-active`}
-          >
-            Submit
-          </button>
-        </div>
+        {calculateSubmitButtonVisibility() && (
+          <div className="lm-poll-submit">
+            <button
+              onClick={submitPoll}
+              className={`lm-poll-submit-button lm-cursor-pointer lm-poll-submit-button-active`}
+            >
+              Submit
+            </button>
+          </div>
+        )}
       </div>
       <Dialog open={dialogOpen} onClose={closeDialog}>
         <div className="lm-poll-response-add-option-dialog">

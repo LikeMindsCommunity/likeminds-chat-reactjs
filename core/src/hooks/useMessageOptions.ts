@@ -6,13 +6,19 @@ import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { CustomActions } from "../customActions";
 import Conversation from "../types/models/conversations";
+import { useNavigate } from "react-router-dom";
+import { DM_CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
 
 export function useMessageOptions(): UseMessageOptionsReturn {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
 
-  const { setConversationToEdit } = useContext(LMChatChatroomContext);
+  const { setConversationToEdit, setConversationToReply } = useContext(
+    LMChatChatroomContext,
+  );
   const { message, deleteMessage, editMessageLocally } =
     useContext(LMMessageContext);
+
+  const navigate = useNavigate();
   const onReport = async ({
     id,
     reason,
@@ -53,6 +59,43 @@ export function useMessageOptions(): UseMessageOptionsReturn {
       console.log(error);
     }
   };
+  const onReply = async () => {
+    try {
+      setConversationToReply(message);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const onReplyPrivately = async (memberId: string | number) => {
+    try {
+      const checkDMLimitCall = await lmChatclient?.checkDMLimit({
+        memberId: parseInt(memberId.toString()),
+      });
+      if (checkDMLimitCall.success) {
+        const chatroomId = checkDMLimitCall.data.chatroom_id;
+        if (chatroomId) {
+          // navigate to the chatroom
+          navigate(`/${DM_CHANNEL_PATH}/${chatroomId}`);
+          return;
+        }
+        const is_request_dm_limit_exceeded =
+          checkDMLimitCall.data.is_request_dm_limit_exceeded;
+        if (!is_request_dm_limit_exceeded) {
+          const createDMChatroomCall = await lmChatclient?.createDMChatroom({
+            memberId: parseInt(memberId.toString()),
+          });
+          if (createDMChatroomCall.success) {
+            // console.log(createDMChatroomCall.data);
+            const newChatroomId = createDMChatroomCall.data.chatroom.id;
+            navigate(`/${DM_CHANNEL_PATH}/${newChatroomId}`);
+            // navigate to the chatroom
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   //   const getReportTags = async () => {
   //     try {
   //       const getReportTags = await lmChatclient?.getReportTags({
@@ -85,7 +128,9 @@ export function useMessageOptions(): UseMessageOptionsReturn {
     onReport,
     onDelete,
     onEdit,
+    onReply,
     putReaction,
+    onReplyPrivately,
   };
 }
 export interface UseMessageOptionsReturn {
@@ -95,5 +140,7 @@ export interface UseMessageOptionsReturn {
   }>;
   onDelete: ZeroArgVoidReturns;
   onEdit: ZeroArgVoidReturns;
+  onReply: ZeroArgVoidReturns;
   putReaction: OneArgVoidReturns<string>;
+  onReplyPrivately: OneArgVoidReturns<string | number>;
 }

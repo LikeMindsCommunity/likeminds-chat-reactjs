@@ -8,6 +8,7 @@ import LMMessageContext from "../../context/MessageContext";
 import Message from "../LMMessage/Message";
 import UserProviderContext from "../../context/UserProviderContext";
 import { EmojiData } from "../../types/models/emojiData";
+
 interface LMMessageMiddlewareProps {
   message: Conversation;
   index: number;
@@ -75,6 +76,22 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
       return currentLocalCopy as Conversation;
     });
   }
+  function updatePollOnSubmitLocally(selectedPollIds: string[]) {
+    setLocalMessageCopy((currentLocalCopy: Conversation | null) => {
+      if (!currentLocalCopy) {
+        return currentLocalCopy;
+      }
+      currentLocalCopy = { ...currentLocalCopy };
+      currentLocalCopy.polls = currentLocalCopy.polls?.map((poll) => {
+        if (selectedPollIds.includes(poll.id.toString())) {
+          poll.is_selected = true;
+          poll.no_votes += 1;
+        }
+        return poll;
+      });
+      return currentLocalCopy;
+    });
+  }
   return (
     <LMMessageContext.Provider
       value={{
@@ -85,6 +102,7 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
         addReactionLocally: addReactionLocally,
         removeReactionLocally: removeReactionLocally,
         addPollOptionLocally: addPollOptionLocally,
+        updatePollOnSubmitLocally: updatePollOnSubmitLocally,
       }}
     >
       <Message />

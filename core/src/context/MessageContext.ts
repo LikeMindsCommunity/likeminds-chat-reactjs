@@ -11,6 +11,7 @@ interface LMMessageContextInterface {
   addReactionLocally: OneArgVoidReturns<EmojiData>;
   removeReactionLocally: ZeroArgVoidReturns;
   addPollOptionLocally: OneArgVoidReturns<PollOptionNew>;
+  updatePollOnSubmitLocally: OneArgVoidReturns<string[]>;
 }
 
 const LMMessageContext = React.createContext<LMMessageContextInterface>(

@@ -8,16 +8,61 @@ import useConversations from "../../hooks/useConversations";
 import LMMessageMiddleware from "./LMMessageMiddleware";
 
 import { CircularProgress } from "@mui/material";
+import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import UserProviderContext from "../../context/UserProviderContext";
+import { ChatroomTypes } from "../../enums/chatroom-types";
+import { MemberType } from "../../enums/member-type";
 
 const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
   (props) => {
+    const { chatroom } = useContext(LMChatChatroomContext);
+    const { currentUser } = useContext(UserProviderContext);
     const { MessageComponent } = props;
     const scrollToBottom = () => {
       if (bottomReferenceDiv && bottomReferenceDiv.current) {
         bottomReferenceDiv.current.scrollIntoView(false);
       }
     };
+    const chatroomUser = () => {
+      if (chatroom?.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+        return;
+      }
+      if (
+        chatroom?.chatroom.member.id.toString() === currentUser?.id.toString()
+      ) {
+        const chatroomUser = chatroom?.chatroom.chatroom_with_user;
+        return chatroomUser;
+      } else {
+        const chatroomUser = chatroom?.chatroom.member;
+        return chatroomUser;
+      }
+    };
 
+    const showInitiateDMRequestMessage: () => boolean = () => {
+      if (chatroom?.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+        return false;
+      }
+      if (
+        currentUser.state === MemberType.COMMUNITY_MANAGER ||
+        chatroomUser()?.state === MemberType.COMMUNITY_MANAGER
+      ) {
+        return false;
+      }
+      const chatRequestState = chatroom?.chatroom.chat_request_state;
+      console.log(chatRequestState);
+
+      if (chatRequestState === null) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+
+    const getInitiateDmRequestMessage = () => {
+      const user = chatroomUser();
+      const templateMessage = `Send a DM request to ${user?.name} by sending your 1st message.`;
+      return templateMessage;
+    };
     const {
       conversations,
       getChatroomConversationsOnBottomScroll,
@@ -25,6 +70,7 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       showLoader,
       bottomReferenceDiv,
       messageListContainerRef,
+      unBlockUserInDM,
     } = useConversations();
 
     if (showLoader.current) {
@@ -36,6 +82,11 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
     }
     return (
       <div className="lm-channel" ref={messageListContainerRef}>
+        {showInitiateDMRequestMessage() && (
+          <p className="initiate-dm-request-message">
+            {getInitiateDmRequestMessage()}
+          </p>
+        )}
         <MessageListContext.Provider
           value={{
             conversations,
@@ -43,6 +94,7 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
             getChatroomConversationsOnTopScroll,
             bottomReferenceDiv,
             messageListContainerRef,
+            unBlockUserInDM,
           }}
         >
           <ScrollContainer
