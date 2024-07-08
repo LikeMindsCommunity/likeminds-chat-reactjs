@@ -354,6 +354,7 @@ body {
   display: flex;
   justify-content: space-between;
   background: #f6f7f9;
+  position: relative;
 }
 
 .lm-channel-header .lm-header-left {
@@ -2259,4 +2260,39 @@ input.disabled-state {
 
 .lm-add-emoji{
   width: 22px;
+}
+
+
+.lm-channel-header .search-input-wrapper {
+  position: absolute;
+  left: 13px;
+  top: 9px;
+  width: 98%;
+}
+
+.search-input-wrapper input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-results-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  z-index: 1000;
+}
+
+.search-result-item {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.search-result-item:hover {
+  background: #f0f0f0;
 }
