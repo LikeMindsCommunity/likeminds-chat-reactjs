@@ -104,6 +104,7 @@ const Header = () => {
             return (
               <MenuItem
                 key={menuOption.id}
+                className="lm-chatroom-menu-item"
                 onClick={() => {
                   switch (menuOption.id) {
                     case ChatroomAction.ACTION_MUTE:

@@ -1784,7 +1784,11 @@ body {
   border-radius: 8px;
   margin-bottom: 16px !important;
 }
-
+.lm-chatroom-menu-item{
+  font-size: 14px !important;
+  color: rgba(0, 0, 0, .87) !important;
+  padding: 10px 16px !important;
+}
 .poll-advanced-option-toggle { 
   font-size: 12px;
   font-weight: 400;
