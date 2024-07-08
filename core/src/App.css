@@ -246,6 +246,13 @@ body {
 .reactionHeader {
   padding: 20px;
   font-size: 20px;
+  position: relative;
+}
+.reactionHeader img{
+  cursor: pointer;
+  position: absolute;
+  right: 20px;
+  top: 20px;
 }
 
 .reactions-selection-tabs {
@@ -309,7 +316,8 @@ body {
 
 .lm-chat-message-reaction {
   width: max-content;
-  margin-bottom: 10px;
+  float: left;
+  margin: 0 5px 10px 0;
   height: 1.75rem;
   padding: 0.25rem 0.5rem 0.25rem 0.25rem;
   border-radius: 24px;
@@ -605,9 +613,16 @@ body {
   text-align: right;
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 2px;
+  align-items: center;
 }
-
+.lm-channel .conversation .edited-bullet{
+  background-color: #9b9b9b;
+    border-radius: 50%;
+    width: 4px;
+    height: 4px;
+    margin: 0 4px;
+}
 .lm-channel .conversation.receiver {
   background-color: #fff;
   float: left;
@@ -1677,19 +1692,24 @@ body {
 /* Poll View */
 .lm-poll-wrapper {
   width: 424px;
-  height: 614px;
+  /* height: 614px; */
   padding: 48px;
   padding-bottom: 16px;
   position: relative;
 }
 
 .lm-poll-heading {
-  font-family: Roboto;
   font-size: 16px;
   font-weight: 500;
   line-height: 18px;
   text-align: left;
   margin-bottom: 14px;
+  position: relative;
+}
+.lm-poll-heading img{
+  position: absolute;
+  top: -30px;
+  right: -30px;
 }
 
 .poll-creation-textarea {
@@ -1765,19 +1785,18 @@ body {
   margin-bottom: 16px !important;
 }
 
-.poll-advanced-option-toggle {
-  font-family: Roboto;
+.poll-advanced-option-toggle { 
   font-size: 12px;
   font-weight: 400;
   line-height: 20px;
   text-align: center;
   color: #ACB7C0;
-
+  cursor: pointer;
 
 }
 
 .poll-advanced-option-text {
-  font-family: Roboto;
+   
   font-size: 16px;
   font-weight: 400;
   line-height: 20px;

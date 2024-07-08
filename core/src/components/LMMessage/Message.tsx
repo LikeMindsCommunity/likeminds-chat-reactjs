@@ -203,7 +203,10 @@ const Message = () => {
                 </div>
                 <div className="time">
                   {message.is_edited ? (
-                    <div className="error-message">Edited</div>
+                    <>
+                      <div className="error-message">Edited</div>
+                      <div className="edited-bullet">&nbsp;</div>
+                    </>
                   ) : null}
                   {message?.created_at}
                 </div>

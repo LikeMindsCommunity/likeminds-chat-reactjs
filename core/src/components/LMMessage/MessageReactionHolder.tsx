@@ -5,6 +5,7 @@ import { useDialog } from "../../hooks/useDialog";
 import { Dialog, Tab, Tabs } from "@mui/material";
 import { ConstantStrings } from "../../enums/common-strings";
 import { useReactions } from "../../hooks/useReactions";
+import cancelIcon from "../../assets/img/cancel-icon.svg";
 
 const MessageReactionHolder = () => {
   const { message } = useContext(LMMessageContext);
@@ -37,13 +38,18 @@ const MessageReactionHolder = () => {
       >
         <div className="message-reactions-members-list">
           <div className="reactionHeader">
-            Reactions({message.reactions.length})
+            Reactions({message?.reactions?.length})
+            <img
+              src={cancelIcon}
+              alt="close"
+              className="close-icon"
+              onClick={closeDialog}
+            />
           </div>
 
           <Tabs
             value={selectedReaction}
             onChange={(_, newValue) => {
-              console.log(newValue);
               setSelectedReaction(newValue);
             }}
           >
