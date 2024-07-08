@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { Dispatch, useContext, useRef, useState } from "react";
 import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
@@ -59,10 +59,14 @@ export function useConversationSearch(): UseConversationSearch {
     resetSearch,
     loadMoreConversations,
     onSearchedConversationClick,
+    searchKey,
+    setSearchKey,
   };
 }
 
 interface UseConversationSearch {
+  searchKey: string;
+  setSearchKey: Dispatch<string>;
   searchList: SearchedConversation[];
   resetSearch: ZeroArgVoidReturns;
   searchConversations: ZeroArgVoidReturns;

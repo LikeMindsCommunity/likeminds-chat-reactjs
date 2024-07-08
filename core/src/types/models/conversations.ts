@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Member from "./member";
 
 export interface Conversation {
   answer: string;
   attachment_count: number;
+  attachments: any[];
   attachments_uploaded: boolean;
   chatroom_id: number;
   community_id: number;
