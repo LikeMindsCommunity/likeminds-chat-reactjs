@@ -18,6 +18,10 @@ import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
 import UserProviderContext from "../../context/UserProviderContext";
 import { MemberType } from "../../enums/member-type";
 import { ConstantStrings } from "../../enums/common-strings";
+import MessageReplyCollapse from "./MessageReplyCollapse";
+import { ChatroomTypes } from "../../enums/chatroom-types";
+// import { ReplyDmQueries } from "../../enums/reply-dm-queries";
+import { ChatRequestStates } from "../../enums/chat-request-states";
 
 const Input = () => {
   const {
@@ -51,6 +55,9 @@ const Input = () => {
     gifMedia,
     removeMediaFromImageList,
     removeMediaFromDocumentList,
+    aprooveDMRequest,
+    sendDMRequest,
+    rejectDMRequest,
   } = useInput();
   const { currentUser } = useContext(UserProviderContext);
   const { chatroom, conversationToReply } = useContext(LMChatChatroomContext);
@@ -84,6 +91,133 @@ const Input = () => {
       }
     }
   }, [chatroom?.chatroom, currentUser?.memberRights, currentUser?.state]);
+  const renderInputBoxComponent = () => {
+    let isInputBoxDisabled = false;
+    let disabledInputMessage = "";
+    const isDMChatroom =
+      chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM;
+
+    if (isDMChatroom) {
+      const chatRequestState =
+        chatroom?.chatroom.chat_request_state?.toString();
+      if (chatRequestState === ChatRequestStates.REJECTED_STATE) {
+        isInputBoxDisabled = true;
+        disabledInputMessage =
+          // chatroom.chatroom.member.id.toString() === currentUser?.id.toString()
+          chatroom.chatroom.chat_requested_by.id.toString() ===
+          currentUser?.id.toString()
+            ? ConstantStrings.DM_REQUEST_REJECTED_MESSAGE_CHATROOM_USER
+            : ConstantStrings.DM_REQUEST_REJECTED_MESSAGE_CHATROOM_WITH_USER;
+      }
+      if (chatRequestState === ChatRequestStates.PENDING_STATE) {
+        isInputBoxDisabled = true;
+        chatroom.chatroom.member.id.toString() === currentUser?.id.toString();
+        disabledInputMessage =
+          chatroom.chatroom.chat_requested_by.id.toString() ===
+          currentUser?.id.toString()
+            ? // chatroom.chatroom.member.id.toString() === currentUser?.id.toString()
+              ConstantStrings.DM_REQUEST_PENDING_MESSAGING_CHATROOM_USER
+            : ConstantStrings.DM_REQUEST_PENDING_MESSAGING_CHATROOM_WITH_USER;
+      }
+    }
+    console.log("isInputBoxDisabled", isInputBoxDisabled);
+    if (isInputBoxDisabled) {
+      return (
+        <input
+          disabled
+          type="text"
+          className="disabled-state"
+          placeholder={disabledInputMessage}
+        />
+      );
+    } else {
+      return (
+        <>
+          <LMChatTextArea />
+          <div className="lm-channel-icon send lm-cursor-pointer">
+            <IconButton onClick={postMessage}>
+              <img src={sendIcon} alt="sendIcon" />
+            </IconButton>
+          </div>
+        </>
+      );
+    }
+  };
+  const renderDMChatroomStatusComponents = () => {
+    const currentChatroom = chatroom?.chatroom;
+    const currentChatroomType = currentChatroom?.type;
+    if (currentChatroomType !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+      return null;
+    }
+    const chatRequestState = currentChatroom?.chat_request_state;
+    if (chatRequestState === null) {
+      return null;
+    }
+    const targetDmUser =
+      currentChatroom?.member.id.toString() === currentUser?.id.toString()
+        ? currentChatroom?.chatroom_with_user
+        : currentChatroom?.member;
+    const isRequestSender =
+      chatroom?.chatroom.chat_requested_by?.id.toString() ===
+      currentUser.id.toString()
+        ? true
+        : false;
+    // chatroom?.chatroom.chatroom_with_user?.id.toString() ===
+    // currentUser.id.toString()
+    //   ? false
+    //   : true;
+    console.log("isRequestSender", isRequestSender);
+    // if (targetDmUser?.id.toString() !== currentUser.id.toString()) {
+    //   isRequestSender = true;
+    // }
+    switch (chatRequestState.toString()) {
+      case ChatRequestStates.APPROVED_STATE: {
+        return null;
+      }
+      case ChatRequestStates.REJECTED_STATE: {
+        if (isRequestSender) {
+          return null;
+        } else {
+          return null;
+        }
+        break;
+      }
+      case ChatRequestStates.PENDING_STATE: {
+        if (isRequestSender) {
+          return null;
+        } else {
+          return (
+            <div className="dm-request-respond-bottom-sheet">
+              <p className="dm-request-respond-message">
+                The sender has sent you a direct messaging request. Approve or
+                respond with a message to get connected. Rejecting this request
+                will not notify the sender.
+              </p>
+              <div className="dm-request-respond-action-buttons">
+                <button
+                  className="dm-request-accept-action-button dm-request-action-button"
+                  onClick={aprooveDMRequest}
+                >
+                  APPROVE
+                </button>
+                <button
+                  className="dm-request-reject-action-button dm-request-action-button"
+                  onClick={rejectDMRequest}
+                >
+                  REJECT
+                </button>
+              </div>
+            </div>
+          );
+        }
+        break;
+      }
+      default: {
+        // this case will be only encountered when the chatroom type is DM and chat_Request_state is null
+        break;
+      }
+    }
+  };
   if (!shouldShowInputBox) {
     return (
       <Alert
@@ -132,6 +266,9 @@ const Input = () => {
         setGifMedia,
         removeMediaFromImageList,
         removeMediaFromDocumentList,
+        aprooveDMRequest,
+        rejectDMRequest,
+        sendDMRequest,
       }}
     >
       <div className="lm-channel-footer-wrapper">
@@ -184,8 +321,17 @@ const Input = () => {
           sx={{
             background: "#D0D8E3",
           }}
-        ></Collapse>
-
+        >
+          <MessageReplyCollapse />
+        </Collapse>
+        {/* Collapsable for dm chatroom status component */}
+        <Collapse
+          in={Boolean(
+            chatroom?.chatroom?.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM,
+          )}
+        >
+          {renderDMChatroomStatusComponents()}
+        </Collapse>
         {/* Media Carousel */}
         <div>
           <MediaCarousel />
@@ -222,14 +368,8 @@ const Input = () => {
             />
             {/* <GiSelector /> */}
           </div>
-
-          <LMChatTextArea />
-
-          <div className="lm-channel-icon send lm-cursor-pointer">
-            <IconButton onClick={postMessage}>
-              <img src={sendIcon} alt="sendIcon" />
-            </IconButton>
-          </div>
+          {renderInputBoxComponent()}
+          {/* <LMChatTextArea /> */}
         </div>
       </div>
     </InputContext.Provider>

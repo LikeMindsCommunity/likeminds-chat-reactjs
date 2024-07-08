@@ -27,14 +27,24 @@ import {
   OgTag,
 } from "../types/api-responses/getOgTagResponse";
 import { Gif } from "../types/models/GifObject";
+import { ChatroomCollabcard } from "../types/api-responses/getChatroomResponse";
+import { ChatroomTypes } from "../enums/chatroom-types";
+import UserProviderContext from "../context/UserProviderContext";
+import { MemberType } from "../enums/member-type";
 
 export function useInput(): UseInputReturns {
   const { id: chatroomId } = useParams();
   //contexts
   const { lmChatclient } = useContext(GlobalClientProviderContext);
-  const { chatroom, conversationToedit, setConversationToEdit } = useContext(
-    LMChatChatroomContext,
-  );
+  const { currentUser } = useContext(UserProviderContext);
+  const {
+    chatroom,
+    conversationToedit,
+    setConversationToEdit,
+    conversationToReply,
+    setConversationToReply,
+    setNewChatroom,
+  } = useContext(LMChatChatroomContext);
   // state
   const [inputText, setInputText] = useState<string>("");
   const [tagSearchKey, setTagSearchKey] = useState<string | null>(null);
@@ -71,6 +81,76 @@ export function useInput(): UseInputReturns {
   // }, []);
 
   //   api calls
+  const sendDMRequest = async (textMessage: string) => {
+    try {
+      const sendDmRequestCall = await lmChatclient?.sendDMRequest({
+        chatRequestState: 0,
+        chatroomId: parseInt(chatroomId!.toString()),
+        text: textMessage,
+      });
+
+      document.dispatchEvent(
+        new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
+          detail: sendDmRequestCall.data.conversation,
+        }),
+      );
+      console.log(sendDmRequestCall);
+      const newChatroom = { ...chatroom };
+      if (newChatroom.chatroom && newChatroom.chatroom) {
+        newChatroom.chatroom.chat_request_state = 0;
+        newChatroom.chatroom.chat_requested_by = currentUser;
+      }
+      setNewChatroom(newChatroom as ChatroomCollabcard);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const aprooveDMRequest = async () => {
+    try {
+      const aprooveDmRequestCall = await lmChatclient?.sendDMRequest({
+        chatRequestState: 1,
+        chatroomId: parseInt(chatroomId!.toString()),
+      });
+      console.log(aprooveDmRequestCall);
+      document.dispatchEvent(
+        new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
+          detail: aprooveDmRequestCall.data.conversation,
+        }),
+      );
+      const newChatroom = { ...chatroom };
+      if (newChatroom.chatroom && newChatroom.chatroom) {
+        newChatroom.chatroom.chat_request_state = 1;
+        console.log("reached here");
+        console.log(newChatroom);
+      }
+      setNewChatroom(newChatroom as ChatroomCollabcard);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const rejectDMRequest = async () => {
+    try {
+      const rejectDmRequestCall = await lmChatclient?.sendDMRequest({
+        chatRequestState: 2,
+        chatroomId: parseInt(chatroomId!.toString()),
+      });
+      console.log(rejectDmRequestCall);
+      document.dispatchEvent(
+        new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
+          detail: rejectDmRequestCall.data.conversation,
+        }),
+      );
+      const newChatroom = { ...chatroom };
+      if (newChatroom.chatroom && newChatroom.chatroom) {
+        console.log("reached here");
+        newChatroom.chatroom.chat_request_state = 2;
+        console.log(newChatroom);
+      }
+      setNewChatroom(newChatroom as ChatroomCollabcard);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const fetchGifs = async (url: string) => {
     setLoading(true);
     setError(null);
@@ -128,6 +208,17 @@ export function useInput(): UseInputReturns {
         inputBoxRef.current!,
       ).trim();
       if (
+        chatroom.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
+        chatroom.chatroom.chat_request_state === null &&
+        chatroom.chatroom.member.state !== MemberType.COMMUNITY_MANAGER &&
+        chatroom.chatroom.chatroom_with_user?.state !==
+          MemberType.COMMUNITY_MANAGER
+      ) {
+        await sendDMRequest(messageText);
+
+        return;
+      }
+      if (
         (!messageText || !messageText.length) &&
         !imagesAndVideosMediaList?.length &&
         imagesAndVideosMediaList?.length
@@ -160,6 +251,11 @@ export function useInput(): UseInputReturns {
         hasFiles: false,
         ogTags: ogTags || undefined,
       };
+      if (conversationToReply) {
+        postConversationCallConfig.repliedConversationId =
+          conversationToReply.id;
+        setConversationToReply(null);
+      }
       const attachmentsList =
         imagesAndVideosMediaList || documentsMediaList || [];
       if (attachmentsList.length) {
@@ -555,6 +651,9 @@ export function useInput(): UseInputReturns {
     setGifMedia,
     removeMediaFromImageList,
     removeMediaFromDocumentList,
+    sendDMRequest,
+    rejectDMRequest,
+    aprooveDMRequest,
   };
 }
 
@@ -589,6 +688,9 @@ export interface UseInputReturns {
   handleGifSearch: ZeroArgVoidReturns;
   removeMediaFromImageList: OneArgVoidReturns<number>;
   removeMediaFromDocumentList: OneArgVoidReturns<number>;
+  sendDMRequest: OneArgVoidReturns<string>;
+  rejectDMRequest: ZeroArgVoidReturns;
+  aprooveDMRequest: ZeroArgVoidReturns;
 }
 // single compulsary argument
 export type onChangeUpdateInputText = (
@@ -599,7 +701,7 @@ export type ZeroArgVoidReturns = () => void;
 export type OneArgVoidReturns<T> = (arg: T) => void;
 export type TwoArgVoidReturns<T, S> = (argOne: T, ardTwo: S) => void;
 export type OneOptionalArgVoidReturns<T> = (arg?: T) => void;
-
+export type ZeroArgBooleanReturns = () => boolean;
 // "files/collabcard/$chatroom_id/conversation/$conversation_id/initials of media/current time in milliseconds.fileextension"
 // var initial = when (mediaType) {
 //                 IMAGE -> "IMG_"

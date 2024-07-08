@@ -45,6 +45,7 @@ export interface Chatroom {
   chat_request_created_at: any;
   chat_request_state: any;
   chat_requested_by: any;
+  chatroom_with_user?: Member;
   chatroom_image_url: string;
   co_hosts: any[];
   cohorts: any[];
@@ -158,7 +159,7 @@ export interface ConversationUser {
 }
 
 export interface ChatroomCollabcard {
-  can_access_secret_chatroom: boolean;
+  can_access_secret_chatroom: boolean | undefined;
   chatroom: Chatroom;
   chatroom_actions: ChatroomAction[];
   community: Community;

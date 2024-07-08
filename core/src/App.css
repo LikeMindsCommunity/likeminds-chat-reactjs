@@ -747,6 +747,7 @@ body {
   flex-grow: 1;
   border-radius: 24px;
   box-shadow: 0 0 2px #3a465d80;
+  background-color: #ffffff;
 }
 
 .lm-chat-text-area__input-box {
@@ -755,6 +756,7 @@ body {
   font-weight: 400;
   max-height: 80px;
   overflow-y: auto;
+
 }
 
 .lm-chat-text-area__input-box>p {
@@ -772,6 +774,7 @@ body {
   display: flex;
   align-items: center;
   position: relative;
+  background-color: #D0D8E2;
 }
 
 .lm-channel-footer .disable-input {
@@ -2060,6 +2063,29 @@ body {
   font-size: 13px;
   color: #11c5b2;  
   font-weight: bold; 
+}
+/* Message reply input view */
+.lm-input-message-reply {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  background-color: #D0D8E2;
+  padding-left: 50px;
+  box-shadow: 3px 1px 4px rgba(0, 67, 34, 0.7);
+}
+
+.lm-input-message-reply-message-wrapper {
+  background-color: #E8ECF2;
+  border-left: 3px solid #008274;
+  height: 100%;
+  padding: 12px 8px;
+  flex-grow: 1;
+}
+
+.lm-input-message-username {
+  font-size: 13px;
+  color: #11c5b2;
+  font-weight: bold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2091,3 +2117,80 @@ body {
 }
  
 /* No Chatroom */
+.lm-input-message-text {
+  font-size: 13px;
+  color: #666666;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.lm-input-message-reply-close {
+  padding: 12px;
+  cursor: pointer;
+  margin: 0 4px;
+}
+
+.initiate-dm-request-message {
+  text-align: center;
+  width: 100%;
+  font-size: 12px;
+  line-height: 14px;
+  bottom: 0px;
+  position: absolute;
+  color: #666666;
+}
+
+.dm-request-respond-bottom-sheet {
+  width: 100%;
+  height: 160px;
+  padding: 24px;
+  opacity: 0.8px;
+  margin-bottom: 1px solid black;
+}
+
+p.dm-request-respond-message {
+  font-family: Roboto;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  text-align: center;
+  color: #666666;
+  margin: 0px;
+  margin-bottom: 24px;
+}
+
+.dm-request-respond-action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 36px;
+}
+
+.dm-request-action-button {
+  width: 111px;
+  height: 48px;
+  border-radius: 4px;
+  font-family: Roboto;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16.41px;
+  text-align: center;
+  color: #000000;
+  border: none;
+}
+
+.undo-dm-blocked {
+  margin-left: 4px;
+}
+
+input.disabled-state {
+  flex-grow: 1;
+  border-radius: 24px;
+  border: 1px solid #D1D8E2;
+  background-color: #ffffff;
+  outline: none;
+  font-size: 14px;
+}

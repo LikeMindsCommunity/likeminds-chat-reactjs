@@ -115,7 +115,6 @@ export class Utils {
   };
 
   static parseAnser(answer: string): JSX.Element[] {
-    console.log(answer);
     const user_splitted_string = answer.split(this.REGEX_USER_SPLITTING);
     const users_matched = answer.match(this.REGEX_USER_TAGGING);
     const combinedMatchesArray: StringTagType[] = [];
