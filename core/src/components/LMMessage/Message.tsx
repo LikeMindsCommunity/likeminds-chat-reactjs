@@ -21,6 +21,7 @@ import LMMicroPoll from "./LMMicroPoll";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
 import { ChatRequestStates } from "../../enums/chat-request-states";
 import { ChatroomTypes } from "../../enums/chatroom-types";
+import { useMessageOptions } from "../../hooks/useMessageOptions";
 
 const Message = () => {
   const { message, index } = useContext(LMMessageContext);
@@ -29,7 +30,8 @@ const Message = () => {
   const { chatroom } = useContext(LMChatChatroomContext);
   const isSender = message?.member?.uuid === currentUser?.uuid;
   const messageClass = isSender ? "sender" : "receiver";
-
+  const { onDelete, onReport, onEdit, onReply, onReplyPrivately } =
+    useMessageOptions();
   const imageUrl = message?.member.imageUrl;
   const name = message?.member.name;
   const avatarContent = getAvatar({ imageUrl, name });
@@ -219,6 +221,7 @@ const Message = () => {
                   src={replyIcon}
                   alt="reply icon"
                   className="lm-add-emoji"
+                  onClick={onReply}
                 />
               </div>
 

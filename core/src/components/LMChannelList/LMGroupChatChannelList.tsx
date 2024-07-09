@@ -3,15 +3,17 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import useChatroomList from "../../hooks/useChatroomsList";
 import { useNavigate, useParams } from "react-router-dom";
 import { ConstantStrings } from "../../enums/common-strings";
+import { Utils } from "../../utils/helpers";
+import { useContext } from "react";
+import UserProviderContext from "../../context/UserProviderContext";
+import { CHANNEL_PATH } from "../../shared/constants/lm.routes.constant";
 
 // Icons
 import joinIcon from "../../assets/img/icon_join.svg";
 import document from "../../assets/img/document.svg";
 import joinedIcon from "../../assets/img/icon_joined.svg";
-import { Utils } from "../../utils/helpers";
-import { useContext } from "react";
-import UserProviderContext from "../../context/UserProviderContext";
-import { CHANNEL_PATH } from "../../shared/constants/lm.routes.constant";
+import participantsIcon from "../../assets/img/explore-feed_chatroom_participants.svg";
+import messageIcon from "../../assets/img/explore-feed_chatroom_messages.svg";
 
 function LMGroupChatChannelList() {
   const {
@@ -138,6 +140,7 @@ function LMGroupChatChannelList() {
           scrollableTarget="lm-channel-list-explore"
         >
           {exploreGroupChatrooms?.map((chatroom) => {
+            console.log(chatroom);
             return (
               <div
                 className="channel-media"
@@ -160,7 +163,21 @@ function LMGroupChatChannelList() {
                 </div>
                 <div className="channel-desc">
                   <div className="channel-title">
-                    <div>{chatroom.header}</div>
+                    <div>
+                      <div>{chatroom.header}</div>
+                      <div className="channel-counts">
+                        <div>
+                          <img src={participantsIcon} alt={participantsIcon} />
+                          {chatroom.participants_count}
+                        </div>
+                        <div className="ellipse"></div>
+                        <div>
+                          <img src={messageIcon} alt={messageIcon} />
+                          {chatroom.total_response_count}
+                        </div>
+                      </div>
+                      <div className="exploreTextMsg">{chatroom.title}</div>
+                    </div>
 
                     <button
                       onClick={(e) => {
