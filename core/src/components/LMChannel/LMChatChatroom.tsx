@@ -16,7 +16,6 @@ const LMChatChatroom: React.FC = () => {
     searchedConversationId,
     setSearchedConversationId,
   } = useChatroom();
-  console.log(chatroom);
 
   return chatroom ? (
     <LMChatChatroomContext.Provider

@@ -1,4 +1,11 @@
-import { useContext, useRef, useState } from "react";
+import {
+  Dispatch,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
@@ -17,7 +24,7 @@ export function useConversationSearch(): UseConversationSearch {
   const onSearchedConversationClick = (conversationId: number) => {
     setSearchedConversationId(conversationId);
   };
-  const searchConversations = async () => {
+  const searchConversations = useCallback(async () => {
     try {
       const PAGE_SIZE = 20;
       const call = await lmChatclient?.searchConversation({
@@ -27,31 +34,41 @@ export function useConversationSearch(): UseConversationSearch {
         chatroomId: chatroom!.chatroom.id!,
         followStatus: true,
       });
-      if (call.data.chatrooms.length === 0) {
+      if (call.data.conversations.length === 0) {
         setLoadMoreConversations(false);
       }
-
-      if (call.data.chatrooms.length > 0) {
+      if (call.data.conversations.length > 0) {
         setSearchList((currentList) => {
           const newList = [...currentList, ...call.data.conversations];
           return newList;
         });
         pageCount.current = pageCount.current + 1;
       }
-      console.log(call);
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [chatroom, lmChatclient, searchKey]);
   const resetSearch = () => {
     setSearchList(() => {
       return [];
     });
     setSearchKey("");
     pageCount.current = 1;
-
-    setLoadMoreConversations(true);
+    setLoadMoreConversations(() => true);
   };
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      searchConversations();
+    }, 300);
+
+    return () => {
+      clearTimeout(debounceTimer);
+      setSearchList(() => []);
+      setLoadMoreConversations(() => true);
+      pageCount.current = 1;
+    };
+  }, [searchConversations, searchKey]);
 
   return {
     searchList,
@@ -59,10 +76,14 @@ export function useConversationSearch(): UseConversationSearch {
     resetSearch,
     loadMoreConversations,
     onSearchedConversationClick,
+    searchKey,
+    setSearchKey,
   };
 }
 
 interface UseConversationSearch {
+  searchKey: string;
+  setSearchKey: Dispatch<string>;
   searchList: SearchedConversation[];
   resetSearch: ZeroArgVoidReturns;
   searchConversations: ZeroArgVoidReturns;

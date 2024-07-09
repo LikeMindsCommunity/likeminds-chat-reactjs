@@ -56,8 +56,14 @@ const MessageReactionHolder = () => {
             <div className="reactions-selection-tabs">
               <Tab value={""} label={"All"} />
 
-              {Object.keys(messageReactionMap).map((reaction) => {
-                return <Tab value={reaction} label={reaction} />;
+              {Object.keys(messageReactionMap).map((reaction, index) => {
+                return (
+                  <Tab
+                    key={reaction.concat(index.toString())}
+                    value={reaction}
+                    label={reaction}
+                  />
+                );
               })}
             </div>
           </Tabs>
@@ -66,7 +72,7 @@ const MessageReactionHolder = () => {
             {selectedReaction.length !== 0
               ? messageReactionMap[selectedReaction]?.map((reactions) => {
                   return (
-                    <div className="reactionUser">
+                    <div className="reactionUser" key={reactions.member.uuid}>
                       <div className="userImg">
                         {reactions.member.imageUrl ? (
                           <img src={reactions.member.imageUrl} alt="image" />
@@ -91,7 +97,7 @@ const MessageReactionHolder = () => {
                 })
               : message?.reactions?.map((reactions) => {
                   return (
-                    <div className="reactionUser">
+                    <div className="reactionUser" key={reactions.member.uuid}>
                       <div className="userImg">
                         {reactions.member.imageUrl ? (
                           <img src={reactions.member.imageUrl} alt="image" />
@@ -118,12 +124,12 @@ const MessageReactionHolder = () => {
         </div>
       </Dialog>
 
-      {Object.keys(messageReactionMap).map((reaction) => {
+      {Object.keys(messageReactionMap).map((reaction, index) => {
         const reactionObject = messageReactionMap[reaction];
         return (
           <div
             className="lm-chat-message-reaction"
-            key={reaction}
+            key={reaction.concat(index.toString())}
             onClick={() => {
               setSelectedReaction(reaction);
               openDialog();

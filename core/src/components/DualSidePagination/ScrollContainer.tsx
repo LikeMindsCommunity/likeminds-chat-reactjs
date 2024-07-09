@@ -3,6 +3,7 @@ import React, {
   MutableRefObject,
   PropsWithChildren,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -11,6 +12,7 @@ import React, {
 import { useParams } from "react-router-dom";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import { IconButton } from "@mui/material";
+import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
 //   Debounce creator for creating a debounced variation of the original function
 function createDebouncedFunction(originalFunction: () => void) {
   let hasTheFunctionAlreadyCalled: boolean = false;
@@ -34,8 +36,16 @@ function isScrollTopBeyondThresholdLimits(
   if (!targetElement) {
     return false;
   }
+
   const { scrollTop, clientHeight, scrollHeight } = targetElement;
-  if (scrollTop < 0.7 * scrollHeight && !scrollDirection) {
+
+  if (scrollTop < 0.3 * scrollHeight && !scrollDirection && scrollTop !== 0) {
+    return true;
+  } else if (
+    scrollTop > 0.7 * (scrollHeight - clientHeight) &&
+    scrollDirection &&
+    scrollTop !== 0
+  ) {
     return true;
   } else {
     return false;
@@ -51,6 +61,7 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
     dataLength,
     bottomReferenceDiv,
   } = props;
+
   const [isScrollToBottomVisible, setIsScrollToBottomVisible] = useState(false);
   const { id: chatroomId } = useParams();
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -83,20 +94,29 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
       const previousScrollTop = previousScrollPosition.current;
       // Scroll direction is 1 for downwards direction and 0 for upwards position
       const scrollDirection = currentScrollTop > previousScrollTop ? 1 : 0;
+
       const isInScrollableLimits = isScrollTopBeyondThresholdLimits(
         scrollDirection,
         30,
         scrollTarget.current || null,
       );
       if (isInScrollableLimits) {
-        hasAlreadyCalled.current = true;
-        await nextOnScrollTop();
+        if (!scrollDirection) {
+          hasAlreadyCalled.current = true;
+          await nextOnScrollTop();
+        } else {
+          console.log(callNextOnBottom);
+          if (callNextOnBottom) {
+            hasAlreadyCalled.current = true;
+            await nextOnScrollBottom();
+          }
+        }
       }
       previousScrollPosition.current = currentScrollTop;
     } catch (error) {
       console.log(error);
     }
-  }, [nextOnScrollTop]);
+  }, [callNextOnBottom, nextOnScrollBottom, nextOnScrollTop]);
 
   useEffect(() => {
     const debouncedScroll = createDebouncedFunction(handleScroll);

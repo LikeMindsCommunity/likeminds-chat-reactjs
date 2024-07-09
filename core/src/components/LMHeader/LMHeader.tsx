@@ -12,6 +12,7 @@ import menuIcon from "../../assets/img/overflow-menu.svg";
 import searchIcon from "../../assets/img/search.svg";
 import { ChatroomTypes } from "../../enums/chatroom-types";
 import UserProviderContext from "../../context/UserProviderContext";
+import LMConversationSearch from "../search/LMConversationSearch";
 
 const Header = () => {
   const { chatroom } = useContext(LMChatChatroomContext);
@@ -72,57 +73,71 @@ const Header = () => {
     }
   }, [chatroom, getChatroomReciever]);
 
-  const [menuAnchorSearch, setMenuAnchorSearch] = useState(null);
-  const [showSearch, setShowSearch] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
+  // const [menuAnchorSearch, setMenuAnchorSearch] = useState(null);
+  // const [showSearch, setShowSearch] = useState(false);
+  // const [searchTerm, setSearchTerm] = useState("");
+  // const [searchResults, setSearchResults] = useState([]);
 
-  const openMenuSearch = (event) => {
-    setMenuAnchorSearch(event.currentTarget);
+  // const openMenuSearch = (event) => {
+  //   setMenuAnchorSearch(event.currentTarget);
+  // };
+
+  // const closeMenuSearch = () => {
+  //   setMenuAnchorSearch(null);
+  // };
+
+  // const handleSearchIconClick = () => {
+  //   setShowSearch(true);
+  // };
+
+  // const handleSearchInputChange = (event) => {
+  //   setSearchTerm(event.target.value);
+  //   // Mock search results for demonstration
+  //   const results = ["Result 1", "Result 2", "Result 3"].filter((result) =>
+  //     result.toLowerCase().includes(event.target.value.toLowerCase()),
+  //   );
+  //   setSearchResults(results);
+  // };
+
+  // const handleSearchResultClick = (result) => {
+  //   // Handle the selection of a search result
+  //   console.log(`Selected search result: ${result}`);
+  //   // Hide the search input and clear results after selection
+  //   setShowSearch(false);
+  //   setSearchTerm("");
+  //   setSearchResults([]);
+  // };
+  const [openSearchField, setOpenSearchField] = useState<boolean>(false);
+  const onOpenSearch = () => {
+    setOpenSearchField(true);
   };
-
-  const closeMenuSearch = () => {
-    setMenuAnchorSearch(null);
+  const onCloseSearch = () => {
+    setOpenSearchField(false);
   };
+  const renderHeaderComponents = () => {
+    switch (openSearchField) {
+      case true: {
+        return <LMConversationSearch onCloseSearch={onCloseSearch} />;
+      }
+      case false: {
+        return (
+          <>
+            <div className="lm-channel-header">
+              <div className="lm-header-left">
+                <div className="lm-channel-img">{chatroomAvatar}</div>
+                <div className="lm-channel-desc">
+                  <div className="lm-channel-title">{chatroomTitle}</div>
+                  {chatroom?.chatroom?.participants_count &&
+                  chatroom.chatroom.type !==
+                    ChatroomTypes.DIRECT_MESSAGE_CHATROOM ? (
+                    <div className="lm-channel-participants">
+                      {chatroom?.chatroom.participants_count} Participants
+                    </div>
+                  ) : null}
+                </div>
+              </div>
 
-  const handleSearchIconClick = () => {
-    setShowSearch(true);
-  };
-
-  const handleSearchInputChange = (event) => {
-    setSearchTerm(event.target.value);
-    // Mock search results for demonstration
-    const results = ["Result 1", "Result 2", "Result 3"].filter((result) =>
-      result.toLowerCase().includes(event.target.value.toLowerCase()),
-    );
-    setSearchResults(results);
-  };
-
-  const handleSearchResultClick = (result) => {
-    // Handle the selection of a search result
-    console.log(`Selected search result: ${result}`);
-    // Hide the search input and clear results after selection
-    setShowSearch(false);
-    setSearchTerm("");
-    setSearchResults([]);
-  };
-
-  return (
-    <div className="lm-channel-header">
-      <div className="lm-header-left">
-        <div className="lm-channel-img">{chatroomAvatar}</div>
-        <div className="lm-channel-desc">
-          <div className="lm-channel-title">{chatroomTitle}</div>
-          {chatroom?.chatroom?.participants_count &&
-          chatroom.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM ? (
-            <div className="lm-channel-participants">
-              {chatroom?.chatroom.participants_count} Participants
-            </div>
-          ) : null}
-        </div>
-      </div>
-
-      <div className="lm-header-right">
+              {/* <div className="lm-header-right">
         <div className="lm-channel-icon">
           <img
             src={searchIcon}
@@ -190,53 +205,60 @@ const Header = () => {
             );
           })}
         </Menu>
-      </div>
-      {/* old code  */}
-      {/* <div className="lm-header-right">
-        <div className="lm-channel-icon">
-          <img src={searchIcon} alt="searchIcon" />
-        </div>
-        <div className="lm-channel-icon">
-          <img src={shareIcon} alt="shareIcon" />
-        </div>
-        <div className="lm-channel-icon">
-          <img onClick={openMenu} src={menuIcon} alt="menuIcon" />
-        </div>
-        <Menu
-          open={Boolean(menuAnchor)}
-          anchorEl={menuAnchor}
-          onClose={closeMenu}
-        >
-          {chatroom?.chatroom_actions.map((menuOption) => {
-            return (
-              <MenuItem
-                key={menuOption.id}
-                className="lm-chatroom-menu-item"
-                onClick={() => {
-                  switch (menuOption.id) {
-                    case ChatroomAction.ACTION_MUTE:
-                      return onMute();
-                    case ChatroomAction.ACTION_UNMUTE:
-                      return onMute();
-                    case ChatroomAction.ACTION_UNFOLLOW:
-                      return onLeaveChatroom();
-                    case ChatroomAction.ACTION_VIEW_PARTICIPANTS:
-                      return onViewParticipants();
-                    case ChatroomAction.ACTION_BLOCK_CHATROOM:
-                      return onBlock();
-                    case ChatroomAction.ACTION_UNBLOCK_CHATROOM:
-                      return onUnBlock();
-                  }
-                }}
-              >
-                {menuOption.title}
-              </MenuItem>
-            );
-          })}
-        </Menu>
       </div> */}
-    </div>
-  );
+              {/* old code  */}
+              <div className="lm-header-right">
+                <div className="lm-channel-icon">
+                  <img
+                    onClick={onOpenSearch}
+                    src={searchIcon}
+                    alt="searchIcon"
+                  />
+                </div>
+
+                <div className="lm-channel-icon">
+                  <img onClick={openMenu} src={menuIcon} alt="menuIcon" />
+                </div>
+                <Menu
+                  open={Boolean(menuAnchor)}
+                  anchorEl={menuAnchor}
+                  onClose={closeMenu}
+                >
+                  {chatroom?.chatroom_actions.map((menuOption) => {
+                    return (
+                      <MenuItem
+                        key={menuOption.id}
+                        className="lm-chatroom-menu-item"
+                        onClick={() => {
+                          switch (menuOption.id) {
+                            case ChatroomAction.ACTION_MUTE:
+                              return onMute();
+                            case ChatroomAction.ACTION_UNMUTE:
+                              return onMute();
+                            case ChatroomAction.ACTION_UNFOLLOW:
+                              return onLeaveChatroom();
+                            case ChatroomAction.ACTION_VIEW_PARTICIPANTS:
+                              return onViewParticipants();
+                            case ChatroomAction.ACTION_BLOCK_CHATROOM:
+                              return onBlock();
+                            case ChatroomAction.ACTION_UNBLOCK_CHATROOM:
+                              return onUnBlock();
+                          }
+                        }}
+                      >
+                        {menuOption.title}
+                      </MenuItem>
+                    );
+                  })}
+                </Menu>
+              </div>
+            </div>
+          </>
+        );
+      }
+    }
+  };
+  return renderHeaderComponents();
 };
 
 export default Header;
