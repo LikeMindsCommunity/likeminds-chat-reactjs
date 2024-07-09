@@ -4,16 +4,18 @@ import useChatroomList from "../../hooks/useChatroomsList";
 import { useNavigate, useParams } from "react-router-dom";
 import { ConstantStrings } from "../../enums/common-strings";
 import { Utils } from "../../utils/helpers";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import UserProviderContext from "../../context/UserProviderContext";
 import { CHANNEL_PATH } from "../../shared/constants/lm.routes.constant";
 
 // Icons
 import joinIcon from "../../assets/img/icon_join.svg";
 import document from "../../assets/img/document.svg";
+import searchIcon from "../../assets/img/search.svg";
 import joinedIcon from "../../assets/img/icon_joined.svg";
 import participantsIcon from "../../assets/img/explore-feed_chatroom_participants.svg";
 import messageIcon from "../../assets/img/explore-feed_chatroom_messages.svg";
+import LMConversationSearch from "../search/LMConversationSearch";
 
 function LMGroupChatChannelList() {
   const {
@@ -33,14 +35,36 @@ function LMGroupChatChannelList() {
 
   const navigate = useNavigate();
   const { id: chatroomId } = useParams();
+  // Search in chatroom
+  const [openSearchField, setOpenSearchField] = useState<boolean>(false);
+  const onOpenSearch = () => {
+    setOpenSearchField(true);
+  };
+  const onCloseSearch = () => {
+    setOpenSearchField(false);
+  };
+
+  const renderChatroomSearchComponent = () => {
+    switch (openSearchField) {
+      case true: {
+        return <LMConversationSearch onCloseSearch={onCloseSearch} />;
+      }
+      case false: {
+        // To do
+      }
+    }
+  };
+
+  // return renderChatroomSearchComponent();
+
   return (
     <div className="lm-channel-list">
       <div>
         <div className="lm-channel-list-header">
           <div className="title">Chatrooms</div>
-          {/* <div className="icon">
-            <img src={searchIcon} alt="searchIcon" />
-          </div> */}
+          <div className="icon">
+            <img src={searchIcon} alt="searchIcon" onClick={onOpenSearch} />
+          </div>
         </div>
       </div>
 

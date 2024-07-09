@@ -25,6 +25,7 @@ import { useMessageOptions } from "../../hooks/useMessageOptions";
 
 const Message = () => {
   const { message, index } = useContext(LMMessageContext);
+  // console.log(message);
   const { conversations, unBlockUserInDM } = useContext(MessageListContext);
   const { currentUser } = useContext(UserProviderContext);
   const { chatroom } = useContext(LMChatChatroomContext);
@@ -126,9 +127,6 @@ const Message = () => {
     }
     case ConversationStates.NORMAL: {
       return (
-        // <>
-        //   <LMMicroPoll />
-        // </>
         <>
           <div className={`lm-chat-card ${message?.state}`}>
             {renderDatePill()}
@@ -314,10 +312,6 @@ const Message = () => {
     }
     default: {
       return null;
-      // <div className={`lm-chat-card ${message?.state}`}>
-      //   {/* {message?.state} */}
-      //   <div className="data-pill">{message?.date}</div>
-      // </div>
     }
   }
 };
