@@ -20,6 +20,8 @@ import { CustomActions } from "../customActions";
 import { ZeroArgVoidReturns } from "./useInput";
 import { ChatroomAction } from "../enums/chatroom-actions";
 import { ChatroomCollabcard } from "../types/api-responses/getChatroomResponse";
+import { GetSyncConversationsResponse } from "../types/api-responses/getSyncConversationsResponse";
+import ConversationStates from "../enums/conversation-states";
 
 interface UseConversations {
   conversations: Conversation[] | null;
@@ -32,6 +34,8 @@ interface UseConversations {
   bottomReferenceDiv: MutableRefObject<HTMLDivElement | null>;
   messageListContainerRef: MutableRefObject<HTMLDivElement | null>;
   unBlockUserInDM: ZeroArgVoidReturns;
+  searchedConversationRef: MutableRefObject<HTMLDivElement | null>;
+  loadMoreBottomConversation: boolean;
 }
 
 export default function useConversations(): UseConversations {
@@ -41,17 +45,106 @@ export default function useConversations(): UseConversations {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
   const { currentUser } = useContext(UserProviderContext);
-  const { chatroom, setNewChatroom } = useContext(LMChatChatroomContext);
+  const {
+    chatroom,
+    setNewChatroom,
+    searchedConversationId,
+    setSearchedConversationId,
+  } = useContext(LMChatChatroomContext);
   const [conversations, setConversations] = useState<Conversation[] | null>([]);
   const [loadMore, setLoadMore] = useState<boolean>(true);
+  const [loadMoreBottomConversation, setLoadMoreBottomConversation] =
+    useState<boolean>(false);
   const newChatroomConversationsLoaded = useRef<boolean>(false);
   const lastMessageRef = useRef<number | null>(null);
   const bottomReferenceDiv = useRef<HTMLDivElement | null>(null);
   const messageListContainerRef = useRef<HTMLDivElement | null>(null);
+  const searchedConversationRef = useRef<HTMLDivElement | null>(null);
+  const currentChatroomMaxTimeStamp = useRef<number>(Date.now());
+  const currentChatroomTopPageCount = useRef<number>(1);
+  const stopAdditionalCalls = useRef<boolean>(false);
+  // id of conversation retrieved from bottomScrollGetconversation
+  const bottomConversationId = useRef<number | null>(null);
   // const [showLoader, setShowLoader] = useState<boolean>(false);
   const showLoader = useRef<boolean>(true);
   // const params = useParams();
+  const transformConversations = (
+    currentConversations: Conversation[],
+    chatroomConversationsCall: GetSyncConversationsResponse,
+  ) => {
+    const {
+      conv_attachments_meta,
+      conv_polls_meta,
+      conv_reactions_meta,
+      conversations_data,
+      conversation_meta,
+      user_meta,
+    } = chatroomConversationsCall.data;
+    currentConversations = [...(currentConversations || [])];
+    const newConversations = conversations_data
+      .map((conversation) => {
+        const newConversation = {
+          ...conversation,
+        } as unknown as Conversation;
+        if (conversation.attachment_count) {
+          newConversation.attachments =
+            conv_attachments_meta[conversation.id.toString()];
+        } else {
+          newConversation.attachments = [];
+        }
+        if (conversation.has_reactions) {
+          newConversation.reactions = conv_reactions_meta[
+            conversation.id.toString()
+          ].map((reaction) => {
+            return {
+              member: user_meta[reaction.user_id.toString()] as any,
+              reaction: reaction.reaction,
+            };
+          });
+        } else {
+          newConversation.reactions = [];
+        }
+        if (conversation.user_id) {
+          newConversation.member = user_meta[
+            conversation.user_id.toString()
+          ] as any;
+        }
+        if (conversation.state === ConversationStates.MICRO_POLL) {
+          newConversation.polls = conv_polls_meta[
+            conversation.id.toString()
+          ].map((poll) => {
+            return {
+              id: poll.id,
+              is_selected: poll.is_selected,
+              member: user_meta[poll.user_id.toString()] as any,
+              no_votes: poll.no_votes,
+              percentage: poll.percentage || 0,
+              text: poll.text,
+            };
+          });
+        }
+        if (conversation.reply_id) {
+          const newRepliedConversation = conversation_meta[
+            newConversation.reply_id
+          ] as any;
+          if (newRepliedConversation.attachment_count) {
+            newRepliedConversation.attachments =
+              conv_attachments_meta[newConversation.reply_id.toString()];
+          }
+          const repliedConversationUser = user_meta[
+            newRepliedConversation.user_id.toString()
+          ] as any;
+          newRepliedConversation.member = repliedConversationUser;
+          newConversation.reply_conversation_object = newRepliedConversation;
+        }
 
+        return newConversation;
+      })
+      .reverse();
+    const newConversationsList = [...newConversations, ...currentConversations];
+    console.log(newConversationsList);
+    return newConversationsList;
+  };
   const getChatroomDetails = useCallback(async () => {
     try {
       const chatroomDetailsCall = await lmChatclient?.getChatroom({
@@ -62,100 +155,124 @@ export default function useConversations(): UseConversations {
       return logError(error);
     }
   }, [chatroomId, lmChatclient]);
-  const getChatroomConversationsOnTopScroll = useCallback(async () =>
-    // topNavigation: boolean | undefined,
-    {
-      try {
-        const chatroomConversationsCall = await lmChatclient?.getConversation({
-          chatroomID: parseInt(chatroomId!.toString()),
-          paginateBy: CONVERSATIONS_PAGINATE_BY || 50,
-          topNavigate: false,
-          conversationID: lastMessageRef.current
-            ? parseInt(lastMessageRef.current.toString())
-            : undefined,
-          scrollDirection: 0,
-          include: false,
-        });
-        if (chatroomConversationsCall.success) {
-          if (!chatroomConversationsCall.data.conversations.length) {
-            setLoadMore(false);
-          } else {
-            setConversations((currentConversations) => {
-              const newConversations = [
-                ...chatroomConversationsCall.data.conversations,
-                ...(currentConversations || []),
-              ];
-              if (newConversations.length) {
-                lastMessageRef.current = newConversations[0].id;
-              }
-              return newConversations;
-            });
-          }
-        }
-        return chatroomConversationsCall.data.conversations;
-      } catch (error) {
-        return logError(error);
+  const getChatroomConversationsOnTopScroll = useCallback(async () => {
+    try {
+      if (stopAdditionalCalls.current) {
+        return;
       }
-    }, [chatroomId, lmChatclient]);
-  const getChatroomConversationsOnBottomScroll = useCallback(
-    async (
-      conversationId: number | string | undefined,
-      topNavigation: boolean | undefined,
-    ) => {
-      try {
-        const chatroomConversationsCall = await lmChatclient?.getConversation({
-          chatroomID: parseInt(chatroomId!.toString()),
-          paginateBy: CONVERSATIONS_PAGINATE_BY,
-          topNavigate: topNavigation,
-          // conversationID: parseInt(conversationId?.toString()),
-          include: false,
-        });
-        return chatroomConversationsCall.data.conversations;
-      } catch (error) {
-        return logError(error);
-      }
-    },
-    [chatroomId, lmChatclient],
-  );
-  const getChatroomConversationsWithID = useCallback(
-    async (conversationId: number | string | undefined) => {
-      try {
-        const chatroomConversationsCall = await lmChatclient?.getConversation({
-          chatroomID: parseInt(chatroomId!.toString()),
-          paginateBy: undefined,
-          topNavigate: undefined,
-          conversationID: parseInt(conversationId?.toString() || ""),
-          include: true,
-        });
-        setConversations((conversationsList) => {
-          console.log(`The current conversations are: ${conversationsList}`);
-          console.log(
-            `The new list is : ${chatroomConversationsCall.data.conversations}`,
-          );
-          const targetConversation =
-            chatroomConversationsCall.data.conversations;
-          if (
-            !conversationsList?.some((conversation) => {
-              if (conversation.id === targetConversation[0].id) {
-                return true;
-              } else {
-                return false;
-              }
-            })
-          ) {
-            return [...(conversationsList || []), ...targetConversation];
-          } else {
-            return conversationsList;
-          }
-        });
-        return chatroomConversationsCall.data.conversations;
-      } catch (error) {
-        return logError(error);
-      }
-    },
-    [chatroomId, lmChatclient],
-  );
 
+      const chatroomConversationsCall: GetSyncConversationsResponse =
+        await lmChatclient?.getConversations({
+          chatroomId: parseInt(chatroomId!.toString()),
+          pageSize: CONVERSATIONS_PAGINATE_BY || 50,
+          maxTimestamp: currentChatroomMaxTimeStamp.current,
+          minTimestamp: 0,
+          isLocalDb: false,
+          page: currentChatroomTopPageCount.current,
+        });
+      if (chatroomConversationsCall.success) {
+        const { conversations_data } = chatroomConversationsCall.data;
+        if (!conversations_data.length) {
+          setLoadMore(false);
+        } else {
+          setConversations((currentConversations) => {
+            const newConversationsList = transformConversations(
+              currentConversations || [],
+              chatroomConversationsCall,
+            );
+            return newConversationsList;
+          });
+          currentChatroomTopPageCount.current =
+            currentChatroomTopPageCount.current + 1;
+        }
+      }
+
+      return;
+    } catch (error) {
+      return logError(error);
+    }
+  }, [lmChatclient, chatroomId]);
+  const getChatroomConversationsOnBottomScroll = useCallback(async () => {
+    try {
+      if (stopAdditionalCalls.current) {
+        return;
+      }
+      const chatroomConversationsCall = await lmChatclient?.getConversation({
+        chatroomID: parseInt(chatroomId?.toString() || ""),
+        paginateBy: CONVERSATIONS_PAGINATE_BY,
+        conversationID: bottomConversationId.current || 0,
+        include: false,
+        scrollDirection: 1,
+        topNavigate: false,
+      });
+      if (chatroomConversationsCall.success) {
+        if (chatroomConversationsCall.data.conversations.length) {
+          setConversations((currentConversations) => {
+            if (!currentConversations) {
+              return currentConversations;
+            }
+
+            const newConversations = [
+              ...currentConversations,
+              ...chatroomConversationsCall.data.conversations,
+            ];
+            bottomConversationId.current =
+              newConversations[newConversations.length - 1].id;
+            return newConversations;
+          });
+        } else {
+          setLoadMoreBottomConversation(() => false);
+        }
+      }
+      return;
+    } catch (error) {
+      logError(error);
+      return;
+    }
+  }, [chatroomId, lmChatclient]);
+
+  const searchConversation = useCallback(async () => {
+    try {
+      stopAdditionalCalls.current = true;
+      // conversations before the searched conversation
+      const preConversationCall = await lmChatclient?.getConversation({
+        chatroomID: parseInt(chatroomId?.toString() || ""),
+        paginateBy: CONVERSATIONS_PAGINATE_BY,
+        conversationID: parseInt(searchedConversationId?.toString() || ""),
+        include: true,
+        scrollDirection: 0,
+        topNavigate: false,
+      });
+      // conversation after the searched conversation
+      const postConversationCall = await lmChatclient?.getConversation({
+        chatroomID: parseInt(chatroomId?.toString() || ""),
+        paginateBy: CONVERSATIONS_PAGINATE_BY,
+        conversationID: parseInt(searchedConversationId?.toString() || ""),
+        include: false,
+        scrollDirection: 1,
+        topNavigate: false,
+      });
+      setLoadMoreBottomConversation(() => true);
+      setConversations((currentConversations) => {
+        const newConversations = [
+          ...(preConversationCall.data.conversations || []),
+          ...(postConversationCall.data.conversations || []),
+        ];
+        if (newConversations.length) {
+          currentChatroomMaxTimeStamp.current =
+            newConversations[0].created_epoch;
+          currentChatroomTopPageCount.current = 1;
+          bottomConversationId.current =
+            newConversations[newConversations.length - 1].id;
+        }
+        return newConversations;
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      stopAdditionalCalls.current = false;
+    }
+  }, [chatroomId, lmChatclient, searchedConversationId]);
   const unBlockUserInDM = useCallback(async () => {
     // add login for showing input field
     try {
@@ -220,11 +337,13 @@ export default function useConversations(): UseConversations {
     }
   }, [chatroomId, lmChatclient]);
 
-  function resetConversations() {
-    setConversations(null);
+  const resetConversations = useCallback(() => {
+    setConversations(() => null);
     lastMessageRef.current = null;
     newChatroomConversationsLoaded.current = false;
-  }
+    currentChatroomTopPageCount.current = 1;
+    setSearchedConversationId(null);
+  }, [setSearchedConversationId]);
 
   function logError(error: unknown): null {
     // Check if the error is an instance of Error
@@ -287,14 +406,69 @@ export default function useConversations(): UseConversations {
       conversationId: number | string | undefined,
     ) => {
       try {
-        const chatroomConversationsCall = await lmChatclient?.getConversation({
-          chatroomID: parseInt(chatroomId!.toString()),
-          paginateBy: undefined,
-          topNavigate: undefined,
-          conversationID: parseInt(conversationId?.toString() || ""),
-          include: true,
+        const chatroomConversationsCall: GetSyncConversationsResponse =
+          await lmChatclient?.getConversations({
+            chatroomId: parseInt(chatroomId!.toString()),
+            page: 1,
+            pageSize: 1,
+            conversationId: parseInt(conversationId?.toString() || ""),
+            minTimestamp: 0,
+            maxTimestamp: Date.now(),
+            isLocalDb: false,
+          });
+        const {
+          conv_attachments_meta,
+          conv_polls_meta,
+          conv_reactions_meta,
+          conversations_data,
+          user_meta,
+        } = chatroomConversationsCall.data;
+        const newConversations = conversations_data.map((conversation) => {
+          const newConversation = {
+            ...conversation,
+          } as unknown as Conversation;
+          if (conversation.attachment_count) {
+            newConversation.attachments =
+              conv_attachments_meta[conversation.id.toString()];
+          } else {
+            newConversation.attachments = [];
+          }
+          if (conversation.has_reactions) {
+            newConversation.reactions = conv_reactions_meta[
+              conversation.id.toString()
+            ].map((reaction) => {
+              return {
+                member: user_meta[reaction.user_id.toString()] as any,
+                reaction: reaction.reaction,
+              };
+            });
+          } else {
+            newConversation.reactions = [];
+          }
+          if (conversation.user_id) {
+            newConversation.member = user_meta[
+              conversation.user_id.toString()
+            ] as any;
+          }
+          if (conversation.state === ConversationStates.MICRO_POLL) {
+            newConversation.polls = conv_polls_meta[
+              conversation.id.toString()
+            ].map((poll) => {
+              return {
+                id: poll.id,
+                is_selected: poll.is_selected,
+                member: user_meta[poll.user_id.toString()] as any,
+                no_votes: poll.no_votes,
+                percentage: poll.percentage || 0,
+                text: poll.text,
+              };
+            });
+          }
+
+          return newConversation;
         });
-        const targetConversation = chatroomConversationsCall.data.conversations;
+
+        const targetConversation = newConversations ? newConversations : null;
         return targetConversation;
       } catch (error) {
         return logError(error);
@@ -311,6 +485,7 @@ export default function useConversations(): UseConversations {
           const collabcardId = snapshot.val().collabcard.answer_id;
           getChatroomConversationsWithID(collabcardId)
             .then((targetConversation) => {
+              if (!targetConversation) return;
               setConversations((currentConversations) => {
                 const targetConversationObject = targetConversation[0];
 
@@ -371,15 +546,49 @@ export default function useConversations(): UseConversations {
         },
       );
     };
-  }, []);
+  }, [handleDMUserActionsConversations]);
+  useEffect(() => {
+    if (searchedConversationId) {
+      searchConversation();
+    }
+  }, [searchConversation, searchedConversationId]);
   useEffect(() => {
     return () => {
       showLoader.current = true;
       resetConversations();
     };
-  }, [chatroomId]);
+  }, [chatroomId, resetConversations]);
+  useEffect(() => {
+    console.log(`The searchedConversation id is : ${searchedConversationId}`);
+    if (
+      conversations?.length &&
+      searchedConversationId &&
+      messageListContainerRef &&
+      messageListContainerRef.current &&
+      searchedConversationRef &&
+      searchedConversationRef.current
+    ) {
+      console.log(`The searched conversation ref is }`);
+      console.log(searchedConversationRef.current);
 
+      setTimeout(() => {
+        searchedConversationRef?.current?.scrollIntoView({
+          behavior: "auto",
+          inline: "center",
+          block: "nearest",
+        });
+      }, 40);
+
+      searchedConversationRef.current.firstElementChild?.classList.add(
+        "message-highlight",
+      );
+      return () => {
+        setSearchedConversationId(null);
+      };
+    }
+  }, [conversations, searchedConversationId, setSearchedConversationId]);
   return {
+    loadMoreBottomConversation,
     conversations,
     setConversations,
     getChatroomConversationsOnBottomScroll,
@@ -389,6 +598,7 @@ export default function useConversations(): UseConversations {
     bottomReferenceDiv,
     messageListContainerRef,
     unBlockUserInDM,
+    searchedConversationRef,
   };
 }
 export type UnknownReturnFunction = (...props: unknown[]) => unknown;

@@ -11,6 +11,7 @@ interface MessageListContextInterface {
   bottomReferenceDiv: MutableRefObject<HTMLDivElement | null>;
   messageListContainerRef: MutableRefObject<HTMLDivElement | null>;
   unBlockUserInDM: ZeroArgVoidReturns;
+  searchedConversationRef: MutableRefObject<HTMLDivElement | null>;
 }
 
 const MessageListContext = React.createContext<MessageListContextInterface>(

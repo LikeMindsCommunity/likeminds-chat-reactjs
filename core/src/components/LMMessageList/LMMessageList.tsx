@@ -15,7 +15,9 @@ import { MemberType } from "../../enums/member-type";
 
 const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
   (props) => {
-    const { chatroom } = useContext(LMChatChatroomContext);
+    const { chatroom, searchedConversationId } = useContext(
+      LMChatChatroomContext,
+    );
     const { currentUser } = useContext(UserProviderContext);
     const { MessageComponent } = props;
     const scrollToBottom = () => {
@@ -70,7 +72,9 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       showLoader,
       bottomReferenceDiv,
       messageListContainerRef,
+      searchedConversationRef,
       unBlockUserInDM,
+      loadMoreBottomConversation,
     } = useConversations();
 
     if (showLoader.current) {
@@ -95,6 +99,7 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
             bottomReferenceDiv,
             messageListContainerRef,
             unBlockUserInDM,
+            searchedConversationRef,
           }}
         >
           <ScrollContainer
@@ -102,6 +107,9 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
             dataLength={conversations?.length || 0}
             nextOnScrollBottom={() => {
               // console.log("bottom scroll function call");
+              if (getChatroomConversationsOnBottomScroll) {
+                getChatroomConversationsOnBottomScroll();
+              }
             }}
             nextOnScrollTop={() => {
               if (getChatroomConversationsOnTopScroll) {
@@ -109,18 +117,38 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
                 getChatroomConversationsOnTopScroll();
               }
             }}
-            callNextOnBottom={false}
+            callNextOnBottom={loadMoreBottomConversation}
             callNextOnTop={true}
           >
             {conversations?.map((conversation: Conversation, index: number) => {
-              console.log(conversation);
-              return (
-                <LMMessageMiddleware
-                  message={conversation}
-                  index={index}
-                  key={conversation.id}
-                />
-              );
+              if (
+                searchedConversationId?.toString() ===
+                conversation.id.toString()
+              ) {
+                return (
+                  <div
+                    key={conversation.id}
+                    ref={
+                      searchedConversationId?.toString() ===
+                      conversation.id.toString()
+                        ? searchedConversationRef
+                        : undefined
+                    }
+                    className="searched-conversation"
+                    id={conversation.id.toString()}
+                  >
+                    <LMMessageMiddleware message={conversation} index={index} />
+                  </div>
+                );
+              } else {
+                return (
+                  <LMMessageMiddleware
+                    message={conversation}
+                    index={index}
+                    key={conversation.id}
+                  />
+                );
+              }
             })}
           </ScrollContainer>
         </MessageListContext.Provider>
