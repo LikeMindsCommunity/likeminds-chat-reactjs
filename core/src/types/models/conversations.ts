@@ -2,6 +2,7 @@
 import Member from "./member";
 
 export interface Conversation {
+  reply_id: any;
   answer: string;
   attachment_count: number;
   attachments: any[];
@@ -31,6 +32,7 @@ export interface Conversation {
   submit_type_text: string;
   poll_answer_text: string;
   last_seen: boolean;
+  reply_conversation_object: Conversation;
 }
 
 export default Conversation;

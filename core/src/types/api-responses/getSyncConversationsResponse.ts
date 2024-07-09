@@ -1,3 +1,5 @@
+import { OgTag } from "./getOgTagResponse";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface GetSyncConversationsResponse {
   success: boolean;
@@ -84,6 +86,7 @@ export interface GetSyncConversationsResponse {
       }>;
     };
     conversations_data: Array<{
+      reply_conversation_object: any;
       allow_add_option: boolean;
       answer: string;
       api_version: number;
@@ -95,13 +98,13 @@ export interface GetSyncConversationsResponse {
       created_at: string;
       created_epoch: number;
       date: string;
-      deleted_by_user_id: null;
+      deleted_by_user_id: number | string | null;
       device_id: string;
       end_time: number;
-      expiry_time: null;
+      expiry_time: number | null;
       has_files: boolean;
       has_reactions: boolean;
-      header: null;
+      header: string | null;
       id: number;
       internal_link: null;
       is_anonymous: boolean;
@@ -110,22 +113,22 @@ export interface GetSyncConversationsResponse {
       location: null;
       location_lat: null;
       location_long: null;
-      multiple_select_no: null;
-      multiple_select_state: null;
-      og_tags: null;
+      multiple_select_no: number | null;
+      multiple_select_state: number | null;
+      og_tags: OgTag;
       online_link_enable_before: number;
       poll_answer_text: string;
-      poll_type: null;
-      poll_type_text: null;
-      preview_chatroom_id: null;
-      preview_community_id: null;
+      poll_type: number;
+      poll_type_text: string;
+      preview_chatroom_id: number | null;
+      preview_community_id: number | null;
       preview_type: string;
-      reply_chatroom_id: null;
-      reply_id: null;
+      reply_chatroom_id: number | null;
+      reply_id: number | null;
       start_time: number;
       state: number;
-      submit_type_text: null;
-      temporary_id: null;
+      submit_type_text: string | null;
+      temporary_id: number | string | null;
       to_show_results: boolean;
       user_id: number;
       widget_id: string;
@@ -153,10 +156,57 @@ export interface GetSyncConversationsResponse {
         uuid: string;
       };
     };
+    conversation_meta: Record<number | string, ConversationMetaObject>;
     widgets: any;
   };
 }
-
+interface ConversationMetaObject {
+  allow_add_option: boolean;
+  answer: string;
+  api_version: number;
+  attachment_count: number;
+  attachments_uploaded: boolean;
+  card_id: number;
+  co_hosts: null;
+  community_id: number;
+  created_at: string;
+  created_epoch: number;
+  date: string;
+  deleted_by_user_id: number | null;
+  device_id: string;
+  end_time: number;
+  expiry_time: number | null;
+  has_files: boolean;
+  has_reactions: boolean;
+  header: string | null;
+  id: number;
+  internal_link: null;
+  is_anonymous: boolean;
+  is_edited: boolean;
+  last_updated: number;
+  location: null;
+  location_lat: null;
+  location_long: null;
+  multiple_select_no: number | null;
+  multiple_select_state: number | null;
+  og_tags: OgTag | null;
+  online_link_enable_before: number;
+  poll_answer_text: string;
+  poll_type: number | null;
+  poll_type_text: null;
+  preview_chatroom_id: null;
+  preview_community_id: null;
+  preview_type: string;
+  reply_chatroom_id: number | null;
+  reply_id: number | null;
+  start_time: number;
+  state: number;
+  submit_type_text: string | null;
+  temporary_id: number | null;
+  to_show_results: boolean;
+  user_id: number;
+  widget_id: string;
+}
 interface PollMeta {
   conversation_id: number;
   count: null | number;
