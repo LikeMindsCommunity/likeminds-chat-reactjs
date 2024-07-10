@@ -29,7 +29,7 @@ export const generateToken = async () => {
     const token = await getToken(messaging, {
       vapidKey: vapidKey,
     });
-    console.log("Token: ", token);
+    return token;
   }
 };
 

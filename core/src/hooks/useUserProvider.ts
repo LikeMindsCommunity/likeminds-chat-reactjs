@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useRef, useState } from "react";
 import { LMClient } from "../types/DataLayerExportsTypes";
 import Member from "../types/models/member";
 import { UserDetails } from "../context/GlobalClientProviderContext";
@@ -13,7 +14,13 @@ interface UserProviderInterface {
   logoutUser: () => void;
   lmChatUserCurrentCommunity: unknown;
 }
+interface Device {
+  token: string;
 
+  xDeviceId: string;
+
+  xPlatformCode: string;
+}
 export default function useUserProvider(
   client: LMClient | null,
   userDetails: UserDetails,
@@ -24,7 +31,9 @@ export default function useUserProvider(
     useState<unknown>(null);
   const [lmChatUserCurrentCommunity, setLmChatUserCurrentCommunity] =
     useState<unknown>(null);
-
+  const [deviceNotificationTrigger, setDeviceNotificationTrigger] =
+    useState<boolean>(false);
+  const currentBrowserId = useRef<string>("");
   useEffect(() => {
     console.log(lmChatclient);
     if (!lmChatclient) {
@@ -58,31 +67,44 @@ export default function useUserProvider(
     userDetails.uuid,
   ]);
 
-  const [currentBrowserId, setCurrentBrowserId] = useState("");
-
-  const device = {
-    token:
-      "cAEsVZ0VuGIQEIobeSVCFz:APA91bGoweEW1ddBkGHzoH_DJ6dKwxBe-IqkG7zqTPgShAxHNGLXrLuAwikFo4tDxmcufll7_B7EIidxQ2uRz87dexSJhvKvOVK6_ada87yGFE4vA64FuqgAL5X9hH8U2cS1QQj_GQQM",
-    xDeviceId: currentBrowserId,
-    xPlatformCode: "rt",
-  };
-
   useEffect(() => {
-    if (!lmChatUser) return;
-
-    getCurrentBrowserFingerPrint().then((fingerprint) => {
-      setCurrentBrowserId(fingerprint);
-    });
-
-    const registerDevice = client?.registerDevice(device);
-    console.log(registerDevice);
-    generateToken();
-    onMessage(messaging, (payload) => {
-      console.log("Message received. ", payload);
-      toast(payload?.notification?.body);
-    });
-  }, [lmChatUser]);
-
+    async function notification() {
+      try {
+        if (deviceNotificationTrigger) {
+          return;
+        }
+        const fingerprint = await getCurrentBrowserFingerPrint();
+        currentBrowserId.current = fingerprint;
+        const token = await generateToken();
+        if (!token) {
+          throw Error("Token not generated.");
+        }
+        const device: Device = {
+          token: token,
+          xDeviceId: currentBrowserId.current,
+          xPlatformCode: "rt",
+        };
+        await client?.registerDevice(device);
+        setDeviceNotificationTrigger(() => true);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    if (!lmChatUser) {
+      notification();
+      return () => {
+        setDeviceNotificationTrigger(() => false);
+      };
+    }
+  }, [client, deviceNotificationTrigger, lmChatUser]);
+  useEffect(() => {
+    if (deviceNotificationTrigger) {
+      return onMessage(messaging, (payload: any) => {
+        console.log("Message received. ", payload);
+        toast(payload?.notification?.body);
+      });
+    }
+  }, [deviceNotificationTrigger]);
   function logoutUser() {
     setLmChatUser(null);
     setLmChatUserMemberState(null);
