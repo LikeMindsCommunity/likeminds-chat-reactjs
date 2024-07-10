@@ -9,6 +9,7 @@ const LMChatTextArea = () => {
     inputWrapperRef,
     inputBoxRef,
     onTextInputKeydownHandler,
+    onTextInputKeyUpHandler,
     updateInputText,
     fetchMoreTags,
     matchedTagMembersList,
@@ -118,6 +119,7 @@ const LMChatTextArea = () => {
         className="lm-chat-text-area__input-box"
         onKeyDown={onTextInputKeydownHandler}
         onInput={updateInputText}
+        onKeyUp={onTextInputKeyUpHandler}
       ></div>
     </div>
   );

@@ -71,6 +71,7 @@ export default function useConversations(): UseConversations {
   const transformConversations = (
     currentConversations: Conversation[],
     chatroomConversationsCall: GetSyncConversationsResponse,
+    appendAtEnd?: boolean,
   ) => {
     const {
       conv_attachments_meta,
@@ -95,7 +96,7 @@ export default function useConversations(): UseConversations {
         if (conversation.has_reactions) {
           newConversation.reactions = conv_reactions_meta[
             conversation.id.toString()
-          ].map((reaction) => {
+          ]?.map((reaction) => {
             return {
               member: user_meta[reaction.user_id.toString()] as any,
               reaction: reaction.reaction,
@@ -141,9 +142,21 @@ export default function useConversations(): UseConversations {
         return newConversation;
       })
       .reverse();
-    const newConversationsList = [...newConversations, ...currentConversations];
-    console.log(newConversationsList);
-    return newConversationsList;
+    if (appendAtEnd) {
+      const newConversationsList = [
+        ...currentConversations,
+        ...newConversations,
+      ];
+      console.log(newConversationsList);
+      return newConversationsList;
+    } else {
+      const newConversationsList = [
+        ...newConversations,
+        ...currentConversations,
+      ];
+      console.log(newConversationsList);
+      return newConversationsList;
+    }
   };
   const getChatroomDetails = useCallback(async () => {
     try {
@@ -416,60 +429,8 @@ export default function useConversations(): UseConversations {
             maxTimestamp: Date.now(),
             isLocalDb: false,
           });
-        const {
-          conv_attachments_meta,
-          conv_polls_meta,
-          conv_reactions_meta,
-          conversations_data,
-          user_meta,
-        } = chatroomConversationsCall.data;
-        const newConversations = conversations_data.map((conversation) => {
-          const newConversation = {
-            ...conversation,
-          } as unknown as Conversation;
-          if (conversation.attachment_count) {
-            newConversation.attachments =
-              conv_attachments_meta[conversation.id.toString()];
-          } else {
-            newConversation.attachments = [];
-          }
-          if (conversation.has_reactions) {
-            newConversation.reactions = conv_reactions_meta[
-              conversation.id.toString()
-            ].map((reaction) => {
-              return {
-                member: user_meta[reaction.user_id.toString()] as any,
-                reaction: reaction.reaction,
-              };
-            });
-          } else {
-            newConversation.reactions = [];
-          }
-          if (conversation.user_id) {
-            newConversation.member = user_meta[
-              conversation.user_id.toString()
-            ] as any;
-          }
-          if (conversation.state === ConversationStates.MICRO_POLL) {
-            newConversation.polls = conv_polls_meta[
-              conversation.id.toString()
-            ].map((poll) => {
-              return {
-                id: poll.id,
-                is_selected: poll.is_selected,
-                member: user_meta[poll.user_id.toString()] as any,
-                no_votes: poll.no_votes,
-                percentage: poll.percentage || 0,
-                text: poll.text,
-              };
-            });
-          }
 
-          return newConversation;
-        });
-
-        const targetConversation = newConversations ? newConversations : null;
-        return targetConversation;
+        return chatroomConversationsCall;
       } catch (error) {
         return logError(error);
       }
@@ -484,30 +445,43 @@ export default function useConversations(): UseConversations {
           // }
           const collabcardId = snapshot.val().collabcard.answer_id;
           getChatroomConversationsWithID(collabcardId)
-            .then((targetConversation) => {
+            .then((targetConversation: GetSyncConversationsResponse | null) => {
               if (!targetConversation) return;
+              if (targetConversation.data.conversations_data.length === 0)
+                return;
               setConversations((currentConversations) => {
-                const targetConversationObject = targetConversation[0];
+                const targetConversationObject =
+                  targetConversation.data.conversations_data[0];
+                if (!currentConversations) {
+                  return currentConversations;
+                }
+                // utilising for loop with reverse indexing to make checks faster
+                let alreadyHasIt = false;
+                const currentConversationsLength = currentConversations?.length;
+                for (
+                  let index = currentConversationsLength - 1;
+                  index >= 0;
+                  index--
+                ) {
+                  const conversationObject = currentConversations[index];
+                  if (
+                    conversationObject.id.toString() ===
+                    targetConversationObject.id.toString()
+                  ) {
+                    alreadyHasIt = true;
+                    break;
+                  }
+                }
 
-                const alreadyHasIt = currentConversations?.some(
-                  (conversationObject) => {
-                    if (
-                      conversationObject.id.toString() ===
-                      targetConversationObject.id.toString()
-                    ) {
-                      return true;
-                    } else {
-                      return false;
-                    }
-                  },
-                );
                 if (alreadyHasIt) {
                   return currentConversations;
                 } else {
-                  return [
-                    ...(currentConversations || []),
-                    ...(targetConversation || []),
-                  ];
+                  const newConversationsList = transformConversations(
+                    currentConversations || [],
+                    targetConversation,
+                    true,
+                  );
+                  return newConversationsList;
                 }
               });
               setTimeout(() => {
@@ -516,7 +490,7 @@ export default function useConversations(): UseConversations {
                   block: "end",
                   inline: "nearest",
                 });
-              }, 500);
+              }, 100);
             })
             .catch(console.log);
         }
@@ -525,6 +499,9 @@ export default function useConversations(): UseConversations {
       }
     });
   }, [chatroomId, lmChatclient]);
+  useEffect(() => {
+    console.log("refreshed conversations");
+  }, [conversations]);
   useEffect(() => {
     console.log("\x1b[36m%s\x1b[0m", "Executing hook");
 

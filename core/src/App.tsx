@@ -28,13 +28,6 @@ import { generateToken, messaging } from "./notifications/firebase";
 import { onMessage } from "firebase/messaging";
 
 const LMAppLayout = () => {
-  useEffect(() => {
-    generateToken();
-    onMessage(messaging, (payload) => {
-      console.log("Message received. ", payload);
-    }
-  }, []);
-
   const lmChatClient = LMChatClient.setApiKey(
     "1b442bdc-bec5-4e08-bb41-e13debf97e00",
   )
@@ -48,7 +41,12 @@ const LMAppLayout = () => {
     username: "",
     isGuest: false,
   };
-
+  useEffect(() => {
+    generateToken();
+    onMessage(messaging, (payload) => {
+      console.log("Message received. ", payload);
+    });
+  }, []);
   return (
     <BrowserRouter>
       <LMClientOverlayProvider client={lmChatClient} userDetails={userDetails}>

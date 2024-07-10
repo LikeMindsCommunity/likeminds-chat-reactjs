@@ -164,7 +164,6 @@ function LMGroupChatChannelList() {
           scrollableTarget="lm-channel-list-explore"
         >
           {exploreGroupChatrooms?.map((chatroom) => {
-            console.log(chatroom);
             return (
               <div
                 className="channel-media"

@@ -58,6 +58,7 @@ const Input = () => {
     aprooveDMRequest,
     sendDMRequest,
     rejectDMRequest,
+    onTextInputKeyUpHandler,
   } = useInput();
   const { currentUser } = useContext(UserProviderContext);
   const { chatroom, conversationToReply } = useContext(LMChatChatroomContext);
@@ -144,6 +145,36 @@ const Input = () => {
       );
     }
   };
+  const renderAdditionalComponents = () => {
+    if (
+      chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
+      chatroom?.chatroom.chat_request_state.toString() !==
+        ChatRequestStates.APPROVED_STATE
+    ) {
+      return null;
+    } else {
+      return (
+        <>
+          <div className="lm-channel-icon lm-cursor-pointer">
+            <Emojis />
+          </div>
+          <div className="lm-channel-icon lm-cursor-pointer">
+            <AttachmentsSelector />
+          </div>
+          <div className="lm-channel-icon lm-cursor-pointer">
+            <img
+              src={giffyIcon}
+              alt="giffy"
+              onClick={() => {
+                setOpenGifCollapse(!openGifCollapse);
+              }}
+            />
+            {/* <GiSelector /> */}
+          </div>
+        </>
+      );
+    }
+  };
   const renderDMChatroomStatusComponents = () => {
     const currentChatroom = chatroom?.chatroom;
     const currentChatroomType = currentChatroom?.type;
@@ -154,23 +185,13 @@ const Input = () => {
     if (chatRequestState === null) {
       return null;
     }
-    // const targetDmUser =
-    //   currentChatroom?.member.id.toString() === currentUser?.id.toString()
-    //     ? currentChatroom?.chatroom_with_user
-    //     : currentChatroom?.member;
+
     const isRequestSender =
       chatroom?.chatroom.chat_requested_by?.id.toString() ===
       currentUser.id.toString()
         ? true
         : false;
-    // chatroom?.chatroom.chatroom_with_user?.id.toString() ===
-    // currentUser.id.toString()
-    //   ? false
-    //   : true;
-    console.log("isRequestSender", isRequestSender);
-    // if (targetDmUser?.id.toString() !== currentUser.id.toString()) {
-    //   isRequestSender = true;
-    // }
+
     switch (chatRequestState.toString()) {
       case ChatRequestStates.APPROVED_STATE: {
         return null;
@@ -181,7 +202,6 @@ const Input = () => {
         } else {
           return null;
         }
-        break;
       }
       case ChatRequestStates.PENDING_STATE: {
         if (isRequestSender) {
@@ -270,6 +290,7 @@ const Input = () => {
         aprooveDMRequest,
         rejectDMRequest,
         sendDMRequest,
+        onTextInputKeyUpHandler,
       }}
     >
       <div className="lm-channel-footer-wrapper">
@@ -338,37 +359,8 @@ const Input = () => {
           <MediaCarousel />
         </div>
 
-        {/* Message response  */}
-        {/* <div className="lm-response-block">
-          <div className="lm-response">
-            <div className="lm-res-name">User Name</div>
-            <div className="lm-res-msg">skdfj slkdfjslkdj fslkdfjlskfjd</div>
-          </div>
-          <div className="lm-response-cancel">
-            <IconButton onClick={() => {}}>
-              <ClearIcon fontSize="small" />
-            </IconButton>
-          </div>
-        </div> */}
-        {/* Message response  */}
-
         <div className="lm-channel-footer">
-          <div className="lm-channel-icon lm-cursor-pointer">
-            <Emojis />
-          </div>
-          <div className="lm-channel-icon lm-cursor-pointer">
-            <AttachmentsSelector />
-          </div>
-          <div className="lm-channel-icon lm-cursor-pointer">
-            <img
-              src={giffyIcon}
-              alt="giffy"
-              onClick={() => {
-                setOpenGifCollapse(!openGifCollapse);
-              }}
-            />
-            {/* <GiSelector /> */}
-          </div>
+          {renderAdditionalComponents()}
           {renderInputBoxComponent()}
           {/* <LMChatTextArea /> */}
         </div>

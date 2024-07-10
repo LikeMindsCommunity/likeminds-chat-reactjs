@@ -65,7 +65,7 @@ export function useInput(): UseInputReturns {
   const inputWrapperRef = useRef<HTMLDivElement | null>(null);
   const taggingListPageCount = useRef<number>(1);
   const chatroomInputTextRef = useRef<Record<string, string>>({});
-
+  const isShiftPressed = useRef<boolean>(false);
   // Gifs
   const [query, setQuery] = useState("");
   const [gifs, setGifs] = useState<Gif[]>([]);
@@ -73,12 +73,6 @@ export function useInput(): UseInputReturns {
   const [error, setError] = useState<string | null>(null);
   const [openGifCollapse, setOpenGifCollapse] = useState<boolean>(false);
   const apiKey = "9hQZNoy1wtM2b1T4BIx8B0Cwjaje3UUR";
-
-  // useEffect(() => {
-  //   // Fetch trending GIFs initially
-  //   const url = `https://api.giphy.com/v1/gifs/trending?api_key=${apiKey}&limit=10`;
-  //   fetchGifs(url);
-  // }, []);
 
   //   api calls
   const sendDMRequest = async (textMessage: string) => {
@@ -94,7 +88,7 @@ export function useInput(): UseInputReturns {
           detail: sendDmRequestCall.data.conversation,
         }),
       );
-      console.log(sendDmRequestCall);
+
       const newChatroom = { ...chatroom };
       if (newChatroom.chatroom && newChatroom.chatroom) {
         newChatroom.chatroom.chat_request_state = 0;
@@ -476,7 +470,9 @@ export function useInput(): UseInputReturns {
       return;
     }
     const textContentFocusNode = focusNode.textContent;
-
+    if (chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+      return;
+    }
     const tagOp = Utils.findTag(textContentFocusNode!);
 
     if (tagOp?.tagString !== null && tagOp?.tagString !== undefined) {
@@ -486,18 +482,20 @@ export function useInput(): UseInputReturns {
     }
   };
   const onTextInputKeydownHandler: onKeydownEvent = (change) => {
+    console.log(isShiftPressed.current);
     if (change.key === "Enter") {
-      change.preventDefault();
-      const selection = window.getSelection()!;
-      const range = selection.getRangeAt(0).cloneRange();
-      const p = document.createElement("p");
-      const br = document.createElement("br");
-      p.appendChild(br);
-      inputBoxRef?.current?.appendChild(p);
-      range.setStart(p, 0);
-      range.setEnd(p, 0);
-      selection.removeAllRanges();
-      selection.addRange(range);
+      if (!isShiftPressed.current) {
+        change.preventDefault();
+      }
+    }
+    if (change.key === "Shift") {
+      isShiftPressed.current = true;
+    }
+  };
+  const onTextInputKeyUpHandler: onKeyUpEvent = (change) => {
+    console.log(isShiftPressed.current);
+    if (change.key === "Shift") {
+      isShiftPressed.current = false;
     }
   };
   const addEmojiToText: TwoArgVoidReturns<EmojiData, MouseEvent> = (
@@ -627,6 +625,7 @@ export function useInput(): UseInputReturns {
     matchedTagMembersList,
     updateInputText,
     onTextInputKeydownHandler,
+    onTextInputKeyUpHandler,
     fetchMoreTags,
     clearTaggingList,
     addEmojiToText,
@@ -663,6 +662,7 @@ export interface UseInputReturns {
   inputText: string;
   updateInputText: onChangeUpdateInputText;
   onTextInputKeydownHandler: onKeydownEvent;
+  onTextInputKeyUpHandler: onKeyUpEvent;
   matchedTagMembersList: Member[];
   fetchMoreTags: boolean;
   clearTaggingList: ZeroArgVoidReturns;
@@ -697,6 +697,7 @@ export type onChangeUpdateInputText = (
   change: KeyboardEvent<HTMLDivElement>,
 ) => void;
 export type onKeydownEvent = (change: KeyboardEvent<HTMLDivElement>) => void;
+export type onKeyUpEvent = (change: KeyboardEvent<HTMLDivElement>) => void;
 export type ZeroArgVoidReturns = () => void;
 export type OneArgVoidReturns<T> = (arg: T) => void;
 export type TwoArgVoidReturns<T, S> = (argOne: T, ardTwo: S) => void;
