@@ -10,6 +10,8 @@ import uploadDoc from "../../assets/img/upload-doc.svg";
 import PollIcon from "../../assets/img/Location.png";
 import { useDialog } from "../../hooks/useDialog";
 import LMPollCreationDialog from "./LMPollCreationDialog";
+import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import { ChatroomTypes } from "../../enums/chatroom-types";
 
 const LMAttachmentsSelector = () => {
   const { openMenu, closeMenu, menuAnchor } = useMenu();
@@ -20,6 +22,7 @@ const LMAttachmentsSelector = () => {
     documentsMediaList,
   } = useContext(InputContext);
   const { openDialog, closeDialog, dialogOpen } = useDialog();
+  const { chatroom } = useContext(LMChatChatroomContext);
   return (
     <div className="attachment-selecter-wrapper">
       <Dialog open={dialogOpen} onClose={closeDialog}>
@@ -82,14 +85,16 @@ const LMAttachmentsSelector = () => {
           </label>
         </MenuItem>
         {/* Option for poll */}
-        <MenuItem className="lm-chat-input-attachment-label">
-          <label onClick={openDialog}>
-            <div>
-              <img src={PollIcon} alt="poll" />
-            </div>
-            <div className="title">Polls</div>
-          </label>
-        </MenuItem>
+        {chatroom?.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM && (
+          <MenuItem className="lm-chat-input-attachment-label">
+            <label onClick={openDialog}>
+              <div>
+                <img src={PollIcon} alt="poll" />
+              </div>
+              <div className="title">Polls</div>
+            </label>
+          </MenuItem>
+        )}
         {/* </div> */}
       </Menu>
       <img

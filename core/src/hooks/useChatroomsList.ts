@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useContext, useEffect, useState } from "react";
 import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
@@ -19,6 +20,8 @@ import UserProviderContext from "../context/UserProviderContext";
 import { onValue, ref } from "firebase/database";
 import { CustomActions } from "../customActions";
 import { CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
+import Conversation from "../types/models/conversations";
+import { GetSyncConversationsResponse } from "../types/api-responses/getSyncConversationsResponse";
 interface ChatroomProviderInterface {
   dmChatroomList: DMChannel[] | null;
   loadMoreDmChatrooms: boolean;
@@ -67,6 +70,23 @@ export default function useChatroomList(): ChatroomProviderInterface {
     useState<number>(1);
   const [loadMoreExploreGroupChatrooms, setLoadMoreExploreGroupChatrooms] =
     useState<boolean>(true);
+
+  // const chatroomOnLatestConversationUpdateListener = (newConversation: Conversation)=>{
+  //   setGroupChatrooms((currentGroupChatrooms) => {
+  //     return currentGroupChatrooms.map((chatroom) => {
+  //       if (chatroom.id.toString() === newConversation.chatroomId.toString()) {
+  //         chatroom.last_conversation_id = newConversation.id;
+  //         chatroom.last_message = newConversation.message;
+  //         chatroom.last_message_time = newConversation.created_at;
+  //         chatroom.last_message_sender_id = newConversation.sender_id;
+  //         chatroom.last_message_sender_name = newConversation.sender_name;
+  //         chatroom.unseen_count = chatroom.unseen_count + 1;
+  //       }
+  //       return chatroom;
+  //     });
+  //   });
+  // }
+
   const chatroolLeaveActionListener = useCallback((eventObject: Event) => {
     setGroupChatrooms((currentGroupChatroom) => {
       const chatroomId = (eventObject as CustomEvent).detail;
@@ -165,22 +185,60 @@ export default function useChatroomList(): ChatroomProviderInterface {
       console.log(error);
     }
   };
-  const refreshGroupChatrooms = useCallback((chatroomId: string | number) => {
-    setGroupChatrooms((groupChatrooms) => {
-      const groupChatroomsCopy = [...groupChatrooms];
-      const targetChatroom = groupChatroomsCopy.find((chatroom) => {
-        return chatroom.id.toString() === chatroomId.toString();
-      });
-      const newGroupChatroomsCopy = groupChatroomsCopy.filter((chatroom) => {
-        return chatroom.id.toString() !== chatroomId.toString();
-      });
-      if (targetChatroom) {
-        newGroupChatroomsCopy.unshift(targetChatroom);
-        return newGroupChatroomsCopy;
+  const refreshGroupChatrooms = useCallback(
+    (
+      chatroomId: string | number,
+      conversationData?: GetSyncConversationsResponse,
+    ) => {
+      if (conversationData) {
+        const {
+          conversations_data,
+
+          user_meta,
+          chatroom_meta,
+        } = conversationData.data;
+
+        const targetConversation = conversations_data[0];
+        setgroupChatroomConversationsMeta((currentConversationsMeta) => {
+          currentConversationsMeta = { ...currentConversationsMeta };
+          currentConversationsMeta[targetConversation.id] = targetConversation;
+          return currentConversationsMeta;
+        });
+        setgroupChatroomMember((currentMembersMeta) => {
+          currentMembersMeta = { ...currentMembersMeta };
+          currentMembersMeta[targetConversation.user_id] = user_meta[
+            targetConversation.user_id
+          ] as any;
+          return currentMembersMeta;
+        });
+        setGroupChatrooms((currentGroupChatrooms) => {
+          const groupChatroomsCopy = [...currentGroupChatrooms];
+          const targetChatroom = groupChatroomsCopy.find((chatroom) => {
+            return chatroom.id.toString() === chatroomId.toString();
+          });
+          const targetUpdatedChatroom = {
+            ...targetChatroom,
+            ...chatroom_meta[chatroomId.toString()],
+          };
+          targetUpdatedChatroom.last_conversation_id = targetConversation.id;
+          const newGroupChatroomsCopy = groupChatroomsCopy.filter(
+            (chatroom) => {
+              return chatroom.id.toString() !== chatroomId.toString();
+            },
+          );
+          if (targetUpdatedChatroom) {
+            newGroupChatroomsCopy.unshift(
+              targetUpdatedChatroom as unknown as any,
+            );
+            return newGroupChatroomsCopy;
+          }
+          return groupChatroomsCopy;
+        });
       }
-      return groupChatroomsCopy;
-    });
-  }, []);
+    },
+
+    [],
+  );
   const getExploreGroupChatrooms = async () => {
     try {
       const call: GetExploreChatroomsResponse =
@@ -202,32 +260,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
       console.log(error);
     }
   };
-  // async function getDmChannelList() {
-  //   try {
-  //     //
-  //     const dmChatroomList = await getDMChatroomsList();
-  //     setDmChatroomsPageCount(dmChatroomsPageCount + 1);
-  //     if (dmChatroomList.length === 0) {
-  //       setLoadMoreDmChatrooms(false);
-  //     }
-  //     const newDmChatroomsList = [...dmChatrooms!, ...dmChatroomList];
-  //     setDmChatrooms(newDmChatroomsList);
-  //   } catch (error) {
-  //     //
-  //   }
-  // }
-  // async function getDMChatroomsList() {
-  //   try {
-  //     const newChatrooms = await lmChatclient?.fetchDMFeed({
-  //       page: dmChatroomsPageCount,
 
-  //     });
-  //     console.log(newChatrooms);
-  //     return newChatrooms.data.dm_chatrooms;
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
   async function approveDMRequest(id: string) {
     try {
       const call = await lmChatclient?.inviteAction({
@@ -314,13 +347,25 @@ export default function useChatroomList(): ChatroomProviderInterface {
     const fb = lmChatclient?.fbInstance();
 
     const query = ref(fb, `community/${currentCommunity.id}`);
-    return onValue(query, (snapshot) => {
+    return onValue(query, async (snapshot) => {
       if (snapshot.exists()) {
+        console.log(snapshot.val());
         // log("the firebase val is");
         // log(snapshot.val());
         const chatroomId = snapshot.val().chatroom_id;
+        const conversationId = snapshot.val().conversation_id;
         // if (chatroomId != id) refreshHomeFeed();
-        refreshGroupChatrooms(chatroomId);
+        const chatroomConversationsCall: GetSyncConversationsResponse =
+          await lmChatclient?.getConversations({
+            chatroomId: parseInt(chatroomId!.toString()),
+            page: 1,
+            pageSize: 1,
+            conversationId: parseInt(conversationId?.toString() || ""),
+            minTimestamp: 0,
+            maxTimestamp: Date.now(),
+            isLocalDb: false,
+          });
+        refreshGroupChatrooms(chatroomId, chatroomConversationsCall);
       }
     });
   }, [currentCommunity, lmChatclient, refreshGroupChatrooms]);

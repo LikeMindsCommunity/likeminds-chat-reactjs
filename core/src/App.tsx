@@ -37,7 +37,12 @@ const LMAppLayout = () => {
     username: "Gaurav Rajput",
     isGuest: false,
   };
-
+  useEffect(() => {
+    generateToken();
+    onMessage(messaging, (payload) => {
+      console.log("Message received. ", payload);
+    });
+  }, []);
   return (
     <BrowserRouter>
       <LMClientOverlayProvider client={lmChatClient} userDetails={userDetails}>
