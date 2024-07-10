@@ -21,24 +21,20 @@ import {
   ROOT_PATH,
 } from "./shared/constants/lm.routes.constant";
 
-// import { LMChatProps } from "./types/prop-types/LMChatProps";
 import LMChatClient from "@likeminds.community/chat-js-beta";
-import { useEffect } from "react";
-import { generateToken, messaging } from "./notifications/firebase";
-import { onMessage } from "firebase/messaging";
+import { Toaster } from "react-hot-toast";
 
 const LMAppLayout = () => {
   const lmChatClient = LMChatClient.setApiKey(
-    "1b442bdc-bec5-4e08-bb41-e13debf97e00",
+    "5f567ca1-9d74-4a1b-be8b-a7a81fef796f",
   )
     .setPlatformCode("rt")
     .setVersionCode(40)
     .build();
 
   const userDetails = {
-    // uuid: "9d296adf-ee24-4d1a-a7e8-d7a7544e9573",
-    uuid: "dc41b498-9217-4b00-a658-e1807a105d08",
-    username: "",
+    uuid: "07012200-9c3c-4990-997e-bfde683d911b",
+    username: "Gaurav Rajput",
     isGuest: false,
   };
   useEffect(() => {
@@ -50,7 +46,7 @@ const LMAppLayout = () => {
   return (
     <BrowserRouter>
       <LMClientOverlayProvider client={lmChatClient} userDetails={userDetails}>
-        {/* <Outlet /> */}
+        <Toaster position="top-right" />
         <Routes>
           <Route path={ROOT_PATH} element={<LMChannel />}>
             <Route path={MODE + "/"} element={null} />
@@ -64,27 +60,6 @@ const LMAppLayout = () => {
                 </>
               }
             />
-
-            {/* <Route
-              path={CHANNEL_PATH + "/" + ID_PATH}
-              element={
-                <>
-                  <Header />
-                  <MessageList />
-                  <Input />
-                </>
-              }
-            />
-            <Route
-              path={DM_CHANNEL_PATH + "/" + ID_PATH}
-              element={
-                <>
-                  <Header />
-                  <MessageList />
-                  <Input />
-                </>
-              }
-            /> */}
             <Route
               path={PARTICIPANTS_PATH + "/" + ID_PATH}
               element={<LMParticipantList />}
