@@ -9,8 +9,8 @@ import Emojis from "./LMEmojis";
 import { Alert, Collapse, IconButton } from "@mui/material";
 import MediaCarousel from "./LMCarousel";
 import AttachmentsSelector from "./LMAttachmentsSelector";
-import giffyIcon from "../../assets/img/giffy.png";
-// import GiphySearch from "./GiphySearch";
+// import giffyIcon from "../../assets/img/giffy.png";
+import giffyIcon from "../../assets/img/gif.png";
 
 import GiphySearch from "./LMGiphySearch";
 import { useContext, useMemo, useState } from "react";
