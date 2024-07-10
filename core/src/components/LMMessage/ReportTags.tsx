@@ -45,7 +45,7 @@ const ReportTagsDialog = ({
         <div className="lmReportPostWrapper__header">
           Report Message
           <div className="lmReportPostWrapper__header__closeIcon">
-            <img src={canceIcon} alt="canceIcon" />
+            <img src={canceIcon} alt="canceIcon" onClick={closeDialog} />
           </div>
         </div>
 

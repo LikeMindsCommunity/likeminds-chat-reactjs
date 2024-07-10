@@ -26,12 +26,12 @@ const MediaRenderer = ({ attachments }) => {
   };
 
   const renderMedia = (attachment, index, isThumbnail = false) => {
-    if (!attachment || !attachment.url) {
+    if (!attachment || !attachment.file_url) {
       console.error(`Invalid attachment at index ${index}:`, attachment);
       return null;
     }
 
-    const fileType = attachment.url.split(".").pop().toLowerCase();
+    const fileType = attachment.file_url.split(".").pop().toLowerCase();
     const fileTypeOther = fileType.split("&")[0];
     const className = isThumbnail ? "thumbnail" : "carousel-media";
 
@@ -43,7 +43,7 @@ const MediaRenderer = ({ attachments }) => {
     ) {
       return (
         <img
-          src={attachment.url}
+          src={attachment.file_url}
           alt="img"
           key={index}
           className={className}
@@ -63,14 +63,14 @@ const MediaRenderer = ({ attachments }) => {
           onClick={() => handleShow(index)}
           onError={handleError}
         >
-          <source src={attachment.url} type={`video/${fileType}`} />
+          <source src={attachment.file_url} type={`video/${fileType}`} />
           Your browser does not support the video tag.
         </video>
       );
     } else if (fileType === "pdf") {
       return (
         <div key={index} className={className}>
-          <a href={attachment.url} target="_blank" className="pdf">
+          <a href={attachment.file_url} target="_blank" className="pdf">
             <img src={pdfIcon} alt="pdf" />
             {!isThumbnail && <div className="pdfName">{attachment.name}</div>}
           </a>

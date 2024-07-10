@@ -33,7 +33,8 @@ body {
 
 .lm-right-panel {
   flex: 0 0 75%;
-  height: 100%;
+  height: 100vh;
+  /* height: 100%; */
   /* background: url(../../core//src/assets/img/no-chat-selected.svg) no-repeat center center; */
 }
 
@@ -138,6 +139,7 @@ body {
   display: flex;
   justify-content: space-between;
   flex-direction: column;
+  position: relative;
 }
 
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-title {
@@ -152,6 +154,40 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+}
+
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-title .channel-counts {
+  display: flex;
+  align-items: center;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  color: #666666;
+  margin-top: 2px;
+}
+
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-title .channel-counts img {
+  margin: 0 5px 0 0;
+}
+
+.ellipse {
+  width: 3px;
+  height: 3px;
+  background: #9b9b9b;
+  border-radius: 50%;
+  margin: 0 4px;
+}
+
+.exploreTextMsg {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 20px;
+  color: #666;
+  margin-top: 5px;
+  white-space: nowrap;
+  max-width: 200px;
 }
 
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc .time {
@@ -224,12 +260,15 @@ body {
   width: 16px;
 }
 
-.channel-unseen-convo-count {
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-unseen-convo-count {
+  position: absolute;
+  right: 0;
+  top: 35px;
   height: 16px;
   width: 16px;
   overflow: hidden;
   border-radius: 50%;
-  background: #f00;
+  background: #09d174;
   font-size: 11px;
   justify-content: center;
   display: flex;
@@ -1815,7 +1854,6 @@ body {
   font-weight: 400;
   line-height: 20px;
   text-align: left;
-
 }
 
 .poll-advanced-options-container {
@@ -2344,6 +2382,12 @@ input.disabled-state {
   border-top: 1px solid #e0e0e0;
   max-height: 800px;
   overflow: auto;
+  max-height: 500px;
+  overflow: auto;
+  position: relative;
+  z-index: 12;
+  background: #fff;
+  box-shadow: 1px 1px 4px #ccc;
 }
 
 .lm-conversation-search-list-item {
@@ -2365,6 +2409,17 @@ input.disabled-state {
   display: flex;
   justify-content: center;
   align-items: center;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.search-conversation-member-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .search-conversation-content {

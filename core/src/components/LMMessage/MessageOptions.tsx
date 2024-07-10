@@ -23,13 +23,13 @@ function MessageOptions() {
   const { openDialog, dialogOpen, closeDialog } = useDialog();
 
   const options = [
-    {
-      title: ConversationActions.REPLY_ON_MESSAGE,
-      clickFunction: () => {
-        onReply();
-        closeMenu();
-      },
-    },
+    // {
+    //   title: ConversationActions.REPLY_ON_MESSAGE,
+    //   clickFunction: () => {
+    //     onReply();
+    //     closeMenu();
+    //   },
+    // },
     {
       title: ConversationActions.REPLY_PRIVATELY_ON_MESSAGE,
       clickFunction: () => {
