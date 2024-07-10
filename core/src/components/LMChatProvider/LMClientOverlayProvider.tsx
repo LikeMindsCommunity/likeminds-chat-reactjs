@@ -4,6 +4,7 @@ import GlobalClientProviderContext from "../../context/GlobalClientProviderConte
 import UserProviderContext from "../../context/UserProviderContext";
 import LoaderContextProvider from "../../context/LoaderContextProvider";
 import useUserProvider from "../../hooks/useUserProvider";
+import { Toaster } from "react-hot-toast";
 
 const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
   client,

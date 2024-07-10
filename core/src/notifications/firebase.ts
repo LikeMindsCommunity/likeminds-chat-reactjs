@@ -19,6 +19,8 @@ const vapidKey =
 const app = initializeApp(firebaseConfig);
 export const messaging = getMessaging(app);
 
+export const fcmToken = "";
+
 export const generateToken = async () => {
   const premision = await Notification.requestPermission();
   console.log(premision);
@@ -27,7 +29,6 @@ export const generateToken = async () => {
     const token = await getToken(messaging, {
       vapidKey: vapidKey,
     });
-
     console.log("Token: ", token);
   }
 };
