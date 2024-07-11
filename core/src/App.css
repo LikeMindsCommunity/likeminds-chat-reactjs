@@ -264,17 +264,17 @@ body {
   position: absolute;
   right: 0;
   top: 35px;
-  height: 16px;
-  width: 16px;
+  height: 18px;
+  width: 18px;
   overflow: hidden;
   border-radius: 50%;
   background: #09d174;
-  font-size: 11px;
+  font-size: 10px;
   justify-content: center;
   display: flex;
   align-items: center;
   color: #fff;
-  line-height: 17px;
+  line-height: 14px;
   font-weight: 400;
 }
 
@@ -987,8 +987,8 @@ body {
 .lm-participant-header {
   width: 100%;
   float: left;
-  background: #d0d8e2;
-  padding: 15px 20px;
+  background: #f6f7f9;
+  padding:19px 20px;
   border-bottom: 1px solid #dae1ee;
   display: flex;
   justify-content: space-between;
@@ -1074,6 +1074,27 @@ body {
   font-weight: 500;
   color: #000;
   line-height: 18px;
+}
+
+.member-search{
+  width: 100%;
+  padding: 15px 20px; 
+  border-bottom: 1px solid #e6ebf5;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #666;
+  /* margin-bottom: 20px; */
+  display: flex;
+  gap: 15px; 
+}
+.member-search input{
+  width: 90%;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  font-weight: 400;
+  color: #333333;
 }
 
 .lm-media {
