@@ -350,11 +350,8 @@ export default function useChatroomList(): ChatroomProviderInterface {
     return onValue(query, async (snapshot) => {
       if (snapshot.exists()) {
         console.log(snapshot.val());
-        // log("the firebase val is");
-        // log(snapshot.val());
         const chatroomId = snapshot.val().chatroom_id;
         const conversationId = snapshot.val().conversation_id;
-        // if (chatroomId != id) refreshHomeFeed();
         const chatroomConversationsCall: GetSyncConversationsResponse =
           await lmChatclient?.getConversations({
             chatroomId: parseInt(chatroomId!.toString()),

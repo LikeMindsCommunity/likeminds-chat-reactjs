@@ -451,7 +451,7 @@ export default function useConversations(): UseConversations {
                 return;
               setConversations((currentConversations) => {
                 const targetConversationObject =
-                  targetConversation.data.conversations_data[0];
+                  targetConversation?.data?.conversations_data[0];
                 if (!currentConversations) {
                   return currentConversations;
                 }

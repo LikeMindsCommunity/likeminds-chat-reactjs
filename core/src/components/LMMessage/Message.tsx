@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useContext } from "react";
 
 import ConversationStates from "../../enums/conversation-states";
@@ -31,13 +32,12 @@ const Message = () => {
   const { chatroom } = useContext(LMChatChatroomContext);
   const isSender = message?.member?.uuid === currentUser?.uuid;
   const messageClass = isSender ? "sender" : "receiver";
-  const { onDelete, onReport, onEdit, onReply, onReplyPrivately } =
-    useMessageOptions();
+  const { onReply } = useMessageOptions();
   const imageUrl = message?.member.imageUrl;
   const name = message?.member.name;
   const avatarContent = getAvatar({ imageUrl, name });
 
-  const handleImageError = (e) => {
+  const handleImageError = (e: any) => {
     e.target.src = linkImg; // Fallback image URL
     e.target.onerror = null; // Prevent infinite loop if the fallback also fails
   };
