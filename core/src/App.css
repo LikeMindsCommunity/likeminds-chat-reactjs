@@ -1905,7 +1905,7 @@ body {
 
 /* Poll View */
 .lm-poll {
-  width: 382px;
+  width: 320px !important;
 }
 
 .lm-poll .user-profile {
@@ -2018,9 +2018,10 @@ body {
   text-align: center;
   border: 1px solid #D0D8E2;
   border-radius: 10px;
-  color: black;
+  color: #333;
   margin-bottom: 15px;
   cursor: pointer;
+  font-size: 14px;
 }
 
 .lm-poll-response-add-option-dialog {
