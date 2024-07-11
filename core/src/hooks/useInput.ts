@@ -486,6 +486,7 @@ export function useInput(): UseInputReturns {
     if (change.key === "Enter") {
       if (!isShiftPressed.current) {
         change.preventDefault();
+        postMessage();
       }
     }
     if (change.key === "Shift") {

@@ -100,7 +100,7 @@ const Message = () => {
             <div className="name">{message?.member.name}</div>
           ) : null}
           <div className="lm-delete-msg">
-            {message.deleted_by_member.uuid === currentUser?.uuid
+            {message?.deleted_by_member?.uuid === currentUser?.uuid
               ? ConstantStrings.MESSAGE_DELETED_BY_SELF
               : ConstantStrings.MESSAGE_DELETED_NOT_BY_SELF}
           </div>
