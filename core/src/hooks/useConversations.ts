@@ -113,7 +113,7 @@ export default function useConversations(): UseConversations {
         if (conversation.state === ConversationStates.MICRO_POLL) {
           newConversation.polls = conv_polls_meta[
             conversation.id.toString()
-          ].map((poll) => {
+          ]?.map((poll) => {
             return {
               id: poll.id,
               is_selected: poll.is_selected,
