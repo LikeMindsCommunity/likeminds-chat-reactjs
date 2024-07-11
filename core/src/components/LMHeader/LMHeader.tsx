@@ -14,7 +14,7 @@ import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import UserProviderContext from "../../context/LMUserProviderContext";
 import LMConversationSearch from "../search/LMConversationSearch";
 
-const Header = () => {
+const LMHeader = () => {
   const { chatroom } = useContext(LMChatChatroomContext);
   const { currentUser } = useContext(UserProviderContext);
   const { onMute, onLeaveChatroom, onViewParticipants, onBlock, onUnBlock } =
@@ -157,4 +157,4 @@ const Header = () => {
   return renderHeaderComponents();
 };
 
-export default Header;
+export default LMHeader;
