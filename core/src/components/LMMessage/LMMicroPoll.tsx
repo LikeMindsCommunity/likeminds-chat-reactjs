@@ -50,7 +50,7 @@ const LMMicroPoll = () => {
           <div className="poll-icon">
             <img src={pollIcon} alt="Poll Icon" />
           </div>
-          <button className="ends">{`Ends in ${dayjs(message.expiry_time).fromNow()}`}</button>
+          <button className="ends">{`Ends ${dayjs(message.expiry_time).fromNow()}`}</button>
         </div>
         <div className="poll-title">{message.answer}</div>
         {message?.polls?.map((poll) => {
@@ -89,6 +89,16 @@ const LMMicroPoll = () => {
             </button>
           </div>
         )}
+
+        <div className="time">
+          {message.is_edited ? (
+            <>
+              <div className="error-message">Edited</div>
+              <div className="edited-bullet">&nbsp;</div>
+            </>
+          ) : null}
+          {message?.created_at}
+        </div>
       </div>
 
       <Dialog open={dialogOpen} onClose={closeDialog}>
