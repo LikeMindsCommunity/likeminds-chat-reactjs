@@ -53,7 +53,7 @@ const LMMicroPoll = () => {
           <button className="ends">{`Ends in ${dayjs(message.expiry_time).fromNow()}`}</button>
         </div>
         <div className="poll-title">{message.answer}</div>
-        {message.polls.map((poll) => {
+        {message?.polls?.map((poll) => {
           return (
             <div className={`pollOptions lm-cursor-pointer`} key={poll.id}>
               <div
