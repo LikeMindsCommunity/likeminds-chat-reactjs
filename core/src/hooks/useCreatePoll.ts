@@ -9,11 +9,14 @@ import ConversationStates from "../enums/conversation-states";
 import { useParams } from "react-router-dom";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { SelectChangeEvent } from "@mui/material";
+import LoaderContextProvider from "../context/LoaderContextProvider";
+import { PollMessages } from "../enums/poll-messages";
 
 export function useCreatePoll(closeDialog?: ZeroArgVoidReturns): UseCreatePoll {
   const { id: chatroomId } = useParams();
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { conversationToReply } = useContext(LMChatChatroomContext);
+  const { openSnackbar } = useContext(LoaderContextProvider);
   const [pollText, setPollText] = useState<string>("");
   const [advancedPollOptions, setAdvancedPollOptions] =
     useState<AdvancedPollOptions>({
@@ -112,6 +115,32 @@ export function useCreatePoll(closeDialog?: ZeroArgVoidReturns): UseCreatePoll {
   const createPollConversation = async () => {
     // createPollConversation
     try {
+      if (openSnackbar) {
+        if (pollText.length === 0) {
+          openSnackbar(PollMessages.POLL_WITH_EMPTY_TEXT_NOT_ALLOWED);
+          return;
+        }
+        if (pollOptions.length < 2) {
+          openSnackbar(PollMessages.POLL_SHOULD_HAVE_AT_LEAST_TWO_OPTIONS);
+          return;
+        }
+        const emptyOption = pollOptions.find((option) => option.text === "");
+        if (emptyOption) {
+          openSnackbar(PollMessages.POLL_CANNOT_BE_CREATED_WITH_EMPTY_OPTIONS);
+          return;
+        }
+        const pollOptionsMap: Record<string, PollOption> = {};
+        for (const option of pollOptions) {
+          const optionText = option.text;
+          const existingOption = pollOptionsMap[optionText];
+          if (existingOption) {
+            openSnackbar(PollMessages.POLL_OPTIONS_SHOULD_BE_UNIQUE);
+            return;
+          } else {
+            pollOptionsMap[optionText] = option;
+          }
+        }
+      }
       const call = await lmChatclient?.postPollConversation({
         chatroomId: parseInt(chatroomId!),
         state: ConversationStates.MICRO_POLL,

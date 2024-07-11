@@ -23,13 +23,13 @@ export const fcmToken = "";
 
 export const generateToken = async () => {
   const premision = await Notification.requestPermission();
-  console.log(premision);
+  // console.log(premision);
 
   if (premision === "granted") {
     const token = await getToken(messaging, {
       vapidKey: vapidKey,
     });
-    console.log("Token: ", token);
+    return token;
   }
 };
 

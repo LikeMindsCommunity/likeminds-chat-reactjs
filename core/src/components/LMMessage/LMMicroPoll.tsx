@@ -11,6 +11,8 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs"; // Assuming you are u
 import "react-tabs/style/react-tabs.css";
 import modalCancelIcon from "../../assets/img/cancel-icon.svg";
 import pollIcon from "../../assets/img/poll-icon.svg";
+import UserProviderContext from "../../context/UserProviderContext";
+import { getAvatar } from "../../shared/components/LMUserMedia";
 
 dayjs.extend(relativeTime);
 const LMMicroPoll = () => {
@@ -29,15 +31,17 @@ const LMMicroPoll = () => {
   const [tabIndex, setTabIndex] = useState(0);
   // const { openVoteCountDialog, voteCountDialogOpen, closeVoteCountDialog } =
   //   useDialog();
-
-  const [value, setValue] = React.useState("1");
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
-  };
+  const { currentUser } = useContext(UserProviderContext);
+  const isSender = message?.member?.uuid === currentUser?.uuid;
+  const messageClass = isSender ? "sender" : "receiver";
+  const imageUrl = message?.member.imageUrl;
+  const name = message?.member.name;
+  const avatarContent = getAvatar({ imageUrl, name });
 
   return (
-    <div className="conversation reciever">
-      <div className="lm-poll">
+    <div className={`lm-chat-card  ${messageClass}  `}>
+      {!isSender ? <div className="lmUserData">{avatarContent}</div> : null}
+      <div className={`conversation lm-poll  ${messageClass}`}>
         <div className="user-profile">
           <div className="name">{message.member.name}</div>
           <div className="info">{message.poll_type_text}</div>
@@ -46,10 +50,10 @@ const LMMicroPoll = () => {
           <div className="poll-icon">
             <img src={pollIcon} alt="Poll Icon" />
           </div>
-          <button className="ends">{`Ends in ${dayjs(message.expiry_time).fromNow()}`}</button>
+          <button className="ends">{`Ends ${dayjs(message.expiry_time).fromNow()}`}</button>
         </div>
         <div className="poll-title">{message.answer}</div>
-        {message.polls.map((poll) => {
+        {message?.polls?.map((poll) => {
           return (
             <div className={`pollOptions lm-cursor-pointer`} key={poll.id}>
               <div
@@ -85,6 +89,16 @@ const LMMicroPoll = () => {
             </button>
           </div>
         )}
+
+        <div className="time">
+          {message.is_edited ? (
+            <>
+              <div className="error-message">Edited</div>
+              <div className="edited-bullet">&nbsp;</div>
+            </>
+          ) : null}
+          {message?.created_at}
+        </div>
       </div>
 
       <Dialog open={dialogOpen} onClose={closeDialog}>

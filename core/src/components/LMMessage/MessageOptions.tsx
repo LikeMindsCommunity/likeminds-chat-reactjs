@@ -83,26 +83,7 @@ function MessageOptions() {
           ) {
             return null;
           }
-          // if (
-          //   (option.title === "Reply Privately" &&
-          //     generalContext.currentChatroom?.type !== 7 &&
-          //     generalContext.currentChatroom?.type !== 0 &&
-          //     chatroomContext.showReplyPrivately) ||
-          //   (option.title === "Reply Privately" && mode === "direct-messages")
-          // ) {
-          //   return null;
-          // }
-          // if (option.title === "Reply Privately") {
-          //   if (convoObject.member?.id === userContext.currentUser?.id) {
-          //     return null;
-          //   }
-          //   if (
-          //     chatroomContext.replyPrivatelyMode === 2 &&
-          //     convoObject?.member?.state === 4
-          //   ) {
-          //     return null;
-          //   }
-          // }
+
           if (
             option.title === ConversationActions.REPLY_PRIVATELY_ON_MESSAGE &&
             message.member.id.toString() === currentUser?.id.toString() &&
@@ -116,6 +97,9 @@ function MessageOptions() {
               canUserReplyPrivately ===
                 ReplyDmQueries.REPLY_PRIVATELY_ALLOWED_TO_COMMUNITY_MANAGERS
             ) {
+              return null;
+            }
+            if (message.member.id.toString() === currentUser?.id.toString()) {
               return null;
             }
           }
