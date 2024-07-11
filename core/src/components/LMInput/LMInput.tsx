@@ -3,27 +3,25 @@ import ClearIcon from "@mui/icons-material/Clear";
 
 import sendIcon from "../../assets/img/send.svg";
 import { useInput } from "../../hooks/useInput";
-import InputContext from "../../context/InputContext";
+import InputContext from "../../context/LMInputContext";
 import LMChatTextArea from "./LMChatTextArea";
 import Emojis from "./LMEmojis";
 import { Alert, Collapse, IconButton } from "@mui/material";
 import MediaCarousel from "./LMCarousel";
 import AttachmentsSelector from "./LMAttachmentsSelector";
-// import giffyIcon from "../../assets/img/giffy.png";
 import giffyIcon from "../../assets/img/gif.png";
 
 import GiphySearch from "./LMGiphySearch";
 import { useContext, useMemo, useState } from "react";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
-import UserProviderContext from "../../context/UserProviderContext";
-import { MemberType } from "../../enums/member-type";
-import { ConstantStrings } from "../../enums/common-strings";
-import MessageReplyCollapse from "./MessageReplyCollapse";
-import { ChatroomTypes } from "../../enums/chatroom-types";
-// import { ReplyDmQueries } from "../../enums/reply-dm-queries";
-import { ChatRequestStates } from "../../enums/chat-request-states";
+import UserProviderContext from "../../context/LMUserProviderContext";
+import { MemberType } from "../../enums/lm-member-type";
+import { ConstantStrings } from "../../enums/lm-common-strings";
+import { ChatroomTypes } from "../../enums/lm-chatroom-types";
+import { ChatRequestStates } from "../../enums/lm-chat-request-states";
+import LMMessageReplyCollapse from "./LMMessageReplyCollapse";
 
-const Input = () => {
+const LMInput = () => {
   const {
     inputBoxRef,
     inputWrapperRef,
@@ -344,7 +342,7 @@ const Input = () => {
             background: "#D0D8E3",
           }}
         >
-          <MessageReplyCollapse />
+          <LMMessageReplyCollapse />
         </Collapse>
         {/* Collapsable for dm chatroom status component */}
         <Collapse
@@ -376,4 +374,4 @@ const Input = () => {
   );
 };
 
-export default Input;
+export default LMInput;

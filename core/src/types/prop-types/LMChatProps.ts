@@ -1,4 +1,4 @@
-import { UserDetails } from "../../context/GlobalClientProviderContext";
+import { UserDetails } from "../../context/LMGlobalClientProviderContext";
 import { LMClient } from "../DataLayerExportsTypes";
 
 export interface LMChatProps {

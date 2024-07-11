@@ -1,9 +1,9 @@
 import React, { useContext, useMemo, useState } from "react";
-import LMMessageContext from "../../context/MessageContext";
+import LMMessageContext from "../../context/LMMessageContext";
 import { Reaction } from "../../types/models/conversations";
 import { useDialog } from "../../hooks/useDialog";
 import { Dialog, Tab, Tabs } from "@mui/material";
-import { ConstantStrings } from "../../enums/common-strings";
+import { ConstantStrings } from "../../enums/lm-common-strings";
 import { useReactions } from "../../hooks/useReactions";
 import cancelIcon from "../../assets/img/cancel-icon.svg";
 

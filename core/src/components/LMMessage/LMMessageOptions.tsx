@@ -2,16 +2,16 @@ import React, { useContext } from "react";
 import { useMessageOptions } from "../../hooks/useMessageOptions";
 import { useMenu } from "../../hooks/useMenu";
 import { Dialog, Menu, MenuItem } from "@mui/material";
-import LMMessageContext from "../../context/MessageContext";
-import UserProviderContext from "../../context/UserProviderContext";
+import LMMessageContext from "../../context/LMMessageContext";
+import UserProviderContext from "../../context/LMUserProviderContext";
 import { useDialog } from "../../hooks/useDialog";
-import ReportTagsDialog from "./ReportTags";
+import ReportTagsDialog from "./LMReportTags";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { ConversationActions } from "../../enums/message-options";
+import { ConversationActions } from "../../enums/lm-message-options";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
-import { ReplyDmQueries } from "../../enums/reply-dm-queries";
-import { MemberType } from "../../enums/member-type";
-import { ChatroomTypes } from "../../enums/chatroom-types";
+import { ReplyDmQueries } from "../../enums/lm-reply-dm-queries";
+import { MemberType } from "../../enums/lm-member-type";
+import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 
 function MessageOptions() {
   const { message } = useContext(LMMessageContext);

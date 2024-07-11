@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useMenu } from "../../hooks/useMenu";
 import { Dialog, Menu, MenuItem } from "@mui/material";
-import InputContext from "../../context/InputContext";
+import InputContext from "../../context/LMInputContext";
 
 // Icons
 import attachmentIcon from "../../assets/img/attachment.svg";
@@ -11,7 +11,7 @@ import PollIcon from "../../assets/img/Location.png";
 import { useDialog } from "../../hooks/useDialog";
 import LMPollCreationDialog from "./LMPollCreationDialog";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
-import { ChatroomTypes } from "../../enums/chatroom-types";
+import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 
 const LMAttachmentsSelector = () => {
   const { openMenu, closeMenu, menuAnchor } = useMenu();

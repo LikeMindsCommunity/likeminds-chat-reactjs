@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
+import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { ZeroArgVoidReturns } from "./useInput";

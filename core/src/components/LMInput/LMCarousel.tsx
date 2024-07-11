@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import InputContext from "../../context/InputContext";
+import InputContext from "../../context/LMInputContext";
 import { FileType } from "../../types/enums/Filetype";
 import { Carousel } from "react-responsive-carousel";
 import CloseIcon from "@mui/icons-material/Close";

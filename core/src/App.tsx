@@ -11,7 +11,7 @@ import "./App.css";
 import LMParticipantList from "./components/LMParticipant/LMParticipantList";
 import Header from "./components/LMHeader/LMHeader";
 import MessageList from "./components/LMMessageList/LMMessageList";
-import Input from "./components/LMInput/Input";
+import LMInput from "./components/LMInput/LMInput";
 import LMChannel from "./components/LMChannel/LMChannel";
 import {
   CHANNEL_PATH,
@@ -51,7 +51,7 @@ const LMAppLayout = () => {
                 <>
                   <Header />
                   <MessageList />
-                  <Input />
+                  <LMInput />
                 </>
               }
             />
@@ -82,7 +82,7 @@ export const appRoute = createBrowserRouter([
               <>
                 <Header />
                 <MessageList />
-                <Input />
+                <LMInput />
               </>
             ),
           },

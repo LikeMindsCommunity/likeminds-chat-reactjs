@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { PropsWithChildren, useState } from "react";
 import { LMChatProps } from "../../types/prop-types/LMChatProps";
-import GlobalClientProviderContext from "../../context/GlobalClientProviderContext";
-import UserProviderContext from "../../context/UserProviderContext";
-import LoaderContextProvider from "../../context/LoaderContextProvider";
+import GlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
+import UserProviderContext from "../../context/LMUserProviderContext";
+import LoaderContextProvider from "../../context/LMLoaderContextProvider";
 import useUserProvider from "../../hooks/useUserProvider";
 import { Snackbar } from "@mui/material";
 

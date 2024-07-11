@@ -8,20 +8,20 @@ import React, {
   useRef,
   useState,
 } from "react";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
+import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import { onValue, ref } from "firebase/database";
-import { CONVERSATIONS_PAGINATE_BY } from "../constants/Constants";
-import LoaderContextProvider from "../context/LoaderContextProvider";
+import { CONVERSATIONS_PAGINATE_BY } from "../constants/LMConstants";
+import LoaderContextProvider from "../context/LMLoaderContextProvider";
 import Conversation from "../types/models/conversations";
-import UserProviderContext from "../context/UserProviderContext";
+import UserProviderContext from "../context/LMUserProviderContext";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { useParams } from "react-router-dom";
 import { CustomActions } from "../customActions";
 import { ZeroArgVoidReturns } from "./useInput";
-import { ChatroomAction } from "../enums/chatroom-actions";
+import { ChatroomAction } from "../enums/lm-chatroom-actions";
 import { ChatroomCollabcard } from "../types/api-responses/getChatroomResponse";
 import { GetSyncConversationsResponse } from "../types/api-responses/getSyncConversationsResponse";
-import ConversationStates from "../enums/conversation-states";
+import ConversationStates from "../enums/lm-conversation-states";
 
 interface UseConversations {
   conversations: Conversation[] | null;
