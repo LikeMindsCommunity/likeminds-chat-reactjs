@@ -105,8 +105,10 @@ export default function useUserProvider(
         if (validateUserCall && memberStateCall?.success) {
           const user = {
             ...validateUserCall.data?.user,
-            ...memberStateCall.data.member,
           };
+          user.state = memberStateCall.data.state;
+          user.memberRights = memberStateCall.data.member_rights;
+          console.log(user);
           setLmChatUser(user || null);
           setLmChatUserCurrentCommunity(
             validateUserCall?.data?.community || null,
@@ -153,8 +155,9 @@ export default function useUserProvider(
         if (initiateUserCall.success && memberStateCall.success) {
           const user = {
             ...initiateUserCall.data?.user,
-            ...memberStateCall.data.member,
           };
+          user.state = memberStateCall.data.state;
+          user.memberRights = memberStateCall.data.member_rights;
           console.log(user);
           setLmChatUser(user || null);
           setLmChatUserCurrentCommunity(
