@@ -92,6 +92,7 @@ export default function useChatroom(): UseChatroom {
     async function fetchChannel() {
       try {
         // get the chatroom details
+        if (!chatroomId) return;
         const newChatroom = await getChatroomDetails();
         setChatroom(newChatroom);
         // set the loader to false

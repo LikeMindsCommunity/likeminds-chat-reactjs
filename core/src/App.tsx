@@ -23,8 +23,11 @@ import {
 
 import LMChatClient from "@likeminds.community/chat-js-beta";
 import { Toaster } from "react-hot-toast";
-import { UserDetails } from "./context/GlobalClientProviderContext";
-import { LMCoreCallbacks } from "./LMSDKCoreCallbacks";
+
+import {
+  LMCoreCallbacks,
+  LMSDKCallbacksImplementations,
+} from "./LMSDKCoreCallbacks";
 import { useState } from "react";
 
 const LMAppLayout = () => {
@@ -36,10 +39,14 @@ const LMAppLayout = () => {
     isGuest?: boolean;
     apiKey?: string;
   }>({
-    apiKey: "1b442bdc-bec5-4e08-bb41-e13debf97e00",
-    isGuest: false,
-    uuid: "a6c65e80-e4f9-407a-9e1e-6f67aa362ab9",
-    username: "kurama",
+    // apiKey: "1b442bdc-bec5-4e08-bb41-e13debf97e00",
+    // isGuest: false,
+    // uuid: "a6c65e80-e4f9-407a-9e1e-6f67aa362ab9",
+    // username: "kurama",
+    accessToken:
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoic2ZoUU12b1c3RmdMMHl0d1lRckFPcU1pbGUrRFJqTzBJa3NCRnp2bXZBeGV2ZzhFblBoZ3JEZFFUejBPS3JlRXFVQlhOVUVLQTd6QWhoWEpjY1dHQzBISFZ0cUhkVXRFNENKV2w3U3RUOFhLOXArRGNKNXR3OVg1N250SWNGR0lVWUFKL0M0Y1M0VzU5QjdpbWVNenVLeTRRL0tXYmFna04rSDlJODZMdmE3Ym1aZlZBUVp3Z09FaWVrMkYzVjF0ZVVzeUNZbVFwUkR4ZlN3Qk0zU2pzenBYckUwRkFjK2pycXdNWElVejZKQTU1QldNNms3UXhaWnhGWmtqd3NvdEtwRE0yUWJ0a20rRnJ1U2oiLCJleHAiOjE3MjA3NzQ1MTl9.gfp_Ssoho5ZKYUlT_HdgFpWy9hX-axWudjC_FCisBo8",
+    refreshToken:
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoieWUyenZVVklEN0hUbS9HTHA2Q2UzWi8rajE2SUJVMlFpbzZHYmxORFZLYWVpVVhQc0xFTXUvZ0pJQzBvVTlWSkpMU1JwYWpGajAvNTdqdjRBK3lMaTYvam1GOHZuZk5LSDhNamNuZDArdENoQ1p4ZS9ZSzhqTHBTT3NJWk82UWMySmFMakxXMno5MmRkVU5FcjZOR3FiRG1LRmFrWHBDMlJFVEZFaFJkaHYwaDFaYkhHb1F3NENCOGh1c3owdmtPUXdRL2dqYnBhQ2RnbGlzRHg5OXNLNW5EWHVxK0dINkRmTjNvN0FpWDlHSGJ2OXB2aml5bFNhUUh0akFhQ1NZemRyK3NDTDBVYnNTckU0cVVCQT09IiwiZXhwIjoxNzIwNzc0NTc5fQ.c_tyIirTtGtLG-1VW2x9GeHlun-GyzXrf80hTcwsoCI",
   });
   const LMCORECALLBACKS = new LMCoreCallbacks(
     (a: string, b: string) => {
@@ -51,10 +58,10 @@ const LMAppLayout = () => {
     },
     async () => {
       const myHeaders = new Headers();
-      myHeaders.append("x-api-key", "");
+      myHeaders.append("x-api-key", "1b442bdc-bec5-4e08-bb41-e13debf97e00");
       myHeaders.append("x-platform-code", "rt");
-      myHeaders.append("x-version-code", "1");
-      myHeaders.append("x-sdk-source", "feed");
+      myHeaders.append("x-version-code", "40");
+      myHeaders.append("x-sdk-source", "chat");
       myHeaders.append("Content-Type", "application/json");
 
       interface RequestBody {
@@ -62,13 +69,15 @@ const LMAppLayout = () => {
         user_unique_id: string;
         token_expiry_beta: number;
         rtm_token_expiry_beta: number;
+        is_guest?: boolean;
       }
 
       const raw: RequestBody = {
         user_name: "",
-        user_unique_id: "",
-        token_expiry_beta: 2,
-        rtm_token_expiry_beta: 4,
+        is_guest: false,
+        user_unique_id: "a6c65e80-e4f9-407a-9e1e-6f67aa362ab9",
+        token_expiry_beta: 1,
+        rtm_token_expiry_beta: 2,
       };
 
       const requestOptions: RequestInit = {
@@ -84,7 +93,7 @@ const LMAppLayout = () => {
           requestOptions,
         );
         const result_1 = await response.json();
-
+        console.log(result_1);
         return {
           accessToken: result_1.data.access_token,
           refreshToken: result_1.data.refresh_token,
@@ -100,11 +109,11 @@ const LMAppLayout = () => {
     },
   );
 
-  const lmChatClient = LMChatClient.setLMSDKCallbacks(LMCORECALLBACKS)
-    .setPlatformCode("rt")
+  const lmChatClient = LMChatClient.setPlatformCode("rt")
     .setVersionCode(40)
     .build();
-
+  const sdk = new LMSDKCallbacksImplementations(LMCORECALLBACKS, lmChatClient);
+  lmChatClient.setLMSDKCallbacks(sdk);
   return (
     <BrowserRouter>
       <LMClientOverlayProvider client={lmChatClient} userDetails={userDetails}>

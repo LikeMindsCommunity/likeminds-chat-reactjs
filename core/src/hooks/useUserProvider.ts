@@ -91,9 +91,11 @@ export default function useUserProvider(
         const validateUserCall = await lmChatclient?.validateUser({
           accessToken: localAccessToken,
           refreshToken: localRefreshToken,
+          tokenExpiryBeta: 1,
+          rtmTokenExpiryBeta: 2,
         });
-        console.log;
-        console.log(validateChatUser);
+
+        console.log(validateUserCall);
         if (validateUserCall.success) {
           // Setting tokens in local storage
           setTokensInLocalStorage(localAccessToken, localRefreshToken);
@@ -137,13 +139,17 @@ export default function useUserProvider(
           userName: username,
           isGuest: isGuest,
           apiKey: apiKey,
+          tokenExpiryBeta: 1,
+          rtmTokenExpiryBeta: 2,
         });
         console.log(initiateUserCall);
         if (initiateUserCall.success) {
           // Setting the tokens, API key and User in local storage
+          console.log(initiateUserCall.data?.access_token);
+          console.log(initiateUserCall.data?.refresh_token);
           setTokensInLocalStorage(
-            initiateUserCall.data?.accessToken || "",
-            initiateUserCall.data?.refreshToken || "",
+            initiateUserCall.data?.access_token || "",
+            initiateUserCall.data?.refresh_token || "",
           );
           lmChatclient?.setApiKeyInLocalStorage(apiKey);
           lmChatclient?.setUserInLocalStorage(
@@ -164,8 +170,8 @@ export default function useUserProvider(
             initiateUserCall?.data?.community || null,
           );
           return {
-            accessToken: initiateUserCall.data?.accessToken,
-            refreshToken: initiateUserCall.data?.refreshToken,
+            accessToken: initiateUserCall.data?.access_token,
+            refreshToken: initiateUserCall.data?.refresh_token,
           };
         }
       } catch (error) {
@@ -222,27 +228,13 @@ export default function useUserProvider(
       CustomActions.TRIGGER_SET_USER,
       // setUser,
       () => {
-        const user = lmChatclient?.getUserFromLocalStorage();
-        const { uuid, name, isGuest } = JSON.parse(user);
-        initiateFeedUser(
-          lmChatclient?.getApiKeyFromLocalStorage(),
-          uuid,
-          name,
-          isGuest,
-        );
+        setUser();
       },
     );
     setUser();
     return () => {
       document.removeEventListener(CustomActions.TRIGGER_SET_USER, () => {
-        const user = lmChatclient?.getUserFromLocalStorage();
-        const { uuid, name, isGuest } = JSON.parse(user);
-        initiateFeedUser(
-          lmChatclient?.getApiKeyFromLocalStorage(),
-          uuid,
-          name,
-          isGuest,
-        );
+        setUser();
       });
     };
   }, [lmChatclient, userDetails]);
