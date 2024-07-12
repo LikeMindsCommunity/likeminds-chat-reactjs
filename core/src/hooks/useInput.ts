@@ -619,6 +619,20 @@ export function useInput(): UseInputReturns {
     return () => clearTimeout(checkForLinksTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lmChatclient, inputText]);
+  useEffect(() => {
+    return () => {
+      setConversationToEdit(null);
+      setConversationToReply(null);
+      setDocumentMediaList(null);
+      setImagesAndVideosMediaList(null);
+      setGifMedia(null);
+      setFetchMoreTags(true);
+      setMatchedTagMembersList([]);
+      setInputText("");
+      setOgTags(null);
+      setOpenGifCollapse(false);
+    };
+  }, [chatroomId, setConversationToEdit, setConversationToReply]);
   return {
     inputBoxRef,
     inputWrapperRef,
