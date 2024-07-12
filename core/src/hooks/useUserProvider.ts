@@ -59,8 +59,6 @@ export default function useUserProvider(
         const validateUserCall = await lmChatclient?.validateUser({
           accessToken: localAccessToken,
           refreshToken: localRefreshToken,
-          tokenExpiryBeta: 1,
-          rtmTokenExpiryBeta: 2,
         });
         if (validateUserCall.success) {
           // Setting tokens in local storage
@@ -104,8 +102,6 @@ export default function useUserProvider(
           userName: username,
           isGuest: isGuest,
           apiKey: apiKey,
-          tokenExpiryBeta: 1,
-          rtmTokenExpiryBeta: 2,
         });
         if (initiateUserCall.success) {
           // Setting the tokens, API key and User in local storage

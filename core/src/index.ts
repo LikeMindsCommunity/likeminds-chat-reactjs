@@ -25,7 +25,7 @@ import DmReqBlock from "./components/LMMessageList/LMDMReqBlock";
 import LMMessageMiddleware from "./components/LMMessageList/LMMessageMiddleware";
 import LMMessageList from "./components/LMMessageList/LMMessageList";
 import LMParticipantList from "./components/LMParticipant/LMParticipantList";
-import LMAppLayout from "./old_App";
+
 import LMDMChatChannels from "./components/LMChannelList/LMDMChatChannels";
 import LMJoinedDMChannelTile from "./components/LMChannelList/LMJoinedDMChannelTile";
 import LMMessageReplyCollapse from "./components/LMInput/LMMessageReplyCollapse";
@@ -72,7 +72,6 @@ import { LMCoreCallbacks } from "./LMSDKCoreCallbacks";
 export {
   LMInput,
   LMHeader,
-  LMAppLayout,
   LMChannel,
   LMChatChatroom,
   ScrollContainer,
