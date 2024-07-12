@@ -35,7 +35,12 @@ const LMAppLayout = () => {
     username?: string;
     isGuest?: boolean;
     apiKey?: string;
-  }>({});
+  }>({
+    apiKey: "5f567ca1-9d74-4a1b-be8b-a7a81fef796f",
+    isGuest: false,
+    uuid: "07012200-9c3c-4990-997e-bfde683d911b",
+    username: "Gaurav Rajput",
+  });
   const LMCORECALLBACKS = new LMCoreCallbacks(
     (a: string, b: string) => {
       setUserDetails((userDetails) => {
@@ -95,17 +100,10 @@ const LMAppLayout = () => {
     },
   );
 
-  const lmChatClient = LMChatClient.setLMSDKCallbacks()
+  const lmChatClient = LMChatClient.setLMSDKCallbacks(LMCORECALLBACKS)
     .setPlatformCode("rt")
     .setVersionCode(40)
     .build();
-
-  const userDetails: UserDetails = {
-    uuid: "07012200-9c3c-4990-997e-bfde683d911b",
-    username: "Gaurav Rajput",
-    isGuest: false,
-    apiKey: "5f567ca1-9d74-4a1b-be8b-a7a81fef796f",
-  };
 
   return (
     <BrowserRouter>

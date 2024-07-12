@@ -292,6 +292,10 @@ const LMInput = () => {
       }}
     >
       <div className="lm-channel-footer-wrapper">
+        {/* Collapseable  for Edit message*/}
+        <Collapse in={Boolean(conversationToReply)}>
+          <div className="div">This is the collapse for edit feature</div>
+        </Collapse>
         {/* Collapseable for OG Tags */}
         <Collapse
           in={Boolean(ogTag)}

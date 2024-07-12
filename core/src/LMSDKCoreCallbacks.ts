@@ -43,6 +43,7 @@ export class LMSDKCallbacksImplementations extends LMSDKCallbacks {
         userUniqueId: uuid,
         isGuest: isGuest,
         userName: name,
+        apiKey: this.client.getApiKeyFromLocalStorage(),
       });
       if (initiateUserCall.success) {
         this.setTokensInLocalStorage(

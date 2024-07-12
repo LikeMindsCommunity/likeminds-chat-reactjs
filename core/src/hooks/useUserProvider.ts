@@ -92,6 +92,7 @@ export default function useUserProvider(
           accessToken: localAccessToken,
           refreshToken: localRefreshToken,
         });
+        console.log;
         console.log(validateChatUser);
         if (validateUserCall.success) {
           // Setting tokens in local storage
@@ -133,6 +134,7 @@ export default function useUserProvider(
           userUniqueId: uuid,
           userName: username,
           isGuest: isGuest,
+          apiKey: apiKey,
         });
         console.log(initiateUserCall);
         if (initiateUserCall.success) {
@@ -188,17 +190,23 @@ export default function useUserProvider(
             lmChatclient?.getAccessTokenFromLocalStorage();
           const localRefreshToken =
             lmChatclient?.getRefreshTokenFromLocalStorage();
+          console.log(
+            `the local access token is ${localAccessToken} and the local refresh token is ${localRefreshToken}`,
+          );
           if (
             localAccessToken &&
             localRefreshToken &&
             localAccessToken.length &&
             localRefreshToken.length
           ) {
+            console.log("entering validate user with local tokens");
             await validateChatUser(localAccessToken, localRefreshToken);
           } else {
+            console.log("entering initiate user with local tokens");
             await initiateFeedUser(apiKey, uuid, username, isGuest || false);
           }
         } else if (accessToken && refreshToken) {
+          console.log("entering validate user with provided tokens");
           await validateChatUser(accessToken, refreshToken);
         } else {
           throw Error("Neither API key nor Tokens provided");
