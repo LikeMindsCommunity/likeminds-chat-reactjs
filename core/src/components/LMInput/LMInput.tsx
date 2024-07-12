@@ -67,8 +67,6 @@ const LMInput = () => {
     )?.is_selected
       ? true
       : false;
-    alert(canRespondInChatroom);
-    console.log(canRespondInChatroom, currentUser?.memberRights);
     if (!canRespondInChatroom) {
       setAlertMessage(ConstantStrings.USER_MESSAGES_RESTRICTED_BY_CM);
       return false;

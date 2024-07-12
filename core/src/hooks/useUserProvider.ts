@@ -163,7 +163,6 @@ export default function useUserProvider(
           setLmChatUserCurrentCommunity(
             initiateUserCall?.data?.community || null,
           );
-
           return {
             accessToken: initiateUserCall.data?.accessToken,
             refreshToken: initiateUserCall.data?.refreshToken,
