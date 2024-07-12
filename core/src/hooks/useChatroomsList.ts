@@ -90,7 +90,6 @@ export default function useChatroomList(): ChatroomProviderInterface {
   const chatroolLeaveActionListener = useCallback((eventObject: Event) => {
     setGroupChatrooms((currentGroupChatroom) => {
       const chatroomId = (eventObject as CustomEvent).detail;
-      console.log(chatroomId);
       const groupChatroomsCopy = [...currentGroupChatroom].filter(
         (chatroom) => chatroom.id.toString() !== chatroomId,
       );
@@ -98,7 +97,6 @@ export default function useChatroomList(): ChatroomProviderInterface {
     });
     setExploreGroupChatrooms((currentExploreChatrooms) => {
       const chatroomId = (eventObject as CustomEvent).detail;
-      console.log(chatroomId);
       const exploreChatroomsCopy = [...currentExploreChatrooms].map(
         (chatroom) => {
           if (chatroom.id.toString() === chatroomId) {
@@ -115,7 +113,6 @@ export default function useChatroomList(): ChatroomProviderInterface {
       const call = await lmChatclient?.markReadChatroom({
         chatroomId: parseInt(id.toString()),
       });
-      console.log(call);
       if (call.success) {
         setGroupChatrooms((currentGroupChatrooms) => {
           return currentGroupChatrooms.map((chatroom) => {
@@ -147,7 +144,6 @@ export default function useChatroomList(): ChatroomProviderInterface {
           navigate("/");
         }
       }
-      console.log(call);
     } catch (error) {
       console.log(error);
     }
@@ -267,7 +263,6 @@ export default function useChatroomList(): ChatroomProviderInterface {
         channelId: id,
         inviteStatus: 1,
       });
-      console.log(call);
     } catch (error) {
       console.log(error);
     }
@@ -278,7 +273,6 @@ export default function useChatroomList(): ChatroomProviderInterface {
         channelId: id,
         inviteStatus: 2,
       });
-      console.log(call);
     } catch (error) {
       console.log(error);
     }
@@ -349,7 +343,6 @@ export default function useChatroomList(): ChatroomProviderInterface {
     const query = ref(fb, `community/${currentCommunity.id}`);
     return onValue(query, async (snapshot) => {
       if (snapshot.exists()) {
-        console.log(snapshot.val());
         const chatroomId = snapshot.val().chatroom_id;
         const conversationId = snapshot.val().conversation_id;
         const chatroomConversationsCall: GetSyncConversationsResponse =

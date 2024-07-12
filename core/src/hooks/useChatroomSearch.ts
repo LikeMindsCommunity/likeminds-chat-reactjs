@@ -52,7 +52,6 @@ export function useChatroomSearch(): UseChatroomSearch {
         });
         pageCount.current = pageCount.current + 1;
       }
-      console.log(call);
     } catch (error) {
       console.log(error);
     }

@@ -28,7 +28,6 @@ export function useReactions(): UseReactionReturns {
         conversationId: message!.id!,
         reaction: emoji,
       });
-      console.log(call);
     } catch (error) {
       console.log(error);
     }

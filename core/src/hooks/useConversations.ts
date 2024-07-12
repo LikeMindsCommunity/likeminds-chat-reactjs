@@ -147,14 +147,12 @@ export default function useConversations(): UseConversations {
         ...currentConversations,
         ...newConversations,
       ];
-      console.log(newConversationsList);
       return newConversationsList;
     } else {
       const newConversationsList = [
         ...newConversations,
         ...currentConversations,
       ];
-      console.log(newConversationsList);
       return newConversationsList;
     }
   };
@@ -295,9 +293,7 @@ export default function useConversations(): UseConversations {
       });
       if (call.success) {
         const newChatroom = { ...chatroom };
-        console.log(newChatroom);
         if (!(newChatroom && newChatroom.chatroom)) {
-          console.log("No chatroom found");
           return;
         }
         newChatroom.chatroom.chat_request_state = 1;
@@ -373,15 +369,11 @@ export default function useConversations(): UseConversations {
   const handleDMUserActionsConversations = useCallback(
     (conversation: Conversation) => {
       setConversations((currentConversations) => {
-        console.log(currentConversations);
-        console.log(conversation);
         if (!currentConversations) {
-          console.log("Executing with no conversations");
           return currentConversations;
         }
         currentConversations = [...currentConversations];
         currentConversations.push(conversation);
-        console.log(currentConversations);
         return currentConversations;
       });
     },
@@ -500,15 +492,14 @@ export default function useConversations(): UseConversations {
     });
   }, [chatroomId, lmChatclient]);
   useEffect(() => {
-    console.log("refreshed conversations");
+    // console.log("refreshed conversations");
   }, [conversations]);
   useEffect(() => {
-    console.log("\x1b[36m%s\x1b[0m", "Executing hook");
+    // console.log("\x1b[36m%s\x1b[0m", "Executing hook");
 
     document.addEventListener(
       CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED,
       (eventObject) => {
-        console.log("We reached here");
         const detail = (eventObject as CustomEvent).detail;
         handleDMUserActionsConversations(detail);
       },
@@ -517,7 +508,6 @@ export default function useConversations(): UseConversations {
       document.removeEventListener(
         CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED,
         (eventObject) => {
-          console.log("We reached here");
           const detail = (eventObject as CustomEvent).detail;
           handleDMUserActionsConversations(detail);
         },
@@ -536,7 +526,6 @@ export default function useConversations(): UseConversations {
     };
   }, [chatroomId, resetConversations]);
   useEffect(() => {
-    console.log(`The searchedConversation id is : ${searchedConversationId}`);
     if (
       conversations?.length &&
       searchedConversationId &&
@@ -545,9 +534,6 @@ export default function useConversations(): UseConversations {
       searchedConversationRef &&
       searchedConversationRef.current
     ) {
-      console.log(`The searched conversation ref is }`);
-      console.log(searchedConversationRef.current);
-
       setTimeout(() => {
         searchedConversationRef?.current?.scrollIntoView({
           behavior: "auto",

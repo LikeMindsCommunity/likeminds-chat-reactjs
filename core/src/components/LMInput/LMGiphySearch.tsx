@@ -56,7 +56,6 @@ const LMGiphySearch: React.FC = () => {
             alt={gif.title}
             className="lm-giphy-img lm-cursor-pointer"
             onClick={() => {
-              console.log(gif);
               setGifMedia(gif);
             }}
           />

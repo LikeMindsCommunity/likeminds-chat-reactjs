@@ -26,7 +26,6 @@ import { useMessageOptions } from "../../hooks/useMessageOptions";
 
 const LMMessage = () => {
   const { message, index } = useContext(LMMessageContext);
-  // console.log(message);
   const { conversations, unBlockUserInDM } = useContext(MessageListContext);
   const { currentUser } = useContext(UserProviderContext);
   const { chatroom } = useContext(LMChatChatroomContext);
