@@ -43,6 +43,7 @@ const LMAttachmentsSelector = () => {
         sx={{
           padding: "0",
         }}
+        classes={{ paper: "lm-custom-menu" }}
       >
         {/* <div className="lm-upload-media-dialog"> */}
         <MenuItem className="lm-chat-input-attachment-label">
