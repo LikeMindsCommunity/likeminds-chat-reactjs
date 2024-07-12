@@ -21,27 +21,23 @@ export function usePoll(): UsePoll {
   //   Regular functions
   const calculateSubmitButtonVisibility = () => {
     if (Date.now() > message.expiry_time) {
-      console.log("returning from line 24");
       return false;
     }
     const pollType = message.poll_type.toString();
     switch (pollType) {
       case PollType.INSTANT_POLL: {
         if (message.polls.some((poll) => poll.is_selected)) {
-          console.log("returning from line 31");
           return false;
         }
         switch (message.multiple_select_state) {
           case PollMultipleSelectState.AT_LEAST: {
             if (selectedPollOptions.length < message.multiple_select_no) {
-              console.log("returning from line 37");
               return false;
             }
             return true;
           }
           case PollMultipleSelectState.AT_MAX: {
             if (selectedPollOptions.length > message.multiple_select_no) {
-              console.log("returning from line 44");
               return false;
             }
             return true;
@@ -50,7 +46,6 @@ export function usePoll(): UsePoll {
           case null:
           case undefined: {
             if (selectedPollOptions.length !== message.multiple_select_no) {
-              console.log("returning from line 51");
               return false;
             }
             return true;
@@ -124,7 +119,6 @@ export function usePoll(): UsePoll {
       return;
     }
     const pollOptionValue = clickedEvent.currentTarget.id;
-    console.log(pollOptionValue);
     setSelectedPollOptions((currentSelectedOptions) => {
       // function to select or unselect the option
       currentSelectedOptions = [...currentSelectedOptions];
@@ -188,7 +182,6 @@ export function usePoll(): UsePoll {
       });
       setTemporaryAddOptionText("");
       updatePollOnSubmitLocally(selectedPollOptions.map((option) => option.id));
-      console.log(call);
     } catch (error) {
       console.log(error);
     }
@@ -214,7 +207,6 @@ export function usePoll(): UsePoll {
         conversationId: message?.id,
         pollId: pollId,
       });
-      console.log(call);
     } catch (error) {
       console.log(error);
     }

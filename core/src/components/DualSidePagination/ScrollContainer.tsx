@@ -105,7 +105,6 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
           hasAlreadyCalled.current = true;
           await nextOnScrollTop();
         } else {
-          console.log(callNextOnBottom);
           if (callNextOnBottom) {
             hasAlreadyCalled.current = true;
             await nextOnScrollBottom();

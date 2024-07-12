@@ -77,7 +77,6 @@ export default function useDmChannelLists(): UseDmChannelLists {
       const call = await lmChatclient?.markReadChatroom({
         chatroomId: parseInt(id.toString()),
       });
-      console.log(call);
       if (call.success) {
         setDmChatrooms((currentDmChatrooms) => {
           return currentDmChatrooms.map((chatroom) => {
