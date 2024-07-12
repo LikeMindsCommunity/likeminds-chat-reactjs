@@ -6,9 +6,12 @@ interface GlobalChatProviderContextInterface {
   userDetails: UserDetails;
 }
 export interface UserDetails {
-  username: string;
-  uuid: string;
-  isGuest: boolean;
+  username?: string;
+  uuid?: string;
+  isGuest?: boolean;
+  accessToken?: string;
+  refreshToken?: string;
+  apiKey?: string;
 }
 export default React.createContext<GlobalChatProviderContextInterface>({
   lmChatclient: null,
