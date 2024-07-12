@@ -4,9 +4,9 @@ import Conversation, {
   Poll,
   PollOptionNew,
 } from "../../types/models/conversations";
-import LMMessageContext from "../../context/MessageContext";
-import Message from "../LMMessage/Message";
-import UserProviderContext from "../../context/UserProviderContext";
+import LMMessageContext from "../../context/LMMessageContext";
+import LMMessage from "../LMMessage/LMMessage";
+import UserProviderContext from "../../context/LMUserProviderContext";
 import { EmojiData } from "../../types/models/emojiData";
 
 interface LMMessageMiddlewareProps {
@@ -29,7 +29,6 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
     setLocalMessageCopy(currentLocalMessage as Conversation);
   }
   function editMessageLocally(newMessage: Conversation) {
-    console.log(localMessageCopy?.id === newMessage.id);
     if (localMessageCopy?.id === newMessage.id) {
       setLocalMessageCopy(newMessage);
     }
@@ -37,17 +36,14 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
   function addReactionLocally(emoji: EmojiData) {
     const currentLocalMessage = { ...localMessageCopy };
     const currentUserUUID = currentUser?.uuid;
-    console.log(currentLocalMessage);
     currentLocalMessage.reactions =
       currentLocalMessage?.reactions?.filter(
         (reaction: any) => reaction?.member?.uuid !== currentUserUUID,
       ) || [];
-    console.log(currentLocalMessage);
     currentLocalMessage.reactions?.push({
       member: currentUser!,
       reaction: emoji.native,
     });
-    console.log(currentLocalMessage);
     setLocalMessageCopy(currentLocalMessage as Conversation);
   }
   function removeReactionLocally() {
@@ -56,7 +52,6 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
         currentLocalCopy?.reactions.filter((reaction: any) => {
           return reaction.member.id.toString() !== currentUser?.id.toString();
         }) || [];
-      console.log(currentLocalCopy);
       return currentLocalCopy;
     });
   }
@@ -105,7 +100,7 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
         updatePollOnSubmitLocally: updatePollOnSubmitLocally,
       }}
     >
-      <Message />
+      <LMMessage />
     </LMMessageContext.Provider>
   );
 });

@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
-import LoaderContextProvider from "../context/LoaderContextProvider";
+import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
+import LoaderContextProvider from "../context/LMLoaderContextProvider";
 import Conversation from "../types/models/conversations";
 import {
   ChatroomCollabcard,
   GetChatroomResponse,
 } from "../types/api-responses/getChatroomResponse";
-import UserProviderContext from "../context/UserProviderContext";
+import UserProviderContext from "../context/LMUserProviderContext";
 import { useParams } from "react-router-dom";
-import { ReplyDmQueries } from "../enums/reply-dm-queries";
+import { ReplyDmQueries } from "../enums/lm-reply-dm-queries";
 
 interface UseChatroom {
   chatroom: ChatroomCollabcard | null;
@@ -53,7 +53,6 @@ export default function useChatroom(): UseChatroom {
           const showList = new URL(cta).searchParams
             .get("show_list")
             ?.toString();
-          console.log(`The show_list is ${showList}`);
           switch (showList) {
             case ReplyDmQueries.REPLY_PRIVATELY_ALLOWED_TO_ALL_MEMBERS: {
               setCanUserReplyPrivately(
@@ -92,12 +91,13 @@ export default function useChatroom(): UseChatroom {
     async function fetchChannel() {
       try {
         // get the chatroom details
+        if (!chatroomId) return;
         const newChatroom = await getChatroomDetails();
         setChatroom(newChatroom);
         // set the loader to false
         setLoader!(false);
       } catch (error) {
-        // console.log the error
+        console.log(error);
       }
     }
     fetchChannel();

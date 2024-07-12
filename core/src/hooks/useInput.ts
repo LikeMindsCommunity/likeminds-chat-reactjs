@@ -12,11 +12,11 @@ import {
   useState,
 } from "react";
 import Member from "../types/models/member";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
+import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import { Utils } from "../utils/helpers";
 import { GetTaggingListResponse } from "../types/api-responses/getTaggingListResponse";
 import { EmojiData } from "../types/models/emojiData";
-import { PostConversation } from "@likeminds.community/chat-js-beta/dist/pages/chatroom/types";
+import { PostConversation } from "@likeminds.community/chat-js/dist/pages/chatroom/types";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { PostConversationResponse } from "../types/api-responses/postConversationResponse";
 import { FileType } from "../types/enums/Filetype";
@@ -28,9 +28,9 @@ import {
 } from "../types/api-responses/getOgTagResponse";
 import { Gif } from "../types/models/GifObject";
 import { ChatroomCollabcard } from "../types/api-responses/getChatroomResponse";
-import { ChatroomTypes } from "../enums/chatroom-types";
-import UserProviderContext from "../context/UserProviderContext";
-import { MemberType } from "../enums/member-type";
+import { ChatroomTypes } from "../enums/lm-chatroom-types";
+import UserProviderContext from "../context/LMUserProviderContext";
+import { MemberType } from "../enums/lm-member-type";
 
 export function useInput(): UseInputReturns {
   const { id: chatroomId } = useParams();
@@ -105,7 +105,6 @@ export function useInput(): UseInputReturns {
         chatRequestState: 1,
         chatroomId: parseInt(chatroomId!.toString()),
       });
-      console.log(aprooveDmRequestCall);
       document.dispatchEvent(
         new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
           detail: aprooveDmRequestCall.data.conversation,
@@ -114,8 +113,6 @@ export function useInput(): UseInputReturns {
       const newChatroom = { ...chatroom };
       if (newChatroom.chatroom && newChatroom.chatroom) {
         newChatroom.chatroom.chat_request_state = 1;
-        console.log("reached here");
-        console.log(newChatroom);
       }
       setNewChatroom(newChatroom as ChatroomCollabcard);
     } catch (error) {
@@ -128,7 +125,6 @@ export function useInput(): UseInputReturns {
         chatRequestState: 2,
         chatroomId: parseInt(chatroomId!.toString()),
       });
-      console.log(rejectDmRequestCall);
       document.dispatchEvent(
         new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
           detail: rejectDmRequestCall.data.conversation,
@@ -136,9 +132,7 @@ export function useInput(): UseInputReturns {
       );
       const newChatroom = { ...chatroom };
       if (newChatroom.chatroom && newChatroom.chatroom) {
-        console.log("reached here");
         newChatroom.chatroom.chat_request_state = 2;
-        console.log(newChatroom);
       }
       setNewChatroom(newChatroom as ChatroomCollabcard);
     } catch (error) {
@@ -231,9 +225,7 @@ export function useInput(): UseInputReturns {
               detail: call.data.conversation,
             }),
           );
-          if (call.success) {
-            console.log(call);
-          }
+
           setFocusOnInputField();
           return;
         }
@@ -373,7 +365,6 @@ export function useInput(): UseInputReturns {
             conversation.id.toString(),
             chatroom.chatroom.id.toString(),
           ).then((response: any) => {
-            console.log(response);
             // const fileUrl = response;
             const fileUrl = Utils.generateFileUrl(response);
             const onUploadConfig: {
@@ -482,7 +473,6 @@ export function useInput(): UseInputReturns {
     }
   };
   const onTextInputKeydownHandler: onKeydownEvent = (change) => {
-    console.log(isShiftPressed.current);
     if (change.key === "Enter") {
       if (!isShiftPressed.current) {
         change.preventDefault();
@@ -494,7 +484,6 @@ export function useInput(): UseInputReturns {
     }
   };
   const onTextInputKeyUpHandler: onKeyUpEvent = (change) => {
-    console.log(isShiftPressed.current);
     if (change.key === "Shift") {
       isShiftPressed.current = false;
     }
@@ -505,9 +494,7 @@ export function useInput(): UseInputReturns {
     const emoji = emojiData.native;
     setInputText((currentText) => {
       const newTextString = currentText.concat(emoji);
-      console.log(emoji);
       Utils.insertCharAtEnd(inputBoxRef.current!, emoji.toString());
-      // console.log(newTextString);
       return newTextString;
     });
   };
@@ -619,6 +606,20 @@ export function useInput(): UseInputReturns {
     return () => clearTimeout(checkForLinksTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lmChatclient, inputText]);
+  useEffect(() => {
+    return () => {
+      setConversationToEdit(null);
+      setConversationToReply(null);
+      setDocumentMediaList(null);
+      setImagesAndVideosMediaList(null);
+      setGifMedia(null);
+      setFetchMoreTags(true);
+      setMatchedTagMembersList([]);
+      setInputText("");
+      setOgTags(null);
+      setOpenGifCollapse(false);
+    };
+  }, [chatroomId, setConversationToEdit, setConversationToReply]);
   return {
     inputBoxRef,
     inputWrapperRef,

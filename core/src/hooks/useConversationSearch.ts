@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
+import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { SearchedConversation } from "../types/models/SearchedConversation";

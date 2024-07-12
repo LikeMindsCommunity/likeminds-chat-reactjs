@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import InputContext from "../../context/InputContext";
+import InputContext from "../../context/LMInputContext";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -21,7 +21,7 @@ const LMGiphySearch: React.FC = () => {
     // Fetch trending GIFs initially
     const url = `https://api.giphy.com/v1/gifs/trending?api_key=${apiKey}&limit=100`;
     fetchGifs(url);
-  }, []);
+  }, [fetchGifs]);
   if (gifMedia) {
     return (
       <div className="selected-gif-view-container">
@@ -56,7 +56,6 @@ const LMGiphySearch: React.FC = () => {
             alt={gif.title}
             className="lm-giphy-img lm-cursor-pointer"
             onClick={() => {
-              console.log(gif);
               setGifMedia(gif);
             }}
           />

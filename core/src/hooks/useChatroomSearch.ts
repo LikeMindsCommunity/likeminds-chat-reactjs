@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { SearchedChatroom } from "../types/models/SearchedChatroom";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
+import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { useNavigate } from "react-router-dom";
 import { CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
@@ -52,7 +52,6 @@ export function useChatroomSearch(): UseChatroomSearch {
         });
         pageCount.current = pageCount.current + 1;
       }
-      console.log(call);
     } catch (error) {
       console.log(error);
     }

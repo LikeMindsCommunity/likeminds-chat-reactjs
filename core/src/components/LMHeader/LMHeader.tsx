@@ -4,17 +4,17 @@ import { Menu, MenuItem } from "@mui/material";
 import useChatroomMenuOptions from "../../hooks/useChatroomMenuOptions";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
 import { getAvatar } from "../../shared/components/LMUserMedia";
-import { ChatroomAction } from "../../enums/chatroom-actions";
+import { ChatroomAction } from "../../enums/lm-chatroom-actions";
 import { useMenu } from "../../hooks/useMenu";
 
 // Icons
 import menuIcon from "../../assets/img/overflow-menu.svg";
 import searchIcon from "../../assets/img/search.svg";
-import { ChatroomTypes } from "../../enums/chatroom-types";
-import UserProviderContext from "../../context/UserProviderContext";
+import { ChatroomTypes } from "../../enums/lm-chatroom-types";
+import UserProviderContext from "../../context/LMUserProviderContext";
 import LMConversationSearch from "../search/LMConversationSearch";
 
-const Header = () => {
+const LMHeader = () => {
   const { chatroom } = useContext(LMChatChatroomContext);
   const { currentUser } = useContext(UserProviderContext);
   const { onMute, onLeaveChatroom, onViewParticipants, onBlock, onUnBlock } =
@@ -157,4 +157,4 @@ const Header = () => {
   return renderHeaderComponents();
 };
 
-export default Header;
+export default LMHeader;

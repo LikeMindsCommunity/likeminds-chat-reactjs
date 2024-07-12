@@ -4,13 +4,13 @@ import {
   TwoArgVoidReturns,
   ZeroArgVoidReturns,
 } from "./useInput";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
-import ConversationStates from "../enums/conversation-states";
+import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
+import ConversationStates from "../enums/lm-conversation-states";
 import { useParams } from "react-router-dom";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { SelectChangeEvent } from "@mui/material";
-import LoaderContextProvider from "../context/LoaderContextProvider";
-import { PollMessages } from "../enums/poll-messages";
+import LoaderContextProvider from "../context/LMLoaderContextProvider";
+import { PollMessages } from "../enums/lm-poll-messages";
 
 export function useCreatePoll(closeDialog?: ZeroArgVoidReturns): UseCreatePoll {
   const { id: chatroomId } = useParams();
@@ -45,11 +45,9 @@ export function useCreatePoll(closeDialog?: ZeroArgVoidReturns): UseCreatePoll {
   const addPollOption = () => {
     setPollOptions((currentPollOptions) => {
       currentPollOptions = [...currentPollOptions];
-      console.log("clicked");
       currentPollOptions.push({
         text: "",
       });
-      console.log(currentPollOptions);
       return currentPollOptions;
     });
   };
@@ -163,7 +161,6 @@ export function useCreatePoll(closeDialog?: ZeroArgVoidReturns): UseCreatePoll {
       if (closeDialog) {
         closeDialog();
       }
-      console.log(call);
     } catch (error) {
       console.log(error);
     }

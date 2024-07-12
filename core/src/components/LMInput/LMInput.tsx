@@ -3,27 +3,26 @@ import ClearIcon from "@mui/icons-material/Clear";
 
 import sendIcon from "../../assets/img/send.svg";
 import { useInput } from "../../hooks/useInput";
-import InputContext from "../../context/InputContext";
+import InputContext from "../../context/LMInputContext";
 import LMChatTextArea from "./LMChatTextArea";
 import Emojis from "./LMEmojis";
 import { Alert, Collapse, IconButton } from "@mui/material";
 import MediaCarousel from "./LMCarousel";
 import AttachmentsSelector from "./LMAttachmentsSelector";
-// import giffyIcon from "../../assets/img/giffy.png";
 import giffyIcon from "../../assets/img/gif.png";
 
 import GiphySearch from "./LMGiphySearch";
 import { useContext, useMemo, useState } from "react";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
-import UserProviderContext from "../../context/UserProviderContext";
-import { MemberType } from "../../enums/member-type";
-import { ConstantStrings } from "../../enums/common-strings";
-import MessageReplyCollapse from "./MessageReplyCollapse";
-import { ChatroomTypes } from "../../enums/chatroom-types";
-// import { ReplyDmQueries } from "../../enums/reply-dm-queries";
-import { ChatRequestStates } from "../../enums/chat-request-states";
+import UserProviderContext from "../../context/LMUserProviderContext";
+import { MemberType } from "../../enums/lm-member-type";
+import { ConstantStrings } from "../../enums/lm-common-strings";
+import { ChatroomTypes } from "../../enums/lm-chatroom-types";
+import { ChatRequestStates } from "../../enums/lm-chat-request-states";
+import LMMessageReplyCollapse from "./LMMessageReplyCollapse";
+import LMMessageEditCollapse from "./LMMessageEditCollapse";
 
-const Input = () => {
+const LMInput = () => {
   const {
     inputBoxRef,
     inputWrapperRef,
@@ -61,7 +60,9 @@ const Input = () => {
     onTextInputKeyUpHandler,
   } = useInput();
   const { currentUser } = useContext(UserProviderContext);
-  const { chatroom, conversationToReply } = useContext(LMChatChatroomContext);
+  const { chatroom, conversationToReply, conversationToedit } = useContext(
+    LMChatChatroomContext,
+  );
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const shouldShowInputBox = useMemo(() => {
     const canRespondInChatroom = currentUser?.memberRights?.find(
@@ -69,7 +70,6 @@ const Input = () => {
     )?.is_selected
       ? true
       : false;
-
     if (!canRespondInChatroom) {
       setAlertMessage(ConstantStrings.USER_MESSAGES_RESTRICTED_BY_CM);
       return false;
@@ -122,7 +122,7 @@ const Input = () => {
             : ConstantStrings.DM_REQUEST_PENDING_MESSAGING_CHATROOM_WITH_USER;
       }
     }
-    console.log("isInputBoxDisabled", isInputBoxDisabled);
+
     if (isInputBoxDisabled) {
       return (
         <input
@@ -294,6 +294,16 @@ const Input = () => {
       }}
     >
       <div className="lm-channel-footer-wrapper">
+        {/* Collapseable  for Edit message*/}
+
+        <Collapse
+          in={Boolean(conversationToedit)}
+          sx={{
+            background: "#D0D8E3",
+          }}
+        >
+          <LMMessageEditCollapse />
+        </Collapse>
         {/* Collapseable for OG Tags */}
         <Collapse
           in={Boolean(ogTag)}
@@ -344,7 +354,7 @@ const Input = () => {
             background: "#D0D8E3",
           }}
         >
-          <MessageReplyCollapse />
+          <LMMessageReplyCollapse />
         </Collapse>
         {/* Collapsable for dm chatroom status component */}
         <Collapse
@@ -376,4 +386,4 @@ const Input = () => {
   );
 };
 
-export default Input;
+export default LMInput;

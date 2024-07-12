@@ -1,15 +1,15 @@
 import { useContext } from "react";
 import { ZeroArgVoidReturns } from "./useInput";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
+import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
-import UserProviderContext from "../context/UserProviderContext";
+import UserProviderContext from "../context/LMUserProviderContext";
 import { useNavigate } from "react-router-dom";
 import { CustomActions } from "../customActions";
 import {
   PARTICIPANTS_PATH,
   ROOT_PATH,
 } from "../shared/constants/lm.routes.constant";
-import { ChatroomAction } from "../enums/chatroom-actions";
+import { ChatroomAction } from "../enums/lm-chatroom-actions";
 
 function useChatroomMenuOptions(): UseChatroomMenuOptions {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
@@ -88,7 +88,6 @@ function useChatroomMenuOptions(): UseChatroomMenuOptions {
         status: 1,
         chatroomId: chatroom?.chatroom.id || 0,
       });
-      console.log(unblockCall);
       document.dispatchEvent(
         new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
           detail: unblockCall.data.conversation,
@@ -134,7 +133,6 @@ function useChatroomMenuOptions(): UseChatroomMenuOptions {
         status: 0,
         chatroomId: chatroom?.chatroom.id || 0,
       });
-      console.log(blockCall);
       document.dispatchEvent(
         new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
           detail: blockCall.data.conversation,

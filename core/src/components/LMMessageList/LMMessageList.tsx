@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { PropsWithChildren, memo, useContext } from "react";
 import { MessageListProps } from "../../types/prop-types/MessageListProps";
-import MessageListContext from "../../context/MessageListContext";
+import MessageListContext from "../../context/LMMessageListContext";
 import Conversation from "../../types/models/conversations";
 import ScrollContainer from "../DualSidePagination/ScrollContainer";
 import useConversations from "../../hooks/useConversations";
@@ -9,9 +9,9 @@ import LMMessageMiddleware from "./LMMessageMiddleware";
 
 import { CircularProgress } from "@mui/material";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
-import UserProviderContext from "../../context/UserProviderContext";
-import { ChatroomTypes } from "../../enums/chatroom-types";
-import { MemberType } from "../../enums/member-type";
+import UserProviderContext from "../../context/LMUserProviderContext";
+import { ChatroomTypes } from "../../enums/lm-chatroom-types";
+import { MemberType } from "../../enums/lm-member-type";
 
 const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
   (props) => {
@@ -51,8 +51,6 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
         return false;
       }
       const chatRequestState = chatroom?.chatroom.chat_request_state;
-      console.log(chatRequestState);
-
       if (chatRequestState === null) {
         return true;
       } else {
@@ -106,14 +104,12 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
             bottomReferenceDiv={bottomReferenceDiv}
             dataLength={conversations?.length || 0}
             nextOnScrollBottom={() => {
-              // console.log("bottom scroll function call");
               if (getChatroomConversationsOnBottomScroll) {
                 getChatroomConversationsOnBottomScroll();
               }
             }}
             nextOnScrollTop={() => {
               if (getChatroomConversationsOnTopScroll) {
-                // console.log("calling");
                 getChatroomConversationsOnTopScroll();
               }
             }}

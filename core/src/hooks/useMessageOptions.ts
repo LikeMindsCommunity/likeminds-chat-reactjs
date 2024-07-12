@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useContext, useEffect } from "react";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
-import LMMessageContext from "../context/MessageContext";
+import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
+import LMMessageContext from "../context/LMMessageContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { CustomActions } from "../customActions";
@@ -33,7 +33,6 @@ export function useMessageOptions(): UseMessageOptionsReturn {
         tagId: parseInt(id.toString()),
         reason: reason ? reason : undefined,
       });
-      console.log(reportCall);
     } catch (error) {
       console.log(error);
     }
@@ -45,9 +44,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
         reason: "none",
       });
 
-      console.log(message);
       deleteMessage();
-      console.log(deleteCall);
     } catch (error) {
       console.log(error);
     }
@@ -85,7 +82,6 @@ export function useMessageOptions(): UseMessageOptionsReturn {
             memberId: parseInt(memberId.toString()),
           });
           if (createDMChatroomCall.success) {
-            // console.log(createDMChatroomCall.data);
             const newChatroomId = createDMChatroomCall.data.chatroom.id;
             navigate(`/${DM_CHANNEL_PATH}/${newChatroomId}`);
             // navigate to the chatroom
@@ -96,23 +92,13 @@ export function useMessageOptions(): UseMessageOptionsReturn {
       console.log(error);
     }
   };
-  //   const getReportTags = async () => {
-  //     try {
-  //       const getReportTags = await lmChatclient?.getReportTags({
-  //         type: 0,
-  //       });
-  //       console.log(getReportTags);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
+
   const putReaction = async (reaction: string) => {
     try {
       const putReactionsCall = lmChatclient?.putReaction({
         conversationId: parseInt(message!.id.toString()),
         reaction: reaction,
       });
-      console.log(putReactionsCall);
     } catch (error) {
       console.log(error);
     }
@@ -120,7 +106,6 @@ export function useMessageOptions(): UseMessageOptionsReturn {
   useEffect(() => {
     addEventListener(CustomActions.EDIT_ACTION_COMPLETED, (newEvent) => {
       const detail = (newEvent as CustomEvent).detail;
-      console.log(detail);
       editMessageLocally(detail as unknown as Conversation);
     });
   });

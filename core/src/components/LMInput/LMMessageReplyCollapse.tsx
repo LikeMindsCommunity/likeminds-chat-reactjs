@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
-function MessageReplyCollapse() {
+function LMMessageReplyCollapse() {
   const { conversationToReply, setConversationToReply } = useContext(
     LMChatChatroomContext,
   );
@@ -26,4 +26,4 @@ function MessageReplyCollapse() {
   );
 }
 
-export default MessageReplyCollapse;
+export default LMMessageReplyCollapse;

@@ -1,6 +1,6 @@
 import { useState, useContext, useRef, useEffect, useCallback } from "react";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
-import UserProviderContext from "../context/UserProviderContext";
+import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
+import UserProviderContext from "../context/LMUserProviderContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { onValue, ref } from "firebase/database";
 import {
@@ -77,7 +77,6 @@ export default function useDmChannelLists(): UseDmChannelLists {
       const call = await lmChatclient?.markReadChatroom({
         chatroomId: parseInt(id.toString()),
       });
-      console.log(call);
       if (call.success) {
         setDmChatrooms((currentDmChatrooms) => {
           return currentDmChatrooms.map((chatroom) => {

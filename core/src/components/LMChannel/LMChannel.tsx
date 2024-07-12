@@ -7,8 +7,10 @@ const LMChannel = () => {
       <div className="lm-left-panel">
         <LMChannelList />
       </div>
-      <div className="lm-right-panel lm-d-flex flex-direction">
-        <LMChatChatroom />
+      <div className="lm-right-panel">
+        <div className="lm-chat-box">
+          <LMChatChatroom />
+        </div>
       </div>
     </div>
   );

@@ -1,32 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useContext } from "react";
 
-import ConversationStates from "../../enums/conversation-states";
+import ConversationStates from "../../enums/lm-conversation-states";
 import { Utils } from "../../utils/helpers";
 import { getAvatar } from "../../shared/components/LMUserMedia";
-import UserProviderContext from "../../context/UserProviderContext";
-import MessageOptions from "./MessageOptions";
-import Reactions from "./Reactions";
-import MessageListContext from "../../context/MessageListContext";
-import { ConstantStrings } from "../../enums/common-strings";
-import LMMessageContext from "../../context/MessageContext";
-import MediaRenderer from "../../shared/components/MediaRenderer";
+import UserProviderContext from "../../context/LMUserProviderContext";
+import MessageOptions from "./LMMessageOptions";
+import Reactions from "./LMReactions";
+import MessageListContext from "../../context/LMMessageListContext";
+import { ConstantStrings } from "../../enums/lm-common-strings";
+import LMMessageContext from "../../context/LMMessageContext";
+import MediaRenderer from "../../shared/components/LMMediaRenderer";
 
 // Icons
 
 import linkImg from "../../assets/img/link-img.svg";
 import replyIcon from "../../assets/img/reply.png";
-import MessageReactionHolder from "./MessageReactionHolder";
+import MessageReactionHolder from "./LMMessageReactionHolder";
 import LMMicroPoll from "./LMMicroPoll";
 
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
-import { ChatRequestStates } from "../../enums/chat-request-states";
-import { ChatroomTypes } from "../../enums/chatroom-types";
+import { ChatRequestStates } from "../../enums/lm-chat-request-states";
+import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import { useMessageOptions } from "../../hooks/useMessageOptions";
 
-const Message = () => {
+const LMMessage = () => {
   const { message, index } = useContext(LMMessageContext);
-  // console.log(message);
   const { conversations, unBlockUserInDM } = useContext(MessageListContext);
   const { currentUser } = useContext(UserProviderContext);
   const { chatroom } = useContext(LMChatChatroomContext);
@@ -316,4 +315,4 @@ const Message = () => {
   }
 };
 
-export default Message;
+export default LMMessage;

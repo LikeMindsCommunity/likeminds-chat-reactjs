@@ -2,10 +2,10 @@
 import InfiniteScroll from "react-infinite-scroll-component";
 import useChatroomList from "../../hooks/useChatroomsList";
 import { useNavigate, useParams } from "react-router-dom";
-import { ConstantStrings } from "../../enums/common-strings";
+import { ConstantStrings } from "../../enums/lm-common-strings";
 import { Utils } from "../../utils/helpers";
 import { useContext, useState } from "react";
-import UserProviderContext from "../../context/UserProviderContext";
+import UserProviderContext from "../../context/LMUserProviderContext";
 import { CHANNEL_PATH } from "../../shared/constants/lm.routes.constant";
 
 // Icons

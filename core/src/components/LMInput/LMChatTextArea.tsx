@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import InputContext from "../../context/InputContext";
+import InputContext from "../../context/LMInputContext";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Utils } from "../../utils/helpers";
