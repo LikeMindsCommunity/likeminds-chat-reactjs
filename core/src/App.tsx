@@ -36,10 +36,10 @@ const LMAppLayout = () => {
     isGuest?: boolean;
     apiKey?: string;
   }>({
-    apiKey: "5f567ca1-9d74-4a1b-be8b-a7a81fef796f",
+    apiKey: "1b442bdc-bec5-4e08-bb41-e13debf97e00",
     isGuest: false,
-    uuid: "07012200-9c3c-4990-997e-bfde683d911b",
-    username: "Gaurav Rajput",
+    uuid: "a6c65e80-e4f9-407a-9e1e-6f67aa362ab9",
+    username: "kurama",
   });
   const LMCORECALLBACKS = new LMCoreCallbacks(
     (a: string, b: string) => {
