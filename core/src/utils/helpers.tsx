@@ -8,7 +8,7 @@ import {
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-provider-cognito-identity";
 // import { LMAppAwsKeys } from "./constants/lmAppAwsKeys";
 import { FileType } from "../types/enums/Filetype";
-import { FileTypeInitials } from "../enums/file-type-initials";
+import { FileTypeInitials } from "../enums/lm-file-type-initials";
 import Member from "../types/models/member";
 import { validMatchingString } from "./TLDs";
 type StringTagType = {
@@ -115,7 +115,6 @@ export class Utils {
   };
 
   static parseAnser(answer: string): JSX.Element[] {
-    console.log(answer);
     const user_splitted_string = answer.split(this.REGEX_USER_SPLITTING);
     const users_matched = answer.match(this.REGEX_USER_TAGGING);
     const combinedMatchesArray: StringTagType[] = [];
@@ -134,9 +133,9 @@ export class Utils {
       }
       if (index < (users_matched?.length || 0)) {
         const match = Array.from(users_matched || [])[index];
-        // console.log(match);
+
         const regexMatch = this.REGEX_USER_TAGGING.exec(match);
-        // console.log(regexMatch);
+
         const groups = regexMatch?.groups;
 
         combinedMatchesArray.push({
@@ -422,7 +421,6 @@ export class Utils {
     chatroomId: string,
   ): PutObjectRequest {
     const key = this.generateKey(chatroomId, conversationId, media);
-    console.log(key);
     return {
       // Key: `files/post/${userUniqueId}/${media.name}`,
       Key: key,
@@ -513,7 +511,7 @@ export class Utils {
     contentEditableDiv.current.focus();
   }
   static setTagUserImage(user: Member) {
-    const imageLink = user?.imageUrl || user?.image_url;
+    const imageLink = user?.imageUrl || user?.image_url || "";
     if (imageLink !== "") {
       return (
         <img

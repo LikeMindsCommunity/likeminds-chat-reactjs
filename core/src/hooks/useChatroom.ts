@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
-import LoaderContextProvider from "../context/LoaderContextProvider";
+import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
+import LoaderContextProvider from "../context/LMLoaderContextProvider";
 import Conversation from "../types/models/conversations";
 import {
   ChatroomCollabcard,
   GetChatroomResponse,
 } from "../types/api-responses/getChatroomResponse";
-import UserProviderContext from "../context/UserProviderContext";
+import UserProviderContext from "../context/LMUserProviderContext";
 import { useParams } from "react-router-dom";
+import { ReplyDmQueries } from "../enums/lm-reply-dm-queries";
 
 interface UseChatroom {
   chatroom: ChatroomCollabcard | null;
@@ -17,6 +18,9 @@ interface UseChatroom {
   conversationToedit: Conversation | null;
   setConversationToReply: React.Dispatch<Conversation | null>;
   setConversationToEdit: React.Dispatch<Conversation | null>;
+  canUserReplyPrivately: ReplyDmQueries;
+  searchedConversationId: number | null;
+  setSearchedConversationId: React.Dispatch<number | null>;
 }
 
 export default function useChatroom(): UseChatroom {
@@ -30,6 +34,46 @@ export default function useChatroom(): UseChatroom {
     useState<Conversation | null>(null);
   const [conversationToedit, setConversationToEdit] =
     useState<Conversation | null>(null);
+  const [canUserReplyPrivately, setCanUserReplyPrivately] =
+    useState<ReplyDmQueries>(ReplyDmQueries.REPLY_PRIVATELY_NOT_ALLOWED);
+  const [searchedConversationId, setSearchedConversationId] = useState<
+    number | null
+  >(null);
+  const checkDMStatus = useCallback(async () => {
+    try {
+      const checkDMStatusCall = await lmChatclient?.checkDMStatus({
+        requestFrom: ReplyDmQueries.GROUP_CHANNEL,
+      });
+      if (checkDMStatusCall.success) {
+        const showDM = checkDMStatusCall.data.show_dm;
+        if (!showDM) {
+          setCanUserReplyPrivately(ReplyDmQueries.REPLY_PRIVATELY_NOT_ALLOWED);
+        } else {
+          const cta = checkDMStatusCall.data.cta;
+          const showList = new URL(cta).searchParams
+            .get("show_list")
+            ?.toString();
+          switch (showList) {
+            case ReplyDmQueries.REPLY_PRIVATELY_ALLOWED_TO_ALL_MEMBERS: {
+              setCanUserReplyPrivately(
+                ReplyDmQueries.REPLY_PRIVATELY_ALLOWED_TO_ALL_MEMBERS,
+              );
+              break;
+            }
+            case ReplyDmQueries.REPLY_PRIVATELY_ALLOWED_TO_COMMUNITY_MANAGERS: {
+              setCanUserReplyPrivately(
+                ReplyDmQueries.REPLY_PRIVATELY_ALLOWED_TO_COMMUNITY_MANAGERS,
+              );
+              break;
+            }
+          }
+        }
+      }
+    } catch (error) {
+      setCanUserReplyPrivately(ReplyDmQueries.REPLY_PRIVATELY_NOT_ALLOWED);
+      console.log(error);
+    }
+  }, [lmChatclient]);
 
   const getChatroomDetails = useCallback(async () => {
     try {
@@ -47,13 +91,13 @@ export default function useChatroom(): UseChatroom {
     async function fetchChannel() {
       try {
         // get the chatroom details
+        if (!chatroomId) return;
         const newChatroom = await getChatroomDetails();
         setChatroom(newChatroom);
-
         // set the loader to false
         setLoader!(false);
       } catch (error) {
-        // console.log the error
+        console.log(error);
       }
     }
     fetchChannel();
@@ -61,7 +105,9 @@ export default function useChatroom(): UseChatroom {
       resetChatroom();
     };
   }, [chatroomId, getChatroomDetails, currentUser, setLoader]);
-
+  useEffect(() => {
+    checkDMStatus();
+  }, [checkDMStatus]);
   function resetChatroom() {
     setChatroom(null);
   }
@@ -75,7 +121,6 @@ export default function useChatroom(): UseChatroom {
       // If it's not an Error instance, log a generic message
       console.error("An unknown error occurred:", error);
     }
-
     return null;
   }
   return {
@@ -85,6 +130,9 @@ export default function useChatroom(): UseChatroom {
     conversationToReply,
     setConversationToEdit,
     setConversationToReply,
+    canUserReplyPrivately,
+    searchedConversationId,
+    setSearchedConversationId,
   };
 }
 export type UnknownReturnFunction = (...props: unknown[]) => unknown;

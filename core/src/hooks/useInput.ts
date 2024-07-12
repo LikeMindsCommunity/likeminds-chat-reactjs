@@ -12,7 +12,7 @@ import {
   useState,
 } from "react";
 import Member from "../types/models/member";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
+import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import { Utils } from "../utils/helpers";
 import { GetTaggingListResponse } from "../types/api-responses/getTaggingListResponse";
 import { EmojiData } from "../types/models/emojiData";
@@ -27,14 +27,24 @@ import {
   OgTag,
 } from "../types/api-responses/getOgTagResponse";
 import { Gif } from "../types/models/GifObject";
+import { ChatroomCollabcard } from "../types/api-responses/getChatroomResponse";
+import { ChatroomTypes } from "../enums/lm-chatroom-types";
+import UserProviderContext from "../context/LMUserProviderContext";
+import { MemberType } from "../enums/lm-member-type";
 
 export function useInput(): UseInputReturns {
   const { id: chatroomId } = useParams();
   //contexts
   const { lmChatclient } = useContext(GlobalClientProviderContext);
-  const { chatroom, conversationToedit, setConversationToEdit } = useContext(
-    LMChatChatroomContext,
-  );
+  const { currentUser } = useContext(UserProviderContext);
+  const {
+    chatroom,
+    conversationToedit,
+    setConversationToEdit,
+    conversationToReply,
+    setConversationToReply,
+    setNewChatroom,
+  } = useContext(LMChatChatroomContext);
   // state
   const [inputText, setInputText] = useState<string>("");
   const [tagSearchKey, setTagSearchKey] = useState<string | null>(null);
@@ -55,7 +65,7 @@ export function useInput(): UseInputReturns {
   const inputWrapperRef = useRef<HTMLDivElement | null>(null);
   const taggingListPageCount = useRef<number>(1);
   const chatroomInputTextRef = useRef<Record<string, string>>({});
-
+  const isShiftPressed = useRef<boolean>(false);
   // Gifs
   const [query, setQuery] = useState("");
   const [gifs, setGifs] = useState<Gif[]>([]);
@@ -64,13 +74,71 @@ export function useInput(): UseInputReturns {
   const [openGifCollapse, setOpenGifCollapse] = useState<boolean>(false);
   const apiKey = "9hQZNoy1wtM2b1T4BIx8B0Cwjaje3UUR";
 
-  // useEffect(() => {
-  //   // Fetch trending GIFs initially
-  //   const url = `https://api.giphy.com/v1/gifs/trending?api_key=${apiKey}&limit=10`;
-  //   fetchGifs(url);
-  // }, []);
-
   //   api calls
+  const sendDMRequest = async (textMessage: string) => {
+    try {
+      const sendDmRequestCall = await lmChatclient?.sendDMRequest({
+        chatRequestState: 0,
+        chatroomId: parseInt(chatroomId!.toString()),
+        text: textMessage,
+      });
+
+      document.dispatchEvent(
+        new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
+          detail: sendDmRequestCall.data.conversation,
+        }),
+      );
+
+      const newChatroom = { ...chatroom };
+      if (newChatroom.chatroom && newChatroom.chatroom) {
+        newChatroom.chatroom.chat_request_state = 0;
+        newChatroom.chatroom.chat_requested_by = currentUser;
+      }
+      setNewChatroom(newChatroom as ChatroomCollabcard);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const aprooveDMRequest = async () => {
+    try {
+      const aprooveDmRequestCall = await lmChatclient?.sendDMRequest({
+        chatRequestState: 1,
+        chatroomId: parseInt(chatroomId!.toString()),
+      });
+      document.dispatchEvent(
+        new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
+          detail: aprooveDmRequestCall.data.conversation,
+        }),
+      );
+      const newChatroom = { ...chatroom };
+      if (newChatroom.chatroom && newChatroom.chatroom) {
+        newChatroom.chatroom.chat_request_state = 1;
+      }
+      setNewChatroom(newChatroom as ChatroomCollabcard);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const rejectDMRequest = async () => {
+    try {
+      const rejectDmRequestCall = await lmChatclient?.sendDMRequest({
+        chatRequestState: 2,
+        chatroomId: parseInt(chatroomId!.toString()),
+      });
+      document.dispatchEvent(
+        new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
+          detail: rejectDmRequestCall.data.conversation,
+        }),
+      );
+      const newChatroom = { ...chatroom };
+      if (newChatroom.chatroom && newChatroom.chatroom) {
+        newChatroom.chatroom.chat_request_state = 2;
+      }
+      setNewChatroom(newChatroom as ChatroomCollabcard);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const fetchGifs = async (url: string) => {
     setLoading(true);
     setError(null);
@@ -128,6 +196,17 @@ export function useInput(): UseInputReturns {
         inputBoxRef.current!,
       ).trim();
       if (
+        chatroom.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
+        chatroom.chatroom.chat_request_state === null &&
+        chatroom.chatroom.member.state !== MemberType.COMMUNITY_MANAGER &&
+        chatroom.chatroom.chatroom_with_user?.state !==
+          MemberType.COMMUNITY_MANAGER
+      ) {
+        await sendDMRequest(messageText);
+
+        return;
+      }
+      if (
         (!messageText || !messageText.length) &&
         !imagesAndVideosMediaList?.length &&
         imagesAndVideosMediaList?.length
@@ -146,9 +225,7 @@ export function useInput(): UseInputReturns {
               detail: call.data.conversation,
             }),
           );
-          if (call.success) {
-            console.log(call);
-          }
+
           setFocusOnInputField();
           return;
         }
@@ -160,6 +237,11 @@ export function useInput(): UseInputReturns {
         hasFiles: false,
         ogTags: ogTags || undefined,
       };
+      if (conversationToReply) {
+        postConversationCallConfig.repliedConversationId =
+          conversationToReply.id;
+        setConversationToReply(null);
+      }
       const attachmentsList =
         imagesAndVideosMediaList || documentsMediaList || [];
       if (attachmentsList.length) {
@@ -283,7 +365,6 @@ export function useInput(): UseInputReturns {
             conversation.id.toString(),
             chatroom.chatroom.id.toString(),
           ).then((response: any) => {
-            console.log(response);
             // const fileUrl = response;
             const fileUrl = Utils.generateFileUrl(response);
             const onUploadConfig: {
@@ -380,7 +461,9 @@ export function useInput(): UseInputReturns {
       return;
     }
     const textContentFocusNode = focusNode.textContent;
-
+    if (chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+      return;
+    }
     const tagOp = Utils.findTag(textContentFocusNode!);
 
     if (tagOp?.tagString !== null && tagOp?.tagString !== undefined) {
@@ -391,17 +474,18 @@ export function useInput(): UseInputReturns {
   };
   const onTextInputKeydownHandler: onKeydownEvent = (change) => {
     if (change.key === "Enter") {
-      change.preventDefault();
-      const selection = window.getSelection()!;
-      const range = selection.getRangeAt(0).cloneRange();
-      const p = document.createElement("p");
-      const br = document.createElement("br");
-      p.appendChild(br);
-      inputBoxRef?.current?.appendChild(p);
-      range.setStart(p, 0);
-      range.setEnd(p, 0);
-      selection.removeAllRanges();
-      selection.addRange(range);
+      if (!isShiftPressed.current) {
+        change.preventDefault();
+        postMessage();
+      }
+    }
+    if (change.key === "Shift") {
+      isShiftPressed.current = true;
+    }
+  };
+  const onTextInputKeyUpHandler: onKeyUpEvent = (change) => {
+    if (change.key === "Shift") {
+      isShiftPressed.current = false;
     }
   };
   const addEmojiToText: TwoArgVoidReturns<EmojiData, MouseEvent> = (
@@ -410,9 +494,7 @@ export function useInput(): UseInputReturns {
     const emoji = emojiData.native;
     setInputText((currentText) => {
       const newTextString = currentText.concat(emoji);
-      console.log(emoji);
       Utils.insertCharAtEnd(inputBoxRef.current!, emoji.toString());
-      // console.log(newTextString);
       return newTextString;
     });
   };
@@ -524,6 +606,20 @@ export function useInput(): UseInputReturns {
     return () => clearTimeout(checkForLinksTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lmChatclient, inputText]);
+  useEffect(() => {
+    return () => {
+      setConversationToEdit(null);
+      setConversationToReply(null);
+      setDocumentMediaList(null);
+      setImagesAndVideosMediaList(null);
+      setGifMedia(null);
+      setFetchMoreTags(true);
+      setMatchedTagMembersList([]);
+      setInputText("");
+      setOgTags(null);
+      setOpenGifCollapse(false);
+    };
+  }, [chatroomId, setConversationToEdit, setConversationToReply]);
   return {
     inputBoxRef,
     inputWrapperRef,
@@ -531,6 +627,7 @@ export function useInput(): UseInputReturns {
     matchedTagMembersList,
     updateInputText,
     onTextInputKeydownHandler,
+    onTextInputKeyUpHandler,
     fetchMoreTags,
     clearTaggingList,
     addEmojiToText,
@@ -555,6 +652,9 @@ export function useInput(): UseInputReturns {
     setGifMedia,
     removeMediaFromImageList,
     removeMediaFromDocumentList,
+    sendDMRequest,
+    rejectDMRequest,
+    aprooveDMRequest,
   };
 }
 
@@ -564,6 +664,7 @@ export interface UseInputReturns {
   inputText: string;
   updateInputText: onChangeUpdateInputText;
   onTextInputKeydownHandler: onKeydownEvent;
+  onTextInputKeyUpHandler: onKeyUpEvent;
   matchedTagMembersList: Member[];
   fetchMoreTags: boolean;
   clearTaggingList: ZeroArgVoidReturns;
@@ -589,17 +690,21 @@ export interface UseInputReturns {
   handleGifSearch: ZeroArgVoidReturns;
   removeMediaFromImageList: OneArgVoidReturns<number>;
   removeMediaFromDocumentList: OneArgVoidReturns<number>;
+  sendDMRequest: OneArgVoidReturns<string>;
+  rejectDMRequest: ZeroArgVoidReturns;
+  aprooveDMRequest: ZeroArgVoidReturns;
 }
 // single compulsary argument
 export type onChangeUpdateInputText = (
   change: KeyboardEvent<HTMLDivElement>,
 ) => void;
 export type onKeydownEvent = (change: KeyboardEvent<HTMLDivElement>) => void;
+export type onKeyUpEvent = (change: KeyboardEvent<HTMLDivElement>) => void;
 export type ZeroArgVoidReturns = () => void;
 export type OneArgVoidReturns<T> = (arg: T) => void;
 export type TwoArgVoidReturns<T, S> = (argOne: T, ardTwo: S) => void;
 export type OneOptionalArgVoidReturns<T> = (arg?: T) => void;
-
+export type ZeroArgBooleanReturns = () => boolean;
 // "files/collabcard/$chatroom_id/conversation/$conversation_id/initials of media/current time in milliseconds.fileextension"
 // var initial = when (mediaType) {
 //                 IMAGE -> "IMG_"

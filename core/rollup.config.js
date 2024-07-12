@@ -26,7 +26,7 @@ export default [
             typescript({ tsconfig: './tsconfig.json' })
         ],
 
-        external: ["react", "react-dom"]
+        external: ["react", "react-dom", 'react-router-dom']
     },
     {
         input: 'dist/esm/types/index.d.ts',

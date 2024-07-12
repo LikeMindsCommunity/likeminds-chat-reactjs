@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import InputContext from "../../context/InputContext";
+import InputContext from "../../context/LMInputContext";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Utils } from "../../utils/helpers";
@@ -9,6 +9,7 @@ const LMChatTextArea = () => {
     inputWrapperRef,
     inputBoxRef,
     onTextInputKeydownHandler,
+    onTextInputKeyUpHandler,
     updateInputText,
     fetchMoreTags,
     matchedTagMembersList,
@@ -118,6 +119,7 @@ const LMChatTextArea = () => {
         className="lm-chat-text-area__input-box"
         onKeyDown={onTextInputKeydownHandler}
         onInput={updateInputText}
+        onKeyUp={onTextInputKeyUpHandler}
       ></div>
     </div>
   );

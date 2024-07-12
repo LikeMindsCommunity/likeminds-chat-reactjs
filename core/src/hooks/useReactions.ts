@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import { EmojiData } from "../types/models/emojiData";
 import { OneArgVoidReturns } from "./useInput";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
-import LMMessageContext from "../context/MessageContext";
+import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
+import LMMessageContext from "../context/LMMessageContext";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 
 export function useReactions(): UseReactionReturns {
@@ -28,7 +28,6 @@ export function useReactions(): UseReactionReturns {
         conversationId: message!.id!,
         reaction: emoji,
       });
-      console.log(call);
     } catch (error) {
       console.log(error);
     }

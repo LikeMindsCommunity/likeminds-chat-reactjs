@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { SDKClientInfo } from "./getChatroomResponse";
-
 export interface Member {
   id: number;
   image_url: string;
@@ -13,7 +11,6 @@ export interface Member {
   uuid: string;
   sdk_client_info: SDKClientInfo;
 }
-
 export interface Conversation {
   id: number;
   answer: string;
@@ -38,7 +35,6 @@ export interface Conversation {
   member: Member;
   community_id: number;
 }
-
 export interface PostConversationResponse {
   success: boolean;
   data: { id: number; conversation: Conversation };
