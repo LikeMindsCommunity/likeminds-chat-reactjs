@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { PropsWithChildren, memo, useContext } from "react";
 import { MessageListProps } from "../../types/prop-types/MessageListProps";
-import MessageListContext from "../../context/MessageListContext";
+import MessageListContext from "../../context/LMMessageListContext";
 import Conversation from "../../types/models/conversations";
 import ScrollContainer from "../DualSidePagination/ScrollContainer";
 import useConversations from "../../hooks/useConversations";
@@ -9,9 +9,9 @@ import LMMessageMiddleware from "./LMMessageMiddleware";
 
 import { CircularProgress } from "@mui/material";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
-import UserProviderContext from "../../context/UserProviderContext";
-import { ChatroomTypes } from "../../enums/chatroom-types";
-import { MemberType } from "../../enums/member-type";
+import UserProviderContext from "../../context/LMUserProviderContext";
+import { ChatroomTypes } from "../../enums/lm-chatroom-types";
+import { MemberType } from "../../enums/lm-member-type";
 
 const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
   (props) => {

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import MessageContext from "../../context/MessageContext";
+import MessageContext from "../../context/LMMessageContext";
 import { usePoll } from "../../hooks/usePolls";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -11,7 +11,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs"; // Assuming you are u
 import "react-tabs/style/react-tabs.css";
 import modalCancelIcon from "../../assets/img/cancel-icon.svg";
 import pollIcon from "../../assets/img/poll-icon.svg";
-import UserProviderContext from "../../context/UserProviderContext";
+import UserProviderContext from "../../context/LMUserProviderContext";
 import { getAvatar } from "../../shared/components/LMUserMedia";
 
 dayjs.extend(relativeTime);

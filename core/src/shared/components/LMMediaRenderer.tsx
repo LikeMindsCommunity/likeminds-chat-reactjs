@@ -1,9 +1,9 @@
 import React, { useContext, useState } from "react";
 import { Modal, Carousel } from "react-bootstrap";
-import LMMessageContext from "../../context/MessageContext";
+import LMMessageContext from "../../context/LMMessageContext";
 import pdfIcon from "../../assets/img/pdf-document.svg";
 import { getAvatar } from "./LMUserMedia";
-import MessageListContext from "../../context/MessageListContext";
+import MessageListContext from "../../context/LMMessageListContext";
 
 const MediaRenderer = ({ attachments }) => {
   const [show, setShow] = useState(false);

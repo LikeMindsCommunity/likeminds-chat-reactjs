@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useContext, useEffect, useState } from "react";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
+import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import { DMChannel } from "../types/models/ChatroomResponse";
 import { GetHomeFeedRequest } from "@likeminds.community/chat-js-beta/dist/pages/home-feed/types";
 import {
@@ -16,7 +16,7 @@ import {
   GetExploreChatroomsResponse,
 } from "../types/api-responses/getExploreChatroomsResponse";
 import { useNavigate, useParams } from "react-router-dom";
-import UserProviderContext from "../context/UserProviderContext";
+import UserProviderContext from "../context/LMUserProviderContext";
 import { onValue, ref } from "firebase/database";
 import { CustomActions } from "../customActions";
 import { CHANNEL_PATH } from "../shared/constants/lm.routes.constant";

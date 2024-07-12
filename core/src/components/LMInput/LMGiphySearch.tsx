@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import InputContext from "../../context/InputContext";
+import InputContext from "../../context/LMInputContext";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 

@@ -8,7 +8,7 @@ import {
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-provider-cognito-identity";
 // import { LMAppAwsKeys } from "./constants/lmAppAwsKeys";
 import { FileType } from "../types/enums/Filetype";
-import { FileTypeInitials } from "../enums/file-type-initials";
+import { FileTypeInitials } from "../enums/lm-file-type-initials";
 import Member from "../types/models/member";
 import { validMatchingString } from "./TLDs";
 type StringTagType = {
