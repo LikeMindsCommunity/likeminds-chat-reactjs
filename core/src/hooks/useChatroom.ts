@@ -53,7 +53,6 @@ export default function useChatroom(): UseChatroom {
           const showList = new URL(cta).searchParams
             .get("show_list")
             ?.toString();
-          console.log(`The show_list is ${showList}`);
           switch (showList) {
             case ReplyDmQueries.REPLY_PRIVATELY_ALLOWED_TO_ALL_MEMBERS: {
               setCanUserReplyPrivately(
@@ -98,7 +97,7 @@ export default function useChatroom(): UseChatroom {
         // set the loader to false
         setLoader!(false);
       } catch (error) {
-        // console.log the error
+        console.log(error);
       }
     }
     fetchChannel();

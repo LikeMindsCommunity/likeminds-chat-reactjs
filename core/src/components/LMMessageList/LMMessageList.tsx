@@ -51,8 +51,6 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
         return false;
       }
       const chatRequestState = chatroom?.chatroom.chat_request_state;
-      console.log(chatRequestState);
-
       if (chatRequestState === null) {
         return true;
       } else {
@@ -106,14 +104,12 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
             bottomReferenceDiv={bottomReferenceDiv}
             dataLength={conversations?.length || 0}
             nextOnScrollBottom={() => {
-              // console.log("bottom scroll function call");
               if (getChatroomConversationsOnBottomScroll) {
                 getChatroomConversationsOnBottomScroll();
               }
             }}
             nextOnScrollTop={() => {
               if (getChatroomConversationsOnTopScroll) {
-                // console.log("calling");
                 getChatroomConversationsOnTopScroll();
               }
             }}

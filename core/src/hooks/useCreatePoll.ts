@@ -45,11 +45,9 @@ export function useCreatePoll(closeDialog?: ZeroArgVoidReturns): UseCreatePoll {
   const addPollOption = () => {
     setPollOptions((currentPollOptions) => {
       currentPollOptions = [...currentPollOptions];
-      console.log("clicked");
       currentPollOptions.push({
         text: "",
       });
-      console.log(currentPollOptions);
       return currentPollOptions;
     });
   };
@@ -163,7 +161,6 @@ export function useCreatePoll(closeDialog?: ZeroArgVoidReturns): UseCreatePoll {
       if (closeDialog) {
         closeDialog();
       }
-      console.log(call);
     } catch (error) {
       console.log(error);
     }

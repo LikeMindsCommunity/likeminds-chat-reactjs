@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+
 import LMDMChatChannels from "./LMDMChatChannels";
 import LMGroupChatChannelList from "./LMGroupChatChannelList";
 import {
@@ -9,7 +9,7 @@ import {
 } from "../../shared/constants/lm.routes.constant";
 
 const LMChannelList = () => {
-  const { pathname } = useLocation();
+  const { pathname } = window.location;
   const switcher = () => {
     if (
       pathname.includes(CHANNEL_PATH) ||

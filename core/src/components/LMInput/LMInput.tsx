@@ -20,6 +20,7 @@ import { ConstantStrings } from "../../enums/lm-common-strings";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import { ChatRequestStates } from "../../enums/lm-chat-request-states";
 import LMMessageReplyCollapse from "./LMMessageReplyCollapse";
+import LMMessageEditCollapse from "./LMMessageEditCollapse";
 
 const LMInput = () => {
   const {
@@ -121,7 +122,7 @@ const LMInput = () => {
             : ConstantStrings.DM_REQUEST_PENDING_MESSAGING_CHATROOM_WITH_USER;
       }
     }
-    console.log("isInputBoxDisabled", isInputBoxDisabled);
+
     if (isInputBoxDisabled) {
       return (
         <input
@@ -294,8 +295,14 @@ const LMInput = () => {
     >
       <div className="lm-channel-footer-wrapper">
         {/* Collapseable  for Edit message*/}
-        <Collapse in={Boolean(conversationToedit)}>
-          <div className="div">This is the collapse for edit feature</div>
+
+        <Collapse
+          in={Boolean(conversationToedit)}
+          sx={{
+            background: "#D0D8E3",
+          }}
+        >
+          <LMMessageEditCollapse />
         </Collapse>
         {/* Collapseable for OG Tags */}
         <Collapse

@@ -6,7 +6,7 @@ import { UserDetails } from "../context/LMGlobalClientProviderContext";
 import { getCurrentBrowserFingerPrint } from "@rajesh896/broprint.js";
 import { onMessage } from "firebase/messaging";
 import { generateToken, messaging } from "../notifications/firebase";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { CustomActions } from "../customActions";
 
 interface UserProviderInterface {
@@ -35,39 +35,7 @@ export default function useUserProvider(
   const [deviceNotificationTrigger, setDeviceNotificationTrigger] =
     useState<boolean>(false);
   const currentBrowserId = useRef<string>("");
-  // useEffect(() => {
-  //   console.log(lmChatclient);
-  //   if (!lmChatclient) {
-  //     return;
-  //   }
-  //   async function setUser() {
-  //     try {
-  //       const initiateUserCall = await lmChatclient?.initiateUser({
-  //         userUniqueId: userDetails.uuid,
-  //         userName: userDetails.username,
-  //         isGuest: userDetails.isGuest,
-  //       });
-  //       const memberStateCall = await lmChatclient?.getMemberState();
-  //       console.log(memberStateCall);
-  //       const user = {
-  //         ...initiateUserCall.data.user,
-  //         state: memberStateCall.data.state,
-  //         memberRights: memberStateCall.data.member_rights,
-  //       };
-  //       setLmChatUser(user);
-  //       setLmChatUserCurrentCommunity(initiateUserCall.data.community);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-  //   setUser();
-  // }, [
-  //   lmChatclient,
-  //   userDetails.isGuest,
-  //   userDetails.username,
-  //   userDetails.uuid,
-  // ]);
-  //
+
   useEffect(() => {
     const { accessToken, refreshToken, username, uuid, isGuest, apiKey } =
       userDetails;
@@ -94,8 +62,6 @@ export default function useUserProvider(
           tokenExpiryBeta: 1,
           rtmTokenExpiryBeta: 2,
         });
-
-        console.log(validateUserCall);
         if (validateUserCall.success) {
           // Setting tokens in local storage
           setTokensInLocalStorage(localAccessToken, localRefreshToken);
@@ -110,7 +76,6 @@ export default function useUserProvider(
           };
           user.state = memberStateCall.data.state;
           user.memberRights = memberStateCall.data.member_rights;
-          console.log(user);
           setLmChatUser(user || null);
           setLmChatUserCurrentCommunity(
             validateUserCall?.data?.community || null,
@@ -142,11 +107,9 @@ export default function useUserProvider(
           tokenExpiryBeta: 1,
           rtmTokenExpiryBeta: 2,
         });
-        console.log(initiateUserCall);
         if (initiateUserCall.success) {
           // Setting the tokens, API key and User in local storage
-          console.log(initiateUserCall.data?.access_token);
-          console.log(initiateUserCall.data?.refresh_token);
+
           setTokensInLocalStorage(
             initiateUserCall.data?.access_token || "",
             initiateUserCall.data?.refresh_token || "",
@@ -157,14 +120,12 @@ export default function useUserProvider(
           );
         }
         const memberStateCall = await lmChatclient?.getMemberState();
-        console.log(memberStateCall);
         if (initiateUserCall.success && memberStateCall.success) {
           const user = {
             ...initiateUserCall.data?.user,
           };
           user.state = memberStateCall.data.state;
           user.memberRights = memberStateCall.data.member_rights;
-          console.log(user);
           setLmChatUser(user || null);
           setLmChatUserCurrentCommunity(
             initiateUserCall?.data?.community || null,
@@ -198,23 +159,18 @@ export default function useUserProvider(
             lmChatclient?.getAccessTokenFromLocalStorage();
           const localRefreshToken =
             lmChatclient?.getRefreshTokenFromLocalStorage();
-          console.log(
-            `the local access token is ${localAccessToken} and the local refresh token is ${localRefreshToken}`,
-          );
+
           if (
             localAccessToken &&
             localRefreshToken &&
             localAccessToken.length &&
             localRefreshToken.length
           ) {
-            console.log("entering validate user with local tokens");
             await validateChatUser(localAccessToken, localRefreshToken);
           } else {
-            console.log("entering initiate user with local tokens");
             await initiateFeedUser(apiKey, uuid, username, isGuest || false);
           }
         } else if (accessToken && refreshToken) {
-          console.log("entering validate user with provided tokens");
           await validateChatUser(accessToken, refreshToken);
         } else {
           throw Error("Neither API key nor Tokens provided");
@@ -273,7 +229,6 @@ export default function useUserProvider(
   useEffect(() => {
     if (deviceNotificationTrigger) {
       return onMessage(messaging, (payload: any) => {
-        console.log("Message received. ", payload);
         toast(payload?.notification?.body);
       });
     }

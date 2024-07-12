@@ -1,16 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { PropsWithChildren, useState } from "react";
+import React, { PropsWithChildren, useEffect, useState } from "react";
 import { LMChatProps } from "../../types/prop-types/LMChatProps";
 import GlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import UserProviderContext from "../../context/LMUserProviderContext";
 import LoaderContextProvider from "../../context/LMLoaderContextProvider";
 import useUserProvider from "../../hooks/useUserProvider";
 import { Snackbar } from "@mui/material";
+import { LMSDKCallbacksImplementations } from "../../LMSDKCoreCallbacks";
 
 const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
   client,
   children,
   userDetails,
+  lmChatCoreCallbacks,
 }) => {
   const {
     lmChatUser,
@@ -21,6 +23,11 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
   const [showSnackbarMessage, setShowSnackbarMessage] = useState<string | null>(
     null,
   );
+  useEffect(() => {
+    if (!client) return;
+    const sdk = new LMSDKCallbacksImplementations(lmChatCoreCallbacks, client);
+    client.setLMSDKCallbacks(sdk);
+  }, [client, lmChatCoreCallbacks]);
   const openSnackbar = (message: string) => {
     setShowSnackbarMessage(() => {
       return message;

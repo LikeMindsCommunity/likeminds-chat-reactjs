@@ -88,7 +88,6 @@ function useChatroomMenuOptions(): UseChatroomMenuOptions {
         status: 1,
         chatroomId: chatroom?.chatroom.id || 0,
       });
-      console.log(unblockCall);
       document.dispatchEvent(
         new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
           detail: unblockCall.data.conversation,
@@ -134,7 +133,6 @@ function useChatroomMenuOptions(): UseChatroomMenuOptions {
         status: 0,
         chatroomId: chatroom?.chatroom.id || 0,
       });
-      console.log(blockCall);
       document.dispatchEvent(
         new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
           detail: blockCall.data.conversation,

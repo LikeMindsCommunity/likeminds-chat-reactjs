@@ -23,17 +23,23 @@ export default defineConfig({
   build: {
     cssCodeSplit: true,
     copyPublicDir: false,
-    // lib: {
-    //   // Could also be a dictionary or array of multiple entry points
-    //   entry: resolve(__dirname, "src/index.ts"),
-    //   name: "react-feed-lib",
-    //   // the proper extensions will be added
-    //   fileName: "index",
-    // },
+    lib: {
+      // Could also be a dictionary or array of multiple entry points
+      entry: resolve(__dirname, "src/index.ts"),
+      name: "lm-chat-lib",
+      // the proper extensions will be added
+      fileName: "index",
+    },
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      // external: ["react", "react-dom", "vite", "react/jsx-runtime"],
+      external: [
+        "react",
+        "react-dom",
+        "vite",
+        "react/jsx-runtime",
+        "react-router-dom",
+      ],
       output: {
         // Provide global variables to use in the UMD build
         // for externalized deps

@@ -79,8 +79,6 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
   const handleScroll = useCallback(async () => {
     try {
       if (hasAlreadyCalled.current) {
-        // TODO remove the below log
-        // console.log("The function has already been called before");
         return;
       }
       const scrollContainer = scrollContainerRef.current;
@@ -105,7 +103,6 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
           hasAlreadyCalled.current = true;
           await nextOnScrollTop();
         } else {
-          console.log(callNextOnBottom);
           if (callNextOnBottom) {
             hasAlreadyCalled.current = true;
             await nextOnScrollBottom();
