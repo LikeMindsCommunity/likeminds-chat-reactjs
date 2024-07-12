@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import MessageContext from "../../context/MessageContext";
+import MessageContext from "../../context/LMMessageContext";
 
 const LMNormalMessage = () => {
   const { message } = useContext(MessageContext);

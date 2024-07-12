@@ -1,14 +1,18 @@
-import React, { PropsWithChildren } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { PropsWithChildren, useEffect, useState } from "react";
 import { LMChatProps } from "../../types/prop-types/LMChatProps";
-import GlobalClientProviderContext from "../../context/GlobalClientProviderContext";
-import UserProviderContext from "../../context/UserProviderContext";
-import LoaderContextProvider from "../../context/LoaderContextProvider";
+import GlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
+import UserProviderContext from "../../context/LMUserProviderContext";
+import LoaderContextProvider from "../../context/LMLoaderContextProvider";
 import useUserProvider from "../../hooks/useUserProvider";
+import { Snackbar } from "@mui/material";
+import { LMSDKCallbacksImplementations } from "../../LMSDKCoreCallbacks";
 
 const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
   client,
   children,
   userDetails,
+  lmChatCoreCallbacks,
 }) => {
   const {
     lmChatUser,
@@ -16,6 +20,25 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
     logoutUser,
     lmChatUserCurrentCommunity,
   } = useUserProvider(client, userDetails);
+  const [showSnackbarMessage, setShowSnackbarMessage] = useState<string | null>(
+    null,
+  );
+  useEffect(() => {
+    if (!client) return;
+    const sdk = new LMSDKCallbacksImplementations(lmChatCoreCallbacks, client);
+    client.setLMSDKCallbacks(sdk);
+  }, [client, lmChatCoreCallbacks]);
+  const openSnackbar = (message: string) => {
+    setShowSnackbarMessage(() => {
+      return message;
+    });
+  };
+  const closeSnackbar = () => {
+    setShowSnackbarMessage(() => null);
+  };
+  if (!lmChatUser) {
+    return null;
+  }
 
   return (
     <GlobalClientProviderContext.Provider
@@ -29,16 +52,22 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
           currentUser: lmChatUser,
           memberState: lmChatUserMemberState,
           logoutUser: logoutUser,
-          currentCommunity: lmChatUserCurrentCommunity,
+          currentCommunity: lmChatUserCurrentCommunity as unknown as any,
         }}
       >
         <LoaderContextProvider.Provider
           value={{
             loader: false,
             setLoader: null,
+            openSnackbar: openSnackbar,
           }}
         >
           {lmChatUser ? children : null}
+          <Snackbar
+            open={showSnackbarMessage ? true : false}
+            message={showSnackbarMessage || ""}
+            onClose={closeSnackbar}
+          />
         </LoaderContextProvider.Provider>
       </UserProviderContext.Provider>
     </GlobalClientProviderContext.Provider>

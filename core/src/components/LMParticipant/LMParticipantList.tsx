@@ -4,6 +4,7 @@ import { useParticipants } from "../../hooks/useParticipants";
 // icons
 import backIcon from "../../assets/img/back-navigation-arrow.svg";
 import InfiniteScroll from "react-infinite-scroll-component";
+import searchIcon from "../../assets/img/search.svg";
 
 const LMParticipantList = () => {
   const {
@@ -11,6 +12,9 @@ const LMParticipantList = () => {
     navigateBackToChatroom,
     getMembers,
     loadMoreParticipants,
+    searchKeyword,
+    setSearchKeyword,
+    totalParticipantCount,
   } = useParticipants();
   return (
     <div className="lm-participant-wrapper">
@@ -21,7 +25,18 @@ const LMParticipantList = () => {
           </div>
           <div>Participants</div>
         </div>
-        <div className="counts">{participantsList.length} Participants</div>
+        <div className="counts">{totalParticipantCount} Participants</div>
+      </div>
+      <div className="member-search">
+        <img src={searchIcon} alt="search-icon" />
+        <input
+          type="text"
+          placeholder="Search by member name"
+          value={searchKeyword}
+          onChange={(e) => {
+            setSearchKeyword(e.target.value);
+          }}
+        />
       </div>
       <div className="lm-participant-body" id="lm-participant-scroller">
         <InfiniteScroll

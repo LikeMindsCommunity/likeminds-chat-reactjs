@@ -15,6 +15,7 @@ export interface Participant {
 export interface ResponseData {
   can_edit_participant: boolean;
   participants: Participant[];
+  total_participants_count?: number;
   // widgets: { [key: string]: any }; // Assuming widgets can have dynamic keys
 }
 

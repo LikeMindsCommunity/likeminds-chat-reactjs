@@ -1,10 +1,10 @@
 import React, { useContext, useState } from "react";
-import InputContext from "../../context/InputContext";
+import InputContext from "../../context/LMInputContext";
 import { FileType } from "../../types/enums/Filetype";
 import { Carousel } from "react-responsive-carousel";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
-
+import modalCancelIcon from "../../assets/img/cancel-icon.svg";
 // Styles
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 // Icons
@@ -56,7 +56,7 @@ const LMMediaCarousel = () => {
             <IconButton
               onClick={() => removeMediaFromDocumentList(currentSelectedIndex)}
             >
-              <CloseIcon fontSize="medium" />
+              <CloseIcon fontSize="medium" style={{ color: "white" }} />
             </IconButton>
           </span>
           <Carousel
@@ -99,7 +99,7 @@ function renderLocalDocument(file: File) {
   return (
     <div className="lm-input-carousel-document-element">
       <img src={pdfViewIcon} alt="pdf-icon" />
-      <p className="document-file-details">{file.name}</p>
+      <div className="document-file-details">{file.name}</div>
     </div>
   );
 }
