@@ -4,9 +4,9 @@ import Conversation, {
   Poll,
   PollOptionNew,
 } from "../../types/models/conversations";
-import LMMessageContext from "../../context/MessageContext";
-import Message from "../LMMessage/Message";
-import UserProviderContext from "../../context/UserProviderContext";
+import LMMessageContext from "../../context/LMMessageContext";
+import LMMessage from "../LMMessage/LMMessage";
+import UserProviderContext from "../../context/LMUserProviderContext";
 import { EmojiData } from "../../types/models/emojiData";
 
 interface LMMessageMiddlewareProps {
@@ -105,7 +105,7 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
         updatePollOnSubmitLocally: updatePollOnSubmitLocally,
       }}
     >
-      <Message />
+      <LMMessage />
     </LMMessageContext.Provider>
   );
 });

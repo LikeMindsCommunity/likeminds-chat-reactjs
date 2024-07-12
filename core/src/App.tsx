@@ -9,9 +9,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
 import LMParticipantList from "./components/LMParticipant/LMParticipantList";
-import Header from "./components/LMHeader/LMHeader";
-import MessageList from "./components/LMMessageList/LMMessageList";
-import Input from "./components/LMInput/Input";
+import LMHeader from "./components/LMHeader/LMHeader";
+import LMMessageList from "./components/LMMessageList/LMMessageList";
+import LMInput from "./components/LMInput/LMInput";
 import LMChannel from "./components/LMChannel/LMChannel";
 import {
   CHANNEL_PATH,
@@ -49,9 +49,9 @@ const LMAppLayout = () => {
               path={MODE + "/" + ID_PATH}
               element={
                 <>
-                  <Header />
-                  <MessageList />
-                  <Input />
+                  <LMHeader />
+                  <LMMessageList />
+                  <LMInput />
                 </>
               }
             />
@@ -80,9 +80,9 @@ export const appRoute = createBrowserRouter([
             path: CHANNEL_PATH + "/" + ID_PATH,
             element: (
               <>
-                <Header />
-                <MessageList />
-                <Input />
+                <LMHeader />
+                <LMMessageList />
+                <LMInput />
               </>
             ),
           },

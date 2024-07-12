@@ -4,9 +4,9 @@ import {
   ZeroArgBooleanReturns,
   ZeroArgVoidReturns,
 } from "./useInput";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
-import LMMessageContext from "../context/MessageContext";
-import { PollMultipleSelectState, PollType } from "../enums/poll-type";
+import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
+import LMMessageContext from "../context/LMMessageContext";
+import { PollMultipleSelectState, PollType } from "../enums/lm-poll-type";
 
 export function usePoll(): UsePoll {
   const { lmChatclient } = useContext(GlobalClientProviderContext);

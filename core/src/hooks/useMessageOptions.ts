@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useContext, useEffect } from "react";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
-import LMMessageContext from "../context/MessageContext";
+import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
+import LMMessageContext from "../context/LMMessageContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { CustomActions } from "../customActions";

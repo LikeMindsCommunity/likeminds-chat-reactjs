@@ -1,6 +1,6 @@
 import InfiniteScroll from "react-infinite-scroll-component";
 import useDmChannelLists from "../../hooks/useDMChannelLists";
-import { LMDMChannelListContext } from "../../context/DMChannelListContext";
+import { LMDMChannelListContext } from "../../context/LMDMChannelListContext";
 import LMJoinedDMChannelTile from "./LMJoinedDMChannelTile";
 
 const LMDMChatChannels = () => {

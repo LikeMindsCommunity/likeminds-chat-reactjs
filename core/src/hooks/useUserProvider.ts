@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { LMClient } from "../types/DataLayerExportsTypes";
 import Member from "../types/models/member";
-import { UserDetails } from "../context/GlobalClientProviderContext";
+import { UserDetails } from "../context/LMGlobalClientProviderContext";
 import { getCurrentBrowserFingerPrint } from "@rajesh896/broprint.js";
 import { onMessage } from "firebase/messaging";
 import { generateToken, messaging } from "../notifications/firebase";

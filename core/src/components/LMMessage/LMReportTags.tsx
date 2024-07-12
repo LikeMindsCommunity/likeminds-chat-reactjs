@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import GlobalClientProviderContext from "../../context/GlobalClientProviderContext";
+import GlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import {
   GetReportTagsChatResponse,
   ReportTagMessage,
 } from "../../types/api-responses/getReportTagsResponseChatResponse";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "../../hooks/useInput";
-import ReportTagComponent from "./ReportTagComponent";
+import ReportTagComponent from "./LMReportTagComponent";
 
 import canceIcon from "../../assets/img/cancel-icon.svg";
 

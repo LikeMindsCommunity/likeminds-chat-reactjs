@@ -1,9 +1,9 @@
 import React, { useContext, useMemo } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
-import { LMDMChannelListContext } from "../../context/DMChannelListContext";
+import { LMDMChannelListContext } from "../../context/LMDMChannelListContext";
 import { DM_CHANNEL_PATH } from "../../shared/constants/lm.routes.constant";
-import UserProviderContext from "../../context/UserProviderContext";
+import UserProviderContext from "../../context/LMUserProviderContext";
 import { ChatroomData } from "../../types/api-responses/getChatroomSync";
 import document from "../../assets/img/document.svg";
 import { Utils } from "../../utils/helpers";

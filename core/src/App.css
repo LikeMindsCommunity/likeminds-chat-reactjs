@@ -739,7 +739,7 @@ body {
 
 .lm-input-carousel-document-element {
   width: 100%;
-  max-height: 415px;
+  height: 300px;
   object-fit: contain;
   display: flex;
   justify-content: center;
@@ -749,7 +749,7 @@ body {
 
 
 .lm-input-carousel-document-element img {
-  height: 200px;
+  max-height: 200px;
 }
 
 .lm-input-carousel-document-element .document-file-details {
@@ -2609,4 +2609,11 @@ input.disabled-state {
 
 .search-result-item:hover {
   background: #f0f0f0;
+}
+
+.lm-custom-menu{
+  display: flex;
+}
+.lm-custom-menu ul{
+  display: flex !important;
 }

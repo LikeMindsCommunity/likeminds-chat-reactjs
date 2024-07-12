@@ -12,7 +12,7 @@ import {
   useState,
 } from "react";
 import Member from "../types/models/member";
-import GlobalClientProviderContext from "../context/GlobalClientProviderContext";
+import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import { Utils } from "../utils/helpers";
 import { GetTaggingListResponse } from "../types/api-responses/getTaggingListResponse";
 import { EmojiData } from "../types/models/emojiData";
@@ -28,9 +28,9 @@ import {
 } from "../types/api-responses/getOgTagResponse";
 import { Gif } from "../types/models/GifObject";
 import { ChatroomCollabcard } from "../types/api-responses/getChatroomResponse";
-import { ChatroomTypes } from "../enums/chatroom-types";
-import UserProviderContext from "../context/UserProviderContext";
-import { MemberType } from "../enums/member-type";
+import { ChatroomTypes } from "../enums/lm-chatroom-types";
+import UserProviderContext from "../context/LMUserProviderContext";
+import { MemberType } from "../enums/lm-member-type";
 
 export function useInput(): UseInputReturns {
   const { id: chatroomId } = useParams();
