@@ -59,7 +59,9 @@ const LMInput = () => {
     onTextInputKeyUpHandler,
   } = useInput();
   const { currentUser } = useContext(UserProviderContext);
-  const { chatroom, conversationToReply } = useContext(LMChatChatroomContext);
+  const { chatroom, conversationToReply, conversationToedit } = useContext(
+    LMChatChatroomContext,
+  );
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const shouldShowInputBox = useMemo(() => {
     const canRespondInChatroom = currentUser?.memberRights?.find(
@@ -294,8 +296,16 @@ const LMInput = () => {
     >
       <div className="lm-channel-footer-wrapper">
         {/* Collapseable  for Edit message*/}
-        <Collapse in={Boolean(conversationToReply)}>
+        {/* <Collapse in={Boolean(conversationToReply)}>
           <div className="div">This is the collapse for edit feature</div>
+        </Collapse> */}
+        <Collapse
+          in={Boolean(conversationToedit)}
+          sx={{
+            background: "#D0D8E3",
+          }}
+        >
+          <LMMessageReplyCollapse />
         </Collapse>
         {/* Collapseable for OG Tags */}
         <Collapse
