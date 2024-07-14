@@ -4,10 +4,17 @@ import { Community } from "../types/models/Community";
 
 interface UserProviderContextInterface {
   currentUser: Member;
-  memberState: unknown;
+  memberState: number;
   logoutUser: (() => void) | null;
   currentCommunity: Community;
 }
 export default React.createContext<UserProviderContextInterface>(
   {} as UserProviderContextInterface,
 );
+
+export interface ApplicationGeneralDataContext {
+  currentUser: Member;
+  memberState: number;
+  logoutUser: (() => void) | null;
+  currentCommunity: Community;
+}

@@ -31,8 +31,33 @@ import { ChatroomCollabcard } from "../types/api-responses/getChatroomResponse";
 import { ChatroomTypes } from "../enums/lm-chatroom-types";
 import UserProviderContext from "../context/LMUserProviderContext";
 import { MemberType } from "../enums/lm-member-type";
+import { InputCustomActions } from "../types/prop-types/CustomComponents";
 
-export function useInput(): UseInputReturns {
+export function useInput(
+  inputCustomActions?: InputCustomActions,
+): UseInputReturns {
+  const {
+    onUpdateInputText,
+    onOnTextInputKeydownHandler,
+    onOnTextInputKeyUpHandler,
+    onClearTaggingList,
+    onAddEmojiToText,
+    onAddImagesAndVideosMedia,
+    onAddDocumentsMedia,
+    onPostMessage,
+    onGetTaggingMembers,
+    onRemoveOgTag,
+    onSetGifMedia,
+    onSetOpenGifCollapse,
+    onGifSearchQuery,
+    onFetchGifs,
+    onHandleGifSearch,
+    onRemoveMediaFromImageList,
+    onRemoveMediaFromDocumentList,
+    onSendDMRequest,
+    onRejectDMRequest,
+    onAprooveDMRequest,
+  } = inputCustomActions!;
   const { id: chatroomId } = useParams();
   //contexts
   const { lmChatclient } = useContext(GlobalClientProviderContext);
@@ -662,30 +687,30 @@ export interface UseInputReturns {
   inputBoxRef: MutableRefObject<HTMLDivElement | null>;
   inputWrapperRef: MutableRefObject<HTMLDivElement | null>;
   inputText: string;
-  updateInputText: onChangeUpdateInputText;
-  onTextInputKeydownHandler: onKeydownEvent;
-  onTextInputKeyUpHandler: onKeyUpEvent;
   matchedTagMembersList: Member[];
   fetchMoreTags: boolean;
-  clearTaggingList: ZeroArgVoidReturns;
-  addEmojiToText: TwoArgVoidReturns<EmojiData, MouseEvent>;
-  addImagesAndVideosMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>>;
-  addDocumentsMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>>;
   imagesAndVideosMediaList: File[] | null;
   documentsMediaList: File[] | null;
-  postMessage: ZeroArgVoidReturns;
-  getTaggingMembers: OneOptionalArgVoidReturns<number>;
-  removeOgTag: ZeroArgVoidReturns;
   ogTag: OgTag | null;
-  setGifMedia: Dispatch<Gif | null>;
   gifMedia: Gif | null;
   gifs: Gif[];
   loadingGifs: boolean;
   errorOnGifs: string | null;
   gifQuery: string;
-  gifSearchQuery: OneArgVoidReturns<string>;
   openGifCollapse: boolean;
+  updateInputText: onChangeUpdateInputText;
+  onTextInputKeydownHandler: onKeydownEvent;
+  onTextInputKeyUpHandler: onKeyUpEvent;
+  clearTaggingList: ZeroArgVoidReturns;
+  addEmojiToText: TwoArgVoidReturns<EmojiData, MouseEvent>;
+  addImagesAndVideosMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>>;
+  addDocumentsMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>>;
+  postMessage: ZeroArgVoidReturns;
+  getTaggingMembers: OneOptionalArgVoidReturns<number>;
+  removeOgTag: ZeroArgVoidReturns;
+  setGifMedia: Dispatch<Gif | null>;
   setOpenGifCollapse: Dispatch<boolean>;
+  gifSearchQuery: OneArgVoidReturns<string>;
   fetchGifs: OneArgVoidReturns<string>;
   handleGifSearch: ZeroArgVoidReturns;
   removeMediaFromImageList: OneArgVoidReturns<number>;
@@ -718,3 +743,43 @@ export type ZeroArgBooleanReturns = () => boolean;
 //             if (isThumbnail) {
 //                 initial += "THUMB_"
 //             }
+
+export interface InputDefaultActions {
+  updateInputText: onChangeUpdateInputText;
+  onTextInputKeydownHandler: onKeydownEvent;
+  onTextInputKeyUpHandler: onKeyUpEvent;
+  clearTaggingList: ZeroArgVoidReturns;
+  addEmojiToText: TwoArgVoidReturns<EmojiData, MouseEvent>;
+  addImagesAndVideosMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>>;
+  addDocumentsMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>>;
+  postMessage: ZeroArgVoidReturns;
+  getTaggingMembers: OneOptionalArgVoidReturns<number>;
+  removeOgTag: ZeroArgVoidReturns;
+  setGifMedia: Dispatch<Gif | null>;
+  setOpenGifCollapse: Dispatch<boolean>;
+  gifSearchQuery: OneArgVoidReturns<string>;
+  fetchGifs: OneArgVoidReturns<string>;
+  handleGifSearch: ZeroArgVoidReturns;
+  removeMediaFromImageList: OneArgVoidReturns<number>;
+  removeMediaFromDocumentList: OneArgVoidReturns<number>;
+  sendDMRequest: OneArgVoidReturns<string>;
+  rejectDMRequest: ZeroArgVoidReturns;
+  aprooveDMRequest: ZeroArgVoidReturns;
+}
+
+export interface InputDataStore {
+  inputBoxRef: MutableRefObject<HTMLDivElement | null>;
+  inputWrapperRef: MutableRefObject<HTMLDivElement | null>;
+  inputText: string;
+  matchedTagMembersList: Member[];
+  fetchMoreTags: boolean;
+  imagesAndVideosMediaList: File[] | null;
+  documentsMediaList: File[] | null;
+  ogTag: OgTag | null;
+  gifMedia: Gif | null;
+  gifs: Gif[];
+  loadingGifs: boolean;
+  errorOnGifs: string | null;
+  gifQuery: string;
+  openGifCollapse: boolean;
+}

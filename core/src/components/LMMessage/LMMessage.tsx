@@ -23,8 +23,12 @@ import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
 import { ChatRequestStates } from "../../enums/lm-chat-request-states";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import { useMessageOptions } from "../../hooks/useMessageOptions";
+import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 
 const LMMessage = () => {
+  const { customComponents } = useContext(LMGlobalClientProviderContext);
+  const { messageBubbles, message: CustomMessageComponent } =
+    customComponents || {};
   const { message, index } = useContext(LMMessageContext);
   const { conversations, unBlockUserInDM } = useContext(MessageListContext);
   const { currentUser } = useContext(UserProviderContext);
@@ -35,6 +39,12 @@ const LMMessage = () => {
   const imageUrl = message?.member.imageUrl;
   const name = message?.member.name;
   const avatarContent = getAvatar({ imageUrl, name });
+
+  // custom message component
+
+  if (CustomMessageComponent) {
+    return <CustomMessageComponent />;
+  }
 
   const handleImageError = (e: any) => {
     e.target.src = linkImg; // Fallback image URL
@@ -91,6 +101,9 @@ const LMMessage = () => {
     }
   }
   if (message?.deleted_by) {
+    if (messageBubbles?.chatroomDeletedChatBubble) {
+      return <messageBubbles.chatroomDeletedChatBubble />;
+    }
     return (
       <div className={`lm-chat-card ${messageClass} ${message?.state}`}>
         {!isSender ? <div className="lmUserData">{avatarContent}</div> : null}
@@ -118,13 +131,15 @@ const LMMessage = () => {
   }
   switch (message?.state) {
     case ConversationStates.MICRO_POLL: {
-      return (
-        <>
-          <LMMicroPoll />
-        </>
-      );
+      if (messageBubbles?.chatroolMicroPoll) {
+        return <messageBubbles.chatroolMicroPoll />;
+      }
+      return <LMMicroPoll />;
     }
     case ConversationStates.NORMAL: {
+      if (messageBubbles?.chatroomNormalChatBubble) {
+        return <messageBubbles.chatroomNormalChatBubble />;
+      }
       return (
         <>
           <div className={`lm-chat-card ${message?.state}`}>
@@ -237,6 +252,9 @@ const LMMessage = () => {
     }
 
     case ConversationStates.CHAT_ROOM_HEADER: {
+      if (messageBubbles?.chatroomHeaderBubble) {
+        return <messageBubbles.chatroomHeaderBubble />;
+      }
       return (
         <>
           <div className={`lm-chat-card ${message?.state}`}>
@@ -250,6 +268,9 @@ const LMMessage = () => {
       );
     }
     case ConversationStates.CHAT_ROOM_UNFOLLOWED: {
+      if (messageBubbles?.chatroomUnFollowedBubble) {
+        return <messageBubbles.chatroomUnFollowedBubble />;
+      }
       return (
         <>
           <div className={`lm-chat-card ${message?.state}`}>
@@ -267,6 +288,9 @@ const LMMessage = () => {
       );
     }
     case ConversationStates.CHAT_ROOM_FOLLOWED: {
+      if (messageBubbles?.chatroomFollowedBubble) {
+        return <messageBubbles.chatroomFollowedBubble />;
+      }
       return (
         <>
           <div className={`lm-chat-card ${message?.state}`}>
@@ -284,12 +308,18 @@ const LMMessage = () => {
       );
     }
     case ConversationStates.ADD_ALL_MEMBERS:
+      if (messageBubbles?.chatroomMembersAddedBubble) {
+        return <messageBubbles.chatroomMembersAddedBubble />;
+      }
       return (
         <div className={`lm-chat-card ${message?.state}`}>
           <div className="data-pill">{message?.answer}</div>
         </div>
       );
     case ConversationStates.DIRECT_MESSAGE_MEMBER_REQUEST_REJECTED: {
+      if (messageBubbles?.chatroomDirectMessageRequestRejectedBubble) {
+        return <messageBubbles.chatroomDirectMessageRequestRejectedBubble />;
+      }
       return (
         <div className={`lm-chat-card ${message?.state}`}>
           <div className="data-pill">
@@ -300,6 +330,9 @@ const LMMessage = () => {
       );
     }
     case ConversationStates.DIRECT_MESSAGE_MEMBER_REQUEST_APPROVED: {
+      if (messageBubbles?.chatroomDirectMessageRequestAcceptedBubble) {
+        return <messageBubbles.chatroomDirectMessageRequestAcceptedBubble />;
+      }
       return (
         <div className={`lm-chat-card ${message?.state}`}>
           <div className="data-pill">

@@ -12,7 +12,7 @@ import AttachmentsSelector from "./LMAttachmentsSelector";
 import giffyIcon from "../../assets/img/gif.png";
 
 import GiphySearch from "./LMGiphySearch";
-import { useContext, useMemo, useState } from "react";
+import { PropsWithChildren, useContext, useMemo, useState } from "react";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
 import UserProviderContext from "../../context/LMUserProviderContext";
 import { MemberType } from "../../enums/lm-member-type";
@@ -21,8 +21,14 @@ import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import { ChatRequestStates } from "../../enums/lm-chat-request-states";
 import LMMessageReplyCollapse from "./LMMessageReplyCollapse";
 import LMMessageEditCollapse from "./LMMessageEditCollapse";
+import { InputCustomActions } from "../../types/prop-types/CustomComponents";
+interface LMInputProps {
+  inputCustomActions?: InputCustomActions;
+}
 
-const LMInput = () => {
+const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
+  const { inputCustomActions = {} } = props;
+
   const {
     inputBoxRef,
     inputWrapperRef,
@@ -58,7 +64,7 @@ const LMInput = () => {
     sendDMRequest,
     rejectDMRequest,
     onTextInputKeyUpHandler,
-  } = useInput();
+  } = useInput(inputCustomActions);
   const { currentUser } = useContext(UserProviderContext);
   const { chatroom, conversationToReply, conversationToedit } = useContext(
     LMChatChatroomContext,

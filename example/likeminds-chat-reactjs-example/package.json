@@ -11,9 +11,10 @@
   },
   "dependencies": {
     "@likeminds.community/chat-js": "^1.8.0",
-    "likeminds-chat-reactjs-beta": "^0.1.0",
+    "likeminds-chat-reactjs-beta": "^1.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.4.1",
     "react-router-dom": "^6.24.0"
   },
   "devDependencies": {
