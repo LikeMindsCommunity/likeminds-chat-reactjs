@@ -22,6 +22,7 @@ import { ChatRequestStates } from "../../enums/lm-chat-request-states";
 import LMMessageReplyCollapse from "./LMMessageReplyCollapse";
 import LMMessageEditCollapse from "./LMMessageEditCollapse";
 import { InputCustomActions } from "../../types/prop-types/CustomComponents";
+import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 interface LMInputProps {
   inputCustomActions?: InputCustomActions;
 }
@@ -69,6 +70,7 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
   const { chatroom, conversationToReply, conversationToedit } = useContext(
     LMChatChatroomContext,
   );
+  const { customComponents } = useContext(LMGlobalClientProviderContext);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const shouldShowInputBox = useMemo(() => {
     const canRespondInChatroom = currentUser?.memberRights?.find(
@@ -130,6 +132,11 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
     }
 
     if (isInputBoxDisabled) {
+      // Custom component
+      if (customComponents?.input?.chatroomInputTextArea) {
+        return <customComponents.input.chatroomInputTextArea />;
+      }
+      // Default component
       return (
         <input
           disabled
@@ -139,6 +146,11 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
         />
       );
     } else {
+      // Custom component
+      if (customComponents?.input?.chatroomInputTextArea) {
+        return <customComponents.input.chatroomInputTextArea />;
+      }
+      // Default component
       return (
         <>
           <LMChatTextArea />

@@ -21,24 +21,21 @@ export interface CustomComponents {
     chatroomDirectMessageRequestAcceptedBubble?: CustomComponentType;
   };
   messageList?: CustomComponentType;
-  header?: CustomComponentType;
+  chatroomHeader?: CustomComponentType;
   searchConversation?: CustomComponentType;
   input?: {
     chatroomInputTextArea?: CustomComponentType;
     chatroomInputEmojiSelector?: CustomComponentType;
     chatroomInputAttachmentsSelector?: CustomComponentType;
+    chatroomInputMessageGiphy?: CustomComponentType;
     chatroomInputMessageReplyCollapse?: CustomComponentType;
     chatroomInputMessageEditCollapse?: CustomComponentType;
-    chatroomInputMessageGiphy?: CustomComponentType;
     chatroomInputAttachmentsMediaCarousel?: CustomComponentType;
     chatroomInputPollCreation?: CustomComponentType;
   };
   participantList?: CustomComponentType;
   groupChatChannelList?: CustomComponentType;
   dmChannelList?: CustomComponentType;
-  groupChatChannelListjoinedChatroomTile?: CustomComponentType;
-  groupChatChannelListExploreChatroomTile?: CustomComponentType;
-  dmChannelListChatroomTile?: CustomComponentType;
 }
 
 export interface InputCustomActions {

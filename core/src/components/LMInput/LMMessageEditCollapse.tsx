@@ -1,12 +1,20 @@
 import React, { useContext } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 function LMMessageEditCollapse() {
   const { conversationToedit, setConversationToEdit } = useContext(
     LMChatChatroomContext,
   );
   function closeReply() {
     setConversationToEdit(null);
+  }
+
+  const { customComponents } = useContext(LMGlobalClientProviderContext);
+
+  // Custom component
+  if (customComponents?.input?.chatroomInputMessageEditCollapse) {
+    return <customComponents.input.chatroomInputMessageEditCollapse />;
   }
 
   return (

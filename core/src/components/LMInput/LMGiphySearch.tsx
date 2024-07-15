@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from "react";
 import InputContext from "../../context/LMInputContext";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 
 const LMGiphySearch: React.FC = () => {
   const {
@@ -34,6 +35,15 @@ const LMGiphySearch: React.FC = () => {
       </div>
     );
   }
+
+  const { customComponents } = useContext(LMGlobalClientProviderContext);
+
+  // Custom component
+  if (customComponents?.input?.chatroomInputMessageGiphy) {
+    return <customComponents.input.chatroomInputMessageGiphy />;
+  }
+  // Default component
+
   return (
     <div className="lm-giphy-box">
       <div className="lm-giphy-search">
