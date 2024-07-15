@@ -1,4 +1,10 @@
-import { useCallback, useContext, useMemo, useState } from "react";
+import {
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 import { Menu, MenuItem } from "@mui/material";
 
 import useChatroomMenuOptions from "../../hooks/useChatroomMenuOptions";
@@ -13,13 +19,20 @@ import searchIcon from "../../assets/img/search.svg";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import UserProviderContext from "../../context/LMUserProviderContext";
 import LMConversationSearch from "../search/LMConversationSearch";
-
-const LMHeader = () => {
+import { ChatroomMenuCustomActions } from "../../types/prop-types/CustomComponents";
+import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
+interface LMHeaderProps {
+  chatroomMenuCustomActions?: ChatroomMenuCustomActions;
+}
+const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
+  chatroomMenuCustomActions,
+}) => {
   const { chatroom } = useContext(LMChatChatroomContext);
   const { currentUser } = useContext(UserProviderContext);
   const { onMute, onLeaveChatroom, onViewParticipants, onBlock, onUnBlock } =
-    useChatroomMenuOptions();
+    useChatroomMenuOptions(chatroomMenuCustomActions);
   const { menuAnchor, openMenu, closeMenu } = useMenu();
+  const { customComponents } = useContext(LMGlobalClientProviderContext);
 
   const getChatroomReciever = useCallback(() => {
     if (!chatroom) {
@@ -86,6 +99,8 @@ const LMHeader = () => {
         return <LMConversationSearch onCloseSearch={onCloseSearch} />;
       }
       case false: {
+        if (customComponents?.chatroomHeader)
+          return <customComponents.chatroomHeader />;
         return (
           <>
             <div className="lm-channel-header">

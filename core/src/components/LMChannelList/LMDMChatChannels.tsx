@@ -2,6 +2,8 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import useDmChannelLists from "../../hooks/useDMChannelLists";
 import { LMDMChannelListContext } from "../../context/LMDMChannelListContext";
 import LMJoinedDMChannelTile from "./LMJoinedDMChannelTile";
+import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
+import { useContext } from "react";
 
 const LMDMChatChannels = () => {
   const {
@@ -13,6 +15,14 @@ const LMDMChatChannels = () => {
     conversationsData,
     usersData,
   } = useDmChannelLists();
+
+  const { customComponents } = useContext(LMGlobalClientProviderContext);
+
+  // Custom component
+  if (customComponents?.dmChannelList) {
+    return <customComponents.dmChannelList />;
+  }
+
   return (
     <div className="lm-channel-list dm-channel-list">
       <div className="lm-channel-list-header">

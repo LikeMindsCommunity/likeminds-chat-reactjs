@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useParticipants } from "../../hooks/useParticipants";
 
 // icons
 import backIcon from "../../assets/img/back-navigation-arrow.svg";
 import InfiniteScroll from "react-infinite-scroll-component";
 import searchIcon from "../../assets/img/search.svg";
+import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 
 const LMParticipantList = () => {
   const {
@@ -16,6 +17,15 @@ const LMParticipantList = () => {
     setSearchKeyword,
     totalParticipantCount,
   } = useParticipants();
+
+  const { customComponents } = useContext(LMGlobalClientProviderContext);
+
+  // Custom component
+  if (customComponents?.participantList) {
+    return <customComponents.participantList />;
+  }
+  // Default component
+
   return (
     <div className="lm-participant-wrapper">
       <div className="lm-participant-header">

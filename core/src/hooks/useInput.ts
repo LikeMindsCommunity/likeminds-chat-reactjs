@@ -8,6 +8,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -21,7 +22,7 @@ import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { PostConversationResponse } from "../types/api-responses/postConversationResponse";
 import { FileType } from "../types/enums/Filetype";
 import { CustomActions } from "../customActions";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   GetOgTagResponse,
   OgTag,
@@ -31,12 +32,43 @@ import { ChatroomCollabcard } from "../types/api-responses/getChatroomResponse";
 import { ChatroomTypes } from "../enums/lm-chatroom-types";
 import UserProviderContext from "../context/LMUserProviderContext";
 import { MemberType } from "../enums/lm-member-type";
+import {
+  InputCustomActions,
+  Router,
+} from "../types/prop-types/CustomComponents";
 
-export function useInput(): UseInputReturns {
+export function useInput(
+  inputCustomActions?: InputCustomActions,
+): UseInputReturns {
+  const {
+    onUpdateInputText,
+    onOnTextInputKeydownHandler,
+    onOnTextInputKeyUpHandler,
+    onClearTaggingList,
+    onAddEmojiToText,
+    onAddImagesAndVideosMedia,
+    onAddDocumentsMedia,
+    onPostMessage,
+    onGetTaggingMembers,
+    onRemoveOgTag,
+    onSetGifMedia,
+    onSetOpenGifCollapse,
+    onGifSearchQuery,
+    onFetchGifs,
+    onHandleGifSearch,
+    onRemoveMediaFromImageList,
+    onRemoveMediaFromDocumentList,
+    onSendDMRequest,
+    onRejectDMRequest,
+    onAprooveDMRequest,
+  } = inputCustomActions!;
   const { id: chatroomId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   //contexts
   const { lmChatclient } = useContext(GlobalClientProviderContext);
-  const { currentUser } = useContext(UserProviderContext);
+  const { currentUser, memberState, currentCommunity, logoutUser } =
+    useContext(UserProviderContext);
   const {
     chatroom,
     conversationToedit,
@@ -75,31 +107,34 @@ export function useInput(): UseInputReturns {
   const apiKey = "9hQZNoy1wtM2b1T4BIx8B0Cwjaje3UUR";
 
   //   api calls
-  const sendDMRequest = async (textMessage: string) => {
-    try {
-      const sendDmRequestCall = await lmChatclient?.sendDMRequest({
-        chatRequestState: 0,
-        chatroomId: parseInt(chatroomId!.toString()),
-        text: textMessage,
-      });
+  const sendDMRequest = useCallback(
+    async (textMessage: string) => {
+      try {
+        const sendDmRequestCall = await lmChatclient?.sendDMRequest({
+          chatRequestState: 0,
+          chatroomId: parseInt(chatroomId!.toString()),
+          text: textMessage,
+        });
 
-      document.dispatchEvent(
-        new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
-          detail: sendDmRequestCall.data.conversation,
-        }),
-      );
+        document.dispatchEvent(
+          new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
+            detail: sendDmRequestCall.data.conversation,
+          }),
+        );
 
-      const newChatroom = { ...chatroom };
-      if (newChatroom.chatroom && newChatroom.chatroom) {
-        newChatroom.chatroom.chat_request_state = 0;
-        newChatroom.chatroom.chat_requested_by = currentUser;
+        const newChatroom = { ...chatroom };
+        if (newChatroom.chatroom && newChatroom.chatroom) {
+          newChatroom.chatroom.chat_request_state = 0;
+          newChatroom.chatroom.chat_requested_by = currentUser;
+        }
+        setNewChatroom(newChatroom as ChatroomCollabcard);
+      } catch (error) {
+        console.log(error);
       }
-      setNewChatroom(newChatroom as ChatroomCollabcard);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const aprooveDMRequest = async () => {
+    },
+    [chatroomId, lmChatclient, chatroom, currentUser, setNewChatroom],
+  );
+  const aprooveDMRequest = useCallback(async () => {
     try {
       const aprooveDmRequestCall = await lmChatclient?.sendDMRequest({
         chatRequestState: 1,
@@ -118,8 +153,8 @@ export function useInput(): UseInputReturns {
     } catch (error) {
       console.log(error);
     }
-  };
-  const rejectDMRequest = async () => {
+  }, [chatroomId, lmChatclient, chatroom, setNewChatroom]);
+  const rejectDMRequest = useCallback(async () => {
     try {
       const rejectDmRequestCall = await lmChatclient?.sendDMRequest({
         chatRequestState: 2,
@@ -138,7 +173,7 @@ export function useInput(): UseInputReturns {
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [chatroomId, lmChatclient, chatroom, setNewChatroom]);
   const fetchGifs = async (url: string) => {
     setLoading(true);
     setError(null);
@@ -153,10 +188,10 @@ export function useInput(): UseInputReturns {
     }
   };
 
-  const handleSearch = async () => {
+  const handleSearch = useCallback(async () => {
     const url = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${query}&limit=100`;
     fetchGifs(url);
-  };
+  }, [apiKey, query]);
 
   const fetchTaggingList = useCallback(
     async (pg?: number) => {
@@ -187,7 +222,7 @@ export function useInput(): UseInputReturns {
     },
     [chatroom?.chatroom.id, lmChatclient, tagSearchKey],
   );
-  const postMessage = async () => {
+  const postMessage = useCallback(async () => {
     try {
       if (!chatroom) {
         return;
@@ -400,7 +435,19 @@ export function useInput(): UseInputReturns {
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [
+    chatroom,
+    conversationToReply,
+    conversationToedit,
+    documentsMediaList,
+    gifMedia,
+    imagesAndVideosMediaList,
+    lmChatclient,
+    ogTags,
+    sendDMRequest,
+    setConversationToEdit,
+    setConversationToReply,
+  ]);
 
   // normal functions
   const removeOgTag = () => {
@@ -439,50 +486,56 @@ export function useInput(): UseInputReturns {
   const resetPageCount = () => {
     taggingListPageCount.current = 1;
   };
-  const clearTaggingList = () => {
+  const clearTaggingList = useCallback(() => {
     setMatchedTagMembersList(() => []);
     setTagSearchKey(null);
     resetPageCount();
-  };
-  const updateInputText: onChangeUpdateInputText = (change) => {
-    const selection = window.getSelection();
-    setInputText(change.currentTarget.textContent!);
-    if (selection === null) return;
-    const focusNode = selection.focusNode;
-    if (focusNode === null) {
-      return;
-    }
-    const div = focusNode.parentElement;
-    if (div === null) {
-      return;
-    }
-    const postText = div.childNodes;
-    if (focusNode === null || postText.length === 0) {
-      return;
-    }
-    const textContentFocusNode = focusNode.textContent;
-    if (chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
-      return;
-    }
-    const tagOp = Utils.findTag(textContentFocusNode!);
-
-    if (tagOp?.tagString !== null && tagOp?.tagString !== undefined) {
-      setTagSearchKey(tagOp?.tagString);
-    } else {
-      setTagSearchKey(null);
-    }
-  };
-  const onTextInputKeydownHandler: onKeydownEvent = (change) => {
-    if (change.key === "Enter") {
-      if (!isShiftPressed.current) {
-        change.preventDefault();
-        postMessage();
+  }, []);
+  const updateInputText: onChangeUpdateInputText = useCallback(
+    (change) => {
+      const selection = window.getSelection();
+      setInputText(change.currentTarget.textContent!);
+      if (selection === null) return;
+      const focusNode = selection.focusNode;
+      if (focusNode === null) {
+        return;
       }
-    }
-    if (change.key === "Shift") {
-      isShiftPressed.current = true;
-    }
-  };
+      const div = focusNode.parentElement;
+      if (div === null) {
+        return;
+      }
+      const postText = div.childNodes;
+      if (focusNode === null || postText.length === 0) {
+        return;
+      }
+      const textContentFocusNode = focusNode.textContent;
+      if (chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+        return;
+      }
+      const tagOp = Utils.findTag(textContentFocusNode!);
+
+      if (tagOp?.tagString !== null && tagOp?.tagString !== undefined) {
+        setTagSearchKey(tagOp?.tagString);
+      } else {
+        setTagSearchKey(null);
+      }
+    },
+    [chatroom?.chatroom.type],
+  );
+  const onTextInputKeydownHandler: onKeydownEvent = useCallback(
+    (change) => {
+      if (change.key === "Enter") {
+        if (!isShiftPressed.current) {
+          change.preventDefault();
+          postMessage();
+        }
+      }
+      if (change.key === "Shift") {
+        isShiftPressed.current = true;
+      }
+    },
+    [postMessage],
+  );
   const onTextInputKeyUpHandler: onKeyUpEvent = (change) => {
     if (change.key === "Shift") {
       isShiftPressed.current = false;
@@ -500,38 +553,43 @@ export function useInput(): UseInputReturns {
   };
   const addImagesAndVideosMedia: OneArgVoidReturns<
     ChangeEvent<HTMLInputElement>
-  > = (changeEvent) => {
-    const currentMediaFileNames = Array.from(
-      imagesAndVideosMediaList || [],
-    ).map((file) => {
-      return file.name;
-    });
-    const filesArray = Array.from(changeEvent.target.files || []);
-    const mediaListCopy = [...(imagesAndVideosMediaList || [])];
-    filesArray.forEach((file) => {
-      if (!currentMediaFileNames.includes(file.name)) {
-        mediaListCopy.push(file);
-      }
-    });
-    setImagesAndVideosMediaList(mediaListCopy);
-  };
-  const addDocumentsMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>> = (
-    changeEvent,
-  ) => {
-    const currentMediaFileNames = Array.from(documentsMediaList || []).map(
-      (file) => {
+  > = useCallback(
+    (changeEvent) => {
+      const currentMediaFileNames = Array.from(
+        imagesAndVideosMediaList || [],
+      ).map((file) => {
         return file.name;
+      });
+      const filesArray = Array.from(changeEvent.target.files || []);
+      const mediaListCopy = [...(imagesAndVideosMediaList || [])];
+      filesArray.forEach((file) => {
+        if (!currentMediaFileNames.includes(file.name)) {
+          mediaListCopy.push(file);
+        }
+      });
+      setImagesAndVideosMediaList(mediaListCopy);
+    },
+    [imagesAndVideosMediaList],
+  );
+  const addDocumentsMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>> =
+    useCallback(
+      (changeEvent) => {
+        const currentMediaFileNames = Array.from(documentsMediaList || []).map(
+          (file) => {
+            return file.name;
+          },
+        );
+        const filesArray = Array.from(changeEvent.target.files || []);
+        const mediaListCopy = [...(documentsMediaList || [])];
+        filesArray.forEach((file) => {
+          if (!currentMediaFileNames.includes(file.name)) {
+            mediaListCopy.push(file);
+          }
+        });
+        setDocumentMediaList(mediaListCopy);
       },
+      [documentsMediaList],
     );
-    const filesArray = Array.from(changeEvent.target.files || []);
-    const mediaListCopy = [...(documentsMediaList || [])];
-    filesArray.forEach((file) => {
-      if (!currentMediaFileNames.includes(file.name)) {
-        mediaListCopy.push(file);
-      }
-    });
-    setDocumentMediaList(mediaListCopy);
-  };
   const gifSearchQuery = (query: string) => {
     setQuery(query);
   };
@@ -620,24 +678,93 @@ export function useInput(): UseInputReturns {
       setOpenGifCollapse(false);
     };
   }, [chatroomId, setConversationToEdit, setConversationToReply]);
+  const inputDefaultActions = useMemo(() => {
+    return {
+      updateInputText,
+      onTextInputKeydownHandler,
+      onTextInputKeyUpHandler,
+      clearTaggingList,
+      addEmojiToText,
+      addDocumentsMedia,
+      addImagesAndVideosMedia,
+      postMessage,
+      getTaggingMembers: fetchTaggingList,
+      removeOgTag,
+      setOpenGifCollapse: setOpenGifCollapse,
+      fetchGifs: fetchGifs,
+      handleGifSearch: handleSearch,
+      setGifMedia,
+      removeMediaFromImageList,
+      removeMediaFromDocumentList,
+      sendDMRequest,
+      rejectDMRequest,
+      aprooveDMRequest,
+      gifSearchQuery: gifSearchQuery,
+    };
+  }, [
+    addDocumentsMedia,
+    addImagesAndVideosMedia,
+    aprooveDMRequest,
+    clearTaggingList,
+    fetchTaggingList,
+    handleSearch,
+    onTextInputKeydownHandler,
+    postMessage,
+    rejectDMRequest,
+    sendDMRequest,
+    updateInputText,
+  ]);
+  const inputDataStore = useMemo(() => {
+    return {
+      inputBoxRef,
+      inputWrapperRef,
+      inputText,
+      matchedTagMembersList,
+      fetchMoreTags,
+      documentsMediaList,
+      imagesAndVideosMediaList,
+      ogTag: ogTags,
+      gifMedia,
+      gifs: gifs,
+      loadingGifs: loading,
+      errorOnGifs: error,
+      openGifCollapse: openGifCollapse,
+      gifQuery: query,
+    };
+  }, [
+    documentsMediaList,
+    error,
+    fetchMoreTags,
+    gifMedia,
+    gifs,
+    imagesAndVideosMediaList,
+    inputText,
+    loading,
+    matchedTagMembersList,
+    ogTags,
+    openGifCollapse,
+    query,
+  ]);
+  const applicationGeneralDataContext = useMemo(() => {
+    return {
+      currentUser,
+      memberState,
+      logoutUser,
+      currentCommunity,
+    };
+  }, [currentCommunity, currentUser, logoutUser, memberState]);
+  const router: Router = {
+    location: location,
+    navigate: navigate,
+  };
   return {
     inputBoxRef,
     inputWrapperRef,
     inputText,
     matchedTagMembersList,
-    updateInputText,
-    onTextInputKeydownHandler,
-    onTextInputKeyUpHandler,
     fetchMoreTags,
-    clearTaggingList,
-    addEmojiToText,
-    addDocumentsMedia,
-    addImagesAndVideosMedia,
     documentsMediaList,
     imagesAndVideosMediaList,
-    postMessage,
-    getTaggingMembers: fetchTaggingList,
-    removeOgTag,
     ogTag: ogTags,
     gifMedia,
     gifs: gifs,
@@ -645,16 +772,179 @@ export function useInput(): UseInputReturns {
     errorOnGifs: error,
     gifSearchQuery: gifSearchQuery,
     openGifCollapse: openGifCollapse,
-    setOpenGifCollapse: setOpenGifCollapse,
-    fetchGifs: fetchGifs,
-    handleGifSearch: handleSearch,
     gifQuery: query,
-    setGifMedia,
-    removeMediaFromImageList,
-    removeMediaFromDocumentList,
-    sendDMRequest,
-    rejectDMRequest,
-    aprooveDMRequest,
+    // Functions
+    updateInputText: onUpdateInputText
+      ? onUpdateInputText.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : updateInputText,
+    onTextInputKeydownHandler: onOnTextInputKeydownHandler
+      ? onOnTextInputKeydownHandler.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : onTextInputKeydownHandler,
+    onTextInputKeyUpHandler: onOnTextInputKeyUpHandler
+      ? onOnTextInputKeyUpHandler.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : onTextInputKeyUpHandler,
+    clearTaggingList: onClearTaggingList
+      ? onClearTaggingList.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : clearTaggingList,
+    addEmojiToText: onAddEmojiToText
+      ? onAddEmojiToText.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : addEmojiToText,
+    addDocumentsMedia: onAddDocumentsMedia
+      ? onAddDocumentsMedia.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : addDocumentsMedia,
+    addImagesAndVideosMedia: onAddImagesAndVideosMedia
+      ? onAddImagesAndVideosMedia.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : addImagesAndVideosMedia,
+    postMessage: onPostMessage
+      ? onPostMessage.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : postMessage,
+    getTaggingMembers: onGetTaggingMembers
+      ? onGetTaggingMembers.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : fetchTaggingList,
+    removeOgTag: onRemoveOgTag
+      ? onRemoveOgTag.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : removeOgTag,
+    setOpenGifCollapse: onSetOpenGifCollapse
+      ? onSetOpenGifCollapse.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : setOpenGifCollapse,
+    fetchGifs: onFetchGifs
+      ? onFetchGifs.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : fetchGifs,
+    handleGifSearch: onHandleGifSearch
+      ? onHandleGifSearch.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : handleSearch,
+    setGifMedia: onSetGifMedia
+      ? onSetGifMedia.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : setGifMedia,
+    removeMediaFromImageList: onRemoveMediaFromImageList
+      ? onRemoveMediaFromImageList.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : removeMediaFromImageList,
+    removeMediaFromDocumentList: onRemoveMediaFromDocumentList
+      ? onRemoveMediaFromDocumentList.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : removeMediaFromDocumentList,
+    sendDMRequest: onSendDMRequest
+      ? onSendDMRequest.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : sendDMRequest,
+    rejectDMRequest: onRejectDMRequest
+      ? onRejectDMRequest.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : rejectDMRequest,
+    aprooveDMRequest: onAprooveDMRequest
+      ? onAprooveDMRequest.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : aprooveDMRequest,
   };
 }
 
@@ -662,30 +952,30 @@ export interface UseInputReturns {
   inputBoxRef: MutableRefObject<HTMLDivElement | null>;
   inputWrapperRef: MutableRefObject<HTMLDivElement | null>;
   inputText: string;
-  updateInputText: onChangeUpdateInputText;
-  onTextInputKeydownHandler: onKeydownEvent;
-  onTextInputKeyUpHandler: onKeyUpEvent;
   matchedTagMembersList: Member[];
   fetchMoreTags: boolean;
-  clearTaggingList: ZeroArgVoidReturns;
-  addEmojiToText: TwoArgVoidReturns<EmojiData, MouseEvent>;
-  addImagesAndVideosMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>>;
-  addDocumentsMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>>;
   imagesAndVideosMediaList: File[] | null;
   documentsMediaList: File[] | null;
-  postMessage: ZeroArgVoidReturns;
-  getTaggingMembers: OneOptionalArgVoidReturns<number>;
-  removeOgTag: ZeroArgVoidReturns;
   ogTag: OgTag | null;
-  setGifMedia: Dispatch<Gif | null>;
   gifMedia: Gif | null;
   gifs: Gif[];
   loadingGifs: boolean;
   errorOnGifs: string | null;
   gifQuery: string;
-  gifSearchQuery: OneArgVoidReturns<string>;
   openGifCollapse: boolean;
+  updateInputText: onChangeUpdateInputText;
+  onTextInputKeydownHandler: onKeydownEvent;
+  onTextInputKeyUpHandler: onKeyUpEvent;
+  clearTaggingList: ZeroArgVoidReturns;
+  addEmojiToText: TwoArgVoidReturns<EmojiData, MouseEvent>;
+  addImagesAndVideosMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>>;
+  addDocumentsMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>>;
+  postMessage: ZeroArgVoidReturns;
+  getTaggingMembers: OneOptionalArgVoidReturns<number>;
+  removeOgTag: ZeroArgVoidReturns;
+  setGifMedia: Dispatch<Gif | null>;
   setOpenGifCollapse: Dispatch<boolean>;
+  gifSearchQuery: OneArgVoidReturns<string>;
   fetchGifs: OneArgVoidReturns<string>;
   handleGifSearch: ZeroArgVoidReturns;
   removeMediaFromImageList: OneArgVoidReturns<number>;
@@ -705,16 +995,43 @@ export type OneArgVoidReturns<T> = (arg: T) => void;
 export type TwoArgVoidReturns<T, S> = (argOne: T, ardTwo: S) => void;
 export type OneOptionalArgVoidReturns<T> = (arg?: T) => void;
 export type ZeroArgBooleanReturns = () => boolean;
-// "files/collabcard/$chatroom_id/conversation/$conversation_id/initials of media/current time in milliseconds.fileextension"
-// var initial = when (mediaType) {
-//                 IMAGE -> "IMG_"
-//                 GIF -> "GIF_"
-//                 VIDEO -> "VID_"
-//                 PDF -> "DOC_"
-//                 AUDIO -> "AUD_"
-//                 VOICE_NOTE -> "VOC_"
-//                 else -> "MEDIA_"
-//             }
-//             if (isThumbnail) {
-//                 initial += "THUMB_"
-//             }
+
+export interface InputDefaultActions {
+  updateInputText: onChangeUpdateInputText;
+  onTextInputKeydownHandler: onKeydownEvent;
+  onTextInputKeyUpHandler: onKeyUpEvent;
+  clearTaggingList: ZeroArgVoidReturns;
+  addEmojiToText: TwoArgVoidReturns<EmojiData, MouseEvent>;
+  addImagesAndVideosMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>>;
+  addDocumentsMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>>;
+  postMessage: ZeroArgVoidReturns;
+  getTaggingMembers: OneOptionalArgVoidReturns<number>;
+  removeOgTag: ZeroArgVoidReturns;
+  setGifMedia: Dispatch<Gif | null>;
+  setOpenGifCollapse: Dispatch<boolean>;
+  gifSearchQuery: OneArgVoidReturns<string>;
+  fetchGifs: OneArgVoidReturns<string>;
+  handleGifSearch: ZeroArgVoidReturns;
+  removeMediaFromImageList: OneArgVoidReturns<number>;
+  removeMediaFromDocumentList: OneArgVoidReturns<number>;
+  sendDMRequest: OneArgVoidReturns<string>;
+  rejectDMRequest: ZeroArgVoidReturns;
+  aprooveDMRequest: ZeroArgVoidReturns;
+}
+
+export interface InputDataStore {
+  inputBoxRef: MutableRefObject<HTMLDivElement | null>;
+  inputWrapperRef: MutableRefObject<HTMLDivElement | null>;
+  inputText: string;
+  matchedTagMembersList: Member[];
+  fetchMoreTags: boolean;
+  imagesAndVideosMediaList: File[] | null;
+  documentsMediaList: File[] | null;
+  ogTag: OgTag | null;
+  gifMedia: Gif | null;
+  gifs: Gif[];
+  loadingGifs: boolean;
+  errorOnGifs: string | null;
+  gifQuery: string;
+  openGifCollapse: boolean;
+}

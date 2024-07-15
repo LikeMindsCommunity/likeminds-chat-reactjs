@@ -547,17 +547,18 @@ export default function useConversations(): UseConversations {
     }
   }, [conversations, searchedConversationId, setSearchedConversationId]);
   return {
-    loadMoreBottomConversation,
     conversations,
-    setConversations,
-    getChatroomConversationsOnBottomScroll,
-    getChatroomConversationsOnTopScroll,
     loadMore,
     showLoader,
     bottomReferenceDiv,
     messageListContainerRef,
-    unBlockUserInDM,
     searchedConversationRef,
+    loadMoreBottomConversation,
+    // Functions
+    setConversations,
+    getChatroomConversationsOnBottomScroll,
+    getChatroomConversationsOnTopScroll,
+    unBlockUserInDM,
   };
 }
 export type UnknownReturnFunction = (...props: unknown[]) => unknown;

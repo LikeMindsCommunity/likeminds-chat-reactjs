@@ -1,16 +1,32 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect, useMemo } from "react";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import LMMessageContext from "../context/LMMessageContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { CustomActions } from "../customActions";
 import Conversation from "../types/models/conversations";
-import { useNavigate } from "react-router-dom";
-import { DM_CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
+import { useLocation, useNavigate } from "react-router-dom";
+// import { DM_CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
+import { LMMessageListCustomActionsContext } from "../context/LMMessageListCustomActionsContext";
+import LMUserProviderContext from "../context/LMUserProviderContext";
 
 export function useMessageOptions(): UseMessageOptionsReturn {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
+  const { messageCustomActions = {} } = useContext(
+    LMMessageListCustomActionsContext,
+  );
+  const {
+    onReportCustom,
+    onDeleteCustom,
+    onEditCustom,
+    onReplyCustom,
+    putReactionCustom,
+    onReplyPrivatelyCustom,
+  } = messageCustomActions;
+  const { currentCommunity, currentUser, logoutUser, memberState } = useContext(
+    LMUserProviderContext,
+  );
 
   const { setConversationToEdit, setConversationToReply } = useContext(
     LMChatChatroomContext,
@@ -19,25 +35,22 @@ export function useMessageOptions(): UseMessageOptionsReturn {
     useContext(LMMessageContext);
 
   const navigate = useNavigate();
-  const onReport = async ({
-    id,
-    reason,
-  }: {
-    id: string | number;
-    reason: string | null;
-  }) => {
-    try {
-      // TODO handle this
-      const reportCall = await lmChatclient?.pushReport({
-        conversationId: parseInt(message!.id.toString()),
-        tagId: parseInt(id.toString()),
-        reason: reason ? reason : undefined,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const onDelete = async () => {
+  const onReport = useCallback(
+    async ({ id, reason }: { id: string | number; reason: string | null }) => {
+      try {
+        // TODO handle this
+        const reportCall = await lmChatclient?.pushReport({
+          conversationId: parseInt(message!.id.toString()),
+          tagId: parseInt(id.toString()),
+          reason: reason ? reason : undefined,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [lmChatclient, message],
+  );
+  const onDelete = useCallback(async () => {
     try {
       const deleteCall = await lmChatclient?.deleteConversation({
         conversationIds: [parseInt(message!.id.toString())],
@@ -48,77 +61,162 @@ export function useMessageOptions(): UseMessageOptionsReturn {
     } catch (error) {
       console.log(error);
     }
-  };
-  const onEdit = async () => {
+  }, [deleteMessage, lmChatclient, message]);
+  const onEdit = useCallback(async () => {
     try {
       setConversationToEdit(message);
     } catch (error) {
       console.log(error);
     }
-  };
-  const onReply = async () => {
+  }, [message, setConversationToEdit]);
+  const onReply = useCallback(async () => {
     try {
       setConversationToReply(message);
     } catch (error) {
       console.log(error);
     }
-  };
-  const onReplyPrivately = async (memberId: string | number) => {
-    try {
-      const checkDMLimitCall = await lmChatclient?.checkDMLimit({
-        memberId: parseInt(memberId.toString()),
-      });
-      if (checkDMLimitCall.success) {
-        const chatroomId = checkDMLimitCall.data.chatroom_id;
-        if (chatroomId) {
-          // navigate to the chatroom
-          navigate(`/${DM_CHANNEL_PATH}/${chatroomId}`);
-          return;
-        }
-        const is_request_dm_limit_exceeded =
-          checkDMLimitCall.data.is_request_dm_limit_exceeded;
-        if (!is_request_dm_limit_exceeded) {
-          const createDMChatroomCall = await lmChatclient?.createDMChatroom({
-            memberId: parseInt(memberId.toString()),
-          });
-          if (createDMChatroomCall.success) {
-            const newChatroomId = createDMChatroomCall.data.chatroom.id;
-            navigate(`/${DM_CHANNEL_PATH}/${newChatroomId}`);
+  }, [message, setConversationToReply]);
+  const onReplyPrivately = useCallback(
+    async (memberId: string | number) => {
+      try {
+        const checkDMLimitCall = await lmChatclient?.checkDMLimit({
+          memberId: parseInt(memberId.toString()),
+        });
+        if (checkDMLimitCall.success) {
+          const chatroomId = checkDMLimitCall.data.chatroom_id;
+          if (chatroomId) {
             // navigate to the chatroom
+            navigate(`/${routes?.getDmChannelPath()}/${chatroomId}`);
+            return;
+          }
+          const is_request_dm_limit_exceeded =
+            checkDMLimitCall.data.is_request_dm_limit_exceeded;
+          if (!is_request_dm_limit_exceeded) {
+            const createDMChatroomCall = await lmChatclient?.createDMChatroom({
+              memberId: parseInt(memberId.toString()),
+            });
+            if (createDMChatroomCall.success) {
+              const newChatroomId = createDMChatroomCall.data.chatroom.id;
+              navigate(`/${routes?.getDmChannelPath()}/${newChatroomId}`);
+              // navigate to the chatroom
+            }
           }
         }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    },
+    [lmChatclient, navigate, routes],
+  );
 
-  const putReaction = async (reaction: string) => {
-    try {
-      const putReactionsCall = lmChatclient?.putReaction({
-        conversationId: parseInt(message!.id.toString()),
-        reaction: reaction,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const putReaction = useCallback(
+    async (reaction: string) => {
+      try {
+        const putReactionsCall = lmChatclient?.putReaction({
+          conversationId: parseInt(message!.id.toString()),
+          reaction: reaction,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [lmChatclient, message],
+  );
   useEffect(() => {
     addEventListener(CustomActions.EDIT_ACTION_COMPLETED, (newEvent) => {
       const detail = (newEvent as CustomEvent).detail;
       editMessageLocally(detail as unknown as Conversation);
     });
   });
+  const messageDefaultActions = useMemo(() => {
+    return {
+      onReport,
+      onDelete,
+      onEdit,
+      onReply,
+      putReaction,
+      onReplyPrivately,
+    };
+  }, [onDelete, onEdit, onReply, onReplyPrivately, onReport, putReaction]);
+  const location = useLocation();
+  const router = useMemo(() => {
+    return {
+      location,
+      navigate,
+    };
+  }, [location, navigate]);
+  const applicationGeneralDataContext = useMemo(() => {
+    return {
+      currentCommunity,
+      currentUser,
+      logoutUser,
+      memberState,
+    };
+  }, [currentCommunity, currentUser, logoutUser, memberState]);
   return {
-    onReport,
-    onDelete,
-    onEdit,
-    onReply,
-    putReaction,
-    onReplyPrivately,
+    onReport: onReportCustom
+      ? onReportCustom.bind(
+          null,
+          messageDefaultActions,
+          applicationGeneralDataContext,
+          router,
+        )
+      : onReport,
+    onDelete: onDeleteCustom
+      ? onDeleteCustom.bind(
+          null,
+          messageDefaultActions,
+          applicationGeneralDataContext,
+          router,
+        )
+      : onDelete,
+    onEdit: onEditCustom
+      ? onEditCustom.bind(
+          null,
+          messageDefaultActions,
+          applicationGeneralDataContext,
+          router,
+        )
+      : onEdit,
+    onReply: onReplyCustom
+      ? onReplyCustom.bind(
+          null,
+          messageDefaultActions,
+          applicationGeneralDataContext,
+          router,
+        )
+      : onReply,
+    putReaction: putReactionCustom
+      ? putReactionCustom.bind(
+          null,
+          messageDefaultActions,
+          applicationGeneralDataContext,
+          router,
+        )
+      : putReaction,
+    onReplyPrivately: onReplyPrivatelyCustom
+      ? onReplyPrivatelyCustom.bind(
+          null,
+          messageDefaultActions,
+          applicationGeneralDataContext,
+          router,
+        )
+      : onReplyPrivately,
   };
 }
 export interface UseMessageOptionsReturn {
+  onReport: OneArgVoidReturns<{
+    id: string | number;
+    reason: string | null;
+  }>;
+  onDelete: ZeroArgVoidReturns;
+  onEdit: ZeroArgVoidReturns;
+  onReply: ZeroArgVoidReturns;
+  putReaction: OneArgVoidReturns<string>;
+  onReplyPrivately: OneArgVoidReturns<string | number>;
+}
+
+export interface MessageDefaultActions {
   onReport: OneArgVoidReturns<{
     id: string | number;
     reason: string | null;

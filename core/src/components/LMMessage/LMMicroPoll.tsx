@@ -13,6 +13,7 @@ import modalCancelIcon from "../../assets/img/cancel-icon.svg";
 import pollIcon from "../../assets/img/poll-icon.svg";
 import UserProviderContext from "../../context/LMUserProviderContext";
 import { getAvatar } from "../../shared/components/LMUserMedia";
+import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 
 dayjs.extend(relativeTime);
 const LMMicroPoll = () => {
@@ -37,6 +38,13 @@ const LMMicroPoll = () => {
   const imageUrl = message?.member.imageUrl;
   const name = message?.member.name;
   const avatarContent = getAvatar({ imageUrl, name });
+  const { customComponents } = useContext(LMGlobalClientProviderContext);
+
+  // Custom component
+  if (customComponents?.input?.chatroomInputPollCreation) {
+    return <customComponents.input.chatroomInputPollCreation />;
+  }
+  // Default component
 
   return (
     <div className={`lm-chat-card  ${messageClass}  `}>

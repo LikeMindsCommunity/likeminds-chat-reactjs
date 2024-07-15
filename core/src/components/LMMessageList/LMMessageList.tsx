@@ -12,14 +12,16 @@ import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
 import UserProviderContext from "../../context/LMUserProviderContext";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import { MemberType } from "../../enums/lm-member-type";
+import { LMMessageListCustomActionsContext } from "../../context/LMMessageListCustomActionsContext";
 
 const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
   (props) => {
+    const { messageCustomActions } = props;
     const { chatroom, searchedConversationId } = useContext(
       LMChatChatroomContext,
     );
     const { currentUser } = useContext(UserProviderContext);
-    const { MessageComponent } = props;
+
     const scrollToBottom = () => {
       if (bottomReferenceDiv && bottomReferenceDiv.current) {
         bottomReferenceDiv.current.scrollIntoView(false);
@@ -83,74 +85,85 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       );
     }
     return (
-      <div className="lm-channel" ref={messageListContainerRef}>
-        {showInitiateDMRequestMessage() && (
-          <p className="initiate-dm-request-message">
-            {getInitiateDmRequestMessage()}
-          </p>
-        )}
-        <MessageListContext.Provider
-          value={{
-            conversations,
-            getChatroomConversationsOnBottomScroll,
-            getChatroomConversationsOnTopScroll,
-            bottomReferenceDiv,
-            messageListContainerRef,
-            unBlockUserInDM,
-            searchedConversationRef,
-          }}
-        >
-          <ScrollContainer
-            bottomReferenceDiv={bottomReferenceDiv}
-            dataLength={conversations?.length || 0}
-            nextOnScrollBottom={() => {
-              if (getChatroomConversationsOnBottomScroll) {
-                getChatroomConversationsOnBottomScroll();
-              }
+      <LMMessageListCustomActionsContext.Provider
+        value={{
+          messageCustomActions: messageCustomActions,
+        }}
+      >
+        <div className="lm-channel" ref={messageListContainerRef}>
+          {showInitiateDMRequestMessage() && (
+            <p className="initiate-dm-request-message">
+              {getInitiateDmRequestMessage()}
+            </p>
+          )}
+          <MessageListContext.Provider
+            value={{
+              conversations,
+              getChatroomConversationsOnBottomScroll,
+              getChatroomConversationsOnTopScroll,
+              bottomReferenceDiv,
+              messageListContainerRef,
+              unBlockUserInDM,
+              searchedConversationRef,
             }}
-            nextOnScrollTop={() => {
-              if (getChatroomConversationsOnTopScroll) {
-                getChatroomConversationsOnTopScroll();
-              }
-            }}
-            callNextOnBottom={loadMoreBottomConversation}
-            callNextOnTop={true}
           >
-            {conversations?.map((conversation: Conversation, index: number) => {
-              if (
-                searchedConversationId?.toString() ===
-                conversation.id.toString()
-              ) {
-                return (
-                  <div
-                    key={conversation.id}
-                    ref={
-                      searchedConversationId?.toString() ===
-                      conversation.id.toString()
-                        ? searchedConversationRef
-                        : undefined
-                    }
-                    className="searched-conversation"
-                    id={conversation.id.toString()}
-                  >
-                    <LMMessageMiddleware message={conversation} index={index} />
-                  </div>
-                );
-              } else {
-                return (
-                  <LMMessageMiddleware
-                    message={conversation}
-                    index={index}
-                    key={conversation.id}
-                  />
-                );
-              }
-            })}
-          </ScrollContainer>
-        </MessageListContext.Provider>
-        {/* DM Request Block */}
-        {/* <DmReqBlock /> */}
-      </div>
+            <ScrollContainer
+              bottomReferenceDiv={bottomReferenceDiv}
+              dataLength={conversations?.length || 0}
+              nextOnScrollBottom={() => {
+                if (getChatroomConversationsOnBottomScroll) {
+                  getChatroomConversationsOnBottomScroll();
+                }
+              }}
+              nextOnScrollTop={() => {
+                if (getChatroomConversationsOnTopScroll) {
+                  getChatroomConversationsOnTopScroll();
+                }
+              }}
+              callNextOnBottom={loadMoreBottomConversation}
+              callNextOnTop={true}
+            >
+              {conversations?.map(
+                (conversation: Conversation, index: number) => {
+                  if (
+                    searchedConversationId?.toString() ===
+                    conversation.id.toString()
+                  ) {
+                    return (
+                      <div
+                        key={conversation.id}
+                        ref={
+                          searchedConversationId?.toString() ===
+                          conversation.id.toString()
+                            ? searchedConversationRef
+                            : undefined
+                        }
+                        className="searched-conversation"
+                        id={conversation.id.toString()}
+                      >
+                        <LMMessageMiddleware
+                          message={conversation}
+                          index={index}
+                        />
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <LMMessageMiddleware
+                        message={conversation}
+                        index={index}
+                        key={conversation.id}
+                      />
+                    );
+                  }
+                },
+              )}
+            </ScrollContainer>
+          </MessageListContext.Provider>
+          {/* DM Request Block */}
+          {/* <DmReqBlock /> */}
+        </div>
+      </LMMessageListCustomActionsContext.Provider>
     );
   },
 );

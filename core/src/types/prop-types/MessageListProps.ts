@@ -1,3 +1,5 @@
+import { MessageCustomActions } from "./CustomComponents";
+
 export interface MessageListProps {
-  MessageComponent?: React.FC;
+  messageCustomActions?: MessageCustomActions;
 }

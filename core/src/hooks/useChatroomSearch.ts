@@ -10,10 +10,10 @@ import { SearchedChatroom } from "../types/models/SearchedChatroom";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { useNavigate } from "react-router-dom";
-import { CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
+// import { CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
 
 export function useChatroomSearch(): UseChatroomSearch {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
   const [searchList, setSearchList] = useState<SearchedChatroom[]>([]);
   const [searchKey, setSearchKey] = useState<string>("");
   const [loadMoreChatrooms, setLoadMoreChatrooms] = useState<boolean>(false);
@@ -21,7 +21,7 @@ export function useChatroomSearch(): UseChatroomSearch {
   const followStatus = useRef<boolean>(true);
   const navigate = useNavigate();
   const onSearchChatroomClick = (chatroomId: number) => {
-    navigate(`/${CHANNEL_PATH}/${chatroomId}`);
+    navigate(`/${routes?.getChannelPath()}/${chatroomId}`);
   };
   const searchChatrooms = useCallback(async () => {
     try {

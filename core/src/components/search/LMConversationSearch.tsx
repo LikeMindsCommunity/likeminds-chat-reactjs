@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import backArrowNavigation from "../../assets/img/back-navigation-arrow.svg";
 import { useConversationSearch } from "../../hooks/useConversationSearch";
 import { Collapse } from "@mui/material";
 import { ZeroArgVoidReturns } from "../../hooks/useInput";
 import { getAvatar } from "../../shared/components/LMUserMedia";
 import InfiniteScroll from "react-infinite-scroll-component";
+import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 interface LMConversationSearchProps {
   onCloseSearch: ZeroArgVoidReturns;
 }
@@ -18,6 +19,14 @@ const LMConversationSearch = ({ onCloseSearch }: LMConversationSearchProps) => {
     searchKey,
     setSearchKey,
   } = useConversationSearch();
+
+  const { customComponents } = useContext(LMGlobalClientProviderContext);
+
+  // Custom component
+  if (customComponents?.searchConversation) {
+    return <customComponents.searchConversation />;
+  }
+  // Default component
   return (
     <>
       <div className="lm-conversation-search">

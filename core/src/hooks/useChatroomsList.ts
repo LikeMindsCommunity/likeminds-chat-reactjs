@@ -44,7 +44,7 @@ interface ChatroomProviderInterface {
 export default function useChatroomList(): ChatroomProviderInterface {
   const navigate = useNavigate();
   const { id: chatroomId } = useParams();
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
   const { currentUser, currentCommunity } = useContext(UserProviderContext);
   //   states for dm chatrooms
   const [dmChatrooms, setDmChatrooms] = useState<DMChannel[] | null>(null);
@@ -141,7 +141,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
           }),
         );
         if (chatroomID.toString() === chatroomId?.toString()) {
-          navigate("/");
+          navigate(`${routes?.getRootPath()}`);
         }
       }
     } catch (error) {
@@ -176,7 +176,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
         });
       });
 
-      navigate(`/${CHANNEL_PATH}/${collabcardId}`);
+      navigate(`/${routes?.getChannelPath()}/${collabcardId}`);
     } catch (error) {
       console.log(error);
     }

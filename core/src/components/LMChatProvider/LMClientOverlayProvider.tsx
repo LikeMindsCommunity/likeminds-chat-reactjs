@@ -7,12 +7,14 @@ import LoaderContextProvider from "../../context/LMLoaderContextProvider";
 import useUserProvider from "../../hooks/useUserProvider";
 import { Snackbar } from "@mui/material";
 import { LMSDKCallbacksImplementations } from "../../LMSDKCoreCallbacks";
+import { LMRoutes } from "../../LMRoutes";
 
 const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
   client,
   children,
   userDetails,
   lmChatCoreCallbacks,
+  routes,
 }) => {
   const {
     lmChatUser,
@@ -45,6 +47,7 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
       value={{
         lmChatclient: client,
         userDetails: userDetails,
+        routes: routes || new LMRoutes(),
       }}
     >
       <UserProviderContext.Provider

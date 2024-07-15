@@ -12,6 +12,7 @@ import { useDialog } from "../../hooks/useDialog";
 import LMPollCreationDialog from "./LMPollCreationDialog";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
+import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 
 const LMAttachmentsSelector = () => {
   const { openMenu, closeMenu, menuAnchor } = useMenu();
@@ -23,6 +24,13 @@ const LMAttachmentsSelector = () => {
   } = useContext(InputContext);
   const { openDialog, closeDialog, dialogOpen } = useDialog();
   const { chatroom } = useContext(LMChatChatroomContext);
+  const { customComponents } = useContext(LMGlobalClientProviderContext);
+
+  // Custom component
+  if (customComponents?.input?.chatroomInputAttachmentsSelector) {
+    return <customComponents.input.chatroomInputAttachmentsSelector />;
+  }
+  // Default component
   return (
     <div className="attachment-selecter-wrapper">
       <Dialog open={dialogOpen} onClose={closeDialog}>
