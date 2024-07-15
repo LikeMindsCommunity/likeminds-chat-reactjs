@@ -59,6 +59,8 @@ function LMGroupChatChannelList() {
     }
   };
 
+  const { customComponents } = useContext(LMGlobalClientProviderContext);
+
   const renderChatroomSearchComponent = () => {
     switch (openSearchField) {
       case true: {
@@ -86,6 +88,12 @@ function LMGroupChatChannelList() {
   };
 
   // return renderChatroomSearchComponent();
+
+  // Custom component
+  if (customComponents?.groupChatChannelList) {
+    return <customComponents.groupChatChannelList />;
+  }
+  // Default component
 
   return (
     <div className="lm-channel-list">

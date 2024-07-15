@@ -11,6 +11,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 import pdfViewIcon from "../../assets/img/pdf-document.svg";
 import crossIcon from "../../assets/img/carousel-cross-icon.svg";
+import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 
 const LMMediaCarousel = () => {
   const {
@@ -20,6 +21,15 @@ const LMMediaCarousel = () => {
     removeMediaFromImageList,
   } = useContext(InputContext);
   const [currentSelectedIndex, setCurrentSelectedIndex] = useState<number>(0);
+
+  const { customComponents } = useContext(LMGlobalClientProviderContext);
+
+  // Custom component
+  if (customComponents?.input?.chatroomInputAttachmentsMediaCarousel) {
+    return <customComponents.input.chatroomInputAttachmentsMediaCarousel />;
+  }
+  // Default component
+
   // carousel for images
   if (imagesAndVideosMediaList && imagesAndVideosMediaList?.length) {
     return (
