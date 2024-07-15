@@ -69,7 +69,8 @@ import LMUserProviderContext from "./context/LMUserProviderContext";
 import { LMCoreCallbacks } from "./LMSDKCoreCallbacks";
 import { LMRoutes } from "./LMRoutes";
 import { LMMessageListCustomActionsContext } from "./context/LMMessageListCustomActionsContext";
-
+import { initiateLMClient } from "./getClient";
+import "./App.css";
 export {
   LMInput,
   LMHeader,
@@ -142,4 +143,5 @@ export {
   LMCoreCallbacks,
   LMMessageListCustomActionsContext,
   LMRoutes,
+  initiateLMClient,
 };

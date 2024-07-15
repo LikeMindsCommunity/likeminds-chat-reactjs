@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { useState } from "react";
-import LMChatClient from "@likeminds.community/chat-js";
+// import LMChatClient from "@likeminds.community/chat-js";
 import {
   LMClientOverlayProvider,
   LMChannel,
@@ -10,7 +10,8 @@ import {
   LMParticipantList,
   LMCoreCallbacks,
   LMMessageList,
-} from "likeminds-chat-reactjs-beta";
+  initiateLMClient,
+} from "@likeminds.community/likeminds-chat-reactjs";
 import { Toaster } from "react-hot-toast";
 
 const LMAppLayout = () => {
@@ -88,9 +89,7 @@ const LMAppLayout = () => {
     }
   );
 
-  const lmChatClient = LMChatClient.setPlatformCode("rt")
-    .setVersionCode(40)
-    .build();
+  const lmChatClient = initiateLMClient();
 
   return (
     <BrowserRouter>
