@@ -15,14 +15,14 @@ import {
   ViewParticipantsResponse,
 } from "../types/api-responses/viewParticipants";
 import { useNavigate, useParams } from "react-router-dom";
-import { CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
+// import { CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
 
 /**
  * Custom hook that provides functionality related to participants/members of a chatroom.
  * @returns {UseParticipantsReturns} An object containing the participants list, a flag indicating whether there are more participants to load, a function to fetch the members/participants of a chatroom, and a function to navigate back to the chatroom.
  */
 export function useParticipants(): UseParticipantsReturns {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
   const { chatroom } = useContext(LMChatChatroomContext);
   const [participantsList, setParticipantList] = useState<Participant[]>([]);
   const participantListPageCount = useRef<number>(1);
@@ -36,8 +36,8 @@ export function useParticipants(): UseParticipantsReturns {
    * Navigates back to the chatroom.
    */
   const navigateBackToChatroom = useCallback(() => {
-    navigate(`/${CHANNEL_PATH}/${chatroomId}`);
-  }, [chatroomId, navigate]);
+    navigate(`/${routes?.getChannelPath()}/${chatroomId}`);
+  }, [chatroomId, navigate, routes]);
 
   /**
    * Fetches the members/participants of a chatroom.

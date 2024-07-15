@@ -2,11 +2,12 @@ import React, { useContext, useMemo } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { LMDMChannelListContext } from "../../context/LMDMChannelListContext";
-import { DM_CHANNEL_PATH } from "../../shared/constants/lm.routes.constant";
+// import { DM_CHANNEL_PATH } from "../../shared/constants/lm.routes.constant";
 import UserProviderContext from "../../context/LMUserProviderContext";
 import { ChatroomData } from "../../types/api-responses/getChatroomSync";
 import document from "../../assets/img/document.svg";
 import { Utils } from "../../utils/helpers";
+import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 interface LMJoinedDMChannelTileProps {
   chatroom: ChatroomData;
 }
@@ -16,6 +17,7 @@ const LMJoinedDMChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
   const { markReadADMChatroom, usersData, conversationsData } = useContext(
     LMDMChannelListContext,
   );
+  const { routes } = useContext(LMGlobalClientProviderContext);
   const { currentUser } = useContext(UserProviderContext);
   const {
     id,
@@ -53,7 +55,7 @@ const LMJoinedDMChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
       className={`channel-media ${chatroomId?.toString() === id.toString() ? "selected" : null}`}
       onClick={() => {
         markReadADMChatroom(id);
-        navigate(`/${DM_CHANNEL_PATH}/${id}`);
+        navigate(`/${routes?.getDmChannelPath()}/${id}`);
       }}
     >
       <div className="channel-icon">

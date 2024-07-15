@@ -25,7 +25,6 @@ import DmReqBlock from "./components/LMMessageList/LMDMReqBlock";
 import LMMessageMiddleware from "./components/LMMessageList/LMMessageMiddleware";
 import LMMessageList from "./components/LMMessageList/LMMessageList";
 import LMParticipantList from "./components/LMParticipant/LMParticipantList";
-
 import LMDMChatChannels from "./components/LMChannelList/LMDMChatChannels";
 import LMJoinedDMChannelTile from "./components/LMChannelList/LMJoinedDMChannelTile";
 import LMMessageReplyCollapse from "./components/LMInput/LMMessageReplyCollapse";
@@ -68,6 +67,8 @@ import LMLoaderContextProvider from "./context/LMLoaderContextProvider";
 import LMMessageListContext from "./context/LMMessageListContext";
 import LMUserProviderContext from "./context/LMUserProviderContext";
 import { LMCoreCallbacks } from "./LMSDKCoreCallbacks";
+import { LMRoutes } from "./LMRoutes";
+import { LMMessageListCustomActionsContext } from "./context/LMMessageListCustomActionsContext";
 
 export {
   LMInput,
@@ -139,4 +140,6 @@ export {
   useReactions,
   useUserProvider,
   LMCoreCallbacks,
+  LMMessageListCustomActionsContext,
+  LMRoutes,
 };

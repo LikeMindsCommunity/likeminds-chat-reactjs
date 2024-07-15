@@ -18,6 +18,7 @@ import messageIcon from "../../assets/img/explore-feed_chatroom_messages.svg";
 import LMConversationSearch from "../search/LMConversationSearch";
 import LMChatroomSearch from "../search/LMChatroomSearch";
 import { ChatroomData } from "../../types/api-responses/getChatroomSync";
+import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 
 function LMGroupChatChannelList() {
   const {
@@ -34,7 +35,7 @@ function LMGroupChatChannelList() {
     onLeaveChatroom,
   } = useChatroomList();
   const { currentUser } = useContext(UserProviderContext);
-
+  const { routes } = useContext(LMGlobalClientProviderContext);
   const navigate = useNavigate();
   const { id: chatroomId } = useParams();
   // Search in chatroom
@@ -105,7 +106,7 @@ function LMGroupChatChannelList() {
                 className={`channel-media ${chatroomId?.toString() === chatroom?.id?.toString() ? "selected" : null}`}
                 onClick={() => {
                   markReadAChatroom(chatroom?.id);
-                  navigate(`/${CHANNEL_PATH}/${chatroom?.id}`);
+                  navigate(`/${routes?.getChannelPath()}/${chatroom?.id}`);
                 }}
               >
                 <div className="channel-icon">
@@ -187,7 +188,7 @@ function LMGroupChatChannelList() {
                 className="channel-media"
                 key={chatroom.id.toString()}
                 onClick={() => {
-                  navigate(`/${CHANNEL_PATH}/${chatroom.id}`);
+                  navigate(`/${routes?.getChannelPath()}/${chatroom.id}`);
                 }}
               >
                 <div className="channel-icon">

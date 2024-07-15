@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Location, NavigateFunction } from "react-router-dom";
 import { ApplicationGeneralDataContext } from "../../context/LMUserProviderContext";
 import { InputDataStore, InputDefaultActions } from "../../hooks/useInput";
+import { MessageDefaultActions } from "../../hooks/useMessageOptions";
+import { ChatroomMenuDefaultActions } from "../../hooks/useChatroomMenuOptions";
 
 export interface CustomComponents {
   message?: CustomComponentType; //added
@@ -61,14 +64,50 @@ export interface InputCustomActions {
   onAprooveDMRequest?: InputActionsCallback;
 }
 
-export type CustomComponentType = React.FC;
+export interface MessageCustomActions {
+  onReportCustom?: MessageActionsCallback;
+  onDeleteCustom?: MessageActionsCallback;
+  onEditCustom?: MessageActionsCallback;
+  onReplyCustom?: MessageActionsCallback;
+  putReactionCustom?: MessageActionsCallback;
+  onReplyPrivatelyCustom?: MessageActionsCallback;
+}
 
+export interface ChatroomMenuCustomActions {
+  onMuteCustom?: ChatroomHeaderActionsCallback;
+  onViewParticipantsCustom?: ChatroomHeaderActionsCallback;
+  onLeaveChatroomCustom?: ChatroomHeaderActionsCallback;
+  onBlockCustom?: ChatroomHeaderActionsCallback;
+  onUnBlockCustom?: ChatroomHeaderActionsCallback;
+}
+
+export type CustomComponentType = React.FC;
+// for input actions callback
 export type InputActionsCallback = (
   inputDefaultActions: InputDefaultActions,
   applicationGeneralDataContext: ApplicationGeneralDataContext,
   inputDataStore: InputDataStore,
   router: Router,
-) => void;
+) => any;
+
+// end for input action callback
+// for message options
+export type MessageActionsCallback = (
+  messageDefaultActions: MessageDefaultActions,
+  applicationGeneralDataContext: ApplicationGeneralDataContext,
+  router: Router,
+) => any;
+// end for message options
+
+// for chatroomHeader
+
+export type ChatroomHeaderActionsCallback = (
+  chatroomMenuDefaultActions: ChatroomMenuDefaultActions,
+  applicationGeneralDataContext: ApplicationGeneralDataContext,
+  router: Router,
+) => any;
+
+// end for chatroomHeader
 
 export interface Router {
   location: Location;
