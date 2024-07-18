@@ -3,6 +3,7 @@ import InputContext from "../../context/LMInputContext";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
+import { GIPHY_API_KEY } from "../../apiKeys";
 
 const LMGiphySearch: React.FC = () => {
   const {
@@ -16,13 +17,13 @@ const LMGiphySearch: React.FC = () => {
     gifQuery,
     setGifMedia,
   } = useContext(InputContext);
-  const apiKey = "9hQZNoy1wtM2b1T4BIx8B0Cwjaje3UUR";
-
+  const apiKey = GIPHY_API_KEY;
+  const { customComponents } = useContext(LMGlobalClientProviderContext);
   useEffect(() => {
     // Fetch trending GIFs initially
     const url = `https://api.giphy.com/v1/gifs/trending?api_key=${apiKey}&limit=100`;
     fetchGifs(url);
-  }, [fetchGifs]);
+  }, [apiKey, fetchGifs]);
   if (gifMedia) {
     return (
       <div className="selected-gif-view-container">
@@ -35,8 +36,6 @@ const LMGiphySearch: React.FC = () => {
       </div>
     );
   }
-
-  const { customComponents } = useContext(LMGlobalClientProviderContext);
 
   // Custom component
   if (customComponents?.input?.chatroomInputMessageGiphy) {
