@@ -2631,3 +2631,8 @@ input.disabled-state {
 .lm-custom-menu ul {
     display: flex !important;
 }
+
+.lm-chatroom-topic {
+    height: 74px;
+    padding: 18px 16px;
+}

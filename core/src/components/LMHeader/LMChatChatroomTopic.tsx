@@ -7,7 +7,7 @@ const LMChatChatroomTopic = () => {
   if (!chatroom) {
     return null;
   }
-  return <div></div>;
+  return <div className="lm-chatroom-topic"></div>;
 };
 
 export default LMChatChatroomTopic;
