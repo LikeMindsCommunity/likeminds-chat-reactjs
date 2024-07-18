@@ -34,6 +34,7 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
   const { menuAnchor, openMenu, closeMenu } = useMenu();
   const { customComponents } = useContext(LMGlobalClientProviderContext);
 
+  // Function to get the reciever of the chatroom in case of direct message chatroom
   const getChatroomReciever = useCallback(() => {
     if (!chatroom) {
       return null;
@@ -47,6 +48,8 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
         : chatroom.chatroom.member;
     return recieverUser;
   }, [chatroom, currentUser]);
+
+  // function for getting the avatar of the chatroom
   const chatroomAvatar = useMemo(() => {
     if (chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
       const recieverUser = getChatroomReciever();
@@ -70,6 +73,7 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
     chatroom?.chatroom.type,
     getChatroomReciever,
   ]);
+  // function to get the TItle for the chatroom
   const chatroomTitle = useMemo(() => {
     if (!chatroom) return "";
     const chatroomType = chatroom?.chatroom.type;

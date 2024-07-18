@@ -174,7 +174,7 @@ export function useInput(
       console.log(error);
     }
   }, [chatroomId, lmChatclient, chatroom, setNewChatroom]);
-  const fetchGifs = async (url: string) => {
+  const fetchGifs = useCallback(async (url: string) => {
     setLoading(true);
     setError(null);
     try {
@@ -186,7 +186,7 @@ export function useInput(
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const handleSearch = useCallback(async () => {
     const url = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${query}&limit=100`;

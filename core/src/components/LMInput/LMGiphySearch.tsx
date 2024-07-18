@@ -17,7 +17,7 @@ const LMGiphySearch: React.FC = () => {
     setGifMedia,
   } = useContext(InputContext);
   const apiKey = "9hQZNoy1wtM2b1T4BIx8B0Cwjaje3UUR";
-
+  const { customComponents } = useContext(LMGlobalClientProviderContext);
   useEffect(() => {
     // Fetch trending GIFs initially
     const url = `https://api.giphy.com/v1/gifs/trending?api_key=${apiKey}&limit=100`;
@@ -36,8 +36,6 @@ const LMGiphySearch: React.FC = () => {
     );
   }
 
-  const { customComponents } = useContext(LMGlobalClientProviderContext);
-
   // Custom component
   if (customComponents?.input?.chatroomInputMessageGiphy) {
     return <customComponents.input.chatroomInputMessageGiphy />;
@@ -46,6 +44,7 @@ const LMGiphySearch: React.FC = () => {
 
   return (
     <div className="lm-giphy-box">
+      <div className="giphy-attribution-mark">Powered by GIPHY</div>
       <div className="lm-giphy-search">
         <input
           type="text"
