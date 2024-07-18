@@ -36,6 +36,7 @@ import {
   InputCustomActions,
   Router,
 } from "../types/prop-types/CustomComponents";
+import { GIPHY_API_KEY } from "../apiKeys";
 
 export function useInput(
   inputCustomActions?: InputCustomActions,
@@ -104,7 +105,7 @@ export function useInput(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [openGifCollapse, setOpenGifCollapse] = useState<boolean>(false);
-  const apiKey = "9hQZNoy1wtM2b1T4BIx8B0Cwjaje3UUR";
+  const apiKey = GIPHY_API_KEY;
 
   //   api calls
   const sendDMRequest = useCallback(
@@ -174,24 +175,25 @@ export function useInput(
       console.log(error);
     }
   }, [chatroomId, lmChatclient, chatroom, setNewChatroom]);
-  const fetchGifs = async (url: string) => {
+  const fetchGifs = useCallback(async (url: string) => {
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(url);
       const result = await response.json();
       setGifs(result.data);
+      setQuery(() => "");
     } catch (err) {
       setError("Failed to fetch GIFs. Please try again.");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const handleSearch = useCallback(async () => {
     const url = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${query}&limit=100`;
     fetchGifs(url);
-  }, [apiKey, query]);
+  }, [apiKey, fetchGifs, query]);
 
   const fetchTaggingList = useCallback(
     async (pg?: number) => {
