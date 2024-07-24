@@ -2635,4 +2635,30 @@ input.disabled-state {
 .lm-chatroom-topic {
     height: 74px;
     padding: 18px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.lm-chatroom-topic-conversation-user-avatar {
+    height: 40px;
+    width: 40px;
+}
+
+.lm-topic-chatroom-user-details {
+    font-family: Roboto;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+    text-align: left;
+    color: #06C3AF;
+}
+
+.lm-topic-chatroom-conversation-time {
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    text-align: left;
+    color: rgba(0, 0, 0, 0.3);
 }

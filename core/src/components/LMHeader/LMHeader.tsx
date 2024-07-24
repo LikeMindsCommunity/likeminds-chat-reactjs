@@ -1,4 +1,4 @@
-import {
+import React, {
   PropsWithChildren,
   useCallback,
   useContext,
@@ -21,6 +21,7 @@ import UserProviderContext from "../../context/LMUserProviderContext";
 import LMConversationSearch from "../search/LMConversationSearch";
 import { ChatroomMenuCustomActions } from "../../types/prop-types/CustomComponents";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
+import LMChatChatroomTopic from "./LMChatChatroomTopic";
 interface LMHeaderProps {
   chatroomMenuCustomActions?: ChatroomMenuCustomActions;
 }
@@ -168,6 +169,7 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
                 </Menu>
               </div>
             </div>
+            <LMChatChatroomTopic />
           </>
         );
       }
