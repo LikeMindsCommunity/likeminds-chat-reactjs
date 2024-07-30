@@ -157,7 +157,7 @@ export interface GetSyncConversationsResponse {
       };
     };
     conversation_meta: Record<number | string, ConversationMetaObject>;
-    widgets: any;
+    widgets: Record<string, any>;
   };
 }
 interface ConversationMetaObject {

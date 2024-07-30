@@ -42,6 +42,9 @@ const LMMessage = () => {
 
   // custom message component
 
+  if (message?.widget_id?.length && messageBubbles?.customWidget) {
+    return <messageBubbles.customWidget />;
+  }
   if (CustomMessageComponent) {
     return <CustomMessageComponent />;
   }

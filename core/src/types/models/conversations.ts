@@ -33,6 +33,8 @@ export interface Conversation {
   poll_answer_text: string;
   last_seen: boolean;
   reply_conversation_object: Conversation;
+  widget_id?: string;
+  widget?: Record<string, any>;
 }
 
 export default Conversation;
