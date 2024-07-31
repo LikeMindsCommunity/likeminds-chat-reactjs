@@ -102,7 +102,7 @@ const LMAppLayout = () => {
         userDetails={userDetails}
         customComponents={{
           messageBubbles: {
-            customWidget: ThalaCustomWidget,
+            customWidget: SampleCustomWidget,
           },
         }}
       >
@@ -161,7 +161,21 @@ export const PAGE_NOT_FOUND_PATH = "404";
 
 export default LMAppLayout;
 
-const ThalaCustomWidget: React.FC = () => {
+// Write a custom widget
+
+const SampleCustomWidget: React.FC = () => {
   const { message } = useContext(LMMessageContext);
-  return <div>{`Ye h message ${message.answer}`}</div>;
+  return (
+    <div>
+      <h1>Hello World</h1>
+      <select>
+        <option value="1">1</option>
+        <option value="1">1</option>
+        <option value="1">1</option>
+        <option value="1">1</option>
+        <option value="1">1</option>
+      </select>
+      {`Ye h message ${JSON.stringify(message.widget)}`}
+    </div>
+  );
 };
