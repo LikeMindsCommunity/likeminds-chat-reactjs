@@ -36,6 +36,7 @@ import {
   InputCustomActions,
   Router,
 } from "../types/prop-types/CustomComponents";
+import { GIPHY_API_KEY } from "../apiKeys";
 
 export function useInput(
   inputCustomActions?: InputCustomActions,
@@ -104,7 +105,7 @@ export function useInput(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [openGifCollapse, setOpenGifCollapse] = useState<boolean>(false);
-  const apiKey = "9hQZNoy1wtM2b1T4BIx8B0Cwjaje3UUR";
+  const apiKey = GIPHY_API_KEY;
 
   //   api calls
   const sendDMRequest = useCallback(
@@ -174,24 +175,25 @@ export function useInput(
       console.log(error);
     }
   }, [chatroomId, lmChatclient, chatroom, setNewChatroom]);
-  const fetchGifs = async (url: string) => {
+  const fetchGifs = useCallback(async (url: string) => {
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(url);
       const result = await response.json();
       setGifs(result.data);
+      setQuery(() => "");
     } catch (err) {
       setError("Failed to fetch GIFs. Please try again.");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const handleSearch = useCallback(async () => {
     const url = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${query}&limit=100`;
     fetchGifs(url);
-  }, [apiKey, query]);
+  }, [apiKey, fetchGifs, query]);
 
   const fetchTaggingList = useCallback(
     async (pg?: number) => {
@@ -222,232 +224,238 @@ export function useInput(
     },
     [chatroom?.chatroom.id, lmChatclient, tagSearchKey],
   );
-  const postMessage = useCallback(async () => {
-    try {
-      if (!chatroom) {
-        return;
-      }
-      const messageText = Utils.extractTextFromNode(
-        inputBoxRef.current!,
-      ).trim();
-      if (
-        chatroom.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
-        chatroom.chatroom.chat_request_state === null &&
-        chatroom.chatroom.member.state !== MemberType.COMMUNITY_MANAGER &&
-        chatroom.chatroom.chatroom_with_user?.state !==
-          MemberType.COMMUNITY_MANAGER
-      ) {
-        await sendDMRequest(messageText);
-
-        return;
-      }
-      if (
-        (!messageText || !messageText.length) &&
-        !imagesAndVideosMediaList?.length &&
-        imagesAndVideosMediaList?.length
-      ) {
-        return;
-      }
-      if (Utils.extractTextFromNode(inputBoxRef.current!).trim())
-        if (conversationToedit) {
-          const call: any = await lmChatclient?.editConversation({
-            conversationId: conversationToedit.id,
-            text: messageText,
-          });
-          setConversationToEdit(null);
-          dispatchEvent(
-            new CustomEvent(CustomActions.EDIT_ACTION_COMPLETED, {
-              detail: call.data.conversation,
-            }),
-          );
-
-          setFocusOnInputField();
+  const postMessage = useCallback(
+    async (customWidgetData?: Record<string, any>) => {
+      try {
+        if (!chatroom) {
           return;
         }
-      // sending the text part of the conversation
-      const chatroomData = chatroom.chatroom;
-      const postConversationCallConfig: PostConversation = {
-        text: messageText,
-        chatroomId: parseInt(chatroomData.id.toString()),
-        hasFiles: false,
-        ogTags: ogTags || undefined,
-      };
-      if (conversationToReply) {
-        postConversationCallConfig.repliedConversationId =
-          conversationToReply.id;
-        setConversationToReply(null);
-      }
-      const attachmentsList =
-        imagesAndVideosMediaList || documentsMediaList || [];
-      if (attachmentsList.length) {
-        postConversationCallConfig.hasFiles = true;
-        postConversationCallConfig.attachmentCount = attachmentsList.length;
-      }
-      if (gifMedia) {
-        postConversationCallConfig.hasFiles = true;
-        postConversationCallConfig.attachmentCount = 1;
-      }
-      const postConversationsCall: PostConversationResponse =
-        await lmChatclient?.postConversation(postConversationCallConfig);
-      setFocusOnInputField();
-      removeOgTag();
-      if (gifMedia) {
-        setGifMedia(null);
-        const onUploadConfig = {
-          conversationId: parseInt(
-            postConversationsCall.data.conversation.id.toString(),
-            10,
-          ),
-          filesCount: 1,
-          index: 0,
-          meta: {
-            size: parseInt(gifMedia.images.fixed_height.size.toString()),
-            // size: parseInt(giphyUrl?.images?.fixed_height?.size?.toString()),
-          },
-          name: gifMedia?.title,
-          type: gifMedia?.type,
-          url: gifMedia?.images?.fixed_height?.url,
-          thumbnailUrl: gifMedia?.images["480w_still"]?.url,
-        };
-        lmChatclient?.putMultimedia(onUploadConfig);
-        setOpenGifCollapse(false);
-        return;
-      }
-      for (let index = 0; index < attachmentsList.length; index++) {
-        const conversation = postConversationsCall.data.conversation;
-        const attachment = attachmentsList[index];
-        const { name, size, type } = attachment;
-        if (type.includes(FileType.video)) {
-          const video = document.createElement("video");
-          const canvas = document.createElement("canvas");
-          const ctx = canvas.getContext("2d");
-          const localIndex = index;
-          // Load the video
-          const url = URL.createObjectURL(attachment);
-          video.src = url;
-          let blobEl = null;
-          video.addEventListener("loadedmetadata", async () => {
-            // Set canvas dimensions to match video dimensions
+        const messageText = Utils.extractTextFromNode(
+          inputBoxRef.current!,
+        ).trim();
+        if (
+          chatroom.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
+          chatroom.chatroom.chat_request_state === null &&
+          chatroom.chatroom.member.state !== MemberType.COMMUNITY_MANAGER &&
+          chatroom.chatroom.chatroom_with_user?.state !==
+            MemberType.COMMUNITY_MANAGER
+        ) {
+          await sendDMRequest(messageText);
 
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            video.currentTime = 1;
-            video.addEventListener("seeked", async () => {
-              ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
+          return;
+        }
+        if (
+          (!messageText || !messageText.length) &&
+          !imagesAndVideosMediaList?.length &&
+          imagesAndVideosMediaList?.length
+        ) {
+          return;
+        }
+        if (Utils.extractTextFromNode(inputBoxRef.current!).trim())
+          if (conversationToedit) {
+            const call: any = await lmChatclient?.editConversation({
+              conversationId: conversationToedit.id,
+              text: messageText,
+            });
+            setConversationToEdit(null);
+            dispatchEvent(
+              new CustomEvent(CustomActions.EDIT_ACTION_COMPLETED, {
+                detail: call.data.conversation,
+              }),
+            );
 
-              // Convert canvas content to blob
-              canvas.toBlob(
-                (blob) => {
-                  blobEl = blob;
-                  const thumbnailFile = new File(
-                    [blobEl!],
-                    conversation.id.toString().concat("thumbnail.jpeg"),
-                  );
+            setFocusOnInputField();
+            return;
+          }
+        // sending the text part of the conversation
+        const chatroomData = chatroom.chatroom;
+        const postConversationCallConfig = {
+          text: messageText,
+          chatroomId: parseInt(chatroomData.id.toString()),
+          hasFiles: false,
+          ogTags: ogTags || undefined,
+        } as unknown as any;
+        if (customWidgetData) {
+          postConversationCallConfig.metadata = customWidgetData;
+        }
+        if (conversationToReply) {
+          postConversationCallConfig.repliedConversationId =
+            conversationToReply.id;
+          setConversationToReply(null);
+        }
+        const attachmentsList =
+          imagesAndVideosMediaList || documentsMediaList || [];
+        if (attachmentsList.length) {
+          postConversationCallConfig.hasFiles = true;
+          postConversationCallConfig.attachmentCount = attachmentsList.length;
+        }
+        if (gifMedia) {
+          postConversationCallConfig.hasFiles = true;
+          postConversationCallConfig.attachmentCount = 1;
+        }
+        const postConversationsCall: PostConversationResponse =
+          await lmChatclient?.postConversation(postConversationCallConfig);
+        setFocusOnInputField();
+        removeOgTag();
+        if (gifMedia) {
+          setGifMedia(null);
+          const onUploadConfig = {
+            conversationId: parseInt(
+              postConversationsCall.data.conversation.id.toString(),
+              10,
+            ),
+            filesCount: 1,
+            index: 0,
+            meta: {
+              size: parseInt(gifMedia.images.fixed_height.size.toString()),
+              // size: parseInt(giphyUrl?.images?.fixed_height?.size?.toString()),
+            },
+            name: gifMedia?.title,
+            type: gifMedia?.type,
+            url: gifMedia?.images?.fixed_height?.url,
+            thumbnailUrl: gifMedia?.images["480w_still"]?.url,
+          };
+          lmChatclient?.putMultimedia(onUploadConfig);
+          setOpenGifCollapse(false);
+          return;
+        }
+        for (let index = 0; index < attachmentsList.length; index++) {
+          const conversation = postConversationsCall.data.conversation;
+          const attachment = attachmentsList[index];
+          const { name, size, type } = attachment;
+          if (type.includes(FileType.video)) {
+            const video = document.createElement("video");
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            const localIndex = index;
+            // Load the video
+            const url = URL.createObjectURL(attachment);
+            video.src = url;
+            let blobEl = null;
+            video.addEventListener("loadedmetadata", async () => {
+              // Set canvas dimensions to match video dimensions
 
-                  Utils.uploadMedia(
-                    attachment,
-                    conversation.id.toString(),
-                    chatroom.chatroom.id.toString(),
-                  ).then((response: any) => {
-                    const thumbnailUrl = Utils.generateFileUrl(response);
-                    // const thumbnailUrl = response;
+              canvas.width = video.videoWidth;
+              canvas.height = video.videoHeight;
+              video.currentTime = 1;
+              video.addEventListener("seeked", async () => {
+                ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Convert canvas content to blob
+                canvas.toBlob(
+                  (blob) => {
+                    blobEl = blob;
+                    const thumbnailFile = new File(
+                      [blobEl!],
+                      conversation.id.toString().concat("thumbnail.jpeg"),
+                    );
+
                     Utils.uploadMedia(
                       attachment,
                       conversation.id.toString(),
                       chatroom.chatroom.id.toString(),
-                    ).then((response) => {
-                      // const fileUrl = response;
-                      const fileUrl = Utils.generateFileUrl(
-                        response as unknown as string,
-                      );
-                      const onUploadConfig: {
-                        conversationId: number;
-                        filesCount: number;
-                        index: number;
-                        meta: { size: number };
-                        name: string;
-                        type: string;
-                        url: string;
-                        thumbnailUrl: undefined | string;
-                      } = {
-                        conversationId: parseInt(
-                          conversation.id.toString(),
-                          10,
-                        ),
-                        filesCount: 1,
-                        index: localIndex,
-                        meta: { size: size },
-                        name: name,
-                        type: "video",
-                        url: (fileUrl as string) || "",
-                        thumbnailUrl: thumbnailUrl,
-                      };
+                    ).then((response: any) => {
+                      const thumbnailUrl = Utils.generateFileUrl(response);
+                      // const thumbnailUrl = response;
+                      Utils.uploadMedia(
+                        attachment,
+                        conversation.id.toString(),
+                        chatroom.chatroom.id.toString(),
+                      ).then((response) => {
+                        // const fileUrl = response;
+                        const fileUrl = Utils.generateFileUrl(
+                          response as unknown as string,
+                        );
+                        const onUploadConfig: {
+                          conversationId: number;
+                          filesCount: number;
+                          index: number;
+                          meta: { size: number };
+                          name: string;
+                          type: string;
+                          url: string;
+                          thumbnailUrl: undefined | string;
+                        } = {
+                          conversationId: parseInt(
+                            conversation.id.toString(),
+                            10,
+                          ),
+                          filesCount: 1,
+                          index: localIndex,
+                          meta: { size: size },
+                          name: name,
+                          type: "video",
+                          url: (fileUrl as string) || "",
+                          thumbnailUrl: thumbnailUrl,
+                        };
 
-                      lmChatclient?.putMultimedia(onUploadConfig);
+                        lmChatclient?.putMultimedia(onUploadConfig);
+                      });
                     });
-                  });
-                },
-                "image/jpeg",
-                0.8,
-              );
+                  },
+                  "image/jpeg",
+                  0.8,
+                );
+              });
             });
-          });
 
-          video.load();
-        } else {
-          await Utils.uploadMedia(
-            attachment,
-            conversation.id.toString(),
-            chatroom.chatroom.id.toString(),
-          ).then((response: any) => {
-            // const fileUrl = response;
-            const fileUrl = Utils.generateFileUrl(response);
-            const onUploadConfig: {
-              conversationId: number;
-              filesCount: number;
-              index: number;
-              meta: { size: number };
-              name: string;
-              type: string;
-              url: string;
-              thumbnail_url: null | string;
-            } = {
-              conversationId: parseInt(
-                postConversationsCall.data.id.toString(),
-                10,
-              ),
-              filesCount: 1,
-              index,
-              meta: { size: size },
-              name: name,
-              // type: type,
-              type: type.includes(FileType.image) ? FileType.image : "pdf",
-              url: fileUrl || "",
-              thumbnail_url: null,
-            };
+            video.load();
+          } else {
+            await Utils.uploadMedia(
+              attachment,
+              conversation.id.toString(),
+              chatroom.chatroom.id.toString(),
+            ).then((response: any) => {
+              // const fileUrl = response;
+              const fileUrl = Utils.generateFileUrl(response);
+              const onUploadConfig: {
+                conversationId: number;
+                filesCount: number;
+                index: number;
+                meta: { size: number };
+                name: string;
+                type: string;
+                url: string;
+                thumbnail_url: null | string;
+              } = {
+                conversationId: parseInt(
+                  postConversationsCall.data.id.toString(),
+                  10,
+                ),
+                filesCount: 1,
+                index,
+                meta: { size: size },
+                name: name,
+                // type: type,
+                type: type.includes(FileType.image) ? FileType.image : "pdf",
+                url: fileUrl || "",
+                thumbnail_url: null,
+              };
 
-            lmChatclient?.putMultimedia(onUploadConfig);
-          });
+              lmChatclient?.putMultimedia(onUploadConfig);
+            });
+          }
+          setImagesAndVideosMediaList(null);
+          setDocumentMediaList(null);
         }
-        setImagesAndVideosMediaList(null);
-        setDocumentMediaList(null);
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
-    }
-  }, [
-    chatroom,
-    conversationToReply,
-    conversationToedit,
-    documentsMediaList,
-    gifMedia,
-    imagesAndVideosMediaList,
-    lmChatclient,
-    ogTags,
-    sendDMRequest,
-    setConversationToEdit,
-    setConversationToReply,
-  ]);
+    },
+    [
+      chatroom,
+      conversationToReply,
+      conversationToedit,
+      documentsMediaList,
+      gifMedia,
+      imagesAndVideosMediaList,
+      lmChatclient,
+      ogTags,
+      sendDMRequest,
+      setConversationToEdit,
+      setConversationToReply,
+    ],
+  );
 
   // normal functions
   const removeOgTag = () => {
@@ -706,6 +714,7 @@ export function useInput(
     addImagesAndVideosMedia,
     aprooveDMRequest,
     clearTaggingList,
+    fetchGifs,
     fetchTaggingList,
     handleSearch,
     onTextInputKeydownHandler,
@@ -970,7 +979,7 @@ export interface UseInputReturns {
   addEmojiToText: TwoArgVoidReturns<EmojiData, MouseEvent>;
   addImagesAndVideosMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>>;
   addDocumentsMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>>;
-  postMessage: ZeroArgVoidReturns;
+  postMessage: OneOptionalArgVoidReturns<Record<string, any>>;
   getTaggingMembers: OneOptionalArgVoidReturns<number>;
   removeOgTag: ZeroArgVoidReturns;
   setGifMedia: Dispatch<Gif | null>;
@@ -1004,7 +1013,7 @@ export interface InputDefaultActions {
   addEmojiToText: TwoArgVoidReturns<EmojiData, MouseEvent>;
   addImagesAndVideosMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>>;
   addDocumentsMedia: OneArgVoidReturns<ChangeEvent<HTMLInputElement>>;
-  postMessage: ZeroArgVoidReturns;
+  postMessage: OneOptionalArgVoidReturns<Record<string, any>>;
   getTaggingMembers: OneOptionalArgVoidReturns<number>;
   removeOgTag: ZeroArgVoidReturns;
   setGifMedia: Dispatch<Gif | null>;

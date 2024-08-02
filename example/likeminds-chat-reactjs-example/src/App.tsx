@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import { useState } from "react";
-// import LMChatClient from "@likeminds.community/chat-js";
+import { useContext, useState } from "react";
+
 import {
   LMClientOverlayProvider,
   LMChannel,
@@ -11,6 +12,8 @@ import {
   LMCoreCallbacks,
   LMMessageList,
   initiateLMClient,
+  LMMessageContext,
+  // } from "@likeminds.community/likeminds-chat-reactjs";
 } from "@likeminds.community/likeminds-chat-reactjs";
 import { Toaster } from "react-hot-toast";
 
@@ -23,10 +26,10 @@ const LMAppLayout = () => {
     isGuest?: boolean;
     apiKey?: string;
   }>({
-    apiKey: "",
+    apiKey: "9c4efcfd-fc11-4989-b805-d6b3c550706f",
     isGuest: false,
-    uuid: "",
-    username: "",
+    uuid: "New-User",
+    username: "New-User",
   });
   const LMCORECALLBACKS = new LMCoreCallbacks(
     (a: string, b: string) => {
@@ -97,6 +100,11 @@ const LMAppLayout = () => {
         lmChatCoreCallbacks={LMCORECALLBACKS}
         client={lmChatClient}
         userDetails={userDetails}
+        customComponents={{
+          messageBubbles: {
+            customWidget: SampleCustomWidget,
+          },
+        }}
       >
         <Toaster position="top-right" />
         <Routes>
@@ -108,7 +116,27 @@ const LMAppLayout = () => {
                 <>
                   <LMHeader />
                   <LMMessageList />
-                  <LMInput />
+                  <LMInput
+                    inputCustomActions={{
+                      onPostMessage: (
+                        defaultActions,
+                        applicationContext,
+                        inputDataStore,
+                        _router
+                      ) => {
+                        _router;
+                        console.log(
+                          "onPostMessage",
+                          defaultActions,
+                          applicationContext,
+                          inputDataStore
+                        );
+                        return defaultActions.postMessage({
+                          hello: "world",
+                        });
+                      },
+                    }}
+                  />
                 </>
               }
             />
@@ -132,3 +160,22 @@ export const PARTICIPANTS_PATH = "participants";
 export const PAGE_NOT_FOUND_PATH = "404";
 
 export default LMAppLayout;
+
+// Write a custom widget
+
+const SampleCustomWidget: React.FC = () => {
+  const { message } = useContext(LMMessageContext);
+  return (
+    <div>
+      <h1>Hello World</h1>
+      <select>
+        <option value="1">1</option>
+        <option value="1">1</option>
+        <option value="1">1</option>
+        <option value="1">1</option>
+        <option value="1">1</option>
+      </select>
+      {`Ye h message ${JSON.stringify(message.widget)}`}
+    </div>
+  );
+};

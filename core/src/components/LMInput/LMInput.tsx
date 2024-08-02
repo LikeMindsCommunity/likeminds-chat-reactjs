@@ -155,7 +155,7 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
         <>
           <LMChatTextArea />
           <div className="lm-channel-icon send lm-cursor-pointer">
-            <IconButton onClick={postMessage}>
+            <IconButton onClick={() => postMessage()}>
               <img src={sendIcon} alt="sendIcon" />
             </IconButton>
           </div>
