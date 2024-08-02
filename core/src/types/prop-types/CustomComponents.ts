@@ -9,6 +9,7 @@ export interface CustomComponents {
   message?: CustomComponentType; //added
   messageBubbles?: {
     //added
+    customWidget?: CustomComponentType;
     chatroomMessageOptionsEmojisSelector?: CustomComponentType;
     chatroolMicroPoll?: CustomComponentType;
     chatroomNormalChatBubble?: CustomComponentType;
