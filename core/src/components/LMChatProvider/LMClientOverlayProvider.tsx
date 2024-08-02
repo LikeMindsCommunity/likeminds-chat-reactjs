@@ -15,6 +15,7 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
   userDetails,
   lmChatCoreCallbacks,
   routes,
+  customComponents,
 }) => {
   const {
     lmChatUser,
@@ -48,6 +49,7 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
         lmChatclient: client,
         userDetails: userDetails,
         routes: routes || new LMRoutes(),
+        customComponents: customComponents,
       }}
     >
       <UserProviderContext.Provider
