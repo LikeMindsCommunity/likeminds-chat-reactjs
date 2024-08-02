@@ -10,8 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@likeminds.community/chat-js": "^1.0.1",
-    "likeminds-chat-reactjs-beta": "^1.8.14",
+    "@likeminds.community/likeminds-chat-reactjs": "1.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",

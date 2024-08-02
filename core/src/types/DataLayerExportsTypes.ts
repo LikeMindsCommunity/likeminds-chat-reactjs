@@ -1,3 +1,3 @@
-import LMChatClient from "@likeminds.community/chat-js-beta";
+import LMChatClient from "@likeminds.community/chat-js";
 
 export { LMChatClient as LMClient };

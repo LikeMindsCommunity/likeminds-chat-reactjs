@@ -2,7 +2,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { useContext, useState } from "react";
-// import LMChatClient from "@likeminds.community/chat-js";
+
 import {
   LMClientOverlayProvider,
   LMChannel,
@@ -14,7 +14,7 @@ import {
   initiateLMClient,
   LMMessageContext,
   // } from "@likeminds.community/likeminds-chat-reactjs";
-} from "likeminds-chat-reactjs-beta";
+} from "@likeminds.community/likeminds-chat-reactjs";
 import { Toaster } from "react-hot-toast";
 
 const LMAppLayout = () => {
