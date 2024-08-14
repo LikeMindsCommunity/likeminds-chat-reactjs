@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import LMChatClient, { LMSDKCallbacks } from "@likeminds.community/chat-js";
+import LMChatClient, { LMSDKCallbacks } from "@likeminds.community/chat-js-beta";
 import { CustomActions } from "./customActions";
 
 export class LMCoreCallbacks {
