@@ -65,6 +65,7 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
     sendDMRequest,
     rejectDMRequest,
     onTextInputKeyUpHandler,
+    onMemberTabClick,
   } = useInput(inputCustomActions);
   const { currentUser } = useContext(UserProviderContext);
   const { chatroom, conversationToReply, conversationToedit } = useContext(
@@ -275,6 +276,7 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
     // Defalut view
     <InputContext.Provider
       value={{
+        onMemberTabClick,
         inputBoxRef,
         inputWrapperRef,
         inputText,

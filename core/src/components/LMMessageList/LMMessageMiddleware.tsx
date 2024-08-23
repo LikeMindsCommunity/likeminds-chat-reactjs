@@ -35,10 +35,11 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
   }
   function addReactionLocally(emoji: EmojiData) {
     const currentLocalMessage = { ...localMessageCopy };
-    const currentUserUUID = currentUser?.uuid;
+    const currentUserUUID = currentUser?.sdkClientInfo.uuid;
     currentLocalMessage.reactions =
       currentLocalMessage?.reactions?.filter(
-        (reaction: any) => reaction?.member?.uuid !== currentUserUUID,
+        (reaction: any) =>
+          reaction?.member?.sdkClientInfo.uuid !== currentUserUUID,
       ) || [];
     currentLocalMessage.reactions?.push({
       member: currentUser!,

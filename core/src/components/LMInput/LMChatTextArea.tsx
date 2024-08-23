@@ -14,7 +14,7 @@ const LMChatTextArea = () => {
     fetchMoreTags,
     matchedTagMembersList,
     getTaggingMembers,
-    clearTaggingList,
+    onMemberTabClick,
   } = useContext(InputContext);
   const { chatroom } = useContext(LMChatChatroomContext);
   return (
@@ -35,69 +35,72 @@ const LMChatTextArea = () => {
             dataLength={matchedTagMembersList.length}
             scrollableTarget="scrollableTaggingContainer"
           >
-            {matchedTagMembersList?.map!((item) => {
+            {matchedTagMembersList?.map!((member) => {
               return (
                 <button
-                  key={item?.id.toString() + Math.random().toString()}
+                  key={member?.id.toString() + Math.random().toString()}
                   className="taggingTile"
+                  // onClick={(e) => {
+                  //   e.preventDefault();
+                  //   const selection = window.getSelection();
+                  //   if (!selection) {
+                  //     return;
+                  //   }
+                  //   const focusNode = selection.focusNode;
+
+                  //   if (focusNode === null) {
+                  //     return;
+                  //   }
+
+                  //   const div = focusNode.parentElement;
+                  //   const text = div!.childNodes;
+                  //   if (focusNode === null || text.length === 0) {
+                  //     return;
+                  //   }
+
+                  //   const textContentFocusNode = focusNode.textContent;
+                  //   if (textContentFocusNode === null) {
+                  //     return;
+                  //   }
+
+                  //   const tagOp = Utils.findTag(textContentFocusNode);
+
+                  //   // ('the tag string is ', tagOp!.tagString);
+                  //   if (tagOp === undefined) return;
+
+                  //   const { limitLeft, limitRight } = tagOp;
+
+                  //   const textNode1Text = textContentFocusNode.substring(
+                  //     0,
+                  //     limitLeft - 1,
+                  //   );
+
+                  //   const textNode2Text = textContentFocusNode.substring(
+                  //     limitRight + 1,
+                  //   );
+
+                  //   const textNode1 = document.createTextNode(textNode1Text);
+                  //   const anchorNode = document.createElement("a");
+                  //   anchorNode.id = member?.sdkClientInfo.uuid.toString();
+                  //   anchorNode.href = "#";
+                  //   anchorNode.textContent = `@${member?.name.trim()} `;
+                  //   anchorNode.contentEditable = "false";
+                  //   const textNode2 = document.createTextNode(textNode2Text);
+                  //   const dummyNode = document.createElement("span");
+                  //   div!.replaceChild(textNode2, focusNode);
+
+                  //   div!.insertBefore(anchorNode, textNode2);
+                  //   div!.insertBefore(dummyNode, anchorNode);
+                  //   div!.insertBefore(textNode1, dummyNode);
+                  //   clearTaggingList();
+                  //   Utils.setCursorAtEnd(inputBoxRef);
+                  // }}
                   onClick={(e) => {
-                    e.preventDefault();
-                    const selection = window.getSelection();
-                    if (!selection) {
-                      return;
-                    }
-                    const focusNode = selection.focusNode;
-
-                    if (focusNode === null) {
-                      return;
-                    }
-
-                    const div = focusNode.parentElement;
-                    const text = div!.childNodes;
-                    if (focusNode === null || text.length === 0) {
-                      return;
-                    }
-
-                    const textContentFocusNode = focusNode.textContent;
-                    if (textContentFocusNode === null) {
-                      return;
-                    }
-
-                    const tagOp = Utils.findTag(textContentFocusNode);
-
-                    // ('the tag string is ', tagOp!.tagString);
-                    if (tagOp === undefined) return;
-
-                    const { limitLeft, limitRight } = tagOp;
-
-                    const textNode1Text = textContentFocusNode.substring(
-                      0,
-                      limitLeft - 1,
-                    );
-
-                    const textNode2Text = textContentFocusNode.substring(
-                      limitRight + 1,
-                    );
-
-                    const textNode1 = document.createTextNode(textNode1Text);
-                    const anchorNode = document.createElement("a");
-                    anchorNode.id = item?.id.toString();
-                    anchorNode.href = "#";
-                    anchorNode.textContent = `@${item?.name.trim()} `;
-                    anchorNode.contentEditable = "false";
-                    const textNode2 = document.createTextNode(textNode2Text);
-                    const dummyNode = document.createElement("span");
-                    div!.replaceChild(textNode2, focusNode);
-
-                    div!.insertBefore(anchorNode, textNode2);
-                    div!.insertBefore(dummyNode, anchorNode);
-                    div!.insertBefore(textNode1, dummyNode);
-                    clearTaggingList();
-                    Utils.setCursorAtEnd(inputBoxRef);
+                    onMemberTabClick(e, member);
                   }}
                 >
-                  <div>{Utils.setTagUserImage(item)}</div>
-                  <div className="tagUserName">{item?.name}</div>
+                  <div>{Utils.setTagUserImage(member)}</div>
+                  <div className="tagUserName">{member?.name}</div>
                 </button>
               );
             })}

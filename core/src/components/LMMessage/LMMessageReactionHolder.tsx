@@ -72,7 +72,10 @@ const MessageReactionHolder = () => {
             {selectedReaction.length !== 0
               ? messageReactionMap[selectedReaction]?.map((reactions) => {
                   return (
-                    <div className="reactionUser" key={reactions.member.uuid}>
+                    <div
+                      className="reactionUser"
+                      key={reactions.member.sdkClientInfo.uuid}
+                    >
                       <div className="userImg">
                         {reactions.member.imageUrl ? (
                           <img src={reactions.member.imageUrl} alt="image" />
@@ -97,7 +100,10 @@ const MessageReactionHolder = () => {
                 })
               : message?.reactions?.map((reactions) => {
                   return (
-                    <div className="reactionUser" key={reactions.member.uuid}>
+                    <div
+                      className="reactionUser"
+                      key={reactions.member.sdkClientInfo.uuid}
+                    >
                       <div className="userImg">
                         {reactions.member.imageUrl ? (
                           <img src={reactions.member.imageUrl} alt="image" />

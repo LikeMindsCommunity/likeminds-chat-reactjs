@@ -136,17 +136,6 @@ export default function useUserProvider(
         return error;
       }
     }
-    // document.addEventListener(
-    //   CustomActions.TRIGGER_SET_USER,
-    //   (event) => {
-    //     const { user, community } = (event as CustomEvent).detail;
-    //     setLmFeedUser(user || null);
-    //     setLmFeedUserCurrentCommunity(community || null);
-    //   },
-    // );
-
-    // calling initiateuser and memberstate apis and setting the user details
-    // TODO add a check for tokens
 
     async function setUser() {
       try {

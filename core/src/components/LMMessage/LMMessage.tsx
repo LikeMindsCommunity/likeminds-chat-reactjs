@@ -33,7 +33,8 @@ const LMMessage = () => {
   const { conversations, unBlockUserInDM } = useContext(MessageListContext);
   const { currentUser } = useContext(UserProviderContext);
   const { chatroom } = useContext(LMChatChatroomContext);
-  const isSender = message?.member?.uuid === currentUser?.uuid;
+  const isSender =
+    message?.member?.sdkClientInfo.uuid === currentUser?.sdkClientInfo.uuid;
   const messageClass = isSender ? "sender" : "receiver";
   const { onReply } = useMessageOptions();
   const imageUrl = message?.member.imageUrl;
@@ -115,7 +116,8 @@ const LMMessage = () => {
             <div className="name">{message?.member.name}</div>
           ) : null}
           <div className="lm-delete-msg">
-            {message?.deleted_by_member?.uuid === currentUser?.uuid
+            {message?.deleted_by_member?.sdkClientInfo.uuid ===
+            currentUser?.sdkClientInfo.uuid
               ? ConstantStrings.MESSAGE_DELETED_BY_SELF
               : ConstantStrings.MESSAGE_DELETED_NOT_BY_SELF}
           </div>
