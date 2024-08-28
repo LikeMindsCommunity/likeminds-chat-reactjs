@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useContext, useEffect, useMemo } from "react";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
@@ -79,8 +80,8 @@ export function useMessageOptions(): UseMessageOptionsReturn {
   const onReplyPrivately = useCallback(
     async (memberId: string | number) => {
       try {
-        const checkDMLimitCall = await lmChatclient?.checkDMLimit({
-          memberId: parseInt(memberId.toString()),
+        const checkDMLimitCall = await lmChatclient?.checkDMLimitWithUuid({
+          uuid: parseInt(memberId.toString()),
         });
         if (checkDMLimitCall.success) {
           const chatroomId = checkDMLimitCall.data.chatroom_id;
@@ -92,9 +93,11 @@ export function useMessageOptions(): UseMessageOptionsReturn {
           const is_request_dm_limit_exceeded =
             checkDMLimitCall.data.is_request_dm_limit_exceeded;
           if (!is_request_dm_limit_exceeded) {
-            const createDMChatroomCall = await lmChatclient?.createDMChatroom({
-              memberId: parseInt(memberId.toString()),
-            });
+            const createDMChatroomCall =
+              await lmChatclient?.createDMChatroomWithUuid({
+                // memberId: parseInt(memberId.toString()),
+                uuid: parseInt(memberId.toString()),
+              });
             if (createDMChatroomCall.success) {
               const newChatroomId = createDMChatroomCall.data.chatroom.id;
               navigate(`/${routes?.getDmChannelPath()}/${newChatroomId}`);
