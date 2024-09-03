@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useContext, useRef, useEffect, useCallback } from "react";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import UserProviderContext from "../context/LMUserProviderContext";
@@ -105,9 +106,11 @@ export default function useDmChannelLists(): UseDmChannelLists {
         const is_request_dm_limit_exceeded =
           checkDMLimitCall.data.is_request_dm_limit_exceeded;
         if (!is_request_dm_limit_exceeded) {
-          const createDMChatroomCall = await lmChatclient?.createDMChatroom({
-            memberId: parseInt(memberId.toString()),
-          });
+          const createDMChatroomCall =
+            await lmChatclient?.createDMChatroomWithUuid({
+              // memberId: parseInt(memberId.toString()),
+              uuid: parseInt(memberId.toString()),
+            });
           if (createDMChatroomCall.success) {
             // navigate to the chatroom
           }

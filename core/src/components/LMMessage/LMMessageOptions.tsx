@@ -17,8 +17,7 @@ function MessageOptions() {
   const { message } = useContext(LMMessageContext);
   const { currentUser } = useContext(UserProviderContext);
   const { canUserReplyPrivately, chatroom } = useContext(LMChatChatroomContext);
-  const { onDelete, onReport, onEdit, onReply, onReplyPrivately } =
-    useMessageOptions();
+  const { onDelete, onReport, onEdit, onReplyPrivately } = useMessageOptions();
   const { menuAnchor, openMenu, closeMenu } = useMenu();
   const { openDialog, dialogOpen, closeDialog } = useDialog();
 
@@ -33,7 +32,8 @@ function MessageOptions() {
     {
       title: ConversationActions.REPLY_PRIVATELY_ON_MESSAGE,
       clickFunction: () => {
-        onReplyPrivately(message.member.id);
+        // onReplyPrivately(message.member.id);
+        onReplyPrivately(message.member.sdkClientInfo.uuid);
         closeMenu();
       },
     },

@@ -68,9 +68,10 @@ function useChatroomMenuOptions(
   }, [chatroom, lmChatclient, setNewChatroom]);
   const onLeaveChatroom = useCallback(async () => {
     try {
-      const call = await lmChatclient?.followChatroom({
+      const call = await lmChatclient?.followChatroomWithUuid({
         collabcardId: parseInt(chatroom?.chatroom?.id?.toString() || "0"),
-        memberId: parseInt(currentUser?.id.toString() || "0"),
+        // memberId: parseInt(currentUser?.id.toString() || "0"),
+        uuid: parseInt(currentUser?.id.toString() || "0"),
         value: false,
       });
       if (call.success) {

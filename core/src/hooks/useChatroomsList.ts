@@ -129,9 +129,10 @@ export default function useChatroomList(): ChatroomProviderInterface {
   };
   const onLeaveChatroom = async (chatroomID: string) => {
     try {
-      const call = await lmChatclient?.followChatroom({
+      const call = await lmChatclient?.followChatroomWithUuid({
         collabcardId: parseInt(chatroomID),
-        memberId: parseInt(currentUser?.id.toString() || "0"),
+        // memberId: parseInt(currentUser?.id.toString() || "0"),
+        uuid: parseInt(currentUser?.id.toString() || "0"),
         value: false,
       });
       if (call.success) {

@@ -60,6 +60,7 @@ export interface InputCustomActions {
   onSendDMRequest?: InputActionsCallback;
   onRejectDMRequest?: InputActionsCallback;
   onAprooveDMRequest?: InputActionsCallback;
+  onMemberTabClickFunction?: InputActionsCallback;
 }
 
 export interface MessageCustomActions {
@@ -86,6 +87,7 @@ export type InputActionsCallback = (
   applicationGeneralDataContext: ApplicationGeneralDataContext,
   inputDataStore: InputDataStore,
   router: Router,
+  ...args: any[]
 ) => any;
 
 // end for input action callback
@@ -94,6 +96,7 @@ export type MessageActionsCallback = (
   messageDefaultActions: MessageDefaultActions,
   applicationGeneralDataContext: ApplicationGeneralDataContext,
   router: Router,
+  ...args: any[]
 ) => any;
 // end for message options
 
@@ -103,6 +106,7 @@ export type ChatroomHeaderActionsCallback = (
   chatroomMenuDefaultActions: ChatroomMenuDefaultActions,
   applicationGeneralDataContext: ApplicationGeneralDataContext,
   router: Router,
+  ...args: any[]
 ) => any;
 
 // end for chatroomHeader

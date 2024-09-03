@@ -33,7 +33,8 @@ const LMMicroPoll = () => {
   // const { openVoteCountDialog, voteCountDialogOpen, closeVoteCountDialog } =
   //   useDialog();
   const { currentUser } = useContext(UserProviderContext);
-  const isSender = message?.member?.uuid === currentUser?.uuid;
+  const isSender =
+    message?.member?.sdkClientInfo.uuid === currentUser?.sdkClientInfo.uuid;
   const messageClass = isSender ? "sender" : "receiver";
   const imageUrl = message?.member.imageUrl;
   const name = message?.member.name;

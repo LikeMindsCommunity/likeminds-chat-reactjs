@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
+import React, {
   ChangeEvent,
   Dispatch,
   KeyboardEvent,
@@ -42,6 +42,7 @@ export function useInput(
   inputCustomActions?: InputCustomActions,
 ): UseInputReturns {
   const {
+    onMemberTabClickFunction,
     onUpdateInputText,
     onOnTextInputKeydownHandler,
     onOnTextInputKeyUpHandler,
@@ -559,6 +560,66 @@ export function useInput(
       return newTextString;
     });
   };
+  const onMemberTabClick = useCallback(
+    (
+      e: React.MouseEvent,
+      member: Member,
+      onMemberTagClickCallback?: (member: Member) => void,
+    ) => {
+      e.preventDefault();
+      const selection = window.getSelection();
+      if (!selection) {
+        return;
+      }
+      const focusNode = selection.focusNode;
+      if (focusNode === null) {
+        return;
+      }
+      const div = focusNode.parentElement;
+      const text = div!.childNodes;
+      if (focusNode === null || text.length === 0) {
+        return;
+      }
+
+      const textContentFocusNode = focusNode.textContent;
+      if (textContentFocusNode === null) {
+        return;
+      }
+
+      const tagOp = Utils.findTag(textContentFocusNode);
+
+      // ('the tag string is ', tagOp!.tagString);
+      if (tagOp === undefined) return;
+
+      const { limitLeft, limitRight } = tagOp;
+
+      const textNode1Text = textContentFocusNode.substring(0, limitLeft - 1);
+
+      const textNode2Text = textContentFocusNode.substring(limitRight + 1);
+
+      const textNode1 = document.createTextNode(textNode1Text);
+      const anchorNode = document.createElement("a");
+      anchorNode.id = member?.sdkClientInfo.uuid.toString();
+      anchorNode.href = "#";
+      if (onMemberTagClickCallback) {
+        anchorNode.addEventListener("click", () => {
+          onMemberTagClickCallback(member);
+        });
+      }
+      anchorNode.textContent = `@${member?.name.trim()} `;
+      anchorNode.contentEditable = "false";
+      const textNode2 = document.createTextNode(textNode2Text);
+      const dummyNode = document.createElement("span");
+      div!.replaceChild(textNode2, focusNode);
+
+      div!.insertBefore(anchorNode, textNode2);
+      div!.insertBefore(dummyNode, anchorNode);
+      div!.insertBefore(textNode1, dummyNode);
+      clearTaggingList();
+      Utils.setCursorAtEnd(inputBoxRef);
+    },
+    [clearTaggingList],
+  );
   const addImagesAndVideosMedia: OneArgVoidReturns<
     ChangeEvent<HTMLInputElement>
   > = useCallback(
@@ -708,6 +769,7 @@ export function useInput(
       rejectDMRequest,
       aprooveDMRequest,
       gifSearchQuery: gifSearchQuery,
+      onMemberTabClick: onMemberTabClick,
     };
   }, [
     addDocumentsMedia,
@@ -717,6 +779,7 @@ export function useInput(
     fetchGifs,
     fetchTaggingList,
     handleSearch,
+    onMemberTabClick,
     onTextInputKeydownHandler,
     postMessage,
     rejectDMRequest,
@@ -783,6 +846,15 @@ export function useInput(
     openGifCollapse: openGifCollapse,
     gifQuery: query,
     // Functions
+    onMemberTabClick: onMemberTabClickFunction
+      ? onMemberTabClickFunction.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+          router,
+        )
+      : onMemberTabClick,
     updateInputText: onUpdateInputText
       ? onUpdateInputText.bind(
           null,
@@ -992,6 +1064,7 @@ export interface UseInputReturns {
   sendDMRequest: OneArgVoidReturns<string>;
   rejectDMRequest: ZeroArgVoidReturns;
   aprooveDMRequest: ZeroArgVoidReturns;
+  onMemberTabClick: onMemberTabClickFunction;
 }
 // single compulsary argument
 export type onChangeUpdateInputText = (
@@ -1026,6 +1099,7 @@ export interface InputDefaultActions {
   sendDMRequest: OneArgVoidReturns<string>;
   rejectDMRequest: ZeroArgVoidReturns;
   aprooveDMRequest: ZeroArgVoidReturns;
+  onMemberTabClick: onMemberTabClickFunction;
 }
 
 export interface InputDataStore {
@@ -1044,3 +1118,9 @@ export interface InputDataStore {
   gifQuery: string;
   openGifCollapse: boolean;
 }
+
+export type onMemberTabClickFunction = (
+  eventObject: React.MouseEvent,
+  member: Member,
+  onClickCallback?: (member: Member) => void,
+) => void;
