@@ -33,8 +33,9 @@ const LMMessage = () => {
   const { conversations, unBlockUserInDM } = useContext(MessageListContext);
   const { currentUser } = useContext(UserProviderContext);
   const { chatroom } = useContext(LMChatChatroomContext);
+  console.log(message);
   const isSender =
-    message?.member?.sdkClientInfo.uuid === currentUser?.sdkClientInfo.uuid;
+    message?.member?.sdkClientInfo?.uuid === currentUser?.sdkClientInfo?.uuid;
   const messageClass = isSender ? "sender" : "receiver";
   const { onReply } = useMessageOptions();
   const imageUrl = message?.member.imageUrl;

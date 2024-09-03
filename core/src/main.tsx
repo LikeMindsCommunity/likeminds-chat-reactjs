@@ -14,7 +14,7 @@ import {
   initiateLMClient,
   LMMessageContext,
   // } from "@likeminds.community/likeminds-chat-reactjs";
-} from "@likeminds.community/likeminds-chat-reactjs-beta";
+} from "./main_index";
 import { Toaster } from "react-hot-toast";
 
 const LMAppLayout = () => {
@@ -73,7 +73,7 @@ const LMAppLayout = () => {
       try {
         const response = await fetch(
           "https://betaauth.likeminds.community/sdk/initiate",
-          requestOptions
+          requestOptions,
         );
         const result_1 = await response.json();
 
@@ -89,7 +89,7 @@ const LMAppLayout = () => {
           refreshToken: "",
         };
       }
-    }
+    },
   );
 
   const lmChatClient = initiateLMClient();
@@ -122,14 +122,14 @@ const LMAppLayout = () => {
                         defaultActions,
                         applicationContext,
                         inputDataStore,
-                        _router
+                        _router,
                       ) => {
                         _router;
                         console.log(
                           "onPostMessage",
                           defaultActions,
                           applicationContext,
-                          inputDataStore
+                          inputDataStore,
                         );
                         return defaultActions.postMessage({
                           hello: "world",
@@ -179,3 +179,8 @@ const SampleCustomWidget: React.FC = () => {
     </div>
   );
 };
+// import ReactDOM from "react-dom/client";
+import ReactDOM from "react-dom/client";
+// import App from "./App";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(<LMAppLayout />);
