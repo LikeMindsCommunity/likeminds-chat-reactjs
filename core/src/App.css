@@ -2630,3 +2630,25 @@ input.disabled-state {
 .lm-custom-menu ul{
   display: flex !important;
 }
+
+
+/* Responsive */
+
+/* Extra small devices (phones) */
+@media (max-width: 575.98px) {
+  .lm-left-panel, .lm-right-panel, .lm-channel .conversation{
+    width: 100%;
+  }
+  .lm-channel{
+    padding: 20px;
+  }
+
+    .lm-channel .conversation{
+      max-width: 320px;
+    }
+.lm-channel-header .lm-header-right .lm-channel-icon{ margin: 0 0 0 10px;}
+}
+
+/* Medium devices (tablets) */
+@media (min-width: 768px) and (max-width: 991.98px) {}
+
