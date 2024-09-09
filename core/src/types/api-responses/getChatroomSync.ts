@@ -153,6 +153,7 @@ export interface ConversationMeta {
   to_show_results: boolean;
   user_id: number;
   widget_id: string;
+  topic_id: any;
 }
 export interface UserMeta {
   created_at: number;

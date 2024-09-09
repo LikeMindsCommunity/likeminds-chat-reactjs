@@ -18,10 +18,7 @@ body {
   height: 100vh;
   float: left;
   overflow-y: hidden;
-  /* width: 100%;
-  height: 100vh;
-  float: left;
-  overflow: hidden; */
+  position: relative;
 }
 
 .lm-d-flex {
@@ -407,6 +404,12 @@ body {
   justify-content: space-between;
   background: #f6f7f9;
   position: relative;
+}
+.lm-channel-header.topicHeader {
+  box-shadow: 0px 2px 3px #ccc;
+  margin: 0px 0 0 -20px;
+  border-top: 1px solid #e0e0e0;
+  cursor: pointer;
 }
 
 .lm-channel-header .lm-header-left {
@@ -2636,6 +2639,16 @@ input.disabled-state {
 
 /* Extra small devices (phones) */
 @media (max-width: 575.98px) {
+  .mobile-hide {
+      display: none;
+    }
+  .lm-left-panel{
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 999;
+    background-color: #fff;
+  }
   .lm-left-panel, .lm-right-panel, .lm-channel .conversation{
     width: 100%;
   }

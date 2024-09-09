@@ -36,6 +36,7 @@ const LMMessage = () => {
   const isSender = message?.member?.uuid === currentUser?.uuid;
   const messageClass = isSender ? "sender" : "receiver";
   const { onReply } = useMessageOptions();
+
   const imageUrl = message?.member.imageUrl;
   const name = message?.member.name;
   const avatarContent = getAvatar({ imageUrl, name });
@@ -103,7 +104,7 @@ const LMMessage = () => {
       );
     }
   }
-  if (message?.deleted_by) {
+  if (message?.deleted_by || message?.deleted_by_user_id) {
     if (messageBubbles?.chatroomDeletedChatBubble) {
       return <messageBubbles.chatroomDeletedChatBubble />;
     }

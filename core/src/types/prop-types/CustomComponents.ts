@@ -65,6 +65,7 @@ export interface InputCustomActions {
 export interface MessageCustomActions {
   onReportCustom?: MessageActionsCallback;
   onDeleteCustom?: MessageActionsCallback;
+  onSetTopicCustom?: MessageActionsCallback;
   onEditCustom?: MessageActionsCallback;
   onReplyCustom?: MessageActionsCallback;
   putReactionCustom?: MessageActionsCallback;

@@ -25,6 +25,8 @@ import ConversationStates from "../enums/lm-conversation-states";
 
 interface UseConversations {
   conversations: Conversation[] | null;
+  setChatroomTopic: React.Dispatch<Conversation | null>;
+  chatroomTopic: Conversation | null;
   setConversations: React.Dispatch<Conversation[] | null>;
   getChatroomConversationsOnTopScroll: UnknownGetConversationFunction;
   getChatroomConversationsOnBottomScroll: UnknownGetConversationFunction;
@@ -39,9 +41,7 @@ interface UseConversations {
 }
 
 export default function useConversations(): UseConversations {
-  // const { chatroomId } = useContext(ChatroomProviderContext);
   const { id: chatroomId } = useParams();
-  // const {chatroom} = useContext(LMChatChatroomContext)
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
   const { currentUser } = useContext(UserProviderContext);
@@ -53,6 +53,7 @@ export default function useConversations(): UseConversations {
   } = useContext(LMChatChatroomContext);
   const [conversations, setConversations] = useState<Conversation[] | null>([]);
   const [loadMore, setLoadMore] = useState<boolean>(true);
+  const [chatroomTopic, setChatroomTopic] = useState<Conversation | null>(null);
   const [loadMoreBottomConversation, setLoadMoreBottomConversation] =
     useState<boolean>(false);
   const newChatroomConversationsLoaded = useRef<boolean>(false);
@@ -88,12 +89,14 @@ export default function useConversations(): UseConversations {
         const newConversation = {
           ...conversation,
         } as unknown as Conversation;
+
         if (conversation.attachment_count) {
           newConversation.attachments =
             conv_attachments_meta[conversation.id.toString()];
         } else {
           newConversation.attachments = [];
         }
+
         if (conversation.has_reactions) {
           newConversation.reactions = conv_reactions_meta[
             conversation.id.toString()
@@ -109,6 +112,11 @@ export default function useConversations(): UseConversations {
         if (conversation.user_id) {
           newConversation.member = user_meta[
             conversation.user_id.toString()
+          ] as any;
+        }
+        if (conversation?.topic_id) {
+          newConversation.topic = conversations_data[
+            conversation?.topic_id
           ] as any;
         }
         if (conversation.state === ConversationStates.MICRO_POLL) {
@@ -549,6 +557,14 @@ export default function useConversations(): UseConversations {
       };
     }
   }, [conversations, searchedConversationId, setSearchedConversationId]);
+
+  useEffect(() => {
+    const chatroomTopic = chatroom?.chatroom?.topic;
+    if (chatroomTopic) {
+      setChatroomTopic(chatroomTopic);
+    }
+  }, [chatroom]);
+
   return {
     conversations,
     loadMore,
@@ -557,11 +573,13 @@ export default function useConversations(): UseConversations {
     messageListContainerRef,
     searchedConversationRef,
     loadMoreBottomConversation,
+    chatroomTopic,
     // Functions
     setConversations,
     getChatroomConversationsOnBottomScroll,
     getChatroomConversationsOnTopScroll,
     unBlockUserInDM,
+    setChatroomTopic,
   };
 }
 export type UnknownReturnFunction = (...props: unknown[]) => unknown;

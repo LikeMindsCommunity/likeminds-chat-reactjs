@@ -1,3 +1,5 @@
+import Conversation from "../models/conversations";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface SDKClientInfo {
   community: number;
@@ -97,6 +99,7 @@ export interface Chatroom {
   type: number;
   updated_at: number;
   video_count: number;
+  topic?: Conversation | null;
 }
 
 export interface ChatroomAction {

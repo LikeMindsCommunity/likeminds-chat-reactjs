@@ -56,10 +56,10 @@ export interface GetSyncConversationsResponse {
         share_link: string;
         state: number;
         title: string;
-        topic_id: any;
         type: number;
         updated_at: number;
         user_id: number;
+        topic_id: any;
       };
     };
     chatroom_reactions_meta: any;
@@ -132,6 +132,7 @@ export interface GetSyncConversationsResponse {
       to_show_results: boolean;
       user_id: number;
       widget_id: string;
+      topic_id: number;
     }>;
     user_meta: {
       [key: string]: {
@@ -206,6 +207,7 @@ interface ConversationMetaObject {
   to_show_results: boolean;
   user_id: number;
   widget_id: string;
+  topic_id: number;
 }
 interface PollMeta {
   conversation_id: number;
