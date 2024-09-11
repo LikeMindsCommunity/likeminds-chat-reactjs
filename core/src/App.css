@@ -3,7 +3,6 @@
   padding: 0;
   box-sizing: border-box;
 }
-
 #root {
   width: 100%;
 }
@@ -2660,6 +2659,13 @@ input.disabled-state {
   margin-right: 10px;
 }
 
+.lm-chatroom-topic{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 700px;
+}
+
 /* Responsive */
 
 /* Extra small devices (phones) */
@@ -2670,6 +2676,11 @@ input.disabled-state {
   .mobile-hide {
       display: none;
     }
+
+  .lm-chatroom-topic { 
+    width: 300px;
+  }
+
   .lm-left-panel{
     position: absolute;
     left: 0;

@@ -121,7 +121,7 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
                       {chatroomTopic?.member?.name}
                     </div>
 
-                    <div className="lm-channel-participants">
+                    <div className="lm-channel-participants lm-chatroom-topic">
                       {Utils.parseAndReplaceTags(chatroomTopic?.answer || "")}
                     </div>
                   </div>
