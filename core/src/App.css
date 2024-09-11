@@ -249,6 +249,11 @@ body {
   border: 1px solid #00897b;
 }
 
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc button img{
+  height: 24px;
+  width: 24px;
+}
+
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-info {
   display: flex;
   font-weight: 400;
