@@ -1,6 +1,5 @@
 // main.tsx
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// "@likeminds.community/chat-js-beta-beta": "1.1.137"
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useContext, useState } from "react";
@@ -15,7 +14,6 @@ import {
   LMMessageList,
   initiateLMClient,
   LMMessageContext,
-  // } from "@likeminds.community/chat-js-beta";
 } from "./old_index";
 import { Toaster } from "react-hot-toast";
 
@@ -28,18 +26,10 @@ const LMAppLayout = () => {
     isGuest?: boolean;
     apiKey?: string;
   }>({
-    apiKey: "01b4e80f-29e7-45ad-b914-69d61ffc130d",
+    apiKey: "5f567ca1-9d74-4a1b-be8b-a7a81fef796f",
     isGuest: false,
-    uuid: "backendApiTestNewUser",
-    username: "New BackendApi",
-    // apiKey: "8fa4304d-a5b6-4f10-baeb-a80650a480a4",
-    // isGuest: false,
-    // uuid: "Test_user_1",
-    // username: "Test_user_1",
-    // apiKey: "7d6374e0-9d07-4d85-9a8d-773ae8bbdd4e",
-    // isGuest: false,
-    // uuid: "new-user-5",
-    // username: "New User 5",
+    uuid: "e47d5738-c93e-4a00-9b68-aeadb2e689aa",
+    username: "New user 3",
   });
   const LMCORECALLBACKS = new LMCoreCallbacks(
     (a: string, b: string) => {

@@ -5,7 +5,7 @@ export function initiateLMClient() {
   const PLATFORM_CODE = "rt";
   const lmChatClient = LMChatClient.setPlatformCode(PLATFORM_CODE)
     .setVersionCode(VERSION_CODE)
-    .setExcludedConversationStates([0, 1, 2, 7, 10, 12])
+    .setExcludedConversationStates([0, 1, 2, 3, 7, 8, 9, 10, 11, 12])
     .build();
   return lmChatClient;
 }
