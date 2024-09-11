@@ -16,7 +16,7 @@ import {
   initiateLMClient,
   LMMessageContext,
   // } from "@likeminds.community/chat-js-beta";
-} from ".";
+} from "./old_index";
 import { Toaster } from "react-hot-toast";
 
 const LMAppLayout = () => {
@@ -28,10 +28,14 @@ const LMAppLayout = () => {
     isGuest?: boolean;
     apiKey?: string;
   }>({
-    apiKey: "8fa4304d-a5b6-4f10-baeb-a80650a480a4",
+    apiKey: "01b4e80f-29e7-45ad-b914-69d61ffc130d",
     isGuest: false,
-    uuid: "Test_user_1",
-    username: "Test_user_1",
+    uuid: "backendApiTestNewUser",
+    username: "New BackendApi",
+    // apiKey: "8fa4304d-a5b6-4f10-baeb-a80650a480a4",
+    // isGuest: false,
+    // uuid: "Test_user_1",
+    // username: "Test_user_1",
     // apiKey: "7d6374e0-9d07-4d85-9a8d-773ae8bbdd4e",
     // isGuest: false,
     // uuid: "new-user-5",
@@ -106,11 +110,11 @@ const LMAppLayout = () => {
         lmChatCoreCallbacks={LMCORECALLBACKS}
         client={lmChatClient}
         userDetails={userDetails}
-        customComponents={{
-          messageBubbles: {
-            customWidget: SampleCustomWidget,
-          },
-        }}
+        // customComponents={{
+        //   messageBubbles: {
+        //     customWidget: SampleCustomWidget,
+        //   },
+        // }}
       >
         <Toaster position="top-right" />
         <Routes>
@@ -122,27 +126,7 @@ const LMAppLayout = () => {
                 <>
                   <LMHeader />
                   <LMMessageList />
-                  <LMInput
-                    inputCustomActions={{
-                      onPostMessage: (
-                        defaultActions,
-                        applicationContext,
-                        inputDataStore,
-                        _router,
-                      ) => {
-                        _router;
-                        console.log(
-                          "onPostMessage",
-                          defaultActions,
-                          applicationContext,
-                          inputDataStore,
-                        );
-                        return defaultActions.postMessage({
-                          hello: "world",
-                        });
-                      },
-                    }}
-                  />
+                  <LMInput />
                 </>
               }
             />

@@ -214,7 +214,8 @@ function LMGroupChatChannelList() {
                 <div className="channel-desc">
                   <div className="channel-title">
                     <div>
-                      <div>{chatroom.header}</div>
+                      <div className="exploreTextTitle">{chatroom.header}</div>{" "}
+                      ssss
                       <div className="channel-counts">
                         <div>
                           <img src={participantsIcon} alt={participantsIcon} />

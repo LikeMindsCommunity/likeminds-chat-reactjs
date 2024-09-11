@@ -80,7 +80,7 @@ function MessageOptions() {
         {options.map((option) => {
           if (
             option.title === ConversationActions.SET_AS_CURRENT_TOPIC &&
-            message.member.state !== MemberType.COMMUNITY_MANAGER
+            currentUser?.state !== MemberType.COMMUNITY_MANAGER
           ) {
             return null;
           }

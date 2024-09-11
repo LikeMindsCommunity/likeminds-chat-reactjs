@@ -187,6 +187,13 @@ body {
   margin: 0 4px;
 }
 
+.exploreTextTitle {
+  overflow: hidden;
+  text-overflow: ellipsis; 
+  white-space: nowrap;
+  max-width: 150px;
+}
+
 .exploreTextMsg {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -196,7 +203,7 @@ body {
   color: #666;
   margin-top: 5px;
   white-space: nowrap;
-  max-width: 200px;
+  max-width: 150px;
 }
 
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc .time {
@@ -232,8 +239,9 @@ body {
   justify-content: center;
   border: none;
   cursor: pointer;
-  padding: 6px 12px;
+  padding: 5px 12px;
   gap: 3px;
+  border: 1px solid #fff;
 }
 
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc button.joined {
@@ -1391,6 +1399,10 @@ body {
   width: 100%;
   display: flex;
   gap: 10px;
+  background-color: #fff;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .lm-carousel-header .lm-profile {
@@ -1509,13 +1521,21 @@ body {
 
 .lm-channel .lm-dialog-modal {
   position: relative;
+  right: 0px; 
+  max-width: 100%; 
+  background: #fff;
+  padding: 20px;
+  height: 82%;
+}
+/* .lm-channel .lm-dialog-modal {
+  position: relative;
   right: -186px;
   top: 0px;
   border-radius: 0;
   max-width: 76%;
   margin: 0 auto;
   border-left: 1px solid #e0e0e0;
-}
+} */
 
 .lm-channel .lm-dialog-content-modal {
   border-radius: 0;
@@ -2634,11 +2654,19 @@ input.disabled-state {
   display: flex !important;
 }
 
+.header-back-icon{
+  display: none;
+  cursor: pointer;
+  margin-right: 10px;
+}
 
 /* Responsive */
 
 /* Extra small devices (phones) */
 @media (max-width: 575.98px) {
+  .header-back-icon{
+    display: block;
+  }
   .mobile-hide {
       display: none;
     }
@@ -2655,11 +2683,37 @@ input.disabled-state {
   .lm-channel{
     padding: 20px;
   }
-
+  .selected-gif-view-container{
+    height: 100%;
+  }
+  .selected-gif-view-container img{
+    height: auto;
+    width: 60%;
+  }
+  /* .lm-channel .conversation.receiver */
     .lm-channel .conversation{
-      max-width: 320px;
+      max-width: 310px;
     }
-.lm-channel-header .lm-header-right .lm-channel-icon{ margin: 0 0 0 10px;}
+  .lm-poll-wrapper{
+    width: 100%;
+    padding: 25px;
+  }
+
+  .lm-poll-heading img{
+    top: -10px;
+    right: -10px;
+  }
+  .lm-channel-header .lm-header-right .lm-channel-icon{ margin: 0 0 0 10px;}
+  .lm-channel-header.topicHeader{
+    margin: -20px;
+    position: relative;
+    z-index: 9;
+  }
+  .poll-create-button{bottom: -10px}
+
+  /* .lm-dual-scroll-container div{
+    max-width: 100%;
+  } */
 }
 
 /* Medium devices (tablets) */
