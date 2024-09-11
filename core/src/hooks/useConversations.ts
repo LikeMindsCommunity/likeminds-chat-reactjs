@@ -80,6 +80,7 @@ export default function useConversations(): UseConversations {
       conversations_data,
       conversation_meta,
       user_meta,
+      widgets,
     } = chatroomConversationsCall.data;
     currentConversations = [...(currentConversations || [])];
     const newConversations = conversations_data
@@ -138,7 +139,9 @@ export default function useConversations(): UseConversations {
           newRepliedConversation.member = repliedConversationUser;
           newConversation.reply_conversation_object = newRepliedConversation;
         }
-
+        if (conversation.widget_id.length) {
+          newConversation.widget = widgets[conversation.widget_id];
+        }
         return newConversation;
       })
       .reverse();

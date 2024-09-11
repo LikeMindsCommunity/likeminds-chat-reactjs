@@ -1,6 +1,6 @@
 {
   "name": "@likeminds.community/likeminds-chat-reactjs",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "public": true,
   "scripts": {
     "dev": "vite",
@@ -21,7 +21,7 @@
     "@emoji-mart/react": "^1.1.1",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
-    "@giphy/react-components": "^9.5.0",
+    "@giphy/react-components": "^9.5.0", 
     "@likeminds.community/chat-js-beta": "^1.1.136",
     "@mui/icons-material": "^5.15.20",
     "@mui/lab": "^5.0.0-alpha.170",
