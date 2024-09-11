@@ -341,6 +341,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
     const fb = lmChatclient?.fbInstance();
 
     const query = ref(fb, `community/${currentCommunity.id}`);
+
     return onValue(query, async (snapshot) => {
       if (snapshot.exists()) {
         const chatroomId = snapshot.val().chatroom_id;
