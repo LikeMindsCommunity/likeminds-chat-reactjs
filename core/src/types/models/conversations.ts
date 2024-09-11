@@ -2,6 +2,7 @@
 import Member from "./member";
 
 export interface Conversation {
+  topic: any;
   reply_id: any;
   answer: string;
   attachment_count: number;
@@ -19,6 +20,7 @@ export interface Conversation {
   reactions: Reaction[];
   state: number;
   deleted_by?: number;
+  deleted_by_user_id?: number;
   deleted_by_member?: Member;
   poll_type: number;
   multiple_select_no: number;
@@ -35,6 +37,10 @@ export interface Conversation {
   reply_conversation_object: Conversation;
   widget_id?: string;
   widget?: Record<string, any>;
+  user_id: number;
+  card_id: number;
+  og_tags: any;
+  topic_id: any;
 }
 
 export default Conversation;

@@ -341,7 +341,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
     const fb = lmChatclient?.fbInstance();
 
     const query = ref(fb, `community/${currentCommunity.id}`);
-    const excludedStates = lmChatclient.getExcludedConversationStates();
+
     return onValue(query, async (snapshot) => {
       if (snapshot.exists()) {
         const chatroomId = snapshot.val().chatroom_id;
@@ -355,7 +355,6 @@ export default function useChatroomList(): ChatroomProviderInterface {
             minTimestamp: 0,
             maxTimestamp: Date.now(),
             isLocalDb: false,
-            excludedConversationStates: excludedStates, // Add this line
           });
         refreshGroupChatrooms(chatroomId, chatroomConversationsCall);
       }

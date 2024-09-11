@@ -10,6 +10,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 // import { DM_CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
 import { LMMessageListCustomActionsContext } from "../context/LMMessageListCustomActionsContext";
 import LMUserProviderContext from "../context/LMUserProviderContext";
+import { LMMessageList, MessageListContext } from "../main_index";
 
 export function useMessageOptions(): UseMessageOptionsReturn {
   const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
@@ -19,6 +20,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
   const {
     onReportCustom,
     onDeleteCustom,
+    onSetTopicCustom,
     onEditCustom,
     onReplyCustom,
     putReactionCustom,
@@ -33,6 +35,9 @@ export function useMessageOptions(): UseMessageOptionsReturn {
   );
   const { message, deleteMessage, editMessageLocally } =
     useContext(LMMessageContext);
+
+  const { chatroomTopic, setChatroomTopic, conversations } =
+    useContext(MessageListContext);
 
   const navigate = useNavigate();
   const onReport = useCallback(
@@ -50,18 +55,40 @@ export function useMessageOptions(): UseMessageOptionsReturn {
     },
     [lmChatclient, message],
   );
+
   const onDelete = useCallback(async () => {
     try {
       const deleteCall = await lmChatclient?.deleteConversation({
         conversationIds: [parseInt(message!.id.toString())],
         reason: "none",
       });
-
+      if (chatroomTopic?.id.toString() === message.id.toString()) {
+        setChatroomTopic(null);
+      }
       deleteMessage();
     } catch (error) {
       console.log(error);
     }
   }, [deleteMessage, lmChatclient, message]);
+
+  // Set Chatroom Topic
+  const onSetTopic = useCallback(async () => {
+    try {
+      const setTopicCall = await lmChatclient?.setChatroomTopic({
+        conversationId: parseInt(message!.id.toString()),
+        chatroomId: message?.card_id,
+      });
+      const convo = conversations?.find(
+        (convo) => convo.id.toString() === message.id.toString(),
+      );
+      if (convo) {
+        setChatroomTopic(convo);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, [lmChatclient, message]);
+
   const onEdit = useCallback(async () => {
     try {
       setConversationToEdit(message);
@@ -69,6 +96,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
       console.log(error);
     }
   }, [message, setConversationToEdit]);
+
   const onReply = useCallback(async () => {
     try {
       setConversationToReply(message);
@@ -76,6 +104,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
       console.log(error);
     }
   }, [message, setConversationToReply]);
+
   const onReplyPrivately = useCallback(
     async (memberId: string | number) => {
       try {
@@ -170,6 +199,14 @@ export function useMessageOptions(): UseMessageOptionsReturn {
           router,
         )
       : onDelete,
+    onSetTopic: onSetTopicCustom
+      ? onSetTopicCustom.bind(
+          null,
+          messageDefaultActions,
+          applicationGeneralDataContext,
+          router,
+        )
+      : onSetTopic,
     onEdit: onEditCustom
       ? onEditCustom.bind(
           null,
@@ -210,6 +247,7 @@ export interface UseMessageOptionsReturn {
     reason: string | null;
   }>;
   onDelete: ZeroArgVoidReturns;
+  onSetTopic: ZeroArgVoidReturns;
   onEdit: ZeroArgVoidReturns;
   onReply: ZeroArgVoidReturns;
   putReaction: OneArgVoidReturns<string>;
@@ -222,6 +260,7 @@ export interface MessageDefaultActions {
     reason: string | null;
   }>;
   onDelete: ZeroArgVoidReturns;
+  // onSetTopic: ZeroArgVoidReturns;
   onEdit: ZeroArgVoidReturns;
   onReply: ZeroArgVoidReturns;
   putReaction: OneArgVoidReturns<string>;

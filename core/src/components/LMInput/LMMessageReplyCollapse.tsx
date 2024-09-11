@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
+import { Utils } from "../../utils/helpers";
 function LMMessageReplyCollapse() {
   const { conversationToReply, setConversationToReply } = useContext(
     LMChatChatroomContext,
@@ -24,7 +25,7 @@ function LMMessageReplyCollapse() {
           {conversationToReply?.member.name}
         </div>
         <div className="lm-input-message-text">
-          {conversationToReply?.answer}
+          {Utils.parseAndReplaceTags(conversationToReply?.answer || "")}
         </div>
       </div>
       <div className="lm-input-message-reply-close" onClick={closeReply}>
