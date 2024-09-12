@@ -77,6 +77,7 @@ interface Chatroom {
   type: number;
   video_count: number;
   videos: any[];
+  topic_id: any;
 }
 
 interface Community {

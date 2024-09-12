@@ -7,6 +7,7 @@ interface LMMessageContextInterface {
   message: Conversation;
   index: number;
   deleteMessage: ZeroArgVoidReturns;
+  chatroomTopic: ZeroArgVoidReturns;
   editMessageLocally: OneArgVoidReturns<Conversation>;
   addReactionLocally: OneArgVoidReturns<EmojiData>;
   removeReactionLocally: ZeroArgVoidReturns;

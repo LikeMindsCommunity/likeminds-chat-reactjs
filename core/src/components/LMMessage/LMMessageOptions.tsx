@@ -17,7 +17,7 @@ function MessageOptions() {
   const { message } = useContext(LMMessageContext);
   const { currentUser } = useContext(UserProviderContext);
   const { canUserReplyPrivately, chatroom } = useContext(LMChatChatroomContext);
-  const { onDelete, onReport, onEdit, onReply, onReplyPrivately } =
+  const { onDelete, onSetTopic, onReport, onEdit, onReply, onReplyPrivately } =
     useMessageOptions();
   const { menuAnchor, openMenu, closeMenu } = useMenu();
   const { openDialog, dialogOpen, closeDialog } = useDialog();
@@ -30,6 +30,13 @@ function MessageOptions() {
     //     closeMenu();
     //   },
     // },
+    {
+      title: ConversationActions.SET_AS_CURRENT_TOPIC,
+      clickFunction: () => {
+        onSetTopic();
+        closeMenu();
+      },
+    },
     {
       title: ConversationActions.REPLY_PRIVATELY_ON_MESSAGE,
       clickFunction: () => {
@@ -71,6 +78,13 @@ function MessageOptions() {
         onClose={closeMenu}
       >
         {options.map((option) => {
+          if (
+            option.title === ConversationActions.SET_AS_CURRENT_TOPIC &&
+            currentUser?.state !== MemberType.COMMUNITY_MANAGER
+          ) {
+            return null;
+          }
+
           if (
             option.title === ConversationActions.REPORT_MESSAGE &&
             message!.member?.id.toString() === currentUser?.id.toString()

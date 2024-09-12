@@ -13,6 +13,9 @@ import UserProviderContext from "../../context/LMUserProviderContext";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import { MemberType } from "../../enums/lm-member-type";
 import { LMMessageListCustomActionsContext } from "../../context/LMMessageListCustomActionsContext";
+import { getAvatar } from "../../shared/components/LMUserMedia";
+import { useConversationSearch } from "../../main_index";
+import { Utils } from "../../utils/helpers";
 
 const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
   (props) => {
@@ -21,7 +24,6 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       LMChatChatroomContext,
     );
     const { currentUser } = useContext(UserProviderContext);
-
     const scrollToBottom = () => {
       if (bottomReferenceDiv && bottomReferenceDiv.current) {
         bottomReferenceDiv.current.scrollIntoView(false);
@@ -75,8 +77,19 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       searchedConversationRef,
       unBlockUserInDM,
       loadMoreBottomConversation,
+      setChatroomTopic,
+      chatroomTopic,
     } = useConversations();
 
+    const { searchConversations, resetSearch, onSearchedConversationClick } =
+      useConversationSearch();
+
+    const imageUrl = chatroomTopic?.member.imageUrl;
+    const name = chatroomTopic?.member.name;
+    const avatarContent = getAvatar({ imageUrl, name });
+    if (chatroomTopic?.deleted_by) {
+      setChatroomTopic(null);
+    }
     if (showLoader.current) {
       return (
         <div className="lm-channel-loader">
@@ -91,6 +104,34 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
         }}
       >
         <div className="lm-channel" ref={messageListContainerRef}>
+          {/* Set Chatroom Topic */}
+
+          {chatroomTopic ? (
+            <>
+              <div
+                className="lm-channel-header topicHeader"
+                onClick={() => {
+                  onSearchedConversationClick(chatroomTopic?.id);
+                }}
+              >
+                <div className="lm-header-left">
+                  <div className="lm-channel-img">{avatarContent}</div>
+                  <div className="lm-channel-desc">
+                    <div className="lm-channel-title">
+                      {chatroomTopic?.member?.name}
+                    </div>
+
+                    <div className="lm-channel-participants lm-chatroom-topic">
+                      {Utils.parseAndReplaceTags(chatroomTopic?.answer || "")}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : null}
+
+          {/* Set Chatroom Topic */}
+
           {showInitiateDMRequestMessage() && (
             <p className="initiate-dm-request-message">
               {getInitiateDmRequestMessage()}
@@ -105,6 +146,8 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
               messageListContainerRef,
               unBlockUserInDM,
               searchedConversationRef,
+              setChatroomTopic,
+              chatroomTopic,
             }}
           >
             <ScrollContainer

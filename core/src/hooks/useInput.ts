@@ -244,13 +244,14 @@ export function useInput(
 
           return;
         }
+
         if (
           (!messageText || !messageText.length) &&
-          !imagesAndVideosMediaList?.length &&
-          imagesAndVideosMediaList?.length
+          !imagesAndVideosMediaList?.length
         ) {
           return;
         }
+
         if (Utils.extractTextFromNode(inputBoxRef.current!).trim())
           if (conversationToedit) {
             const call: any = await lmChatclient?.editConversation({

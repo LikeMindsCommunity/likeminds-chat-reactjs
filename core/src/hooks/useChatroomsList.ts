@@ -187,14 +187,12 @@ export default function useChatroomList(): ChatroomProviderInterface {
       conversationData?: GetSyncConversationsResponse,
     ) => {
       if (conversationData) {
-        const {
-          conversations_data,
-
-          user_meta,
-          chatroom_meta,
-        } = conversationData.data;
-
+        const { conversations_data, user_meta, chatroom_meta } =
+          conversationData.data;
         const targetConversation = conversations_data[0];
+        if (!targetConversation) {
+          return;
+        }
         setgroupChatroomConversationsMeta((currentConversationsMeta) => {
           currentConversationsMeta = { ...currentConversationsMeta };
           currentConversationsMeta[targetConversation.id] = targetConversation;
@@ -212,9 +210,10 @@ export default function useChatroomList(): ChatroomProviderInterface {
           const targetChatroom = groupChatroomsCopy.find((chatroom) => {
             return chatroom.id.toString() === chatroomId.toString();
           });
+
           const targetUpdatedChatroom = {
             ...targetChatroom,
-            ...chatroom_meta[chatroomId.toString()],
+            ...chatroom_meta[chatroomId?.toString()],
           };
           targetUpdatedChatroom.last_conversation_id = targetConversation.id;
           const newGroupChatroomsCopy = groupChatroomsCopy.filter(
@@ -341,6 +340,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
     const fb = lmChatclient?.fbInstance();
 
     const query = ref(fb, `community/${currentCommunity.id}`);
+
     return onValue(query, async (snapshot) => {
       if (snapshot.exists()) {
         const chatroomId = snapshot.val().chatroom_id;

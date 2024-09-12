@@ -166,8 +166,7 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
   const renderAdditionalComponents = () => {
     if (
       chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
-      chatroom?.chatroom.chat_request_state.toString() !==
-        ChatRequestStates.APPROVED_STATE
+      chatroom?.chatroom.chat_request_state !== ChatRequestStates.APPROVED_STATE
     ) {
       return null;
     } else {
@@ -187,7 +186,6 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
                 setOpenGifCollapse(!openGifCollapse);
               }}
             />
-            {/* <GiSelector /> */}
           </div>
         </>
       );
