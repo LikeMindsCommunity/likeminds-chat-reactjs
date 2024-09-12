@@ -249,6 +249,11 @@ body {
   border: 1px solid #00897b;
 }
 
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc button img{
+  height: 24px;
+  width: 24px;
+}
+
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc .channel-info {
   display: flex;
   font-weight: 400;
@@ -460,6 +465,15 @@ body {
   color: #818182;
   font-size: 14px;
   font-weight: 400;
+  max-height: 40px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  
+}
+ 
+.lm-channel-header .lm-channel-desc .lm-channel-participants::-webkit-scrollbar {
+  width: 0px;
+  /* Chrome & Edge */
 }
 
 .lm-channel-header .lm-header-right {
@@ -1395,13 +1409,13 @@ body {
 }
 
 .lm-carousel-header {
-  width: 100%;
+  /* width: 100%; */
   display: flex;
   gap: 10px;
-  background-color: #fff;
-  align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #e0e0e0;
+  /* background-color: #fff; */
+  /* align-items: center; */
+  /* padding: 10px; */
+  /* border-bottom: 1px solid #e0e0e0; */
 }
 
 .lm-carousel-header .lm-profile {
@@ -1520,21 +1534,13 @@ body {
 
 .lm-channel .lm-dialog-modal {
   position: relative;
-  right: 0px; 
-  max-width: 100%; 
-  background: #fff;
-  padding: 20px;
-  height: 82%;
-}
-/* .lm-channel .lm-dialog-modal {
-  position: relative;
   right: -186px;
   top: 0px;
   border-radius: 0;
   max-width: 76%;
   margin: 0 auto;
   border-left: 1px solid #e0e0e0;
-} */
+}
 
 .lm-channel .lm-dialog-content-modal {
   border-radius: 0;
@@ -2722,9 +2728,10 @@ input.disabled-state {
   }
   .poll-create-button{bottom: -10px}
 
-  /* .lm-dual-scroll-container div{
-    max-width: 100%;
-  } */
+    .lm-channel .lm-dialog-modal{
+      max-width: 100%;
+      right: 0;
+    }
 }
 
 /* Medium devices (tablets) */
