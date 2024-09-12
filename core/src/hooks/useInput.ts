@@ -17,7 +17,7 @@ import GlobalClientProviderContext from "../context/LMGlobalClientProviderContex
 import { Utils } from "../utils/helpers";
 import { GetTaggingListResponse } from "../types/api-responses/getTaggingListResponse";
 import { EmojiData } from "../types/models/emojiData";
-import { PostConversation } from "@likeminds.community/chat-js-beta/dist/pages/chatroom/types";
+import { PostConversation } from "@likeminds.community/chat-js/dist/pages/chatroom/types";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { PostConversationResponse } from "../types/api-responses/postConversationResponse";
 import { FileType } from "../types/enums/Filetype";
