@@ -10,12 +10,9 @@ import GlobalClientProviderContext from "../context/LMGlobalClientProviderContex
 
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { ZeroArgVoidReturns } from "./useInput";
-import {
-  Participant,
-  ViewParticipantsResponse,
-} from "../types/api-responses/viewParticipants";
+import { ViewParticipantsResponse } from "../types/api-responses/viewParticipants";
 import { useNavigate, useParams } from "react-router-dom";
-// import { CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
+import Member from "../types/models/member";
 
 /**
  * Custom hook that provides functionality related to participants/members of a chatroom.
@@ -24,7 +21,7 @@ import { useNavigate, useParams } from "react-router-dom";
 export function useParticipants(): UseParticipantsReturns {
   const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
   const { chatroom } = useContext(LMChatChatroomContext);
-  const [participantsList, setParticipantList] = useState<Participant[]>([]);
+  const [participantsList, setParticipantList] = useState<Member[]>([]);
   const participantListPageCount = useRef<number>(1);
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   const totalParticipantsCount = useRef<number>(0);
@@ -48,7 +45,7 @@ export function useParticipants(): UseParticipantsReturns {
       const getMembersCall: ViewParticipantsResponse =
         await lmChatclient?.viewParticipants({
           chatroomId: chatroom?.chatroom.id || 0,
-          isSecret: chatroom?.chatroom.is_secret || false,
+          isSecret: chatroom?.chatroom.isSecret || false,
           page: participantListPageCount.current,
           participantName: searchKeyword,
           pageSize: 100,
@@ -57,7 +54,7 @@ export function useParticipants(): UseParticipantsReturns {
         if (getMembersCall.data.participants.length) {
           if (participantListPageCount.current === 1) {
             totalParticipantsCount.current =
-              getMembersCall.data.total_participants_count || 0;
+              getMembersCall.data.totalParticipantsCount || 0;
           }
           participantListPageCount.current += 1;
           setParticipantList((currentParticipants) => {
@@ -75,7 +72,7 @@ export function useParticipants(): UseParticipantsReturns {
     }
   }, [
     chatroom?.chatroom.id,
-    chatroom?.chatroom.is_secret,
+    chatroom?.chatroom.isSecret,
     lmChatclient,
     searchKeyword,
   ]);
@@ -103,7 +100,7 @@ export function useParticipants(): UseParticipantsReturns {
 }
 
 export interface UseParticipantsReturns {
-  participantsList: Participant[];
+  participantsList: Member[];
   loadMoreParticipants: boolean;
   getMembers: ZeroArgVoidReturns;
   navigateBackToChatroom: ZeroArgVoidReturns;

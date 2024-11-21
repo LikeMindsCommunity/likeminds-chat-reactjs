@@ -5,12 +5,12 @@ import LMMessageContext from "../context/LMMessageContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { CustomActions } from "../customActions";
-import Conversation from "../types/models/conversations";
+import { Conversation } from "../types/models/conversations";
 import { useLocation, useNavigate } from "react-router-dom";
 // import { DM_CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
 import { LMMessageListCustomActionsContext } from "../context/LMMessageListCustomActionsContext";
 import LMUserProviderContext from "../context/LMUserProviderContext";
-import { LMMessageList, MessageListContext } from "../main_index";
+import MessageListContext from "../context/LMMessageListContext";
 
 export function useMessageOptions(): UseMessageOptionsReturn {
   const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
@@ -43,7 +43,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
   const onReport = useCallback(
     async ({ id, reason }: { id: string | number; reason: string | null }) => {
       try {
-        // TODO handle this
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const reportCall = await lmChatclient?.pushReport({
           conversationId: parseInt(message!.id.toString()),
           tagId: parseInt(id.toString()),
@@ -58,6 +58,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
 
   const onDelete = useCallback(async () => {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const deleteCall = await lmChatclient?.deleteConversation({
         conversationIds: [parseInt(message!.id.toString())],
         reason: "none",
@@ -69,14 +70,21 @@ export function useMessageOptions(): UseMessageOptionsReturn {
     } catch (error) {
       console.log(error);
     }
-  }, [deleteMessage, lmChatclient, message]);
+  }, [
+    chatroomTopic?.id,
+    deleteMessage,
+    lmChatclient,
+    message,
+    setChatroomTopic,
+  ]);
 
   // Set Chatroom Topic
   const onSetTopic = useCallback(async () => {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const setTopicCall = await lmChatclient?.setChatroomTopic({
         conversationId: parseInt(message!.id.toString()),
-        chatroomId: message?.card_id,
+        chatroomId: parseInt(message?.cardId!.toString()),
       });
       const convo = conversations?.find(
         (convo) => convo.id.toString() === message.id.toString(),
@@ -87,7 +95,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
     } catch (error) {
       console.log(error);
     }
-  }, [lmChatclient, message]);
+  }, [conversations, lmChatclient, message, setChatroomTopic]);
 
   const onEdit = useCallback(async () => {
     try {
@@ -112,7 +120,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
           memberId: parseInt(memberId.toString()),
         });
         if (checkDMLimitCall.success) {
-          const chatroomId = checkDMLimitCall.data.chatroom_id;
+          const chatroomId = checkDMLimitCall.data.chatroomId;
           if (chatroomId) {
             // navigate to the chatroom
             navigate(`/${routes?.getDmChannelPath()}/${chatroomId}`);
@@ -141,6 +149,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
   const putReaction = useCallback(
     async (reaction: string) => {
       try {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const putReactionsCall = lmChatclient?.putReaction({
           conversationId: parseInt(message!.id.toString()),
           reaction: reaction,

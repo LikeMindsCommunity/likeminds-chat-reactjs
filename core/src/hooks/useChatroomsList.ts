@@ -2,36 +2,30 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useContext, useEffect, useState } from "react";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
-import { DMChannel } from "../types/models/ChatroomResponse";
+
 import { GetHomeFeedRequest } from "@likeminds.community/chat-js/dist/pages/home-feed/types";
-import {
-  ChatroomData,
-  ConversationMeta,
-  GetChatroomsSyncResponse,
-  UserMeta,
-} from "../types/api-responses/getChatroomSync";
+
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
-import {
-  ExploreChatroom,
-  GetExploreChatroomsResponse,
-} from "../types/api-responses/getExploreChatroomsResponse";
+
 import { useNavigate, useParams } from "react-router-dom";
 import UserProviderContext from "../context/LMUserProviderContext";
 import { onValue, ref } from "firebase/database";
 import { CustomActions } from "../customActions";
-import { CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
-import Conversation from "../types/models/conversations";
+
 import { GetSyncConversationsResponse } from "../types/api-responses/getSyncConversationsResponse";
+import { Chatroom } from "../types/models/Chatroom";
+import { Conversation } from "../types/models/conversations";
+import Member from "../types/models/member";
 interface ChatroomProviderInterface {
-  dmChatroomList: DMChannel[] | null;
+  dmChatroomList: Chatroom[] | null;
   loadMoreDmChatrooms: boolean;
-  groupChatroomsList: ChatroomData[] | null;
-  groupChatroomConversationsMeta: Record<string, ConversationMeta>;
-  groupChatroomMember: Record<string, UserMeta>;
+  groupChatroomsList: Chatroom[] | null;
+  groupChatroomConversationsMeta: Record<string, Conversation>;
+  groupChatroomMember: Record<string, Member>;
   loadMoreGroupChatrooms: boolean;
   getChatroomsMine: ZeroArgVoidReturns;
   getExploreGroupChatrooms: ZeroArgVoidReturns;
-  exploreGroupChatrooms: ExploreChatroom[];
+  exploreGroupChatrooms: Chatroom[];
   loadMoreExploreGroupChatrooms: boolean;
   joinAChatroom: OneArgVoidReturns<string>;
   markReadAChatroom: OneArgVoidReturns<string | number>;
@@ -47,15 +41,15 @@ export default function useChatroomList(): ChatroomProviderInterface {
   const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
   const { currentUser, currentCommunity } = useContext(UserProviderContext);
   //   states for dm chatrooms
-  const [dmChatrooms, setDmChatrooms] = useState<DMChannel[] | null>(null);
+  const [dmChatrooms, setDmChatrooms] = useState<Chatroom[] | null>(null);
   const [dmChatroomsPageCount, setDmChatroomsPageCount] = useState<number>(1);
   const [loadMoreDmChatrooms, setLoadMoreDmChatrooms] = useState<boolean>(true);
   //   state for groupchat chatrooms should come here
-  const [groupChatrooms, setGroupChatrooms] = useState<ChatroomData[]>([]);
+  const [groupChatrooms, setGroupChatrooms] = useState<Chatroom[]>([]);
   const [groupChatroomConversationsMeta, setgroupChatroomConversationsMeta] =
-    useState<Record<string, ConversationMeta>>({});
+    useState<Record<string, Conversation>>({});
   const [groupChatroomMember, setgroupChatroomMember] = useState<
-    Record<string, UserMeta>
+    Record<string, Member>
   >({});
   const [groupChatroomsPageCount, setGroupChatroomsPageCount] =
     useState<number>(1);
@@ -64,28 +58,12 @@ export default function useChatroomList(): ChatroomProviderInterface {
 
   //   state for explore group chatrooms should come here
   const [exploreGroupChatrooms, setExploreGroupChatrooms] = useState<
-    ExploreChatroom[]
+    Chatroom[]
   >([]);
   const [exploreGroupChatroomsPageCount, setExploreGroupChatroomsPageCount] =
     useState<number>(1);
   const [loadMoreExploreGroupChatrooms, setLoadMoreExploreGroupChatrooms] =
     useState<boolean>(true);
-
-  // const chatroomOnLatestConversationUpdateListener = (newConversation: Conversation)=>{
-  //   setGroupChatrooms((currentGroupChatrooms) => {
-  //     return currentGroupChatrooms.map((chatroom) => {
-  //       if (chatroom.id.toString() === newConversation.chatroomId.toString()) {
-  //         chatroom.last_conversation_id = newConversation.id;
-  //         chatroom.last_message = newConversation.message;
-  //         chatroom.last_message_time = newConversation.created_at;
-  //         chatroom.last_message_sender_id = newConversation.sender_id;
-  //         chatroom.last_message_sender_name = newConversation.sender_name;
-  //         chatroom.unseen_count = chatroom.unseen_count + 1;
-  //       }
-  //       return chatroom;
-  //     });
-  //   });
-  // }
 
   const chatroolLeaveActionListener = useCallback((eventObject: Event) => {
     setGroupChatrooms((currentGroupChatroom) => {
@@ -100,7 +78,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
       const exploreChatroomsCopy = [...currentExploreChatrooms].map(
         (chatroom) => {
           if (chatroom.id.toString() === chatroomId) {
-            chatroom.follow_status = false;
+            chatroom.followStatus = false;
           }
           return chatroom;
         },
@@ -117,7 +95,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
         setGroupChatrooms((currentGroupChatrooms) => {
           return currentGroupChatrooms.map((chatroom) => {
             if (chatroom.id.toString() === id.toString()) {
-              chatroom.unseen_count = 0;
+              chatroom.unseenCount = 0;
             }
             return chatroom;
           });
@@ -162,15 +140,13 @@ export default function useChatroomList(): ChatroomProviderInterface {
             (chatroom) => chatroom.id.toString() === collabcardId,
           );
           if (targetChatroom) {
-            currentGroupChatroomsCopy.unshift(
-              targetChatroom as unknown as ChatroomData,
-            );
+            currentGroupChatroomsCopy.unshift(targetChatroom);
           }
           return currentGroupChatroomsCopy;
         });
         return [...currentExpolreChatrooms].map((chatroom) => {
           if (chatroom.id.toString() === collabcardId?.toString()) {
-            chatroom.follow_status = true;
+            chatroom.followStatus = true;
           }
           return chatroom;
         });
@@ -187,21 +163,21 @@ export default function useChatroomList(): ChatroomProviderInterface {
       conversationData?: GetSyncConversationsResponse,
     ) => {
       if (conversationData) {
-        const { conversations_data, user_meta, chatroom_meta } =
+        const { conversationsData, userMeta, chatroomMeta } =
           conversationData.data;
-        const targetConversation = conversations_data[0];
+        const targetConversation = conversationsData[0];
         if (!targetConversation) {
           return;
         }
         setgroupChatroomConversationsMeta((currentConversationsMeta) => {
           currentConversationsMeta = { ...currentConversationsMeta };
-          currentConversationsMeta[targetConversation.id] = targetConversation;
+          currentConversationsMeta[targetConversation.id!] = targetConversation;
           return currentConversationsMeta;
         });
         setgroupChatroomMember((currentMembersMeta) => {
           currentMembersMeta = { ...currentMembersMeta };
-          currentMembersMeta[targetConversation.user_id] = user_meta[
-            targetConversation.user_id
+          currentMembersMeta[targetConversation.userId!] = userMeta[
+            targetConversation.userId!
           ] as any;
           return currentMembersMeta;
         });
@@ -213,9 +189,10 @@ export default function useChatroomList(): ChatroomProviderInterface {
 
           const targetUpdatedChatroom = {
             ...targetChatroom,
-            ...chatroom_meta[chatroomId?.toString()],
+            ...chatroomMeta[chatroomId?.toString()],
           };
-          targetUpdatedChatroom.last_conversation_id = targetConversation.id;
+          targetUpdatedChatroom.lastConversationId =
+            targetConversation.id.toString();
           const newGroupChatroomsCopy = groupChatroomsCopy.filter(
             (chatroom) => {
               return chatroom.id.toString() !== chatroomId.toString();
@@ -234,14 +211,13 @@ export default function useChatroomList(): ChatroomProviderInterface {
 
     [],
   );
-  const getExploreGroupChatrooms = async () => {
+  const getExploreGroupChatrooms = useCallback(async () => {
     try {
-      const call: GetExploreChatroomsResponse =
-        await lmChatclient?.getExploreFeed({
-          page: exploreGroupChatroomsPageCount,
-          orderType: 0,
-        });
-      if (call.success) {
+      const call = await lmChatclient?.getExploreFeed({
+        page: exploreGroupChatroomsPageCount,
+        orderType: 0,
+      });
+      if (call?.success) {
         if (call.data.chatrooms.length) {
           setExploreGroupChatroomsPageCount((currentPage) => currentPage + 1);
           setExploreGroupChatrooms((currentChatrooms) => {
@@ -254,7 +230,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [exploreGroupChatroomsPageCount, lmChatclient]);
 
   async function approveDMRequest(id: string) {
     try {
@@ -278,16 +254,15 @@ export default function useChatroomList(): ChatroomProviderInterface {
   }
   const getChatroomsMine = useCallback(async () => {
     try {
-      const getChatroomsMineCall: GetChatroomsSyncResponse =
-        await lmChatclient?.getHomeFeed({
-          page: groupChatroomsPageCount,
-          pageSize: 10,
-          chatroomTypes: [0, 7] as unknown,
-          maxTimestamp: Date.now(),
-          minTimestamp: 0,
-        } as GetHomeFeedRequest);
-      if (getChatroomsMineCall.success) {
-        if (!getChatroomsMineCall.data.chatrooms_data.length) {
+      const getChatroomsMineCall = await lmChatclient?.getHomeFeed({
+        page: groupChatroomsPageCount,
+        pageSize: 10,
+        chatroomTypes: [0, 7] as unknown,
+        maxTimestamp: Date.now(),
+        minTimestamp: 0,
+      } as GetHomeFeedRequest);
+      if (getChatroomsMineCall?.success) {
+        if (!getChatroomsMineCall.data.chatroomsData.length) {
           setLoadMoreGroupChatrooms(false);
           return;
         } else {
@@ -296,19 +271,19 @@ export default function useChatroomList(): ChatroomProviderInterface {
         setGroupChatrooms((currentChatrooms) => {
           return [
             ...(currentChatrooms || []),
-            ...getChatroomsMineCall.data.chatrooms_data,
+            ...getChatroomsMineCall.data.chatroomsData,
           ];
         });
         setgroupChatroomConversationsMeta((currentConversationsMeta) => {
           return {
             ...currentConversationsMeta,
-            ...getChatroomsMineCall.data.conversation_meta,
+            ...getChatroomsMineCall.data.conversationMeta,
           };
         });
         setgroupChatroomMember((currentConversationsMeta) => {
           return {
             ...currentConversationsMeta,
-            ...getChatroomsMineCall.data.user_meta,
+            ...getChatroomsMineCall.data.userMeta,
           };
         });
       }
@@ -331,7 +306,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
     // getDmChannelList();
     getChatroomsMine();
     getExploreGroupChatrooms();
-  }, []);
+  }, [getChatroomsMine, getExploreGroupChatrooms]);
   useEffect(() => {
     if (!lmChatclient) {
       return;

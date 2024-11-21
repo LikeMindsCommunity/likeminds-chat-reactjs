@@ -17,7 +17,7 @@ function MessageOptions() {
   const { message } = useContext(LMMessageContext);
   const { currentUser } = useContext(UserProviderContext);
   const { canUserReplyPrivately, chatroom } = useContext(LMChatChatroomContext);
-  const { onDelete, onSetTopic, onReport, onEdit, onReply, onReplyPrivately } =
+  const { onDelete, onSetTopic, onReport, onEdit, onReplyPrivately } =
     useMessageOptions();
   const { menuAnchor, openMenu, closeMenu } = useMenu();
   const { openDialog, dialogOpen, closeDialog } = useDialog();
@@ -103,7 +103,7 @@ function MessageOptions() {
             message.member.id.toString() === currentUser?.id.toString() &&
             canUserReplyPrivately !==
               ReplyDmQueries.REPLY_PRIVATELY_NOT_ALLOWED &&
-            chatroom?.chatroom.type.toString() !==
+            chatroom?.chatroom.type?.toString() !==
               ChatroomTypes.DIRECT_MESSAGE_CHATROOM.toString()
           ) {
             if (

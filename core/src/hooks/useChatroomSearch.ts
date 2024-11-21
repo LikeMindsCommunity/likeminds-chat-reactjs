@@ -6,15 +6,16 @@ import {
   useRef,
   useState,
 } from "react";
-import { SearchedChatroom } from "../types/models/SearchedChatroom";
+// import { SearchedChatroom } from "../types/models/SearchedChatroom";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { useNavigate } from "react-router-dom";
+import { Chatroom } from "../types/models/Chatroom";
 // import { CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
 
 export function useChatroomSearch(): UseChatroomSearch {
   const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
-  const [searchList, setSearchList] = useState<SearchedChatroom[]>([]);
+  const [searchList, setSearchList] = useState<Chatroom[]>([]);
   const [searchKey, setSearchKey] = useState<string>("");
   const [loadMoreChatrooms, setLoadMoreChatrooms] = useState<boolean>(false);
   const pageCount = useRef<number>(1);
@@ -36,16 +37,16 @@ export function useChatroomSearch(): UseChatroomSearch {
         followStatus: followStatus.current,
         searchType: "header",
       });
-      if (call.data.chatrooms.length === 0 && followStatus.current === true) {
+      if (call?.data.chatrooms.length === 0 && followStatus.current === true) {
         followStatus.current = false;
         pageCount.current = 1;
         searchChatrooms();
         // return;
       }
-      if (call.data.chatrooms.length === 0 && followStatus.current === false) {
+      if (call?.data.chatrooms.length === 0 && followStatus.current === false) {
         setLoadMoreChatrooms(() => false);
       }
-      if (call.data.chatrooms.length > 0) {
+      if (call?.data && call.data.chatrooms.length > 0) {
         setSearchList((currentList) => {
           const newList = [...currentList, ...call.data.chatrooms];
           return newList;
@@ -90,7 +91,7 @@ export function useChatroomSearch(): UseChatroomSearch {
 }
 
 interface UseChatroomSearch {
-  searchList: SearchedChatroom[];
+  searchList: Chatroom[];
   resetSearch: ZeroArgVoidReturns;
   searchChatrooms: ZeroArgVoidReturns;
   loadMoreChatrooms: boolean;

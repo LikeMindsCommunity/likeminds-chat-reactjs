@@ -1,13 +1,3 @@
-export interface OgTag {
-  title: string;
-  image: string;
-  description: string;
-  url: string;
-}
+import { GetOgTag, LMResponseType } from "@likeminds.community/chat-js-beta";
 
-export interface GetOgTagResponse {
-  success: boolean;
-  data: {
-    og_tags: OgTag;
-  };
-}
+export interface GetOgTagResponse extends LMResponseType<GetOgTag> {}

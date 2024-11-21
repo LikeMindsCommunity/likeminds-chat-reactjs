@@ -60,9 +60,9 @@ const LMParticipantList = () => {
             return (
               <div className="lm-participant-card">
                 <div className="lm-participant-card-user">
-                  {participant.image_url ? (
+                  {participant.imageUrl ? (
                     <>
-                      <img src={participant.image_url} alt="" />
+                      <img src={participant.imageUrl} alt="" />
                     </>
                   ) : (
                     <>{participant.name[0]}</>
@@ -71,7 +71,7 @@ const LMParticipantList = () => {
                 <div className="lm-participant-card-detail">
                   <div className="name">{participant.name}</div>
 
-                  <div className="desc">{participant.custom_title}</div>
+                  <div className="desc">{participant.customTitle}</div>
                 </div>
               </div>
             );

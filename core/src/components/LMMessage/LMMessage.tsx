@@ -36,14 +36,14 @@ const LMMessage = () => {
   const isSender = message?.member?.uuid === currentUser?.uuid;
   const messageClass = isSender ? "sender" : "receiver";
   const { onReply } = useMessageOptions();
-
+  console.log(message);
   const imageUrl = message?.member.imageUrl;
   const name = message?.member.name;
   const avatarContent = getAvatar({ imageUrl, name });
 
   // custom message component
 
-  if (message?.widget_id?.length && messageBubbles?.customWidget) {
+  if (message?.widgetId?.length && messageBubbles?.customWidget) {
     return <messageBubbles.customWidget />;
   }
   if (CustomMessageComponent) {
@@ -56,12 +56,12 @@ const LMMessage = () => {
   };
   function renderTapToUndo() {
     if (
-      chatroom?.chatroom.chat_request_state.toString() ===
+      chatroom?.chatroom.chatRequestState?.toString() ===
       ChatRequestStates.REJECTED_STATE
     )
       if (
         currentUser.id.toString() ===
-        chatroom?.chatroom.chatroom_with_user?.id.toString()
+        chatroom?.chatroom.chatroomWithUser?.id.toString()
       ) {
         return (
           <span
@@ -86,7 +86,7 @@ const LMMessage = () => {
     if (chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
       const chatroomuser =
         chatroom.chatroom.member.id.toString() === currentUser?.id.toString()
-          ? chatroom.chatroom.chatroom_with_user
+          ? chatroom.chatroom.chatroomWithUser
           : chatroom.chatroom.member;
       return (
         <div className="data-pill">
@@ -104,7 +104,7 @@ const LMMessage = () => {
       );
     }
   }
-  if (message?.deleted_by || message?.deleted_by_user_id) {
+  if (message?.deletedBy || message?.deletedByUserId) {
     if (messageBubbles?.chatroomDeletedChatBubble) {
       return <messageBubbles.chatroomDeletedChatBubble />;
     }
@@ -116,13 +116,13 @@ const LMMessage = () => {
             <div className="name">{message?.member.name}</div>
           ) : null}
           <div className="lm-delete-msg">
-            {message?.deleted_by_member?.uuid === currentUser?.uuid
+            {message?.deletedByMember?.uuid === currentUser?.uuid
               ? ConstantStrings.MESSAGE_DELETED_BY_SELF
               : ConstantStrings.MESSAGE_DELETED_NOT_BY_SELF}
           </div>
-          <div className="time">{message?.created_at}</div>
+          <div className="time">{message?.createdAt}</div>
         </div>
-        <div className={`actions ${message?.deleted_by ? "none" : ""}`}>
+        <div className={`actions ${message?.deletedBy ? "none" : ""}`}>
           <div className="lm-cursor-pointer">
             <MessageOptions />
           </div>
@@ -160,19 +160,20 @@ const LMMessage = () => {
                 ) : null}
                 {/* media */}
                 <div className="lm-media">
-                  {message.has_files && message.attachments?.length > 0 ? (
-                    <MediaRenderer attachments={message.attachments} />
+                  {message.hasFiles &&
+                  (message.attachments?.length || 0) > 0 ? (
+                    <MediaRenderer attachments={message?.attachments || []} />
                   ) : null}
                 </div>
                 {/* OG Tags */}
 
-                {message.og_tags ? (
+                {message.ogTags ? (
                   <div className="lm-og-tags">
-                    {message.og_tags.image ? (
+                    {message.ogTags.image ? (
                       <>
                         <div className="lm-og-img">
                           <img
-                            src={message.og_tags.image || linkImg}
+                            src={message.ogTags.image || linkImg}
                             alt="image"
                             onError={handleImageError}
                           />
@@ -181,10 +182,10 @@ const LMMessage = () => {
                     ) : null}
                     <div className="lm-og-content">
                       <div className="lm-og-title">
-                        {message?.og_tags?.title}
+                        {message?.ogTags?.title}
                       </div>
                       <div className="lm-og-desc">
-                        {message?.og_tags?.description}
+                        {message?.ogTags?.description}
                       </div>
                     </div>
                   </div>
@@ -192,14 +193,14 @@ const LMMessage = () => {
                 {/* OG Tags */}
 
                 {/* text msg */}
-                {message?.reply_conversation_object && (
+                {message?.replyConversationObject && (
                   <div className="lm-reply-wrapper">
                     <div className="lm-reply-wrapper-content">
                       <div className="lm-reply-wrapper-content-name">
-                        {message.reply_conversation_object.member.name}
+                        {message.replyConversationObject.member.name}
                       </div>
                       <div className="lm-reply-wrapper-content-msg">
-                        {message.reply_conversation_object.answer}
+                        {message.replyConversationObject.answer}
                       </div>
                     </div>
                   </div>
@@ -220,13 +221,13 @@ const LMMessage = () => {
                   )}
                 </div>
                 <div className="time">
-                  {message.is_edited ? (
+                  {message.isEdited ? (
                     <>
                       <div className="error-message">Edited</div>
                       <div className="edited-bullet">&nbsp;</div>
                     </>
                   ) : null}
-                  {message?.created_at}
+                  {message?.createdAt}
                 </div>
               </div>
               <MessageReactionHolder />

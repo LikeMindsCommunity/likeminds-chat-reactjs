@@ -2,7 +2,7 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import LoaderContextProvider from "../context/LMLoaderContextProvider";
-import Conversation from "../types/models/conversations";
+import { Conversation } from "../types/models/conversations";
 import {
   ChatroomCollabcard,
   GetChatroomResponse,
@@ -93,7 +93,9 @@ export default function useChatroom(): UseChatroom {
         // get the chatroom details
         if (!chatroomId) return;
         const newChatroom = await getChatroomDetails();
-        setChatroom(newChatroom);
+        if (newChatroom) {
+          setChatroom(newChatroom as ChatroomCollabcard);
+        }
         // set the loader to false
         setLoader!(false);
       } catch (error) {

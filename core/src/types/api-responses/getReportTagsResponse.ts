@@ -1,8 +1,4 @@
-import { ReportObject } from "../models/reportTags";
+import { LMResponseType } from "@likeminds.community/chat-js-beta";
 
-export interface GetReportTagsResponse {
-  success: boolean;
-  data: {
-    reportTags: ReportObject[];
-  };
-}
+export interface GetReportTagsResponse
+  extends LMResponseType<GetReportTagsResponse> {}

@@ -72,16 +72,16 @@ const MessageReactionHolder = () => {
             {selectedReaction.length !== 0
               ? messageReactionMap[selectedReaction]?.map((reactions) => {
                   return (
-                    <div className="reactionUser" key={reactions.member.uuid}>
+                    <div className="reactionUser" key={reactions?.member?.uuid}>
                       <div className="userImg">
-                        {reactions.member.imageUrl ? (
+                        {reactions?.member?.imageUrl ? (
                           <img src={reactions.member.imageUrl} alt="image" />
                         ) : (
-                          <div>{reactions.member.name[0]}</div>
+                          <div>{reactions?.member?.name[0]}</div>
                         )}
                       </div>
                       <div className="userName">
-                        <div className="name">{reactions.member.name}</div>
+                        <div className="name">{reactions?.member?.name}</div>
                         <div
                           className="remove-emoji-text"
                           onClick={() => {
@@ -97,16 +97,16 @@ const MessageReactionHolder = () => {
                 })
               : message?.reactions?.map((reactions) => {
                   return (
-                    <div className="reactionUser" key={reactions.member.uuid}>
+                    <div className="reactionUser" key={reactions?.member?.uuid}>
                       <div className="userImg">
-                        {reactions.member.imageUrl ? (
+                        {reactions?.member?.imageUrl ? (
                           <img src={reactions.member.imageUrl} alt="image" />
                         ) : (
-                          <div>{reactions.member.name[0]}</div>
+                          <div>{reactions.member?.name[0]}</div>
                         )}
                       </div>
                       <div className="userName">
-                        <div className="name">{reactions.member.name}</div>
+                        <div className="name">{reactions?.member?.name}</div>
                         <div
                           className="remove-emoji-text"
                           onClick={() => {

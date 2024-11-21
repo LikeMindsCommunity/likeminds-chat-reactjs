@@ -1,6 +1,6 @@
 {
-  "name": "@likeminds.community/likeminds-chat-reactjs",
-  "version": "1.2.0",
+  "name": "likeminds-chat-reactjs-beta",
+  "version": "1.8.16",
   "public": true,
   "scripts": {
     "dev": "vite",
@@ -21,25 +21,29 @@
     "@emoji-mart/react": "^1.1.1",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
-    "@giphy/react-components": "^9.5.0", 
+    "@giphy/react-components": "^9.5.0",
     "@likeminds.community/chat-js": "^1.11.0",
+    "@likeminds.community/chat-js-beta": "^1.1.164",
     "@mui/icons-material": "^5.15.20",
     "@mui/lab": "^5.0.0-alpha.170",
     "@mui/material": "^5.15.10",
     "@mui/x-date-pickers": "^7.8.0",
     "@rajesh896/broprint.js": "^2.1.1",
     "@types/react-slick": "^0.23.13",
+    "bootstrap": "^5.3.3",
     "dayjs": "^1.11.11",
     "emoji-mart": "^5.6.0",
     "firebase": "^10.12.2",
+    "lottie-react": "^2.4.0",
+    "prop-types": "^15.8.1",
     "react": "^18.2.0",
-    "bootstrap": "^5.3.3",
     "react-bootstrap": "^2.10.3",
     "react-dom": "^18.2.0",
     "react-gif-player": "^0.4.2",
     "react-giphy-searchbox": "^1.5.0",
     "react-hot-toast": "^2.4.1",
     "react-infinite-scroll-component": "^6.1.0",
+    "react-lottie": "^1.2.8",
     "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^6.22.0",
     "react-slick": "^0.30.2",
@@ -74,18 +78,5 @@
     "vite": "^5.0.8",
     "vite-plugin-dts": "^3.9.1",
     "vite-plugin-lib-inject-css": "^2.1.1"
-  },
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "files": [
-    "dist"
-  ],
-  "types": "dist/index.d.ts",
-  "type": "module",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.umd.cjs"
-    }
   }
 }

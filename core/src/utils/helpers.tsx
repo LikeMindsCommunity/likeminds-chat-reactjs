@@ -11,6 +11,8 @@ import { FileType } from "../types/enums/Filetype";
 import { FileTypeInitials } from "../enums/lm-file-type-initials";
 import Member from "../types/models/member";
 import { validMatchingString } from "./TLDs";
+import { Chatroom } from "@likeminds.community/chat-js-beta";
+import { MemberRole } from "@likeminds.community/chat-js-beta";
 type StringTagType = {
   text: string;
   type: number;
@@ -52,7 +54,7 @@ export class Utils {
         elements.push(
           <span
             key={`${lineIndex}-${index}`}
-            // onClick={() => handleRouteClick(route)}
+            lm-user-route={route}
             className="userTag"
           >
             {name}
@@ -74,10 +76,6 @@ export class Utils {
     // Convert URLs to anchor tags
     const textWithLinks = elements.map((element, index) => {
       if (typeof element === "string") {
-        // const regexString = /\b(https?:\/\/\S+|www\.\S+)\b/g
-
-        // const regexString = `\\b(?!(?:https?:\\/\\/|www\\.)\\S+)(?:https?:\\/\\/|www\\.)?\\S+\\.(?:${validTLDs.join("|")})\\b`;
-
         // // Creating a RegExp object
         // const regex = new RegExp(regexString, "gi");
         const regex = /(https?:\/\/\S+|www\.\S+|\b\w+\.\w+\S*)\b/g;
@@ -393,15 +391,11 @@ export class Utils {
     return s3Client;
   }
 
-  static async uploadMedia(
-    media: File,
-    conversationId: string,
-    chatroomId: string,
-  ): Promise<unknown> {
+  static async uploadMedia(media: File, uuid: string, chatroomId: string) {
     const s3Client = this.getAWS();
     const { Key, Bucket, Body, ACL, ContentType } = this.buildUploadParams(
       media,
-      conversationId,
+      uuid,
       chatroomId,
     );
     const command = new PutObjectCommand({
@@ -417,10 +411,10 @@ export class Utils {
 
   private static buildUploadParams(
     media: File,
-    conversationId: string,
+    uuid: string,
     chatroomId: string,
   ): PutObjectRequest {
-    const key = this.generateKey(chatroomId, conversationId, media);
+    const key = this.generateKey(chatroomId, uuid, media);
     return {
       // Key: `files/post/${userUniqueId}/${media.name}`,
       Key: key,
@@ -434,7 +428,7 @@ export class Utils {
           : "pdf",
     };
   }
-  static generateKey(chatroomId: string, conversationId: string, media: File) {
+  static generateKey(chatroomId: string, uuid: string, media: File) {
     const conversationInitials = media.type.includes(FileType.image)
       ? FileTypeInitials.IMAGE
       : media.type.includes(FileType.video)
@@ -442,7 +436,7 @@ export class Utils {
         : media.type.includes(FileType.document)
           ? FileTypeInitials.PDF
           : FileTypeInitials.OTHERS;
-    return `files/collabcard/${chatroomId}/conversation/${conversationId}/${conversationInitials}${Date.now()}.${media.name.split(".").reverse()[0]}`;
+    return `files/collabcard/${chatroomId}/conversation/${uuid}/${conversationInitials}${Date.now()}.${media.name.split(".").reverse()[0]}`;
   }
   static generateFileUrl(keyName: string) {
     return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${keyName}`;
@@ -511,7 +505,7 @@ export class Utils {
     contentEditableDiv.current.focus();
   }
   static setTagUserImage(user: Member) {
-    const imageLink = user?.imageUrl || user?.image_url || "";
+    const imageLink = user?.imageUrl || user?.imageUrl || "";
     if (imageLink !== "") {
       return (
         <img
@@ -552,6 +546,102 @@ export class Utils {
     const regex = /\b(?:https?:\/\/)?(?:[\w.]+\.\w+)(?:(?<=\\n)|\b)/g;
     const links = text?.match(regex);
     return links ? links : [];
+  }
+
+  static async uploadVideoFile(
+    file: File,
+    chatroomId: string,
+    uuid: string,
+  ): Promise<{
+    thumbnailUrl: string | null;
+    fileUrl: string | null;
+    height?: number;
+    width?: number;
+  }> {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement("video");
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const url = URL.createObjectURL(file);
+      video.src = url;
+      let blobEl = null;
+      video.addEventListener("loadedmetadata", async () => {
+        // Set canvas dimensions to match video dimensions
+        try {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          video.currentTime = 1;
+          video.addEventListener("seeked", async () => {
+            try {
+              ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+              // Convert canvas content to blob
+              canvas.toBlob(
+                async (blob) => {
+                  blobEl = blob;
+                  const thumbnailFile = new File(
+                    [blobEl!],
+                    file.name.toString().concat("thumbnail.jpeg"),
+                  );
+
+                  const thumbnailFileKey = await Utils.uploadMedia(
+                    thumbnailFile,
+                    uuid,
+                    chatroomId,
+                  );
+                  const fileKey = await Utils.uploadMedia(
+                    file,
+                    uuid,
+                    chatroomId,
+                  );
+                  const thumbnailUrl = Utils.generateFileUrl(thumbnailFileKey);
+                  const fileUrl = Utils.generateFileUrl(fileKey);
+                  resolve({ thumbnailUrl, fileUrl });
+                },
+                "image/jpeg",
+                0.8,
+              );
+            } catch (e) {
+              reject({
+                thumbnailUrl: null,
+                fileUrl: null,
+                height: canvas.height,
+                width: canvas.width,
+              });
+            }
+          });
+        } catch (e) {
+          reject({ thumbnailUrl: null, fileUrl: null });
+        }
+      });
+    });
+  }
+  static async uploadImageOrDocument(
+    file: File,
+    chatroomId: string,
+    uuid: string,
+  ): Promise<{
+    fileUrl: string | null;
+  }> {
+    try {
+      const fileKey = await Utils.uploadMedia(file, uuid, chatroomId);
+      const fileUrl = Utils.generateFileUrl(fileKey);
+      return { fileUrl };
+    } catch (e) {
+      return { fileUrl: null };
+    }
+  }
+
+  static isOtherUserAIChatbot(chatroom: Chatroom, currentUser: Member) {
+    const currentUUID = currentUser?.uuid;
+    const otherMember =
+      chatroom.member.sdkClientInfo?.uuid === currentUUID
+        ? chatroom.chatroomWithUser
+        : chatroom.member;
+    const isChatroomRolePresent = otherMember?.roles?.includes(
+      MemberRole.Chatbot,
+    );
+    return isChatroomRolePresent;
   }
 }
 export interface TagInfo {

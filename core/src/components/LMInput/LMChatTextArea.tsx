@@ -112,7 +112,7 @@ const LMChatTextArea = () => {
         autoFocus={true}
         id="lm-feed-content-editable-text-area"
         data-placeholder={
-          chatroom?.chatroom.member_can_message
+          chatroom?.chatroom.memberCanMessage
             ? `Type a message`
             : `Members can't message in this chatroom`
         }

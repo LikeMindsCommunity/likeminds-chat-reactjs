@@ -1,6 +1,6 @@
 import React from "react";
 import { ChatroomCollabcard } from "../api-responses/getChatroomResponse";
-import Conversation from "../models/conversations";
+import { Conversation } from "../models/conversations";
 import { ReplyDmQueries } from "../../enums/lm-reply-dm-queries";
 
 export interface LMChatChatroomContextInterface {

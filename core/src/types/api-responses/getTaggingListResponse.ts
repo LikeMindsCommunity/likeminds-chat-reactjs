@@ -1,11 +1,9 @@
 // import { TaggingMember } from "../models/taggingMember";
 
-import Member from "../models/member";
+import {
+  GetTaggingList,
+  LMResponseType,
+} from "@likeminds.community/chat-js-beta";
 
-export interface GetTaggingListResponse {
-  success: boolean;
-  data: {
-    members?: Member[];
-    community_members?: Member[];
-  };
-}
+export interface GetTaggingListResponse
+  extends LMResponseType<GetTaggingList> {}

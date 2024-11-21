@@ -3,7 +3,7 @@ import InputContext from "../../context/LMInputContext";
 import { FileType } from "../../types/enums/Filetype";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
-import modalCancelIcon from "../../assets/img/cancel-icon.svg";
+
 // Styles
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";

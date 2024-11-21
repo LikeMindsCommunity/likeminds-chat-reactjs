@@ -22,7 +22,7 @@ import UserProviderContext from "../../context/LMUserProviderContext";
 import LMConversationSearch from "../search/LMConversationSearch";
 import { ChatroomMenuCustomActions } from "../../types/prop-types/CustomComponents";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
-import { useParticipants } from "../../main_index";
+
 import { useNavigate } from "react-router-dom";
 interface LMHeaderProps {
   chatroomMenuCustomActions?: ChatroomMenuCustomActions;
@@ -46,7 +46,7 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
     }
     const recieverUser =
       chatroom.chatroom.member.id.toString() === currentUser.id.toString()
-        ? chatroom.chatroom.chatroom_with_user
+        ? chatroom.chatroom.chatroomWithUser
         : chatroom.chatroom.member;
     return recieverUser;
   }, [chatroom, currentUser]);
@@ -63,7 +63,7 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
     if (chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
       const recieverUser = getChatroomReciever();
       if (recieverUser) {
-        const imageUrl = recieverUser?.image_url;
+        const imageUrl = recieverUser?.imageUrl;
         const name = recieverUser?.name;
         const avatarContent = getAvatar({ imageUrl, name });
         return avatarContent;
@@ -71,13 +71,13 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
         return null;
       }
     } else {
-      const imageUrl = chatroom?.chatroom.chatroom_image_url;
+      const imageUrl = chatroom?.chatroom.chatroomImageUrl;
       const name = chatroom?.chatroom.header;
       const avatarContent = getAvatar({ imageUrl, name });
       return avatarContent;
     }
   }, [
-    chatroom?.chatroom.chatroom_image_url,
+    chatroom?.chatroom.chatroomImageUrl,
     chatroom?.chatroom.header,
     chatroom?.chatroom.type,
     getChatroomReciever,
@@ -126,11 +126,11 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
                 <div className="lm-channel-img">{chatroomAvatar}</div>
                 <div className="lm-channel-desc">
                   <div className="lm-channel-title">{chatroomTitle}</div>
-                  {chatroom?.chatroom?.participants_count &&
+                  {chatroom?.chatroom?.participantsCount &&
                   chatroom.chatroom.type !==
                     ChatroomTypes.DIRECT_MESSAGE_CHATROOM ? (
                     <div className="lm-channel-participants">
-                      {chatroom?.chatroom.participants_count} Participants
+                      {chatroom?.chatroom.participantsCount} Participants
                     </div>
                   ) : null}
                 </div>
@@ -153,7 +153,7 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
                   anchorEl={menuAnchor}
                   onClose={closeMenu}
                 >
-                  {chatroom?.chatroom_actions.map((menuOption) => {
+                  {chatroom?.chatroomActions.map((menuOption) => {
                     return (
                       <MenuItem
                         key={menuOption.id}

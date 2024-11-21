@@ -52,13 +52,13 @@ const LMMicroPoll = () => {
       <div className={`conversation lm-poll  ${messageClass}`}>
         <div className="user-profile">
           <div className="name">{message.member.name}</div>
-          <div className="info">{message.poll_type_text}</div>
+          <div className="info">{message.pollTypeText}</div>
         </div>
         <div className="poll-header">
           <div className="poll-icon">
             <img src={pollIcon} alt="Poll Icon" />
           </div>
-          <button className="ends">{`Ends ${dayjs(message.expiry_time).fromNow()}`}</button>
+          <button className="ends">{`Ends ${dayjs(message.expiryTime).fromNow()}`}</button>
         </div>
         <div className="poll-title">{message.answer}</div>
         {message?.polls?.map((poll) => {
@@ -70,11 +70,11 @@ const LMMicroPoll = () => {
                 }}
                 id={poll.id.toString()}
                 className={`pollOption  ${selectedPollOptions.some((selectedOption) => selectedOption.id.toString() === poll.id.toString()) ? "pollOptionSelected" : ""}
-                 ${poll.is_selected ? "pollOptionSubmitted" : ""}`}
+                 ${poll.isSelected ? "pollOptionSubmitted" : ""}`}
               >
                 {poll.text}
               </div>
-              <div className="votes">{`${poll.no_votes} votes`}</div>
+              <div className="votes">{`${poll.noVotes} votes`}</div>
             </div>
           );
         })}
@@ -86,7 +86,7 @@ const LMMicroPoll = () => {
         )}
 
         {/* <div className="totalVotes" onClick={openDialog}> */}
-        <div className="totalVotes">{message.poll_answer_text}</div>
+        <div className="totalVotes">{message.pollAnswerText}</div>
         {calculateSubmitButtonVisibility() && (
           <div className="lm-poll-submit">
             <button
@@ -99,13 +99,13 @@ const LMMicroPoll = () => {
         )}
 
         <div className="time">
-          {message.is_edited ? (
+          {message.isEdited ? (
             <>
               <div className="error-message">Edited</div>
               <div className="edited-bullet">&nbsp;</div>
             </>
           ) : null}
-          {message?.created_at}
+          {message?.createdAt}
         </div>
       </div>
 

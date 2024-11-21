@@ -20,24 +20,24 @@ export function usePoll(): UsePoll {
 
   //   Regular functions
   const calculateSubmitButtonVisibility = () => {
-    if (Date.now() > message.expiry_time) {
+    if (Date.now() > message.expiryTime!) {
       return false;
     }
-    const pollType = message.poll_type.toString();
+    const pollType = message?.pollType?.toString();
     switch (pollType) {
       case PollType.INSTANT_POLL: {
-        if (message.polls.some((poll) => poll.is_selected)) {
+        if (message?.polls?.some((poll) => poll.isSelected)) {
           return false;
         }
-        switch (message.multiple_select_state) {
+        switch (message.multipleSelectState) {
           case PollMultipleSelectState.AT_LEAST: {
-            if (selectedPollOptions.length < message.multiple_select_no) {
+            if (selectedPollOptions.length < message.multipleSelectNo!) {
               return false;
             }
             return true;
           }
           case PollMultipleSelectState.AT_MAX: {
-            if (selectedPollOptions.length > message.multiple_select_no) {
+            if (selectedPollOptions.length > message.multipleSelectNo!) {
               return false;
             }
             return true;
@@ -45,7 +45,7 @@ export function usePoll(): UsePoll {
           case PollMultipleSelectState.EXACTLY:
           case null:
           case undefined: {
-            if (selectedPollOptions.length !== message.multiple_select_no) {
+            if (selectedPollOptions.length !== message.multipleSelectNo) {
               return false;
             }
             return true;
@@ -65,22 +65,22 @@ export function usePoll(): UsePoll {
   };
 
   const calculateAddPollOptionButtonVisibility = () => {
-    if (!message.allow_add_option) {
+    if (!message.allowAddOption) {
       return false;
     }
-    const pollType = message.poll_type.toString();
+    const pollType = message?.pollType?.toString();
     switch (pollType) {
       case PollType.INSTANT_POLL: {
-        if (Date.now() > message.expiry_time) {
+        if (Date.now() > message.expiryTime!) {
           return false;
         }
-        if (message.polls.some((poll) => poll.is_selected)) {
+        if (message.polls?.some((poll) => poll.isSelected)) {
           return false;
         }
         return true;
       }
       case PollType.DEFERRED_POLL: {
-        if (Date.now() > message.expiry_time) {
+        if (Date.now() > message.expiryTime!) {
           return false;
         }
         return true;
@@ -107,13 +107,13 @@ export function usePoll(): UsePoll {
    * @param clickedEvent - The click event that triggered the selection.
    */
   const selectPollOption = (clickedEvent: React.MouseEvent<HTMLDivElement>) => {
-    if (Date.now() > message.expiry_time) {
+    if (Date.now() > message.expiryTime!) {
       showLoader("Poll has expired");
       return;
     }
     if (
-      message.polls.some((poll) => poll.is_selected) &&
-      message.poll_type.toString() === PollType.INSTANT_POLL
+      message.polls?.some((poll) => poll.isSelected) &&
+      message.pollType?.toString() === PollType.INSTANT_POLL
     ) {
       showLoader("Poll has already been submitted");
       return;
@@ -141,14 +141,14 @@ export function usePoll(): UsePoll {
       const isOptionAlreadySelected = currentSelectedOptions.some(
         (selectedOptions) => selectedOptions.id === pollOptionValue,
       );
-      switch (message?.multiple_select_state) {
+      switch (message?.multipleSelectState) {
         case PollMultipleSelectState.AT_MAX: {
           if (
             !isOptionAlreadySelected &&
-            currentSelectedOptions.length >= message?.multiple_select_no
+            currentSelectedOptions.length >= message.multipleSelectNo!
           ) {
             showLoader(
-              `You can't select more than ${message.multiple_select_no} options`,
+              `You can't select more than ${message.multipleSelectNo} options`,
             );
             return currentSelectedOptions;
           }
@@ -160,10 +160,10 @@ export function usePoll(): UsePoll {
         default: {
           if (
             !isOptionAlreadySelected &&
-            currentSelectedOptions.length == message?.multiple_select_no
+            currentSelectedOptions.length == message?.multipleSelectNo
           ) {
             showLoader(
-              `You can't select more than ${message.multiple_select_no} options`,
+              `You can't select more than ${message.multipleSelectNo} options`,
             );
             return currentSelectedOptions;
           }
@@ -176,6 +176,7 @@ export function usePoll(): UsePoll {
   //   APIs
   const submitPoll = async () => {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const call = await lmChatclient?.submitPoll({
         polls: selectedPollOptions,
         conversationId: message?.id,
@@ -194,8 +195,8 @@ export function usePoll(): UsePoll {
           text: temporaryAddOptionText,
         },
       });
-      if (call.success) {
-        addPollOptionLocally(call.data.poll);
+      if (call?.success) {
+        addPollOptionLocally(call?.data);
       }
     } catch (error) {
       console.log(error);
@@ -203,6 +204,7 @@ export function usePoll(): UsePoll {
   };
   const getPollUsers = async (pollId: number) => {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const call = await lmChatclient?.getPollUsers({
         conversationId: message?.id,
         pollId: pollId,

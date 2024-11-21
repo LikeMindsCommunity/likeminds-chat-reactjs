@@ -9,14 +9,15 @@ import {
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
-import { SearchedConversation } from "../types/models/SearchedConversation";
+
+import { Conversation } from "../types/models/conversations";
 
 export function useConversationSearch(): UseConversationSearch {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { chatroom, setSearchedConversationId } = useContext(
     LMChatChatroomContext,
   );
-  const [searchList, setSearchList] = useState<SearchedConversation[]>([]);
+  const [searchList, setSearchList] = useState<Conversation[]>([]);
   const [searchKey, setSearchKey] = useState<string>("");
   const [loadMoreConversations, setLoadMoreConversations] =
     useState<boolean>(false);
@@ -34,12 +35,12 @@ export function useConversationSearch(): UseConversationSearch {
         chatroomId: chatroom!.chatroom.id!,
         followStatus: true,
       });
-      if (call.data.conversations.length === 0) {
+      if (call?.data.conversations.length === 0) {
         setLoadMoreConversations(false);
       }
-      if (call.data.conversations.length > 0) {
+      if (call!.data.conversations.length > 0) {
         setSearchList((currentList) => {
-          const newList = [...currentList, ...call.data.conversations];
+          const newList = [...currentList, ...call!.data.conversations];
           return newList;
         });
         pageCount.current = pageCount.current + 1;
@@ -84,7 +85,7 @@ export function useConversationSearch(): UseConversationSearch {
 interface UseConversationSearch {
   searchKey: string;
   setSearchKey: Dispatch<string>;
-  searchList: SearchedConversation[];
+  searchList: Conversation[];
   resetSearch: ZeroArgVoidReturns;
   searchConversations: ZeroArgVoidReturns;
   loadMoreConversations: boolean;

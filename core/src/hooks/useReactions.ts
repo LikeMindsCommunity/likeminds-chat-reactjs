@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useContext } from "react";
 import { EmojiData } from "../types/models/emojiData";
 import { OneArgVoidReturns } from "./useInput";

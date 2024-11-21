@@ -139,6 +139,7 @@ export function useCreatePoll(closeDialog?: ZeroArgVoidReturns): UseCreatePoll {
           }
         }
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const call = await lmChatclient?.postPollConversation({
         chatroomId: parseInt(chatroomId!),
         state: ConversationStates.MICRO_POLL,

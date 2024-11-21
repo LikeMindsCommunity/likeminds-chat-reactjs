@@ -23,12 +23,14 @@ import LMMessageReplyCollapse from "./LMMessageReplyCollapse";
 import LMMessageEditCollapse from "./LMMessageEditCollapse";
 import { InputCustomActions } from "../../types/prop-types/CustomComponents";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
+import { LMInputAttachments } from "../../enums/lm-input-attachment-options";
 interface LMInputProps {
   inputCustomActions?: InputCustomActions;
+  attachmentOptions?: LMInputAttachments[];
 }
 
 const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
-  const { inputCustomActions = {} } = props;
+  const { inputCustomActions = {}, attachmentOptions } = props;
 
   const {
     inputBoxRef,
@@ -75,7 +77,7 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
   const shouldShowInputBox = useMemo(() => {
     const canRespondInChatroom = currentUser?.memberRights?.find(
       (right) => right.state === 3,
-    )?.is_selected
+    )?.isSelected
       ? true
       : false;
     if (!canRespondInChatroom) {
@@ -84,9 +86,9 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
     } else {
       setAlertMessage(null);
     }
-    const member_can_message = chatroom?.chatroom.member_can_message;
+    const memberCanMessage = chatroom?.chatroom.memberCanMessage;
 
-    switch (member_can_message) {
+    switch (memberCanMessage) {
       case true:
         setAlertMessage(null);
         return true;
@@ -108,13 +110,12 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
       chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM;
 
     if (isDMChatroom) {
-      const chatRequestState =
-        chatroom?.chatroom.chat_request_state?.toString();
+      const chatRequestState = chatroom?.chatroom.chatRequestState?.toString();
       if (chatRequestState === ChatRequestStates.REJECTED_STATE) {
         isInputBoxDisabled = true;
         disabledInputMessage =
           // chatroom.chatroom.member.id.toString() === currentUser?.id.toString()
-          chatroom.chatroom.chat_requested_by.id.toString() ===
+          chatroom?.chatroom?.chatRequestedBy?.id.toString() ===
           currentUser?.id.toString()
             ? ConstantStrings.DM_REQUEST_REJECTED_MESSAGE_CHATROOM_USER
             : ConstantStrings.DM_REQUEST_REJECTED_MESSAGE_CHATROOM_WITH_USER;
@@ -123,7 +124,7 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
         isInputBoxDisabled = true;
         chatroom.chatroom.member.id.toString() === currentUser?.id.toString();
         disabledInputMessage =
-          chatroom.chatroom.chat_requested_by.id.toString() ===
+          chatroom.chatroom.chatRequestedBy?.id.toString() ===
           currentUser?.id.toString()
             ? // chatroom.chatroom.member.id.toString() === currentUser?.id.toString()
               ConstantStrings.DM_REQUEST_PENDING_MESSAGING_CHATROOM_USER
@@ -166,7 +167,8 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
   const renderAdditionalComponents = () => {
     if (
       chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
-      chatroom?.chatroom.chat_request_state !== ChatRequestStates.APPROVED_STATE
+      chatroom?.chatroom.chatRequestState?.toString() !==
+        ChatRequestStates.APPROVED_STATE
     ) {
       return null;
     } else {
@@ -197,18 +199,18 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
     if (currentChatroomType !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
       return null;
     }
-    const chatRequestState = currentChatroom?.chat_request_state;
+    const chatRequestState = currentChatroom?.chatRequestState;
     if (chatRequestState === null) {
       return null;
     }
 
     const isRequestSender =
-      chatroom?.chatroom.chat_requested_by?.id.toString() ===
+      chatroom?.chatroom.chatRequestedBy?.id.toString() ===
       currentUser.id.toString()
         ? true
         : false;
 
-    switch (chatRequestState.toString()) {
+    switch (chatRequestState?.toString()) {
       case ChatRequestStates.APPROVED_STATE: {
         return null;
       }
@@ -307,6 +309,7 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
         rejectDMRequest,
         sendDMRequest,
         onTextInputKeyUpHandler,
+        attachmentOptions,
       }}
     >
       <div className="lm-channel-footer-wrapper">
@@ -388,17 +391,9 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
         <div className="lm-channel-footer">
           {renderAdditionalComponents()}
           {renderInputBoxComponent()}
-          {/* <LMChatTextArea /> */}
         </div>
       </div>
     </InputContext.Provider>
-
-    // Can't Respond
-    // <div className="lm-channel-footer">
-    //   <div className="disable-input">
-    //     You can not respond to a rejected connection. Approve to send a message.
-    //   </div>
-    // </div>
   );
 };
 

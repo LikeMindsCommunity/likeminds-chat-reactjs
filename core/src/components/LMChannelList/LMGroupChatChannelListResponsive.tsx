@@ -6,7 +6,6 @@ import { ConstantStrings } from "../../enums/lm-common-strings";
 import { Utils } from "../../utils/helpers";
 import { useContext, useState } from "react";
 import UserProviderContext from "../../context/LMUserProviderContext";
-import { CHANNEL_PATH } from "../../shared/constants/lm.routes.constant";
 
 // Icons
 import joinIcon from "../../assets/img/icon_join.svg";
@@ -17,8 +16,8 @@ import participantsIcon from "../../assets/img/explore-feed_chatroom_participant
 import messageIcon from "../../assets/img/explore-feed_chatroom_messages.svg";
 import LMConversationSearch from "../search/LMConversationSearch";
 import LMChatroomSearch from "../search/LMChatroomSearch";
-import { ChatroomData } from "../../types/api-responses/getChatroomSync";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
+import { Chatroom } from "../../types/models/Chatroom";
 
 function LMGroupChatChannelList() {
   const {
@@ -47,12 +46,12 @@ function LMGroupChatChannelList() {
     setOpenSearchField(false);
   };
 
-  const renderLastConversationUsername = (chatroom: ChatroomData) => {
-    const lastConversationId = chatroom?.last_conversation_id;
+  const renderLastConversationUsername = (chatroom: Chatroom) => {
+    const lastConversationId = chatroom?.lastConversationId || "";
     const lastConversation = groupChatroomConversationsMeta[lastConversationId];
-    const lastConversationUserId = lastConversation?.user_id;
+    const lastConversationUserId = lastConversation?.userId || "";
     const lastConversationUser = groupChatroomMember[lastConversationUserId];
-    if (lastConversationUserId === currentUser?.id) {
+    if (lastConversationUserId.toString() === currentUser?.id.toString()) {
       return "You";
     } else {
       return lastConversationUser?.name.split(" ")[0];
@@ -118,15 +117,15 @@ function LMGroupChatChannelList() {
                 }}
               >
                 <div className="channel-icon">
-                  {chatroom?.chatroom_image_url ? (
+                  {chatroom?.chatroomImageUrl ? (
                     <>
                       <img
-                        src={chatroom?.chatroom_image_url || ""}
+                        src={chatroom?.chatroomImageUrl || ""}
                         alt="channel icon"
                       />
                     </>
                   ) : (
-                    <>{chatroom?.header[0]}</>
+                    <>{chatroom.header ? chatroom?.header[0] : ""}</>
                   )}
                 </div>
                 <div className="channel-desc">
@@ -135,8 +134,8 @@ function LMGroupChatChannelList() {
                     <div className="time">
                       {
                         groupChatroomConversationsMeta[
-                          chatroom?.last_conversation_id
-                        ]?.created_at
+                          chatroom?.lastConversationId || ""
+                        ]?.createdAt
                       }
                     </div>
                   </div>
@@ -145,27 +144,27 @@ function LMGroupChatChannelList() {
                       {renderLastConversationUsername(chatroom)}
                       :&nbsp;{" "}
                       {groupChatroomConversationsMeta[
-                        chatroom?.last_conversation_id
-                      ]?.attachment_count ? (
+                        chatroom?.lastConversationId || ""
+                      ]?.attachmentCount ? (
                         <>
                           <img src={document} alt="document" />
                         </>
                       ) : null}
                       {groupChatroomConversationsMeta[
-                        chatroom?.last_conversation_id
+                        chatroom?.lastConversationId || ""
                       ]
                         ? Utils.parseAnser(
                             groupChatroomConversationsMeta[
-                              chatroom?.last_conversation_id
+                              chatroom?.lastConversationId || ""
                             ]?.answer,
                           )
                         : null}
                     </div>
                   </div>
 
-                  {chatroom?.unseen_count > 0 ? (
+                  {(chatroom?.unseenCount || 0) > 0 ? (
                     <div className="channel-unseen-convo-count">
-                      {chatroom?.unseen_count}
+                      {chatroom?.unseenCount}
                     </div>
                   ) : null}
                 </div>
@@ -200,15 +199,15 @@ function LMGroupChatChannelList() {
                 }}
               >
                 <div className="channel-icon">
-                  {chatroom.chatroom_image_url ? (
+                  {chatroom.chatroomImageUrl ? (
                     <>
                       <img
-                        src={chatroom.chatroom_image_url || ""}
+                        src={chatroom.chatroomImageUrl || ""}
                         alt="channel icon"
                       />
                     </>
                   ) : (
-                    <>{chatroom.header[0]}</>
+                    <>{chatroom.header ? chatroom?.header[0] : ""}</>
                   )}
                 </div>
                 <div className="channel-desc">
@@ -218,12 +217,12 @@ function LMGroupChatChannelList() {
                       <div className="channel-counts">
                         <div>
                           <img src={participantsIcon} alt={participantsIcon} />
-                          {chatroom.participants_count}
+                          {chatroom.participantsCount}
                         </div>
                         <div className="ellipse"></div>
                         <div>
                           <img src={messageIcon} alt={messageIcon} />
-                          {chatroom.total_response_count}
+                          {chatroom.totalResponseCount}
                         </div>
                       </div>
                       <div className="exploreTextMsg">{chatroom.title}</div>
@@ -232,18 +231,18 @@ function LMGroupChatChannelList() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        chatroom.follow_status
+                        chatroom.followStatus
                           ? onLeaveChatroom(chatroom.id.toString())
                           : joinAChatroom(chatroom.id.toString());
                       }}
-                      className={chatroom.follow_status ? "joined" : ""}
+                      className={chatroom.followStatus ? "joined" : ""}
                     >
-                      {chatroom.follow_status ? (
+                      {chatroom.followStatus ? (
                         <img src={joinedIcon} alt={joinedIcon} />
                       ) : (
                         <img src={joinIcon} alt={joinIcon} />
                       )}
-                      {chatroom.follow_status
+                      {chatroom.followStatus
                         ? ConstantStrings.CHATROOM_ALREADY_JOINED_BUTTON_STRING
                         : ConstantStrings.CHATROOM_NOT_ALREADY_JOINED_BUTTON_STRING}
                     </button>

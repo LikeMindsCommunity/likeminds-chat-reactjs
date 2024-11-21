@@ -8,12 +8,13 @@ import { onMessage } from "firebase/messaging";
 import { generateToken, messaging } from "../notifications/firebase";
 import toast from "react-hot-toast";
 import { CustomActions } from "../customActions";
+import { Community } from "../types/models/Community";
 
 interface UserProviderInterface {
   lmChatUser: null | Member;
-  lmChatUserMemberState: unknown;
+  lmChatUserMemberState: number | null;
   logoutUser: () => void;
-  lmChatUserCurrentCommunity: unknown;
+  lmChatUserCurrentCommunity: Community | null;
 }
 interface Device {
   token: string;
@@ -28,10 +29,11 @@ export default function useUserProvider(
 ): UserProviderInterface {
   const lmChatclient = client;
   const [lmChatUser, setLmChatUser] = useState<null | Member>(null);
-  const [lmChatUserMemberState, setLmChatUserMemberState] =
-    useState<unknown>(null);
+  const [lmChatUserMemberState, setLmChatUserMemberState] = useState<
+    number | null
+  >(null);
   const [lmChatUserCurrentCommunity, setLmChatUserCurrentCommunity] =
-    useState<unknown>(null);
+    useState<Community | null>(null);
   const [deviceNotificationTrigger, setDeviceNotificationTrigger] =
     useState<boolean>(false);
   const currentBrowserId = useRef<string>("");
@@ -73,7 +75,7 @@ export default function useUserProvider(
             ...validateUserCall.data?.user,
           };
           user.state = memberStateCall.data.state;
-          user.memberRights = memberStateCall.data.member_rights;
+          user.memberRights = memberStateCall.data.memberRights;
           setLmChatUser(user || null);
           setLmChatUserCurrentCommunity(
             validateUserCall?.data?.community || null,
@@ -136,17 +138,6 @@ export default function useUserProvider(
         return error;
       }
     }
-    // document.addEventListener(
-    //   CustomActions.TRIGGER_SET_USER,
-    //   (event) => {
-    //     const { user, community } = (event as CustomEvent).detail;
-    //     setLmFeedUser(user || null);
-    //     setLmFeedUserCurrentCommunity(community || null);
-    //   },
-    // );
-
-    // calling initiateuser and memberstate apis and setting the user details
-    // TODO add a check for tokens
 
     async function setUser() {
       try {

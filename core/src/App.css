@@ -3,6 +3,7 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 #root {
   width: 100%;
 }
@@ -37,7 +38,7 @@ body {
 }
 
 
-.lm-chat-box{
+.lm-chat-box {
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -188,7 +189,7 @@ body {
 
 .exploreTextTitle {
   overflow: hidden;
-  text-overflow: ellipsis; 
+  text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 150px;
 }
@@ -249,7 +250,7 @@ body {
   border: 1px solid #00897b;
 }
 
-.lm-channel-list .lm-channel-list-body .channel-media .channel-desc button img{
+.lm-channel-list .lm-channel-list-body .channel-media .channel-desc button img {
   height: 24px;
   width: 24px;
 }
@@ -417,6 +418,7 @@ body {
   background: #f6f7f9;
   position: relative;
 }
+
 .lm-channel-header.topicHeader {
   box-shadow: 0px 2px 3px #ccc;
   margin: 0px 0 0 -20px;
@@ -468,9 +470,9 @@ body {
   max-height: 40px;
   overflow-y: auto;
   scrollbar-width: none;
-  
+
 }
- 
+
 .lm-channel-header .lm-channel-desc .lm-channel-participants::-webkit-scrollbar {
   width: 0px;
   /* Chrome & Edge */
@@ -503,7 +505,7 @@ body {
 /* Message Box */
 .lm-channel {
   background-color: #e6ebf5;
-  height: 100vh;
+  max-height: 100vh;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -2652,20 +2654,21 @@ input.disabled-state {
   background: #f0f0f0;
 }
 
-.lm-custom-menu{
+.lm-custom-menu {
   display: flex;
 }
-.lm-custom-menu ul{
+
+.lm-custom-menu ul {
   display: flex !important;
 }
 
-.header-back-icon{
+.header-back-icon {
   display: none;
   cursor: pointer;
   margin-right: 10px;
 }
 
-.lm-chatroom-topic{
+.lm-chatroom-topic {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2676,64 +2679,144 @@ input.disabled-state {
 
 /* Extra small devices (phones) */
 @media (max-width: 575.98px) {
-  .header-back-icon{
+  .header-back-icon {
     display: block;
   }
-  .mobile-hide {
-      display: none;
-    }
 
-  .lm-chatroom-topic { 
+  .mobile-hide {
+    display: none;
+  }
+
+  .lm-chatroom-topic {
     width: 300px;
   }
 
-  .lm-left-panel{
+  .lm-left-panel {
     position: absolute;
     left: 0;
     top: 0;
     z-index: 999;
     background-color: #fff;
   }
-  .lm-left-panel, .lm-right-panel, .lm-channel .conversation{
+
+  .lm-left-panel,
+  .lm-right-panel,
+  .lm-channel .conversation {
     width: 100%;
   }
-  .lm-channel{
+
+  .lm-channel {
     padding: 20px;
   }
-  .selected-gif-view-container{
+
+  .selected-gif-view-container {
     height: 100%;
   }
-  .selected-gif-view-container img{
+
+  .selected-gif-view-container img {
     height: auto;
     width: 60%;
   }
+
   /* .lm-channel .conversation.receiver */
-    .lm-channel .conversation{
-      max-width: 310px;
-    }
-  .lm-poll-wrapper{
+  .lm-channel .conversation {
+    max-width: 310px;
+  }
+
+  .lm-poll-wrapper {
     width: 100%;
     padding: 25px;
   }
 
-  .lm-poll-heading img{
+  .lm-poll-heading img {
     top: -10px;
     right: -10px;
   }
-  .lm-channel-header .lm-header-right .lm-channel-icon{ margin: 0 0 0 10px;}
-  .lm-channel-header.topicHeader{
+
+  .lm-channel-header .lm-header-right .lm-channel-icon {
+    margin: 0 0 0 10px;
+  }
+
+  .lm-channel-header.topicHeader {
     margin: -20px;
     position: relative;
     z-index: 9;
   }
-  .poll-create-button{bottom: -10px}
 
-    .lm-channel .lm-dialog-modal{
-      max-width: 100%;
-      right: 0;
-    }
+  .poll-create-button {
+    bottom: -10px
+  }
+
+  .lm-channel .lm-dialog-modal {
+    max-width: 100%;
+    right: 0;
+  }
 }
 
 /* Medium devices (tablets) */
 @media (min-width: 768px) and (max-width: 991.98px) {}
 
+
+
+/* Styles for AI-Chatbot */
+.lm-chat-ai-bot-container {
+  width: 475px;
+  height: 554px;
+  border-radius: 12px 0 0 0;
+  border-width: 1px 0 0 0;
+  position: absolute;
+  overflow: auto;
+  bottom: 100px;
+  border: 1px solid black;
+}
+
+.lm-chat-ai-bot-fab-button {
+  width: 174px;
+  height: 72px;
+  padding: 12px 16px;
+  background-color: #020D42;
+  display: flex;
+  align-items: center;
+  border-radius: 36px;
+}
+
+.lm-chat-ai-bot-fab-title {
+  font: Roboto;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 24px;
+  color: #FFFFFF;
+}
+
+
+
+.lm-chat-ai-bot-fab-container {
+  position: relative;
+  margin-top: 600px;
+  margin-left: 50%;
+}
+
+.lm-chat-ai-bot-channel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.lm-chat-ai-bot-channel-header {
+  width: 475px;
+  height: 60px;
+  padding: 12px 16px;
+  gap: 0px;
+  justify-content: space-between;
+  opacity: 0;
+}
+
+.lm-chat-ai-bot-input-attachment-selecter-wrapper {
+  height: 48px;
+  width: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  border: 1px solid #DAE1EE;
+}

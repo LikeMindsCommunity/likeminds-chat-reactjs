@@ -12,7 +12,7 @@ import GlobalClientProviderContext from "../context/LMGlobalClientProviderContex
 import { onValue, ref } from "firebase/database";
 import { CONVERSATIONS_PAGINATE_BY } from "../constants/LMConstants";
 import LoaderContextProvider from "../context/LMLoaderContextProvider";
-import Conversation from "../types/models/conversations";
+import { Conversation } from "../types/models/conversations";
 import UserProviderContext from "../context/LMUserProviderContext";
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { useParams } from "react-router-dom";
@@ -75,80 +75,76 @@ export default function useConversations(): UseConversations {
     appendAtEnd?: boolean,
   ) => {
     const {
-      conv_attachments_meta,
-      conv_polls_meta,
-      conv_reactions_meta,
-      conversations_data,
-      conversation_meta,
-      user_meta,
+      convAttachmentsMeta,
+      convPollsMeta,
+      convReactionsMeta,
+      conversationsData,
+      conversationMeta,
+      userMeta,
       widgets,
     } = chatroomConversationsCall.data;
     currentConversations = [...(currentConversations || [])];
-    const newConversations = conversations_data
+    const newConversations = conversationsData
       .map((conversation) => {
         const newConversation = {
           ...conversation,
         } as unknown as Conversation;
 
-        if (conversation.attachment_count) {
-          newConversation.attachments =
-            conv_attachments_meta[conversation.id.toString()];
+        if (conversation.attachmentCount) {
+          newConversation.attachments = convAttachmentsMeta[conversation.id!];
         } else {
           newConversation.attachments = [];
         }
 
-        if (conversation.has_reactions) {
-          newConversation.reactions = conv_reactions_meta[
-            conversation.id.toString()
+        if (conversation.hasReactions) {
+          newConversation.reactions = convReactionsMeta[
+            conversation.id!.toString()
           ]?.map((reaction) => {
             return {
-              member: user_meta[reaction.user_id.toString()] as any,
-              reaction: reaction.reaction,
+              member: userMeta[reaction.userId!.toString()] as any,
+              ...reaction,
             };
           });
         } else {
           newConversation.reactions = [];
         }
-        if (conversation.user_id) {
-          newConversation.member = user_meta[
-            conversation.user_id.toString()
+        if (conversation.userId) {
+          console.log(userMeta);
+          newConversation.member = userMeta[
+            conversation.userId!.toString()
           ] as any;
         }
-        if (conversation?.topic_id) {
-          newConversation.topic = conversations_data[
-            conversation?.topic_id
-          ] as any;
-        }
+        // if (conversation?.topic_id) {
+        //   newConversation.topic = conversations_data[
+        //     conversation?.topic_id
+        //   ] as any;
+        // }
         if (conversation.state === ConversationStates.MICRO_POLL) {
-          newConversation.polls = conv_polls_meta[
-            conversation.id.toString()
+          newConversation.polls = convPollsMeta[
+            conversation?.id!.toString()
           ]?.map((poll) => {
             return {
-              id: poll.id,
-              is_selected: poll.is_selected,
-              member: user_meta[poll.user_id.toString()] as any,
-              no_votes: poll.no_votes,
-              percentage: poll.percentage || 0,
-              text: poll.text,
+              ...poll,
+              member: userMeta[poll.userId!.toString()] as any,
             };
           });
         }
-        if (conversation.reply_id) {
-          const newRepliedConversation = conversation_meta[
-            newConversation.reply_id
+        if (conversation.replyId) {
+          const newRepliedConversation = conversationMeta[
+            conversation.replyId
           ] as any;
           if (newRepliedConversation.attachment_count) {
             newRepliedConversation.attachments =
-              conv_attachments_meta[newConversation.reply_id.toString()];
+              convAttachmentsMeta[newConversation.replyId!.toString()];
           }
-          const repliedConversationUser = user_meta[
+          const repliedConversationUser = userMeta[
             newRepliedConversation.user_id.toString()
           ] as any;
           newRepliedConversation.member = repliedConversationUser;
-          newConversation.reply_conversation_object = newRepliedConversation;
+          newConversation.replyConversationObject = newRepliedConversation;
         }
-        if (conversation.widget_id.length) {
-          newConversation.widget = widgets[conversation.widget_id];
+        if (conversation?.widgetId?.length) {
+          newConversation.widget = widgets[conversation.widgetId];
         }
         return newConversation;
       })
@@ -193,8 +189,8 @@ export default function useConversations(): UseConversations {
           page: currentChatroomTopPageCount.current,
         });
       if (chatroomConversationsCall.success) {
-        const { conversations_data } = chatroomConversationsCall.data;
-        if (!conversations_data.length) {
+        const { conversationsData } = chatroomConversationsCall.data;
+        if (!conversationsData.length) {
           setLoadMore(false);
         } else {
           setConversations((currentConversations) => {
@@ -307,13 +303,13 @@ export default function useConversations(): UseConversations {
         if (!(newChatroom && newChatroom.chatroom)) {
           return;
         }
-        newChatroom.chatroom.chat_request_state = 1;
+        newChatroom.chatroom.chatRequestState = 1;
         if (
-          newChatroom?.chatroom_actions?.some(
+          newChatroom?.chatroomActions?.some(
             (option) => option.id === ChatroomAction.ACTION_UNBLOCK_CHATROOM,
           )
         ) {
-          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+          newChatroom!.chatroomActions = newChatroom.chatroomActions?.map(
             (options) => {
               if (options.id === ChatroomAction.ACTION_UNBLOCK_CHATROOM) {
                 return { id: 27, title: "Block" };
@@ -323,7 +319,7 @@ export default function useConversations(): UseConversations {
             },
           );
         } else {
-          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+          newChatroom!.chatroomActions = newChatroom.chatroomActions?.map(
             (options) => {
               if (options.id === ChatroomAction.ACTION_BLOCK_CHATROOM) {
                 return { id: 28, title: "Unblock" };
@@ -450,11 +446,11 @@ export default function useConversations(): UseConversations {
           getChatroomConversationsWithID(collabcardId)
             .then((targetConversation: GetSyncConversationsResponse | null) => {
               if (!targetConversation) return;
-              if (targetConversation.data.conversations_data.length === 0)
+              if (targetConversation.data.conversationsData.length === 0)
                 return;
               setConversations((currentConversations) => {
                 const targetConversationObject =
-                  targetConversation?.data?.conversations_data[0];
+                  targetConversation?.data?.conversationsData[0];
                 if (!currentConversations) {
                   return currentConversations;
                 }
@@ -468,8 +464,8 @@ export default function useConversations(): UseConversations {
                 ) {
                   const conversationObject = currentConversations[index];
                   if (
-                    conversationObject.id.toString() ===
-                    targetConversationObject.id.toString()
+                    conversationObject?.id!.toString() ===
+                    targetConversationObject?.id!.toString()
                   ) {
                     alreadyHasIt = true;
                     break;

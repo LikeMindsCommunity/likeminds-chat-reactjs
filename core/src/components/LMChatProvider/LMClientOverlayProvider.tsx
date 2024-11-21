@@ -8,6 +8,7 @@ import useUserProvider from "../../hooks/useUserProvider";
 import { Snackbar } from "@mui/material";
 import { LMSDKCallbacksImplementations } from "../../LMSDKCoreCallbacks";
 import { LMRoutes } from "../../LMRoutes";
+import { MemberType } from "../../enums/lm-member-type";
 
 const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
   client,
@@ -55,7 +56,7 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
       <UserProviderContext.Provider
         value={{
           currentUser: lmChatUser,
-          memberState: lmChatUserMemberState,
+          memberState: lmChatUserMemberState || MemberType.MEMBER,
           logoutUser: logoutUser,
           currentCommunity: lmChatUserCurrentCommunity as unknown as any,
         }}

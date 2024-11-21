@@ -2,7 +2,7 @@
 import React, { PropsWithChildren, memo, useContext } from "react";
 import { MessageListProps } from "../../types/prop-types/MessageListProps";
 import MessageListContext from "../../context/LMMessageListContext";
-import Conversation from "../../types/models/conversations";
+import { Conversation } from "../../types/models/conversations";
 import ScrollContainer from "../DualSidePagination/ScrollContainer";
 import useConversations from "../../hooks/useConversations";
 import LMMessageMiddleware from "./LMMessageMiddleware";
@@ -14,7 +14,7 @@ import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import { MemberType } from "../../enums/lm-member-type";
 import { LMMessageListCustomActionsContext } from "../../context/LMMessageListCustomActionsContext";
 import { getAvatar } from "../../shared/components/LMUserMedia";
-import { useConversationSearch } from "../../main_index";
+import { useConversationSearch } from "../../hooks/useConversationSearch";
 import { Utils } from "../../utils/helpers";
 
 const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
@@ -36,7 +36,7 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       if (
         chatroom?.chatroom.member.id.toString() === currentUser?.id.toString()
       ) {
-        const chatroomUser = chatroom?.chatroom.chatroom_with_user;
+        const chatroomUser = chatroom?.chatroom.chatroomWithUser;
         return chatroomUser;
       } else {
         const chatroomUser = chatroom?.chatroom.member;
@@ -54,7 +54,7 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       ) {
         return false;
       }
-      const chatRequestState = chatroom?.chatroom.chat_request_state;
+      const chatRequestState = chatroom?.chatroom.chatRequestState;
       if (chatRequestState === null) {
         return true;
       } else {
@@ -87,7 +87,7 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
     const imageUrl = chatroomTopic?.member.imageUrl;
     const name = chatroomTopic?.member.name;
     const avatarContent = getAvatar({ imageUrl, name });
-    if (chatroomTopic?.deleted_by) {
+    if (chatroomTopic?.deletedBy) {
       setChatroomTopic(null);
     }
     if (showLoader.current) {

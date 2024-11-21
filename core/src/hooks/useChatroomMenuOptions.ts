@@ -32,15 +32,15 @@ function useChatroomMenuOptions(
     try {
       const call = await lmChatclient?.muteChatroom({
         chatroomId: parseInt(chatroom!.chatroom!.id!.toString()),
-        value: chatroom?.chatroom_actions.some((option) => option.id === 6)
+        value: chatroom?.chatroomActions.some((option) => option.id === 6)
           ? true
           : false,
       });
       if (call.success && chatroom) {
         const newChatroom = { ...chatroom };
 
-        if (newChatroom?.chatroom_actions?.some((option) => option.id === 6)) {
-          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+        if (newChatroom?.chatroomActions?.some((option) => option.id === 6)) {
+          newChatroom!.chatroomActions = newChatroom.chatroomActions?.map(
             (options) => {
               if (options.id === 6) {
                 return { id: 8, title: "Unmute notifications" };
@@ -50,7 +50,7 @@ function useChatroomMenuOptions(
             },
           );
         } else {
-          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+          newChatroom!.chatroomActions = newChatroom.chatroomActions?.map(
             (options) => {
               if (options.id === 8) {
                 return { id: 6, title: "Mute notifications" };
@@ -98,7 +98,7 @@ function useChatroomMenuOptions(
     try {
       const unblockCall = await lmChatclient?.blockMember({
         status: 1,
-        chatroomId: chatroom?.chatroom.id || 0,
+        chatroomId: chatroom!.chatroom.id,
       });
       document.dispatchEvent(
         new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
@@ -107,13 +107,13 @@ function useChatroomMenuOptions(
       );
       if (unblockCall.success && chatroom) {
         const newChatroom = { ...chatroom };
-        newChatroom.chatroom.chat_request_state = 1;
+        newChatroom.chatroom.chatRequestState = 1;
         if (
-          newChatroom?.chatroom_actions?.some(
+          newChatroom?.chatroomActions?.some(
             (option) => option.id === ChatroomAction.ACTION_UNBLOCK_CHATROOM,
           )
         ) {
-          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+          newChatroom!.chatroomActions = newChatroom.chatroomActions?.map(
             (options) => {
               if (options.id === ChatroomAction.ACTION_UNBLOCK_CHATROOM) {
                 return { id: 27, title: "Block" };
@@ -123,7 +123,7 @@ function useChatroomMenuOptions(
             },
           );
         } else {
-          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+          newChatroom!.chatroomActions = newChatroom.chatroomActions?.map(
             (options) => {
               if (options.id === ChatroomAction.ACTION_BLOCK_CHATROOM) {
                 return { id: 28, title: "Unblock" };
@@ -143,7 +143,7 @@ function useChatroomMenuOptions(
     try {
       const blockCall = await lmChatclient?.blockMember({
         status: 0,
-        chatroomId: chatroom?.chatroom.id || 0,
+        chatroomId: chatroom!.chatroom.id,
       });
       document.dispatchEvent(
         new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
@@ -152,13 +152,13 @@ function useChatroomMenuOptions(
       );
       if (blockCall.success && chatroom) {
         const newChatroom = { ...chatroom };
-        newChatroom.chatroom.chat_request_state = 2;
+        newChatroom.chatroom.chatRequestState = 2;
         if (
-          newChatroom?.chatroom_actions?.some(
+          newChatroom?.chatroomActions?.some(
             (option) => option.id === ChatroomAction.ACTION_BLOCK_CHATROOM,
           )
         ) {
-          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+          newChatroom!.chatroomActions = newChatroom.chatroomActions?.map(
             (options) => {
               if (options.id === ChatroomAction.ACTION_BLOCK_CHATROOM) {
                 return { id: 28, title: "Unblock" };
@@ -168,7 +168,7 @@ function useChatroomMenuOptions(
             },
           );
         } else {
-          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+          newChatroom!.chatroomActions = newChatroom.chatroomActions?.map(
             (options) => {
               if (options.id === ChatroomAction.ACTION_UNBLOCK_CHATROOM) {
                 return { id: 27, title: "Block" };

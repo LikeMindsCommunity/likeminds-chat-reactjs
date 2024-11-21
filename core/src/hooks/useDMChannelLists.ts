@@ -1,14 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useContext, useRef, useEffect, useCallback } from "react";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import UserProviderContext from "../context/LMUserProviderContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { onValue, ref } from "firebase/database";
-import {
-  ChatroomData,
-  ConversationMeta,
-  GetChatroomsSyncResponse,
-  UserMeta,
-} from "../types/api-responses/getChatroomSync";
+import { GetChatroomsSyncResponse } from "../types/api-responses/getChatroomSync";
+import { Conversation } from "../types/models/conversations";
+import { Chatroom } from "../types/models/Chatroom";
+import Member from "../types/models/member";
 
 /**
  * Custom hook for managing DM channel lists.
@@ -19,10 +18,10 @@ export default function useDmChannelLists(): UseDmChannelLists {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { currentCommunity } = useContext(UserProviderContext);
   const [conversationsData, setConversationsData] = useState<
-    Record<string, ConversationMeta>
+    Record<string, Conversation>
   >({});
-  const [usersData, setUsersData] = useState<Record<string, UserMeta>>({});
-  const [dmChatrooms, setDmChatrooms] = useState<ChatroomData[]>([]);
+  const [usersData, setUsersData] = useState<Record<string, Member>>({});
+  const [dmChatrooms, setDmChatrooms] = useState<Chatroom[]>([]);
   const dmChatroomsPageCount = useRef<number>(1);
   const loadMoreDmChatrooms = useRef<boolean>(true);
 
@@ -44,13 +43,13 @@ export default function useDmChannelLists(): UseDmChannelLists {
           minTimestamp: 0,
         });
       if (newChatroomsCall.success) {
-        const newChatrooms = newChatroomsCall?.data.chatrooms_data;
+        const newChatrooms = newChatroomsCall?.data.chatroomsData;
         if (newChatrooms.length === 0) {
           loadMoreDmChatrooms.current = false;
           return;
         }
-        const newConversationsData = newChatroomsCall?.data.conversation_meta;
-        const newUsersData = newChatroomsCall?.data.user_meta;
+        const newConversationsData = newChatroomsCall?.data.conversationMeta;
+        const newUsersData = newChatroomsCall?.data.userMeta;
         setConversationsData((prevConversationsData) => {
           return { ...prevConversationsData, ...newConversationsData };
         });
@@ -81,7 +80,7 @@ export default function useDmChannelLists(): UseDmChannelLists {
         setDmChatrooms((currentDmChatrooms) => {
           return currentDmChatrooms.map((chatroom) => {
             if (chatroom.id.toString() === id.toString()) {
-              chatroom.unseen_count = 0;
+              chatroom.unseenCount = 0;
             }
             return chatroom;
           });
@@ -170,10 +169,10 @@ export default function useDmChannelLists(): UseDmChannelLists {
   };
 }
 export interface UseDmChannelLists {
-  dmChatrooms: ChatroomData[];
+  dmChatrooms: Chatroom[];
   loadMoreDmChatrooms: boolean;
-  conversationsData: Record<string, ConversationMeta>;
-  usersData: Record<string, UserMeta>;
+  conversationsData: Record<string, Conversation>;
+  usersData: Record<string, Member>;
   getDMChatroomsList: ZeroArgVoidReturns;
   refreshDMChatrooms: OneArgVoidReturns<string | number>;
   markReadADMChatroom: OneArgVoidReturns<string | number>;

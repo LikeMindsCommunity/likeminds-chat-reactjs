@@ -13,7 +13,6 @@ import LMAttachmentsSelector from "./components/LMInput/LMAttachmentsSelector";
 import LMChatTextArea from "./components/LMInput/LMChatTextArea";
 import { LMReactGiffySearchComponent } from "./components/LMInput/LMReactGiffySearchComponent";
 import Loader from "./components/LMLoader/Loader";
-import LMMessageBubble from "./components/LMMessage/LMMessageBubble";
 import LMNormalMessage from "./components/LMMessage/LMNormalMessage";
 import Message from "./components/LMMessage/LMMessage";
 import MessageOptions from "./components/LMMessage/LMMessageOptions";
@@ -38,7 +37,7 @@ import { LMDMChannelListContext } from "./context/LMDMChannelListContext";
 import LMMessageContext from "./context/LMMessageContext";
 import MessageListContext from "./context/LMMessageListContext";
 import ErrorSnackbar from "./shared/components/LMErrorSnackbar";
-import GiphySearchBoxWrapper from "./shared/components/LMGiphySearchBoxWrapper";
+
 import LmLoader from "./shared/components/LmLoader";
 import MediaRenderer from "./shared/components/LMMediaRenderer";
 import { useExploreFeed } from "./hooks/useExploreFeed";
@@ -86,7 +85,6 @@ export {
   LMGiSelector,
   LMChatTextArea,
   Loader,
-  LMMessageBubble,
   LMNormalMessage,
   Message,
   MessageOptions,
@@ -120,7 +118,6 @@ export {
   LMUserProviderContext,
   MessageListContext,
   ErrorSnackbar,
-  GiphySearchBoxWrapper,
   LmLoader,
   MediaRenderer,
   useChatroom,

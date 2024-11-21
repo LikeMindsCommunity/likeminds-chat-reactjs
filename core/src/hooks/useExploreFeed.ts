@@ -3,15 +3,13 @@ import GlobalClientProviderContext from "../context/LMGlobalClientProviderContex
 
 import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
 import { ZeroArgVoidReturns } from "./useInput";
-import {
-  Participant,
-  ViewParticipantsResponse,
-} from "../types/api-responses/viewParticipants";
+import { ViewParticipantsResponse } from "../types/api-responses/viewParticipants";
+import Member from "../types/models/member";
 
 export function useExploreFeed(): UseParticipantsReturns {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { chatroom } = useContext(LMChatChatroomContext);
-  const [participantsList, setParticipantList] = useState<Participant[]>([]);
+  const [participantsList, setParticipantList] = useState<Member[]>([]);
   const participantListPageCount = useRef<number>(1);
   const [loadMoreParticipants, setLoadMoreParticipants] =
     useState<boolean>(true);
@@ -20,7 +18,7 @@ export function useExploreFeed(): UseParticipantsReturns {
       const getMembersCall: ViewParticipantsResponse =
         await lmChatclient?.viewParticipants({
           chatroomId: chatroom?.chatroom.id || 0,
-          isSecret: chatroom?.chatroom.is_secret || false,
+          isSecret: chatroom?.chatroom.isSecret || false,
           page: participantListPageCount.current,
         });
       if (getMembersCall.success) {
@@ -49,7 +47,7 @@ export function useExploreFeed(): UseParticipantsReturns {
 }
 
 export interface UseParticipantsReturns {
-  participantsList: Participant[];
+  participantsList: Member[];
   loadMoreParticipants: boolean;
   getMembers: ZeroArgVoidReturns;
 }
