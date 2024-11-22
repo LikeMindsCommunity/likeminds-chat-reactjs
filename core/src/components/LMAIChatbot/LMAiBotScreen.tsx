@@ -1,7 +1,6 @@
 import React from "react";
 
 import LMMessageList from "../LMMessageList/LMMessageList";
-
 import LMChatAiChatbotHeader from "./LMChatAiChatbotHeader";
 import LMAiChatbotInput from "./LMAiChatbotInput";
 
