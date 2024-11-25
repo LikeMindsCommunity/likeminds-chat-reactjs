@@ -14,14 +14,19 @@ import searchIcon from "../../assets/img/search.svg";
 import joinedIcon from "../../assets/img/icon_joined.svg";
 import participantsIcon from "../../assets/img/explore-feed_chatroom_participants.svg";
 import messageIcon from "../../assets/img/explore-feed_chatroom_messages.svg";
-import LMConversationSearch from "../search/LMConversationSearch";
 import LMChatroomSearch from "../search/LMChatroomSearch";
 
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { Chatroom } from "../../types/models/Chatroom";
 import { Conversation } from "../../types/models/conversations";
 
-function LMGroupChatChannelList() {
+export interface LMGroupChatChannelListProps {
+  currentChatroomId?: string;
+}
+
+function LMGroupChatChannelList({
+  currentChatroomId,
+}: LMGroupChatChannelListProps) {
   const {
     groupChatroomsList,
     loadMoreGroupChatrooms,
@@ -32,15 +37,17 @@ function LMGroupChatChannelList() {
     joinAChatroom,
     groupChatroomConversationsMeta,
     groupChatroomMember,
-    markReadAChatroom,
     onLeaveChatroom,
-  } = useChatroomList();
+    currentSelectedChatroomId,
+    selectNewChatroom,
+  } = useChatroomList(currentChatroomId || "");
   const { currentUser } = useContext(UserProviderContext);
   const { routes } = useContext(LMGlobalClientProviderContext);
   const navigate = useNavigate();
-  const { id: chatroomId } = useParams();
+
   // Search in chatroom
   const [openSearchField, setOpenSearchField] = useState<boolean>(false);
+
   const onOpenSearch = () => {
     setOpenSearchField(true);
   };
@@ -114,10 +121,9 @@ function LMGroupChatChannelList() {
             return (
               <div
                 key={chatroom?.id?.toString()}
-                className={`channel-media ${chatroomId?.toString() === chatroom?.id?.toString() ? "selected" : null}`}
+                className={`channel-media ${currentSelectedChatroomId?.toString() === chatroom?.id?.toString() ? "selected" : null}`}
                 onClick={() => {
-                  markReadAChatroom(chatroom?.id);
-                  navigate(`/${routes?.getChannelPath()}/${chatroom?.id}`);
+                  selectNewChatroom(chatroom?.id?.toString());
                 }}
               >
                 <div className="channel-icon">
@@ -199,7 +205,7 @@ function LMGroupChatChannelList() {
                 className="channel-media"
                 key={chatroom.id.toString()}
                 onClick={() => {
-                  navigate(`/${routes?.getChannelPath()}/${chatroom.id}`);
+                  selectNewChatroom(chatroom.id.toString());
                 }}
               >
                 <div className="channel-icon">

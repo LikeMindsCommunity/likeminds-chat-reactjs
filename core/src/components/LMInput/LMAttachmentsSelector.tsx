@@ -10,7 +10,7 @@ import uploadDoc from "../../assets/img/upload-doc.svg";
 import PollIcon from "../../assets/img/Location.png";
 import { useDialog } from "../../hooks/useDialog";
 import LMPollCreationDialog from "./LMPollCreationDialog";
-import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { Utils } from "../../utils/helpers";
@@ -28,7 +28,7 @@ const LMAttachmentsSelector = () => {
     attachmentOptions,
   } = useContext(InputContext);
   const { openDialog, closeDialog, dialogOpen } = useDialog();
-  const { chatroom } = useContext(LMChatChatroomContext);
+  const { chatroomDetails } = useContext(LMChatroomContext);
   const { customComponents } = useContext(LMGlobalClientProviderContext);
   const { currentUser } = useContext(LMUserProviderContext);
   // Custom component
@@ -45,10 +45,10 @@ const LMAttachmentsSelector = () => {
             type="file"
             // Give only the option of image to AI Chatbot
             accept={
-              chatroom?.chatroom.type ===
+              chatroomDetails?.chatroom.type ===
                 ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
               Utils.isOtherUserAIChatbot(
-                chatroom?.chatroom as unknown as Chatroom,
+                chatroomDetails?.chatroom as unknown as Chatroom,
                 currentUser,
               )
                 ? ".png, .jpeg, .jpg"
@@ -60,10 +60,10 @@ const LMAttachmentsSelector = () => {
             }}
             // Disable the mulitple select state if the chatroom is AI chatbot
             multiple={
-              chatroom?.chatroom.type ===
+              chatroomDetails?.chatroom.type ===
                 ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
               Utils.isOtherUserAIChatbot(
-                chatroom as unknown as Chatroom,
+                chatroomDetails as unknown as Chatroom,
                 currentUser,
               )
                 ? false
@@ -98,7 +98,8 @@ const LMAttachmentsSelector = () => {
         </label>
       </MenuItem>
       {/* Option for poll */}
-      {chatroom?.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM && (
+      {chatroomDetails?.chatroom.type !==
+        ChatroomTypes.DIRECT_MESSAGE_CHATROOM && (
         <MenuItem className="lm-chat-input-attachment-label">
           <label onClick={openDialog}>
             <div>
@@ -126,10 +127,10 @@ const LMAttachmentsSelector = () => {
                   id="media"
                   type="file"
                   accept={
-                    chatroom?.chatroom.type ===
+                    chatroomDetails?.chatroom.type ===
                       ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
                     Utils.isOtherUserAIChatbot(
-                      chatroom?.chatroom as unknown as Chatroom,
+                      chatroomDetails?.chatroom as unknown as Chatroom,
                       currentUser,
                     )
                       ? ".png, .jpeg, .jpg"
@@ -140,10 +141,10 @@ const LMAttachmentsSelector = () => {
                     closeMenu();
                   }}
                   multiple={
-                    chatroom?.chatroom.type ===
+                    chatroomDetails?.chatroom.type ===
                       ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
                     Utils.isOtherUserAIChatbot(
-                      chatroom as unknown as Chatroom,
+                      chatroomDetails as unknown as Chatroom,
                       currentUser,
                     )
                       ? false
@@ -184,7 +185,8 @@ const LMAttachmentsSelector = () => {
         }
         case LMInputAttachments.POLL: {
           if (
-            chatroom?.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM
+            chatroomDetails?.chatroom.type !==
+            ChatroomTypes.DIRECT_MESSAGE_CHATROOM
           ) {
             return (
               <MenuItem className="lm-chat-input-attachment-label">

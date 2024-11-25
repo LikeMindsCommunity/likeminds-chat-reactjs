@@ -18,6 +18,7 @@ import LMConversationSearch from "../search/LMConversationSearch";
 import LMChatroomSearch from "../search/LMChatroomSearch";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { Chatroom } from "../../types/models/Chatroom";
+import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 
 function LMGroupChatChannelList() {
   const {
@@ -32,11 +33,16 @@ function LMGroupChatChannelList() {
     groupChatroomMember,
     markReadAChatroom,
     onLeaveChatroom,
-  } = useChatroomList();
+  } = useChatroomList("");
   const { currentUser } = useContext(UserProviderContext);
   const { routes } = useContext(LMGlobalClientProviderContext);
   const navigate = useNavigate();
-  const { id: chatroomId } = useParams();
+
+  const {
+    chatroomDetails: {
+      chatroom: { id: chatroomId },
+    },
+  } = useContext(LMChatroomContext);
   // Search in chatroom
   const [openSearchField, setOpenSearchField] = useState<boolean>(false);
   const onOpenSearch = () => {

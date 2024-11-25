@@ -2,7 +2,7 @@ import { useCallback, useContext, useMemo } from "react";
 
 // icons
 
-import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import { getAvatar } from "../../shared/components/LMUserMedia";
 // Icons
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
@@ -10,25 +10,30 @@ import UserProviderContext from "../../context/LMUserProviderContext";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 
 const LMChatAiChatbotHeader = () => {
-  const { chatroom } = useContext(LMChatChatroomContext);
+  const { chatroomDetails } = useContext(LMChatroomContext);
   const { currentUser } = useContext(UserProviderContext);
   const { customComponents } = useContext(LMGlobalClientProviderContext);
   const getChatroomReciever = useCallback(() => {
-    if (!chatroom) {
+    if (!chatroomDetails) {
       return null;
     }
-    if (chatroom.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+    if (
+      chatroomDetails.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM
+    ) {
       return null;
     }
     const recieverUser =
-      chatroom.chatroom.member.id.toString() === currentUser.id.toString()
-        ? chatroom.chatroom.chatroomWithUser
-        : chatroom.chatroom.member;
+      chatroomDetails.chatroom.member.id.toString() ===
+      currentUser.id.toString()
+        ? chatroomDetails.chatroom.chatroomWithUser
+        : chatroomDetails.chatroom.member;
     return recieverUser;
-  }, [chatroom, currentUser]);
+  }, [chatroomDetails, currentUser]);
 
   const chatroomAvatar = useMemo(() => {
-    if (chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+    if (
+      chatroomDetails?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM
+    ) {
       const recieverUser = getChatroomReciever();
       if (recieverUser) {
         const imageUrl = recieverUser?.imageUrl;
@@ -39,20 +44,20 @@ const LMChatAiChatbotHeader = () => {
         return null;
       }
     } else {
-      const imageUrl = chatroom?.chatroom.chatroomImageUrl;
-      const name = chatroom?.chatroom.header;
+      const imageUrl = chatroomDetails?.chatroom.chatroomImageUrl;
+      const name = chatroomDetails?.chatroom.header;
       const avatarContent = getAvatar({ imageUrl, name });
       return avatarContent;
     }
   }, [
-    chatroom?.chatroom.chatroomImageUrl,
-    chatroom?.chatroom.header,
-    chatroom?.chatroom.type,
+    chatroomDetails?.chatroom.chatroomImageUrl,
+    chatroomDetails?.chatroom.header,
+    chatroomDetails?.chatroom.type,
     getChatroomReciever,
   ]);
   const chatroomTitle = useMemo(() => {
-    if (!chatroom) return "";
-    const chatroomType = chatroom?.chatroom.type;
+    if (!chatroomDetails) return "";
+    const chatroomType = chatroomDetails?.chatroom.type;
 
     if (chatroomType === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
       const recieverUser = getChatroomReciever();
@@ -62,9 +67,9 @@ const LMChatAiChatbotHeader = () => {
         return "";
       }
     } else {
-      return chatroom?.chatroom.header;
+      return chatroomDetails?.chatroom.header;
     }
-  }, [chatroom, getChatroomReciever]);
+  }, [chatroomDetails, getChatroomReciever]);
 
   const renderHeaderComponents = () => {
     if (customComponents?.chatroomHeader)

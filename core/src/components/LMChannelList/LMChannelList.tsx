@@ -1,24 +1,24 @@
-import React, { useContext } from "react";
-
-import LMDMChatChannels from "./LMDMChatChannels";
+import LMDMChannelList from "./LMDMChatChannels";
 import LMGroupChatChannelList from "./LMGroupChatChannelList";
-import { PARTICIPANTS_PATH } from "../../shared/constants/lm.routes.constant";
-import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
+import { LMChatCurrentMode } from "../../enums/lm-chat-modes";
 
-const LMChannelList = () => {
-  const { routes } = useContext(LMGlobalClientProviderContext);
-  const { pathname } = window.location;
+const LMChannelList = ({
+  currentMode,
+  currentChatroomId,
+}: LMChannelListProps) => {
   const switcher = () => {
-    if (
-      pathname.includes(routes?.getChannelPath() || "") ||
-      pathname.includes(PARTICIPANTS_PATH)
-    ) {
-      return <LMGroupChatChannelList />;
-    } else if (pathname.includes(routes?.getDmChannelPath() || "")) {
-      return <LMDMChatChannels />;
+    if (currentMode === LMChatCurrentMode.GROUP_CHAT) {
+      return <LMGroupChatChannelList currentChatroomId={currentChatroomId} />;
+    } else if (currentMode === LMChatCurrentMode.DIRECT_MESSAGE) {
+      return <LMDMChannelList currentChatroomId={currentChatroomId} />;
     }
   };
   return switcher();
 };
+
+export interface LMChannelListProps {
+  currentChatroomId?: string;
+  currentMode: LMChatCurrentMode;
+}
 
 export default LMChannelList;

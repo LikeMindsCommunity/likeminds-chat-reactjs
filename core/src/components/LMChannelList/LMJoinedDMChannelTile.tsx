@@ -1,22 +1,20 @@
 import React, { useContext, useMemo } from "react";
-
-import { useNavigate, useParams } from "react-router-dom";
 import { LMDMChannelListContext } from "../../context/LMDMChannelListContext";
 import UserProviderContext from "../../context/LMUserProviderContext";
 import document from "../../assets/img/document.svg";
 import { Utils } from "../../utils/helpers";
-import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { Chatroom } from "../../types/models/Chatroom";
 interface LMJoinedDMChannelTileProps {
   chatroom: Chatroom;
 }
 const LMJoinedDMChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
-  const { id: chatroomId } = useParams();
-  const navigate = useNavigate();
-  const { markReadADMChatroom, usersData, conversationsData } = useContext(
-    LMDMChannelListContext,
-  );
-  const { routes } = useContext(LMGlobalClientProviderContext);
+  const {
+    usersData,
+    conversationsData,
+    selectNewChatroom,
+    currentSelectedChatroomId,
+  } = useContext(LMDMChannelListContext);
+
   const { currentUser } = useContext(UserProviderContext);
   const {
     id,
@@ -52,10 +50,9 @@ const LMJoinedDMChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
   return (
     <div
       key={id.toString()}
-      className={`channel-media ${chatroomId?.toString() === id.toString() ? "selected" : null}`}
+      className={`channel-media ${currentSelectedChatroomId?.toString() === id.toString() ? "selected" : null}`}
       onClick={() => {
-        markReadADMChatroom(id);
-        navigate(`/${routes?.getDmChannelPath()}/${id}`);
+        selectNewChatroom(id.toString());
       }}
     >
       <div className="channel-icon">

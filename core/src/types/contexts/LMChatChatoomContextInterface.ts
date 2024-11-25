@@ -1,5 +1,5 @@
 import React from "react";
-import { ChatroomCollabcard } from "../api-responses/getChatroomResponse";
+import { ChatroomDetails } from "../api-responses/getChatroomResponse";
 import { Conversation } from "../models/conversations";
 import { ReplyDmQueries } from "../../enums/lm-reply-dm-queries";
 
@@ -8,8 +8,8 @@ export interface LMChatChatroomContextInterface {
   conversationToedit: Conversation | null;
   setConversationToReply: React.Dispatch<Conversation | null>;
   setConversationToEdit: React.Dispatch<Conversation | null>;
-  chatroom: ChatroomCollabcard | null;
-  setNewChatroom: React.Dispatch<ChatroomCollabcard | null>;
+  chatroomDetails: ChatroomDetails;
+  setNewChatroom: React.Dispatch<ChatroomDetails | null>;
   canUserReplyPrivately: ReplyDmQueries;
   searchedConversationId: number | null;
   setSearchedConversationId: React.Dispatch<number | null>;

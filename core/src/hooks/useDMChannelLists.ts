@@ -8,18 +8,24 @@ import { GetChatroomsSyncResponse } from "../types/api-responses/getChatroomSync
 import { Conversation } from "../types/models/conversations";
 import { Chatroom } from "../types/models/Chatroom";
 import Member from "../types/models/member";
+import { CustomActions } from "../customActions";
 
 /**
  * Custom hook for managing DM channel lists.
  * @returns An object containing the DM chatrooms, a flag indicating whether there are more chatrooms to load,
  * functions for fetching chatrooms, marking a chatroom as read, and refreshing the chatroom list.
  */
-export default function useDmChannelLists(): UseDmChannelLists {
+export default function useDmChannelLists(
+  currentChatroomId: string,
+): UseDmChannelLists {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { currentCommunity } = useContext(UserProviderContext);
   const [conversationsData, setConversationsData] = useState<
     Record<string, Conversation>
   >({});
+  const [chatroomId, setChatroomId] = useState<string | null>(
+    currentChatroomId,
+  );
   const [usersData, setUsersData] = useState<Record<string, Member>>({});
   const [dmChatrooms, setDmChatrooms] = useState<Chatroom[]>([]);
   const dmChatroomsPageCount = useRef<number>(1);
@@ -89,6 +95,20 @@ export default function useDmChannelLists(): UseDmChannelLists {
     } catch (error) {
       console.log(error);
     }
+  };
+  const selectNewChatroom = (id: string) => {
+    markReadADMChatroom(id);
+    setChatroomId(id);
+    console.log("Chatroom selected", id);
+    const NEW_CHATROOM_SELECTED = new CustomEvent(
+      CustomActions.NEW_CHATROOM_SELECTED,
+      {
+        detail: {
+          chatroomId: id,
+        },
+      },
+    );
+    document.dispatchEvent(NEW_CHATROOM_SELECTED);
   };
   const onClickNewDMChatroom = async (memberId: string | number) => {
     try {
@@ -165,6 +185,8 @@ export default function useDmChannelLists(): UseDmChannelLists {
     markReadADMChatroom,
     usersData,
     conversationsData,
+    selectNewChatroom,
+    currentSelectedChatroomId: chatroomId,
     // Return any additional functions here
   };
 }
@@ -176,5 +198,7 @@ export interface UseDmChannelLists {
   getDMChatroomsList: ZeroArgVoidReturns;
   refreshDMChatrooms: OneArgVoidReturns<string | number>;
   markReadADMChatroom: OneArgVoidReturns<string | number>;
+  selectNewChatroom: OneArgVoidReturns<string>;
+  currentSelectedChatroomId: string | null;
   // Add any additional functions here
 }

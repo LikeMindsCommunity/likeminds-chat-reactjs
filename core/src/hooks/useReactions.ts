@@ -4,17 +4,17 @@ import { EmojiData } from "../types/models/emojiData";
 import { OneArgVoidReturns } from "./useInput";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import LMMessageContext from "../context/LMMessageContext";
-import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../context/LMChatChatroomContext";
 
 export function useReactions(): UseReactionReturns {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { message, addReactionLocally } = useContext(LMMessageContext);
-  const { chatroom } = useContext(LMChatChatroomContext);
+  const { chatroomDetails } = useContext(LMChatroomContext);
   const addReaction = async (emoji: EmojiData) => {
     try {
       await lmChatclient?.putReaction({
         conversationId: parseInt(message!.id.toString()),
-        chatroomId: parseInt(chatroom?.chatroom.id.toString() || ""),
+        chatroomId: parseInt(chatroomDetails?.chatroom.id.toString() || ""),
         reaction: emoji.native,
       });
       addReactionLocally(emoji);
@@ -25,7 +25,7 @@ export function useReactions(): UseReactionReturns {
   const removeReaction = async (emoji: string) => {
     try {
       const call = await lmChatclient?.deleteReaction({
-        chatroomId: chatroom!.chatroom!.id!,
+        chatroomId: chatroomDetails!.chatroom!.id!,
         conversationId: message!.id!,
         reaction: emoji,
       });

@@ -8,15 +8,14 @@ import {
 } from "react";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
-import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../context/LMChatChatroomContext";
 
 import { Conversation } from "../types/models/conversations";
 
 export function useConversationSearch(): UseConversationSearch {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
-  const { chatroom, setSearchedConversationId } = useContext(
-    LMChatChatroomContext,
-  );
+  const { chatroomDetails, setSearchedConversationId } =
+    useContext(LMChatroomContext);
   const [searchList, setSearchList] = useState<Conversation[]>([]);
   const [searchKey, setSearchKey] = useState<string>("");
   const [loadMoreConversations, setLoadMoreConversations] =
@@ -32,7 +31,7 @@ export function useConversationSearch(): UseConversationSearch {
         search: searchKey,
         page: pageCount.current,
         pageSize: PAGE_SIZE,
-        chatroomId: chatroom!.chatroom.id!,
+        chatroomId: chatroomDetails!.chatroom.id!,
         followStatus: true,
       });
       if (call?.data.conversations.length === 0) {
@@ -48,7 +47,7 @@ export function useConversationSearch(): UseConversationSearch {
     } catch (error) {
       console.log(error);
     }
-  }, [chatroom, lmChatclient, searchKey]);
+  }, [chatroomDetails, lmChatclient, searchKey]);
   const resetSearch = () => {
     setSearchList(() => {
       return [];

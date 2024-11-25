@@ -8,7 +8,7 @@ import useConversations from "../../hooks/useConversations";
 import LMMessageMiddleware from "./LMMessageMiddleware";
 
 import { CircularProgress } from "@mui/material";
-import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import UserProviderContext from "../../context/LMUserProviderContext";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import { MemberType } from "../../enums/lm-member-type";
@@ -16,13 +16,13 @@ import { LMMessageListCustomActionsContext } from "../../context/LMMessageListCu
 import { getAvatar } from "../../shared/components/LMUserMedia";
 import { useConversationSearch } from "../../hooks/useConversationSearch";
 import { Utils } from "../../utils/helpers";
+import LMMessageSkeleton from "../LMMessage/LMMessageSkeleton";
 
 const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
   (props) => {
     const { messageCustomActions } = props;
-    const { chatroom, searchedConversationId } = useContext(
-      LMChatChatroomContext,
-    );
+    const { chatroomDetails, searchedConversationId } =
+      useContext(LMChatroomContext);
     const { currentUser } = useContext(UserProviderContext);
     const scrollToBottom = () => {
       if (bottomReferenceDiv && bottomReferenceDiv.current) {
@@ -30,22 +30,27 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       }
     };
     const chatroomUser = () => {
-      if (chatroom?.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+      if (
+        chatroomDetails?.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM
+      ) {
         return;
       }
       if (
-        chatroom?.chatroom.member.id.toString() === currentUser?.id.toString()
+        chatroomDetails?.chatroom.member.id.toString() ===
+        currentUser?.id.toString()
       ) {
-        const chatroomUser = chatroom?.chatroom.chatroomWithUser;
+        const chatroomUser = chatroomDetails?.chatroom.chatroomWithUser;
         return chatroomUser;
       } else {
-        const chatroomUser = chatroom?.chatroom.member;
+        const chatroomUser = chatroomDetails?.chatroom.member;
         return chatroomUser;
       }
     };
 
     const showInitiateDMRequestMessage: () => boolean = () => {
-      if (chatroom?.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+      if (
+        chatroomDetails?.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM
+      ) {
         return false;
       }
       if (
@@ -54,7 +59,7 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       ) {
         return false;
       }
-      const chatRequestState = chatroom?.chatroom.chatRequestState;
+      const chatRequestState = chatroomDetails?.chatroom.chatRequestState;
       if (chatRequestState === null) {
         return true;
       } else {
@@ -79,6 +84,7 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       loadMoreBottomConversation,
       setChatroomTopic,
       chatroomTopic,
+      showSkeletonResponse,
     } = useConversations();
 
     const { searchConversations, resetSearch, onSearchedConversationClick } =
@@ -201,10 +207,13 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
                   }
                 },
               )}
+              {Utils.isOtherUserAIChatbot(
+                chatroomDetails?.chatroom,
+                currentUser,
+              ) &&
+                showSkeletonResponse && <LMMessageSkeleton />}
             </ScrollContainer>
           </MessageListContext.Provider>
-          {/* DM Request Block */}
-          {/* <DmReqBlock /> */}
         </div>
       </LMMessageListCustomActionsContext.Provider>
     );

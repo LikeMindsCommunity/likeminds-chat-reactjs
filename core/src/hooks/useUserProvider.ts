@@ -123,7 +123,7 @@ export default function useUserProvider(
             ...initiateUserCall.data?.user,
           };
           user.state = memberStateCall.data.state;
-          user.memberRights = memberStateCall.data.member_rights;
+          user.memberRights = memberStateCall.data.memberRights;
           setLmChatUser(user || null);
           setLmChatUserCurrentCommunity(
             initiateUserCall?.data?.community || null,

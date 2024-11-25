@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+
 import LMChannelList from "../LMChannelList/LMChannelList";
-import LMChatChatroom from "./LMChatChatroom";
+import LMChatroom from "./LMChatChatroom";
+import { LMChatCurrentMode } from "../../enums/lm-chat-modes";
+import LMHeader from "../LMHeader/LMHeader";
+import LMMessageList from "../LMMessageList/LMMessageList";
+import LMInput from "../LMInput/LMInput";
 
-const LMChannel = () => {
-  // Get the chatroomId from the URL parameters
-  const { id } = useParams<{ id: string }>();
-
+const LMChannel = ({
+  currentChatroomId,
+  currentMode = LMChatCurrentMode.GROUP_CHAT,
+}: LMChannelProps) => {
   // State to track whether the screen is mobile size
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 768);
 
@@ -27,14 +31,23 @@ const LMChannel = () => {
   return (
     <div className="lm-channel-block">
       {/* Conditionally render the lm-left-panel div */}
-      {(!id || !isMobile) && (
-        <div className={`lm-left-panel ${id && isMobile ? "mobile-hide" : ""}`}>
-          <LMChannelList />
+      {(!currentChatroomId || !isMobile) && (
+        <div
+          className={`lm-left-panel ${currentChatroomId && isMobile ? "mobile-hide" : ""}`}
+        >
+          <LMChannelList
+            currentChatroomId={currentChatroomId}
+            currentMode={currentMode}
+          />
         </div>
       )}
       <div className="lm-right-panel">
         <div className="lm-chat-box">
-          <LMChatChatroom />
+          <LMChatroom currentChatroomId={currentChatroomId}>
+            <LMHeader />
+            <LMMessageList />
+            <LMInput />
+          </LMChatroom>
         </div>
       </div>
     </div>
@@ -42,3 +55,8 @@ const LMChannel = () => {
 };
 
 export default LMChannel;
+
+export interface LMChannelProps {
+  currentChatroomId?: string;
+  currentMode: LMChatCurrentMode;
+}

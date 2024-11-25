@@ -5,7 +5,7 @@ import LMGiSelector from "./components/LMInput/LMGifSelector";
 import LMChannel from "./components/LMChannel/LMChannel";
 import LMMediaCarousel from "./components/LMInput/LMCarousel";
 import LMGiphySearch from "./components/LMInput/LMGiphySearch";
-import LMChatChatroom from "./components/LMChannel/LMChatChatroom";
+import LMChatroom from "./components/LMChannel/LMChatChatroom";
 import ScrollContainer from "./components/DualSidePagination/ScrollContainer";
 import LMGroupChatChannelList from "./components/LMChannelList/LMGroupChatChannelList";
 import LMClientOverlayProvider from "./components/LMChatProvider/LMClientOverlayProvider";
@@ -24,7 +24,7 @@ import DmReqBlock from "./components/LMMessageList/LMDMReqBlock";
 import LMMessageMiddleware from "./components/LMMessageList/LMMessageMiddleware";
 import LMMessageList from "./components/LMMessageList/LMMessageList";
 import LMParticipantList from "./components/LMParticipant/LMParticipantList";
-import LMDMChatChannels from "./components/LMChannelList/LMDMChatChannels";
+import LMDMChannelList from "./components/LMChannelList/LMDMChatChannels";
 import LMJoinedDMChannelTile from "./components/LMChannelList/LMJoinedDMChannelTile";
 import LMMessageReplyCollapse from "./components/LMInput/LMMessageReplyCollapse";
 import LMPollCreationDialog from "./components/LMInput/LMPollCreationDialog";
@@ -32,7 +32,7 @@ import LMMessage from "./components/LMMessage/LMMessage";
 import LMMicroPoll from "./components/LMMessage/LMMicroPoll";
 import LMChatroomSearch from "./components/search/LMChatroomSearch";
 import LMConversationSearch from "./components/search/LMConversationSearch";
-import { LMChatChatroomContext } from "./context/LMChatChatroomContext";
+import { LMChatroomContext } from "./context/LMChatChatroomContext";
 import { LMDMChannelListContext } from "./context/LMDMChannelListContext";
 import LMMessageContext from "./context/LMMessageContext";
 import MessageListContext from "./context/LMMessageListContext";
@@ -74,7 +74,7 @@ export {
   LMInput,
   LMHeader,
   LMChannel,
-  LMChatChatroom,
+  LMChatroom as LMChatChatroom,
   ScrollContainer,
   LMGroupChatChannelList as LMChannelList,
   LMClientOverlayProvider,
@@ -97,7 +97,7 @@ export {
   LMMessageList,
   LMParticipantList,
   LMReactGiffySearchComponent,
-  LMDMChatChannels,
+  LMDMChannelList as LMDMChatChannels,
   LMJoinedDMChannelTile,
   LMMessageReplyCollapse,
   LMPollCreationDialog,
@@ -105,7 +105,7 @@ export {
   LMMicroPoll,
   LMChatroomSearch,
   LMConversationSearch,
-  LMChatChatroomContext,
+  LMChatroomContext as LMChatChatroomContext,
   LMChatroomDetailContext,
   LMChatroomListContext,
   LMChatroomProviderContext,

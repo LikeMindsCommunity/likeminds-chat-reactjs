@@ -17,14 +17,14 @@ import GlobalClientProviderContext from "../context/LMGlobalClientProviderContex
 import { Utils } from "../utils/helpers";
 import { GetTaggingListResponse } from "../types/api-responses/getTaggingListResponse";
 import { EmojiData } from "../types/models/emojiData";
-import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../context/LMChatChatroomContext";
 import { PostConversationResponse } from "../types/api-responses/postConversationResponse";
 import { FileType } from "../types/enums/Filetype";
 import { CustomActions } from "../customActions";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { GetOgTagResponse } from "../types/api-responses/getOgTagResponse";
 import { Gif } from "../types/models/GifObject";
-import { ChatroomCollabcard } from "../types/api-responses/getChatroomResponse";
+import { ChatroomDetails } from "../types/api-responses/getChatroomResponse";
 import { ChatroomTypes } from "../enums/lm-chatroom-types";
 import UserProviderContext from "../context/LMUserProviderContext";
 import { MemberType } from "../enums/lm-member-type";
@@ -66,7 +66,6 @@ export function useInput(
     onRejectDMRequest,
     onAprooveDMRequest,
   } = inputCustomActions!;
-  const { id: chatroomId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   //contexts
@@ -74,13 +73,18 @@ export function useInput(
   const { currentUser, memberState, currentCommunity, logoutUser } =
     useContext(UserProviderContext);
   const {
-    chatroom,
+    chatroomDetails,
     conversationToedit,
     setConversationToEdit,
     conversationToReply,
     setConversationToReply,
     setNewChatroom,
-  } = useContext(LMChatChatroomContext);
+  } = useContext(LMChatroomContext);
+  const {
+    chatroomDetails: {
+      chatroom: { id: chatroomId },
+    },
+  } = useContext(LMChatroomContext);
   // state
   const [inputText, setInputText] = useState<string>("");
   const [tagSearchKey, setTagSearchKey] = useState<string | null>(null);
@@ -135,7 +139,7 @@ export function useInput(
           const { thumbnailUrl, fileUrl, height, width } =
             await Utils.uploadVideoFile(
               currentAttachment,
-              chatroomId || "",
+              chatroomId.toString() || "",
               currentUser!.sdkClientInfo!.uuid,
             );
           if (thumbnailUrl && fileUrl) {
@@ -156,7 +160,7 @@ export function useInput(
         } else if (type.includes(FileType.image)) {
           const { fileUrl } = await Utils.uploadImageOrDocument(
             currentAttachment,
-            chatroomId || "",
+            chatroomId.toString() || "",
             currentUser.sdkClientInfo!.uuid,
           );
           if (fileUrl) {
@@ -174,7 +178,7 @@ export function useInput(
         } else {
           const { fileUrl } = await Utils.uploadImageOrDocument(
             currentAttachment,
-            chatroomId || "",
+            chatroomId.toString() || "",
             currentUser!.sdkClientInfo!.uuid!,
           );
           if (fileUrl) {
@@ -211,17 +215,17 @@ export function useInput(
           }),
         );
 
-        const newChatroom = { ...chatroom };
+        const newChatroom = { ...chatroomDetails };
         if (newChatroom.chatroom && newChatroom.chatroom) {
           newChatroom.chatroom.chatRequestState = 0;
           newChatroom.chatroom.chatRequestedBy = currentUser;
         }
-        setNewChatroom(newChatroom as ChatroomCollabcard);
+        setNewChatroom(newChatroom as ChatroomDetails);
       } catch (error) {
         console.log(error);
       }
     },
-    [chatroomId, lmChatclient, chatroom, currentUser, setNewChatroom],
+    [chatroomId, lmChatclient, chatroomDetails, currentUser, setNewChatroom],
   );
   const aprooveDMRequest = useCallback(async () => {
     try {
@@ -234,15 +238,15 @@ export function useInput(
           detail: aprooveDmRequestCall.data.conversation,
         }),
       );
-      const newChatroom = { ...chatroom };
+      const newChatroom = { ...chatroomDetails };
       if (newChatroom.chatroom && newChatroom.chatroom) {
         newChatroom.chatroom.chatRequestState = 1;
       }
-      setNewChatroom(newChatroom as ChatroomCollabcard);
+      setNewChatroom(newChatroom as ChatroomDetails);
     } catch (error) {
       console.log(error);
     }
-  }, [chatroomId, lmChatclient, chatroom, setNewChatroom]);
+  }, [chatroomId, lmChatclient, chatroomDetails, setNewChatroom]);
   const rejectDMRequest = useCallback(async () => {
     try {
       const rejectDmRequestCall = await lmChatclient?.sendDMRequest({
@@ -254,15 +258,15 @@ export function useInput(
           detail: rejectDmRequestCall.data.conversation,
         }),
       );
-      const newChatroom = { ...chatroom };
+      const newChatroom = { ...chatroomDetails };
       if (newChatroom.chatroom && newChatroom.chatroom) {
         newChatroom.chatroom.chatRequestState = 2;
       }
-      setNewChatroom(newChatroom as ChatroomCollabcard);
+      setNewChatroom(newChatroom as ChatroomDetails);
     } catch (error) {
       console.log(error);
     }
-  }, [chatroomId, lmChatclient, chatroom, setNewChatroom]);
+  }, [chatroomId, lmChatclient, chatroomDetails, setNewChatroom]);
   const fetchGifs = useCallback(async (url: string) => {
     setLoading(true);
     setError(null);
@@ -288,7 +292,7 @@ export function useInput(
       try {
         const call: GetTaggingListResponse = await lmChatclient?.getTaggingList(
           {
-            feedroomId: chatroom?.chatroom.id,
+            feedroomId: chatroomDetails?.chatroom.id,
             page: pg ? pg : taggingListPageCount.current,
             pageSize: 10,
             searchName: tagSearchKey || "",
@@ -310,22 +314,24 @@ export function useInput(
         console.log(error);
       }
     },
-    [chatroom?.chatroom.id, lmChatclient, tagSearchKey],
+    [chatroomDetails?.chatroom.id, lmChatclient, tagSearchKey],
   );
   const postMessage = useCallback(
     async (customWidgetData?: Record<string, any>) => {
       try {
-        if (!chatroom) {
+        if (!chatroomDetails) {
           return;
         }
         const messageText = Utils.extractTextFromNode(
           inputBoxRef.current!,
         ).trim();
         if (
-          chatroom.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
-          chatroom.chatroom.chatRequestState === null &&
-          chatroom.chatroom.member.state !== MemberType.COMMUNITY_MANAGER &&
-          chatroom.chatroom.chatroomWithUser?.state !==
+          chatroomDetails.chatroom.type ===
+            ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
+          chatroomDetails.chatroom.chatRequestState === null &&
+          chatroomDetails.chatroom.member.state !==
+            MemberType.COMMUNITY_MANAGER &&
+          chatroomDetails.chatroom.chatroomWithUser?.state !==
             MemberType.COMMUNITY_MANAGER
         ) {
           await sendDMRequest(messageText);
@@ -352,7 +358,7 @@ export function useInput(
               text: messageText,
             });
             setConversationToEdit(null);
-            dispatchEvent(
+            document.dispatchEvent(
               new CustomEvent(CustomActions.EDIT_ACTION_COMPLETED, {
                 detail: call.data.conversation,
               }),
@@ -361,8 +367,11 @@ export function useInput(
             return;
           }
 
-        const attachmentsList =
-          imagesAndVideosMediaList || documentsMediaList || [];
+        const attachmentsList = imagesAndVideosMediaList
+          ? [...imagesAndVideosMediaList]
+          : [...(documentsMediaList || [])];
+        setImagesAndVideosMediaList([]);
+        setDocumentMediaList([]);
         const attachments: Attachment[] = [];
         if (gifMedia) {
           const gifAttachment = buildGIFAttachment(gifMedia);
@@ -374,7 +383,7 @@ export function useInput(
         }
 
         // sending the text part of the conversation
-        const chatroomData = chatroom.chatroom;
+        const chatroomData = chatroomDetails.chatroom;
         const postConversationCallConfig: PostConversationRequest = {
           text: messageText,
           chatroomId: parseInt(chatroomData.id.toString()),
@@ -396,9 +405,14 @@ export function useInput(
         if (attachments.length) {
           postConversationCallConfig.attachments = attachments;
         }
+        const SHOW_SKELETON_CUSTOM_EVENT = new CustomEvent(
+          CustomActions.CONVERSATION_POSTED_ON_AI_CHATBOT,
+        );
+        document.dispatchEvent(SHOW_SKELETON_CUSTOM_EVENT);
         // sending the conversation
         const postConversationsCall: PostConversationResponse =
           await lmChatclient?.postConversation(postConversationCallConfig);
+
         setFocusOnInputField();
         removeOgTag();
       } catch (error) {
@@ -407,7 +421,7 @@ export function useInput(
     },
     [
       buildMediaAttachments,
-      chatroom,
+      chatroomDetails,
       conversationToReply,
       conversationToedit,
       currentUser,
@@ -482,7 +496,9 @@ export function useInput(
         return;
       }
       const textContentFocusNode = focusNode.textContent;
-      if (chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+      if (
+        chatroomDetails?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM
+      ) {
         return;
       }
       const tagOp = Utils.findTag(textContentFocusNode!);
@@ -493,7 +509,7 @@ export function useInput(
         setTagSearchKey(null);
       }
     },
-    [chatroom?.chatroom.type],
+    [chatroomDetails?.chatroom.type],
   );
   const onTextInputKeydownHandler: onKeydownEvent = useCallback(
     (change) => {
@@ -608,7 +624,7 @@ export function useInput(
   useEffect(() => {
     manageInputOnChatroomChange();
     return () => {
-      storeInputOnChatroomLeave(chatroomId || "");
+      storeInputOnChatroomLeave(chatroomId.toString() || "");
     };
   }, [chatroomId, manageInputOnChatroomChange, storeInputOnChatroomLeave]);
   useEffect(() => {

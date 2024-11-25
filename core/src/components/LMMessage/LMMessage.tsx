@@ -19,11 +19,12 @@ import replyIcon from "../../assets/img/reply.png";
 import MessageReactionHolder from "./LMMessageReactionHolder";
 import LMMicroPoll from "./LMMicroPoll";
 
-import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import { ChatRequestStates } from "../../enums/lm-chat-request-states";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import { useMessageOptions } from "../../hooks/useMessageOptions";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
+import { MemberRole } from "@likeminds.community/chat-js-beta";
 
 const LMMessage = () => {
   const { customComponents } = useContext(LMGlobalClientProviderContext);
@@ -32,11 +33,10 @@ const LMMessage = () => {
   const { message, index } = useContext(LMMessageContext);
   const { conversations, unBlockUserInDM } = useContext(MessageListContext);
   const { currentUser } = useContext(UserProviderContext);
-  const { chatroom } = useContext(LMChatChatroomContext);
+  const { chatroomDetails } = useContext(LMChatroomContext);
   const isSender = message?.member?.uuid === currentUser?.uuid;
   const messageClass = isSender ? "sender" : "receiver";
   const { onReply } = useMessageOptions();
-  console.log(message);
   const imageUrl = message?.member.imageUrl;
   const name = message?.member.name;
   const avatarContent = getAvatar({ imageUrl, name });
@@ -56,12 +56,12 @@ const LMMessage = () => {
   };
   function renderTapToUndo() {
     if (
-      chatroom?.chatroom.chatRequestState?.toString() ===
+      chatroomDetails?.chatroom.chatRequestState?.toString() ===
       ChatRequestStates.REJECTED_STATE
     )
       if (
         currentUser.id.toString() ===
-        chatroom?.chatroom.chatroomWithUser?.id.toString()
+        chatroomDetails?.chatroom.chatroomWithUser?.id.toString()
       ) {
         return (
           <span
@@ -83,11 +83,14 @@ const LMMessage = () => {
     }
   }
   function renderStateHeaderMessage() {
-    if (chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+    if (
+      chatroomDetails?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM
+    ) {
       const chatroomuser =
-        chatroom.chatroom.member.id.toString() === currentUser?.id.toString()
-          ? chatroom.chatroom.chatroomWithUser
-          : chatroom.chatroom.member;
+        chatroomDetails.chatroom.member.id.toString() ===
+        currentUser?.id.toString()
+          ? chatroomDetails.chatroom.chatroomWithUser
+          : chatroomDetails.chatroom.member;
       return (
         <div className="data-pill">
           {/* {Utils.parseAndReplaceTags(message?.answer || "")} */}
@@ -149,19 +152,26 @@ const LMMessage = () => {
           <div className={`lm-chat-card ${message?.state}`}>
             {renderDatePill()}
           </div>
-          <div className={`lm-chat-card ${messageClass} ${message?.state}`}>
+          <div className={`lm-chat-card ${messageClass} ${message?.state} `}>
             {!isSender ? (
               <div className="lmUserData">{avatarContent}</div>
             ) : null}
             <div className="lm-chat-message-reactions-holder-plate">
-              <div className={`conversation ${messageClass}`}>
-                {!isSender ? (
-                  <div className="name">{message?.member.name}</div>
-                ) : null}
+              <div
+                className={`conversation ${messageClass} ${
+                  Utils.isOtherUserAIChatbot(
+                    chatroomDetails.chatroom,
+                    currentUser,
+                  ) && "ai-chatbot-conversation"
+                }`}
+              >
+                {!isSender &&
+                  !message.member.roles?.includes(MemberRole.Chatbot) && (
+                    <div className="name">{message?.member.name}</div>
+                  )}
                 {/* media */}
                 <div className="lm-media">
-                  {message.hasFiles &&
-                  (message.attachments?.length || 0) > 0 ? (
+                  {(message.attachments?.length || 0) > 0 ? (
                     <MediaRenderer attachments={message?.attachments || []} />
                   ) : null}
                 </div>
@@ -232,23 +242,28 @@ const LMMessage = () => {
               </div>
               <MessageReactionHolder />
             </div>
-            <div className="actions">
-              <div className="lm-cursor-pointer">
-                <img
-                  src={replyIcon}
-                  alt="reply icon"
-                  className="lm-add-emoji"
-                  onClick={onReply}
-                />
-              </div>
+            {!Utils.isOtherUserAIChatbot(
+              chatroomDetails.chatroom,
+              currentUser,
+            ) && (
+              <div className="actions">
+                <div className="lm-cursor-pointer">
+                  <img
+                    src={replyIcon}
+                    alt="reply icon"
+                    className="lm-add-emoji"
+                    onClick={onReply}
+                  />
+                </div>
 
-              <div className="lm-cursor-pointer">
-                <Reactions />
+                <div className="lm-cursor-pointer">
+                  <Reactions />
+                </div>
+                <div className="lm-cursor-pointer">
+                  <MessageOptions />
+                </div>
               </div>
-              <div className="lm-cursor-pointer">
-                <MessageOptions />
-              </div>
-            </div>
+            )}
 
             {/* <div className="data-pill">{message?.date}</div> */}
           </div>

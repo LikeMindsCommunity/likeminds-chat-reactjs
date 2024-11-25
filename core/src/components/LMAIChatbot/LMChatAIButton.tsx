@@ -6,7 +6,13 @@ import LMAiBotScreen from "./LMAiBotScreen";
 import Lottie from "lottie-react";
 import animationData from "../../assets/animation/AiBotLoader.json";
 const LMChatAIButton = () => {
-  const { isAiBotOpen, openAiBot, closeAiBot, showAnimation } = useAiChatbot();
+  const {
+    isAiBotOpen,
+    openAiBot,
+    closeAiBot,
+    showAnimation,
+    aiChatbotChatroomId,
+  } = useAiChatbot();
   const openChatbotButton = (
     <button className="lm-chat-ai-bot-fab-button" onClick={openAiBot}>
       <img src={chatBotIcon} alt="AI Chatbot" />
@@ -21,10 +27,10 @@ const LMChatAIButton = () => {
   );
   const renderAiChatbot = () => {
     if (isAiBotOpen) {
-      if (!showAnimation) {
+      if (showAnimation) {
         return loaderScreen();
       } else {
-        return <LMAiBotScreen />;
+        return <LMAiBotScreen aiChatbotChatroomId={aiChatbotChatroomId} />;
       }
     }
   };

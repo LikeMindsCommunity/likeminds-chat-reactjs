@@ -12,7 +12,7 @@ import React, {
 import { useParams } from "react-router-dom";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import { IconButton } from "@mui/material";
-import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 //   Debounce creator for creating a debounced variation of the original function
 function createDebouncedFunction(originalFunction: () => void) {
   let hasTheFunctionAlreadyCalled: boolean = false;
@@ -63,7 +63,8 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
   } = props;
 
   const [isScrollToBottomVisible, setIsScrollToBottomVisible] = useState(false);
-  const { id: chatroomId } = useParams();
+
+  const { chatroomDetails } = useContext(LMChatroomContext);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const scrollTarget = useRef<HTMLDivElement | null>(null);
   const hasAlreadyCalled = useRef<boolean>(false);
@@ -140,7 +141,7 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
 
       isFirstRender.current = false;
     }
-  }, [children, chatroomId, bottomReferenceDiv]);
+  }, [children, chatroomDetails?.chatroom.id, bottomReferenceDiv]);
   // for setting the visibility of scroll to bottom
   useEffect(() => {
     const observer = new IntersectionObserver(

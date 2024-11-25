@@ -1,6 +1,6 @@
 import React, { useContext, useMemo } from "react";
 
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { LMDMChannelListContext } from "../../context/LMDMChannelListContext";
 // import { DM_CHANNEL_PATH } from "../../shared/constants/lm.routes.constant";
 import UserProviderContext from "../../context/LMUserProviderContext";
@@ -9,11 +9,16 @@ import document from "../../assets/img/document.svg";
 import { Utils } from "../../utils/helpers";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { Chatroom } from "../../types/models/Chatroom";
+import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 interface LMJoinedDMChannelTileProps {
   chatroom: Chatroom;
 }
 const LMJoinedDMChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
-  const { id: chatroomId } = useParams();
+  const {
+    chatroomDetails: {
+      chatroom: { id: chatroomId },
+    },
+  } = useContext(LMChatroomContext);
   const navigate = useNavigate();
   const { markReadADMChatroom, usersData, conversationsData } = useContext(
     LMDMChannelListContext,

@@ -4,16 +4,15 @@ import GlobalClientProviderContext from "../context/LMGlobalClientProviderContex
 import LoaderContextProvider from "../context/LMLoaderContextProvider";
 import { Conversation } from "../types/models/conversations";
 import {
-  ChatroomCollabcard,
+  ChatroomDetails,
   GetChatroomResponse,
 } from "../types/api-responses/getChatroomResponse";
-import UserProviderContext from "../context/LMUserProviderContext";
-import { useParams } from "react-router-dom";
 import { ReplyDmQueries } from "../enums/lm-reply-dm-queries";
+import { CustomActions } from "../customActions";
 
 interface UseChatroom {
-  chatroom: ChatroomCollabcard | null;
-  setChatroom: React.Dispatch<ChatroomCollabcard | null>;
+  chatroomDetails: ChatroomDetails | null;
+  setChatroom: React.Dispatch<ChatroomDetails | null>;
   conversationToReply: Conversation | null;
   conversationToedit: Conversation | null;
   setConversationToReply: React.Dispatch<Conversation | null>;
@@ -23,13 +22,11 @@ interface UseChatroom {
   setSearchedConversationId: React.Dispatch<number | null>;
 }
 
-export default function useChatroom(): UseChatroom {
-  // const { chatroomId } = useContext(ChatroomProviderContext);
-  const { id: chatroomId } = useParams();
+export default function useChatroom(chatroomId: string): UseChatroom {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
-  const { currentUser } = useContext(UserProviderContext);
-  const [chatroom, setChatroom] = useState<ChatroomCollabcard | null>(null);
+  const [chatroomDetails, setChatroomDetails] =
+    useState<ChatroomDetails | null>(null);
   const [conversationToReply, setConversationToReply] =
     useState<Conversation | null>(null);
   const [conversationToedit, setConversationToEdit] =
@@ -75,43 +72,71 @@ export default function useChatroom(): UseChatroom {
     }
   }, [lmChatclient]);
 
-  const getChatroomDetails = useCallback(async () => {
-    try {
-      const chatroomDetailsCall: GetChatroomResponse =
-        await lmChatclient?.getChatroom({
-          chatroomId,
-        });
-      return chatroomDetailsCall.data;
-    } catch (error) {
-      return logError(error);
-    }
-  }, [chatroomId, lmChatclient]);
-
-  useEffect(() => {
-    async function fetchChannel() {
+  const getChatroomDetails = useCallback(
+    async (chatroomId: string) => {
+      try {
+        const chatroomDetailsCall: GetChatroomResponse =
+          await lmChatclient?.getChatroom({
+            chatroomId,
+          });
+        return chatroomDetailsCall.data;
+      } catch (error) {
+        return logError(error);
+      }
+    },
+    [lmChatclient],
+  );
+  const fetchChannel = useCallback(
+    async (chatroomId: string) => {
       try {
         // get the chatroom details
         if (!chatroomId) return;
-        const newChatroom = await getChatroomDetails();
+        const newChatroom = await getChatroomDetails(chatroomId);
         if (newChatroom) {
-          setChatroom(newChatroom as ChatroomCollabcard);
+          setChatroomDetails(newChatroom as ChatroomDetails);
         }
         // set the loader to false
-        setLoader!(false);
+        if (setLoader) {
+          setLoader(false);
+        }
       } catch (error) {
         console.log(error);
       }
-    }
-    fetchChannel();
+    },
+    [getChatroomDetails, setLoader],
+  );
+
+  useEffect(() => {
+    fetchChannel(chatroomId);
     return () => {
       resetChatroom();
     };
-  }, [chatroomId, getChatroomDetails, currentUser, setLoader]);
+  }, [chatroomId, fetchChannel]);
+
+  useEffect(() => {
+    const handleNewChatroomSelected = (eventObject: Event) => {
+      const chatroomId = (eventObject as CustomEvent).detail.chatroomId;
+      fetchChannel(chatroomId);
+    };
+
+    document.addEventListener(
+      CustomActions.NEW_CHATROOM_SELECTED,
+      handleNewChatroomSelected,
+    );
+
+    return () => {
+      document.removeEventListener(
+        CustomActions.NEW_CHATROOM_SELECTED,
+        handleNewChatroomSelected,
+      );
+    };
+  });
+
   useEffect(() => {
     checkDMStatus();
   }, [checkDMStatus]);
   function resetChatroom() {
-    setChatroom(null);
+    setChatroomDetails(null);
   }
 
   function logError(error: unknown): null {
@@ -126,8 +151,8 @@ export default function useChatroom(): UseChatroom {
     return null;
   }
   return {
-    chatroom,
-    setChatroom,
+    chatroomDetails: chatroomDetails,
+    setChatroom: setChatroomDetails,
     conversationToedit,
     conversationToReply,
     setConversationToEdit,

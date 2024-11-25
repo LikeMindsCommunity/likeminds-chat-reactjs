@@ -6,9 +6,9 @@ import InputContext from "../../context/LMInputContext";
 // Icons
 import aiChatbotAttachment from "../../assets/img/add-attachment-ai-chatbot.png";
 import uploadMedia from "../../assets/img/upload-media.svg";
-import uploadDoc from "../../assets/img/upload-doc.svg";
+// import uploadDoc from "../../assets/img/upload-doc.svg";
 
-import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { Utils } from "../../utils/helpers";
@@ -19,14 +19,14 @@ import { LMInputAttachments } from "../../enums/lm-input-attachment-options";
 const LMChatbotAiBotInputAttachmentSelector = () => {
   const { openMenu, closeMenu, menuAnchor } = useMenu();
   const {
-    addDocumentsMedia,
+    // addDocumentsMedia,
     addImagesAndVideosMedia,
-    imagesAndVideosMediaList,
+    // imagesAndVideosMediaList,
     documentsMediaList,
     attachmentOptions,
   } = useContext(InputContext);
 
-  const { chatroom } = useContext(LMChatChatroomContext);
+  const { chatroomDetails } = useContext(LMChatroomContext);
   const { customComponents } = useContext(LMGlobalClientProviderContext);
   const { currentUser } = useContext(LMUserProviderContext);
   // Custom component
@@ -43,10 +43,10 @@ const LMChatbotAiBotInputAttachmentSelector = () => {
             type="file"
             // Give only the option of image to AI Chatbot
             accept={
-              chatroom?.chatroom.type ===
+              chatroomDetails?.chatroom.type ===
                 ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
               Utils.isOtherUserAIChatbot(
-                chatroom?.chatroom as unknown as Chatroom,
+                chatroomDetails?.chatroom as unknown as Chatroom,
                 currentUser,
               )
                 ? ".png, .jpeg, .jpg"
@@ -58,12 +58,9 @@ const LMChatbotAiBotInputAttachmentSelector = () => {
             }}
             // Disable the mulitple select state if the chatroom is AI chatbot
             multiple={
-              chatroom?.chatroom.type ===
+              chatroomDetails?.chatroom.type ===
                 ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
-              Utils.isOtherUserAIChatbot(
-                chatroom as unknown as Chatroom,
-                currentUser,
-              )
+              Utils.isOtherUserAIChatbot(chatroomDetails.chatroom, currentUser)
                 ? false
                 : true
             }
@@ -76,25 +73,6 @@ const LMChatbotAiBotInputAttachmentSelector = () => {
         </label>
       </MenuItem>
 
-      <MenuItem className="lm-chat-input-attachment-label">
-        <label htmlFor="doc">
-          <input
-            id="doc"
-            type="file"
-            accept=".pdf"
-            onChange={(e) => {
-              addDocumentsMedia(e);
-              closeMenu();
-            }}
-            multiple
-            disabled={imagesAndVideosMediaList?.length ? true : false}
-          />
-          <div>
-            <img src={uploadDoc} alt="doc" />
-          </div>
-          <div className="title">Document</div>
-        </label>
-      </MenuItem>
       {/* Option for poll */}
     </>
   );
@@ -114,10 +92,10 @@ const LMChatbotAiBotInputAttachmentSelector = () => {
                   id="media"
                   type="file"
                   accept={
-                    chatroom?.chatroom.type ===
+                    chatroomDetails?.chatroom.type ===
                       ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
                     Utils.isOtherUserAIChatbot(
-                      chatroom?.chatroom as unknown as Chatroom,
+                      chatroomDetails?.chatroom as unknown as Chatroom,
                       currentUser,
                     )
                       ? ".png, .jpeg, .jpg"
@@ -128,10 +106,10 @@ const LMChatbotAiBotInputAttachmentSelector = () => {
                     closeMenu();
                   }}
                   multiple={
-                    chatroom?.chatroom.type ===
+                    chatroomDetails?.chatroom.type ===
                       ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
                     Utils.isOtherUserAIChatbot(
-                      chatroom as unknown as Chatroom,
+                      chatroomDetails as unknown as Chatroom,
                       currentUser,
                     )
                       ? false
@@ -143,29 +121,6 @@ const LMChatbotAiBotInputAttachmentSelector = () => {
                   <img src={uploadMedia} alt="media" />
                 </div>
                 <div className="title">Photos &amp; Videos</div>
-              </label>
-            </MenuItem>
-          );
-        }
-        case LMInputAttachments.DOCUMENT: {
-          return (
-            <MenuItem className="lm-chat-input-attachment-label">
-              <label htmlFor="doc">
-                <input
-                  id="doc"
-                  type="file"
-                  accept=".pdf"
-                  onChange={(e) => {
-                    addDocumentsMedia(e);
-                    closeMenu();
-                  }}
-                  multiple
-                  disabled={imagesAndVideosMediaList?.length ? true : false}
-                />
-                <div>
-                  <img src={uploadDoc} alt="doc" />
-                </div>
-                <div className="title">Document</div>
               </label>
             </MenuItem>
           );

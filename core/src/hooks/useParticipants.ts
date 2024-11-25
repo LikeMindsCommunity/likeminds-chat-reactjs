@@ -7,11 +7,10 @@ import {
   useState,
 } from "react";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
-
-import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../context/LMChatChatroomContext";
 import { ZeroArgVoidReturns } from "./useInput";
 import { ViewParticipantsResponse } from "../types/api-responses/viewParticipants";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Member from "../types/models/member";
 
 /**
@@ -20,19 +19,24 @@ import Member from "../types/models/member";
  */
 export function useParticipants(): UseParticipantsReturns {
   const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
-  const { chatroom } = useContext(LMChatChatroomContext);
+  const { chatroomDetails } = useContext(LMChatroomContext);
   const [participantsList, setParticipantList] = useState<Member[]>([]);
   const participantListPageCount = useRef<number>(1);
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   const totalParticipantsCount = useRef<number>(0);
   const [loadMoreParticipants, setLoadMoreParticipants] =
     useState<boolean>(true);
-  const { id: chatroomId } = useParams();
+  const {
+    chatroomDetails: {
+      chatroom: { id: chatroomId },
+    },
+  } = useContext(LMChatroomContext);
   const navigate = useNavigate();
   /**
    * Navigates back to the chatroom.
    */
   const navigateBackToChatroom = useCallback(() => {
+    window.history.back();
     navigate(`/${routes?.getChannelPath()}/${chatroomId}`);
   }, [chatroomId, navigate, routes]);
 
@@ -44,8 +48,8 @@ export function useParticipants(): UseParticipantsReturns {
     try {
       const getMembersCall: ViewParticipantsResponse =
         await lmChatclient?.viewParticipants({
-          chatroomId: chatroom?.chatroom.id || 0,
-          isSecret: chatroom?.chatroom.isSecret || false,
+          chatroomId: chatroomDetails?.chatroom.id || 0,
+          isSecret: chatroomDetails?.chatroom.isSecret || false,
           page: participantListPageCount.current,
           participantName: searchKeyword,
           pageSize: 100,
@@ -71,8 +75,8 @@ export function useParticipants(): UseParticipantsReturns {
       console.log(error);
     }
   }, [
-    chatroom?.chatroom.id,
-    chatroom?.chatroom.isSecret,
+    chatroomDetails?.chatroom.id,
+    chatroomDetails?.chatroom.isSecret,
     lmChatclient,
     searchKeyword,
   ]);

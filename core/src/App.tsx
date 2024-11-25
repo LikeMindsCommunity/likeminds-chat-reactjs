@@ -18,6 +18,8 @@ import {
 } from "./main_index";
 import { Toaster } from "react-hot-toast";
 
+// import LMChatAIButton from "./components/LMAIChatbot/LMChatAIButton";
+import { LMChatCurrentMode } from "./enums/lm-chat-modes";
 import LMChatAIButton from "./components/LMAIChatbot/LMChatAIButton";
 
 const LMAppLayout = () => {
@@ -30,7 +32,10 @@ const LMAppLayout = () => {
     apiKey?: string;
   }>({
     // apiKey: "d4356d31-306e-406d-aa4a-cd49f1b88f19",
-    apiKey: "aa2a3a49-f371-45de-a071-7cafc1fa927a",
+    // Beta Key Below
+    // apiKey: "aa2a3a49-f371-45de-a071-7cafc1fa927a",
+    // AI chatbot key below
+    apiKey: "3966d591-3ba1-46db-b25b-69a45e1414f3",
     isGuest: false,
     uuid: "Test User 01",
     username: "Test User 01",
@@ -113,17 +118,26 @@ const LMAppLayout = () => {
         <Toaster position="top-right" />
 
         <Routes>
-          <Route path={ROOT_PATH} element={<LMChannel />}>
-            <Route path={MODE + "/"} element={null} />
+          <Route
+            path={ROOT_PATH}
+            element={
+              // <LMChannel
+              //   currentMode={LMChatCurrentMode.GROUP_CHAT}
+              //   currentChatroomId={"29053"}
+              // />
+              <LMChatAIButton />
+            }
+          >
+            <Route path={MODE + "/"} element={<LMChatAIButton />} />
             <Route
               path={MODE + "/" + ID_PATH}
               element={
-                // <>
-                //   <LMHeader />
-                //   <LMMessageList />
-                //   <LMInput />
-                // </>
-                <LMChatAIButton />
+                <>
+                  <LMHeader />
+                  <LMMessageList />
+                  <LMInput />
+                </>
+                // <LMChatAIButton />
               }
             />
             <Route

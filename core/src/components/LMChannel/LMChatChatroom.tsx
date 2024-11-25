@@ -1,12 +1,14 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
-import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import React, { PropsWithChildren } from "react";
+import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import useChatroom from "../../hooks/useChatroom";
 import noChatSelected from "../../assets/img/no-chat-selected.svg";
 
-const LMChatChatroom: React.FC = () => {
+const LMChatroom: React.FC<PropsWithChildren<LMChatroomProps>> = ({
+  currentChatroomId,
+  children,
+}) => {
   const {
-    chatroom,
+    chatroomDetails,
     conversationToReply,
     conversationToedit,
     setConversationToEdit,
@@ -15,24 +17,27 @@ const LMChatChatroom: React.FC = () => {
     canUserReplyPrivately,
     searchedConversationId,
     setSearchedConversationId,
-  } = useChatroom();
-
-  return chatroom ? (
-    <LMChatChatroomContext.Provider
+  } = useChatroom(currentChatroomId || "");
+  return chatroomDetails ? (
+    <LMChatroomContext.Provider
       value={{
         conversationToedit,
         conversationToReply,
         setConversationToEdit,
         setConversationToReply,
-        chatroom,
+        chatroomDetails,
         setNewChatroom: setChatroom,
         canUserReplyPrivately,
         searchedConversationId,
         setSearchedConversationId,
       }}
     >
-      <Outlet />
-    </LMChatChatroomContext.Provider>
+      {/* <Outlet /> */}
+      {/* <LMHeader />
+      <LMMessageList />
+      <LMInput /> */}
+      {children}
+    </LMChatroomContext.Provider>
   ) : (
     <div className="noChatRoom">
       <img src={noChatSelected} alt="No chat selected" />
@@ -41,4 +46,8 @@ const LMChatChatroom: React.FC = () => {
   );
 };
 
-export default LMChatChatroom;
+export default LMChatroom;
+
+export interface LMChatroomProps {
+  currentChatroomId?: string;
+}

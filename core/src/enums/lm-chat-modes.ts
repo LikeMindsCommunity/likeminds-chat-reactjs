@@ -1,0 +1,5 @@
+export enum LMChatCurrentMode {
+  DIRECT_MESSAGE = "DIRECT_MESSAGE",
+  GROUP_CHAT = "GROUP_CHAT",
+  AI_CHATBOT = "AI_CHATBOT",
+}

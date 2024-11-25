@@ -3,7 +3,7 @@ import { useCallback, useContext, useEffect, useMemo } from "react";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import LMMessageContext from "../context/LMMessageContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
-import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../context/LMChatChatroomContext";
 import { CustomActions } from "../customActions";
 import { Conversation } from "../types/models/conversations";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -30,9 +30,8 @@ export function useMessageOptions(): UseMessageOptionsReturn {
     LMUserProviderContext,
   );
 
-  const { setConversationToEdit, setConversationToReply } = useContext(
-    LMChatChatroomContext,
-  );
+  const { setConversationToEdit, setConversationToReply } =
+    useContext(LMChatroomContext);
   const { message, deleteMessage, editMessageLocally } =
     useContext(LMMessageContext);
 

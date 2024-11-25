@@ -14,7 +14,7 @@ export interface ConversationUser {
   name: string;
 }
 
-export interface ChatroomCollabcard {
+export interface ChatroomDetails {
   canAccessSecretChatroom: boolean | undefined;
   chatroom: Chatroom;
   chatroomActions: ChatroomAction[];

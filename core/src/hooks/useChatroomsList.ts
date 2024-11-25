@@ -1,49 +1,47 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
-
 import { GetHomeFeedRequest } from "@likeminds.community/chat-js/dist/pages/home-feed/types";
-
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
-
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import UserProviderContext from "../context/LMUserProviderContext";
 import { onValue, ref } from "firebase/database";
 import { CustomActions } from "../customActions";
-
 import { GetSyncConversationsResponse } from "../types/api-responses/getSyncConversationsResponse";
 import { Chatroom } from "../types/models/Chatroom";
 import { Conversation } from "../types/models/conversations";
 import Member from "../types/models/member";
+
 interface ChatroomProviderInterface {
-  dmChatroomList: Chatroom[] | null;
-  loadMoreDmChatrooms: boolean;
   groupChatroomsList: Chatroom[] | null;
   groupChatroomConversationsMeta: Record<string, Conversation>;
   groupChatroomMember: Record<string, Member>;
-  loadMoreGroupChatrooms: boolean;
   getChatroomsMine: ZeroArgVoidReturns;
   getExploreGroupChatrooms: ZeroArgVoidReturns;
   exploreGroupChatrooms: Chatroom[];
   loadMoreExploreGroupChatrooms: boolean;
+  loadMoreGroupChatrooms: boolean;
   joinAChatroom: OneArgVoidReturns<string>;
   markReadAChatroom: OneArgVoidReturns<string | number>;
   onLeaveChatroom: OneArgVoidReturns<string>;
   checkForDmTab: () => Promise<HideDMTabInfo | null>;
   approveDMRequest: OneArgVoidReturns<string>;
   rejectDMRequest: OneArgVoidReturns<string>;
+  currentSelectedChatroomId: string | null;
+  selectNewChatroom: OneArgVoidReturns<string>;
 }
 
-export default function useChatroomList(): ChatroomProviderInterface {
+export default function useChatroomList(
+  currentChatroomId: string,
+): ChatroomProviderInterface {
   const navigate = useNavigate();
-  const { id: chatroomId } = useParams();
+  const [chatroomId, setChatroomId] = useState<string | null>(
+    currentChatroomId,
+  );
   const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
   const { currentUser, currentCommunity } = useContext(UserProviderContext);
-  //   states for dm chatrooms
-  const [dmChatrooms, setDmChatrooms] = useState<Chatroom[] | null>(null);
-  const [dmChatroomsPageCount, setDmChatroomsPageCount] = useState<number>(1);
-  const [loadMoreDmChatrooms, setLoadMoreDmChatrooms] = useState<boolean>(true);
+
   //   state for groupchat chatrooms should come here
   const [groupChatrooms, setGroupChatrooms] = useState<Chatroom[]>([]);
   const [groupChatroomConversationsMeta, setgroupChatroomConversationsMeta] =
@@ -51,19 +49,15 @@ export default function useChatroomList(): ChatroomProviderInterface {
   const [groupChatroomMember, setgroupChatroomMember] = useState<
     Record<string, Member>
   >({});
-  const [groupChatroomsPageCount, setGroupChatroomsPageCount] =
-    useState<number>(1);
-  const [loadMoreGroupChatrooms, setLoadMoreGroupChatrooms] =
-    useState<boolean>(true);
+  const groupChatroomsPageCount = useRef<number>(1);
+  const loadMoreGroupChatrooms = useRef<boolean>(true);
 
   //   state for explore group chatrooms should come here
   const [exploreGroupChatrooms, setExploreGroupChatrooms] = useState<
     Chatroom[]
   >([]);
-  const [exploreGroupChatroomsPageCount, setExploreGroupChatroomsPageCount] =
-    useState<number>(1);
-  const [loadMoreExploreGroupChatrooms, setLoadMoreExploreGroupChatrooms] =
-    useState<boolean>(true);
+  const exploreGroupChatroomsPageCount = useRef<number>(1);
+  const loadMoreExploreGroupChatrooms = useRef<boolean>(true);
 
   const chatroolLeaveActionListener = useCallback((eventObject: Event) => {
     setGroupChatrooms((currentGroupChatroom) => {
@@ -91,6 +85,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
       const call = await lmChatclient?.markReadChatroom({
         chatroomId: parseInt(id.toString()),
       });
+      setChatroomId(id.toString());
       if (call.success) {
         setGroupChatrooms((currentGroupChatrooms) => {
           return currentGroupChatrooms.map((chatroom) => {
@@ -105,6 +100,20 @@ export default function useChatroomList(): ChatroomProviderInterface {
       console.log(error);
     }
   };
+  const selectNewChatroom = (id: string) => {
+    markReadAChatroom(id);
+    setChatroomId(id);
+    console.log("Chatroom selected", id);
+    const NEW_CHATROOM_SELECTED = new CustomEvent(
+      CustomActions.NEW_CHATROOM_SELECTED,
+      {
+        detail: {
+          chatroomId: id,
+        },
+      },
+    );
+    document.dispatchEvent(NEW_CHATROOM_SELECTED);
+  };
   const onLeaveChatroom = async (chatroomID: string) => {
     try {
       const call = await lmChatclient?.followChatroom({
@@ -115,7 +124,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
       if (call.success) {
         dispatchEvent(
           new CustomEvent(CustomActions.CHATROOM_LEAVE_ACTION_COMPLETED, {
-            detail: chatroomID,
+            detail: chatroomId,
           }),
         );
         if (chatroomID.toString() === chatroomId?.toString()) {
@@ -214,23 +223,23 @@ export default function useChatroomList(): ChatroomProviderInterface {
   const getExploreGroupChatrooms = useCallback(async () => {
     try {
       const call = await lmChatclient?.getExploreFeed({
-        page: exploreGroupChatroomsPageCount,
+        page: exploreGroupChatroomsPageCount.current,
         orderType: 0,
       });
       if (call?.success) {
         if (call.data.chatrooms.length) {
-          setExploreGroupChatroomsPageCount((currentPage) => currentPage + 1);
+          exploreGroupChatroomsPageCount.current += 1;
           setExploreGroupChatrooms((currentChatrooms) => {
             return [...currentChatrooms, ...call.data.chatrooms];
           });
         } else {
-          setLoadMoreExploreGroupChatrooms(false);
+          loadMoreExploreGroupChatrooms.current = false;
         }
       }
     } catch (error) {
       console.log(error);
     }
-  }, [exploreGroupChatroomsPageCount, lmChatclient]);
+  }, [lmChatclient]);
 
   async function approveDMRequest(id: string) {
     try {
@@ -255,7 +264,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
   const getChatroomsMine = useCallback(async () => {
     try {
       const getChatroomsMineCall = await lmChatclient?.getHomeFeed({
-        page: groupChatroomsPageCount,
+        page: groupChatroomsPageCount.current,
         pageSize: 10,
         chatroomTypes: [0, 7] as unknown,
         maxTimestamp: Date.now(),
@@ -263,10 +272,10 @@ export default function useChatroomList(): ChatroomProviderInterface {
       } as GetHomeFeedRequest);
       if (getChatroomsMineCall?.success) {
         if (!getChatroomsMineCall.data.chatroomsData.length) {
-          setLoadMoreGroupChatrooms(false);
+          loadMoreGroupChatrooms.current = false;
           return;
         } else {
-          setGroupChatroomsPageCount((currentCount) => currentCount + 1);
+          groupChatroomsPageCount.current += 1;
         }
         setGroupChatrooms((currentChatrooms) => {
           return [
@@ -290,7 +299,7 @@ export default function useChatroomList(): ChatroomProviderInterface {
     } catch (error) {
       console.log(error);
     }
-  }, [groupChatroomsPageCount, lmChatclient]);
+  }, [lmChatclient]);
   const checkForDmTab: () => Promise<HideDMTabInfo | null> = async () => {
     try {
       const call = await lmChatclient?.checkDMTab();
@@ -303,7 +312,6 @@ export default function useChatroomList(): ChatroomProviderInterface {
     }
   };
   useEffect(() => {
-    // getDmChannelList();
     getChatroomsMine();
     getExploreGroupChatrooms();
   }, [getChatroomsMine, getExploreGroupChatrooms]);
@@ -347,14 +355,12 @@ export default function useChatroomList(): ChatroomProviderInterface {
     };
   }, [chatroolLeaveActionListener]);
   return {
-    dmChatroomList: dmChatrooms,
-    loadMoreDmChatrooms,
     groupChatroomsList: groupChatrooms,
-    loadMoreGroupChatrooms,
     getChatroomsMine,
     getExploreGroupChatrooms,
     exploreGroupChatrooms,
-    loadMoreExploreGroupChatrooms,
+    loadMoreExploreGroupChatrooms: loadMoreExploreGroupChatrooms.current,
+    loadMoreGroupChatrooms: loadMoreGroupChatrooms.current,
     joinAChatroom,
     onLeaveChatroom,
     groupChatroomConversationsMeta,
@@ -363,6 +369,8 @@ export default function useChatroomList(): ChatroomProviderInterface {
     checkForDmTab,
     approveDMRequest,
     rejectDMRequest,
+    currentSelectedChatroomId: chatroomId,
+    selectNewChatroom,
   };
 }
 

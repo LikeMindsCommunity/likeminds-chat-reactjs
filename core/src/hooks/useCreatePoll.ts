@@ -6,16 +6,20 @@ import {
 } from "./useInput";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import ConversationStates from "../enums/lm-conversation-states";
-import { useParams } from "react-router-dom";
-import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
+
+import { LMChatroomContext } from "../context/LMChatChatroomContext";
 import { SelectChangeEvent } from "@mui/material";
 import LoaderContextProvider from "../context/LMLoaderContextProvider";
 import { PollMessages } from "../enums/lm-poll-messages";
 
 export function useCreatePoll(closeDialog?: ZeroArgVoidReturns): UseCreatePoll {
-  const { id: chatroomId } = useParams();
   const { lmChatclient } = useContext(GlobalClientProviderContext);
-  const { conversationToReply } = useContext(LMChatChatroomContext);
+  const { conversationToReply } = useContext(LMChatroomContext);
+  const {
+    chatroomDetails: {
+      chatroom: { id: chatroomId },
+    },
+  } = useContext(LMChatroomContext);
   const { openSnackbar } = useContext(LoaderContextProvider);
   const [pollText, setPollText] = useState<string>("");
   const [advancedPollOptions, setAdvancedPollOptions] =
@@ -141,7 +145,7 @@ export function useCreatePoll(closeDialog?: ZeroArgVoidReturns): UseCreatePoll {
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const call = await lmChatclient?.postPollConversation({
-        chatroomId: parseInt(chatroomId!),
+        chatroomId: parseInt(chatroomId.toString()),
         state: ConversationStates.MICRO_POLL,
         text: pollText,
         repliedConversationId: conversationToReply
