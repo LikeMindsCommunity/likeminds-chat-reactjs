@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import GlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { GetReportTagsChatResponse } from "../../types/api-responses/getReportTagsResponseChatResponse";
-import { ReportTagObject } from "../../types/models/ReportTags";
+import { ReportTag } from "../../types/models/ReportTags";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "../../hooks/useInput";
 import ReportTagComponent from "./LMReportTagComponent";
 
@@ -18,8 +18,8 @@ const ReportTagsDialog = ({
   closeDialog: ZeroArgVoidReturns;
 }) => {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
-  const [reportTags, setReportTags] = useState<ReportTagObject[]>([]);
-  const [selectedTag, setSelectedTag] = useState<ReportTagObject | null>(null);
+  const [reportTags, setReportTags] = useState<ReportTag[]>([]);
+  const [selectedTag, setSelectedTag] = useState<ReportTag | null>(null);
   const [newReasonTagText, setNewReasonTagText] = useState<string>("");
   useEffect(() => {
     async function getTags() {

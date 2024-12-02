@@ -5,7 +5,7 @@ import LMJoinedDMChannelTile from "./LMJoinedDMChannelTile";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { useContext } from "react";
 
-const LMDMChannelList = ({ currentChatroomId }: LMDMChannelListProps) => {
+const LMChatDMChannelList = ({ currentChatroomId }: LMDMChannelListProps) => {
   const {
     dmChatrooms,
     loadMoreDmChatrooms,
@@ -65,7 +65,7 @@ const LMDMChannelList = ({ currentChatroomId }: LMDMChannelListProps) => {
     </div>
   );
 };
-export default LMDMChannelList;
+export default LMChatDMChannelList;
 
 export interface LMDMChannelListProps {
   currentChatroomId?: string;

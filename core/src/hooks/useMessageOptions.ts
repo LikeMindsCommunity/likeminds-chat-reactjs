@@ -6,14 +6,14 @@ import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { LMChatroomContext } from "../context/LMChatChatroomContext";
 import { CustomActions } from "../customActions";
 import { Conversation } from "../types/models/conversations";
-import { useLocation, useNavigate } from "react-router-dom";
+
 // import { DM_CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
 import { LMMessageListCustomActionsContext } from "../context/LMMessageListCustomActionsContext";
 import LMUserProviderContext from "../context/LMUserProviderContext";
 import MessageListContext from "../context/LMMessageListContext";
 
 export function useMessageOptions(): UseMessageOptionsReturn {
-  const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
+  const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { messageCustomActions = {} } = useContext(
     LMMessageListCustomActionsContext,
   );
@@ -38,7 +38,6 @@ export function useMessageOptions(): UseMessageOptionsReturn {
   const { chatroomTopic, setChatroomTopic, conversations } =
     useContext(MessageListContext);
 
-  const navigate = useNavigate();
   const onReport = useCallback(
     async ({ id, reason }: { id: string | number; reason: string | null }) => {
       try {
@@ -122,7 +121,16 @@ export function useMessageOptions(): UseMessageOptionsReturn {
           const chatroomId = checkDMLimitCall.data.chatroomId;
           if (chatroomId) {
             // navigate to the chatroom
-            navigate(`/${routes?.getDmChannelPath()}/${chatroomId}`);
+            //
+            const NEW_CHATROOM_SELECTED = new CustomEvent(
+              CustomActions.NEW_CHATROOM_SELECTED,
+              {
+                detail: {
+                  chatroomId: chatroomId,
+                },
+              },
+            );
+            document.dispatchEvent(NEW_CHATROOM_SELECTED);
             return;
           }
           const is_request_dm_limit_exceeded =
@@ -133,8 +141,17 @@ export function useMessageOptions(): UseMessageOptionsReturn {
             });
             if (createDMChatroomCall.success) {
               const newChatroomId = createDMChatroomCall.data.chatroom.id;
-              navigate(`/${routes?.getDmChannelPath()}/${newChatroomId}`);
-              // navigate to the chatroom
+
+              const NEW_CHATROOM_SELECTED = new CustomEvent(
+                CustomActions.NEW_CHATROOM_SELECTED,
+                {
+                  detail: {
+                    chatroomId: newChatroomId,
+                  },
+                },
+              );
+              document.dispatchEvent(NEW_CHATROOM_SELECTED);
+              return;
             }
           }
         }
@@ -142,7 +159,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
         console.log(error);
       }
     },
-    [lmChatclient, navigate, routes],
+    [lmChatclient],
   );
 
   const putReaction = useCallback(
@@ -175,13 +192,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
       onReplyPrivately,
     };
   }, [onDelete, onEdit, onReply, onReplyPrivately, onReport, putReaction]);
-  const location = useLocation();
-  const router = useMemo(() => {
-    return {
-      location,
-      navigate,
-    };
-  }, [location, navigate]);
+
   const applicationGeneralDataContext = useMemo(() => {
     return {
       currentCommunity,
@@ -196,7 +207,6 @@ export function useMessageOptions(): UseMessageOptionsReturn {
           null,
           messageDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onReport,
     onDelete: onDeleteCustom
@@ -204,7 +214,6 @@ export function useMessageOptions(): UseMessageOptionsReturn {
           null,
           messageDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onDelete,
     onSetTopic: onSetTopicCustom
@@ -212,7 +221,6 @@ export function useMessageOptions(): UseMessageOptionsReturn {
           null,
           messageDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onSetTopic,
     onEdit: onEditCustom
@@ -220,7 +228,6 @@ export function useMessageOptions(): UseMessageOptionsReturn {
           null,
           messageDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onEdit,
     onReply: onReplyCustom
@@ -228,7 +235,6 @@ export function useMessageOptions(): UseMessageOptionsReturn {
           null,
           messageDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onReply,
     putReaction: putReactionCustom
@@ -236,7 +242,6 @@ export function useMessageOptions(): UseMessageOptionsReturn {
           null,
           messageDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : putReaction,
     onReplyPrivately: onReplyPrivatelyCustom
@@ -244,7 +249,6 @@ export function useMessageOptions(): UseMessageOptionsReturn {
           null,
           messageDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onReplyPrivately,
   };

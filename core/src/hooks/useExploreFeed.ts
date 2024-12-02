@@ -5,10 +5,15 @@ import { LMChatroomContext } from "../context/LMChatChatroomContext";
 import { ZeroArgVoidReturns } from "./useInput";
 import { ViewParticipantsResponse } from "../types/api-responses/viewParticipants";
 import Member from "../types/models/member";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 
-export function useExploreFeed(): UseParticipantsReturns {
+export function useExploreFeed(): useExploreFeed {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { chatroomDetails } = useContext(LMChatroomContext);
+  const { exploreFeedCustomActions = {} } = useContext(
+    CustomisationContextProvider,
+  );
+  const { getMembersCustomCallback } = exploreFeedCustomActions;
   const [participantsList, setParticipantList] = useState<Member[]>([]);
   const participantListPageCount = useRef<number>(1);
   const [loadMoreParticipants, setLoadMoreParticipants] =
@@ -38,16 +43,38 @@ export function useExploreFeed(): UseParticipantsReturns {
       console.log(error);
     }
   };
+  const exploreFeedDefaultActions: ExploreFeedDefaultActions = {
+    getMembers,
+  };
+  const exploreFeedDataStore: ExploreFeedDataStore = {
+    participantsList,
+    loadMoreParticipants,
+  };
 
   return {
     participantsList,
     loadMoreParticipants,
-    getMembers,
+    getMembers: getMembersCustomCallback
+      ? getMembersCustomCallback.bind(
+          null,
+          exploreFeedDefaultActions,
+          exploreFeedDataStore,
+        )
+      : getMembers,
   };
 }
 
-export interface UseParticipantsReturns {
+export interface useExploreFeed {
   participantsList: Member[];
   loadMoreParticipants: boolean;
   getMembers: ZeroArgVoidReturns;
+}
+
+export interface ExploreFeedDefaultActions {
+  getMembers: ZeroArgVoidReturns;
+}
+
+export interface ExploreFeedDataStore {
+  participantsList: Member[];
+  loadMoreParticipants: boolean;
 }

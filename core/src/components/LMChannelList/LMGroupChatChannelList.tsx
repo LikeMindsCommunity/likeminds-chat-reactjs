@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import InfiniteScroll from "react-infinite-scroll-component";
 import useChatroomList from "../../hooks/useChatroomsList";
-import { useNavigate, useParams } from "react-router-dom";
+
 import { ConstantStrings } from "../../enums/lm-common-strings";
 import { Utils } from "../../utils/helpers";
 import { useContext, useState } from "react";
@@ -42,8 +42,6 @@ function LMGroupChatChannelList({
     selectNewChatroom,
   } = useChatroomList(currentChatroomId || "");
   const { currentUser } = useContext(UserProviderContext);
-  const { routes } = useContext(LMGlobalClientProviderContext);
-  const navigate = useNavigate();
 
   // Search in chatroom
   const [openSearchField, setOpenSearchField] = useState<boolean>(false);

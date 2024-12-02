@@ -2,26 +2,22 @@ import sendIcon from "../../assets/img/send.svg";
 import { useInput } from "../../hooks/useInput";
 import InputContext from "../../context/LMInputContext";
 import { Alert } from "@mui/material";
-import { PropsWithChildren, useContext, useMemo, useState } from "react";
+import { useContext, useMemo } from "react";
 import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import UserProviderContext from "../../context/LMUserProviderContext";
-import { MemberType } from "../../enums/lm-member-type";
+
 import { ConstantStrings } from "../../enums/lm-common-strings";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import { ChatRequestStates } from "../../enums/lm-chat-request-states";
-import { InputCustomActions } from "../../types/prop-types/CustomComponents";
+
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
-import { LMInputAttachments } from "../../enums/lm-input-attachment-options";
+
 import LMChatTextArea from "../LMInput/LMChatTextArea";
 import MediaCarousel from "../LMInput/LMCarousel";
 import LMChatbotAiBotInputAttachmentSelector from "./LMChatbotAiBotInputAttachmentSelector";
-interface LMInputProps {
-  inputCustomActions?: InputCustomActions;
-  attachmentOptions?: LMInputAttachments[];
-}
+import { createPortal } from "react-dom";
 
-const LMAiChatbotInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
-  const { inputCustomActions = {}, attachmentOptions } = props;
+const LMAiChatbotInput: React.FC = () => {
   const {
     inputBoxRef,
     inputWrapperRef,
@@ -57,44 +53,17 @@ const LMAiChatbotInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
     sendDMRequest,
     rejectDMRequest,
     onTextInputKeyUpHandler,
-  } = useInput(inputCustomActions);
+    shouldShowInputBox: ShouldShowInputBox,
+    alertMessage,
+  } = useInput();
+
   const { currentUser } = useContext(UserProviderContext);
   const { chatroomDetails } = useContext(LMChatroomContext);
   const { customComponents } = useContext(LMGlobalClientProviderContext);
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  const shouldShowInputBox = useMemo(() => {
-    const canRespondInChatroom = currentUser?.memberRights?.find(
-      (right) => right.state === 3,
-    )?.isSelected
-      ? true
-      : false;
-    if (!canRespondInChatroom) {
-      setAlertMessage(ConstantStrings.USER_MESSAGES_RESTRICTED_BY_CM);
-      return false;
-    } else {
-      setAlertMessage(null);
-    }
-    const memberCanMessage = chatroomDetails?.chatroom.memberCanMessage;
-
-    switch (memberCanMessage) {
-      case true:
-        setAlertMessage(null);
-        return true;
-      case false: {
-        if (currentUser?.state === MemberType.COMMUNITY_MANAGER) {
-          setAlertMessage(null);
-          return true;
-        } else {
-          setAlertMessage(ConstantStrings.ONLY_CM_MESSAGES_ALLOWED);
-          return false;
-        }
-      }
-    }
-  }, [
-    chatroomDetails?.chatroom,
-    currentUser?.memberRights,
-    currentUser?.state,
-  ]);
+  const shouldShowInputBox = useMemo(
+    () => ShouldShowInputBox(),
+    [ShouldShowInputBox],
+  );
   const renderInputBoxComponent = () => {
     let isInputBoxDisabled = false;
     let disabledInputMessage = "";
@@ -107,7 +76,6 @@ const LMAiChatbotInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
       if (chatRequestState === ChatRequestStates.REJECTED_STATE) {
         isInputBoxDisabled = true;
         disabledInputMessage =
-          // chatroom.chatroom.member.id.toString() === currentUser?.id.toString()
           chatroomDetails?.chatroom?.chatRequestedBy?.id.toString() ===
           currentUser?.id.toString()
             ? ConstantStrings.DM_REQUEST_REJECTED_MESSAGE_CHATROOM_USER
@@ -120,8 +88,7 @@ const LMAiChatbotInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
         disabledInputMessage =
           chatroomDetails.chatroom.chatRequestedBy?.id.toString() ===
           currentUser?.id.toString()
-            ? // chatroom.chatroom.member.id.toString() === currentUser?.id.toString()
-              ConstantStrings.DM_REQUEST_PENDING_MESSAGING_CHATROOM_USER
+            ? ConstantStrings.DM_REQUEST_PENDING_MESSAGING_CHATROOM_USER
             : ConstantStrings.DM_REQUEST_PENDING_MESSAGING_CHATROOM_WITH_USER;
       }
     }
@@ -161,12 +128,22 @@ const LMAiChatbotInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
       );
     }
   };
+
   const renderAdditionalComponents = () => {
     return (
       <div className="lm-channel-icon lm-cursor-pointer">
         <LMChatbotAiBotInputAttachmentSelector />
       </div>
     );
+  };
+
+  const renderMediaCarousel = () => {
+    if (imagesAndVideosMediaList?.length || documentsMediaList?.length) {
+      return createPortal(
+        <MediaCarousel />,
+        document.getElementById("lm-media-render-portal")!,
+      );
+    }
   };
 
   if (!shouldShowInputBox) {
@@ -221,12 +198,12 @@ const LMAiChatbotInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
         rejectDMRequest,
         sendDMRequest,
         onTextInputKeyUpHandler,
-        attachmentOptions,
+        shouldShowInputBox: ShouldShowInputBox,
+        alertMessage,
       }}
     >
       <div className="lm-channel-footer-wrapper">
-        <MediaCarousel />
-
+        {renderMediaCarousel()}
         <div className="lm-channel-footer">
           {renderAdditionalComponents()}
           {renderInputBoxComponent()}

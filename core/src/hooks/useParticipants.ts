@@ -10,15 +10,24 @@ import GlobalClientProviderContext from "../context/LMGlobalClientProviderContex
 import { LMChatroomContext } from "../context/LMChatChatroomContext";
 import { ZeroArgVoidReturns } from "./useInput";
 import { ViewParticipantsResponse } from "../types/api-responses/viewParticipants";
-import { useNavigate } from "react-router-dom";
+
 import Member from "../types/models/member";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 
 /**
  * Custom hook that provides functionality related to participants/members of a chatroom.
  * @returns {UseParticipantsReturns} An object containing the participants list, a flag indicating whether there are more participants to load, a function to fetch the members/participants of a chatroom, and a function to navigate back to the chatroom.
  */
 export function useParticipants(): UseParticipantsReturns {
-  const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
+  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { participantsCustomActions = {} } = useContext(
+    CustomisationContextProvider,
+  );
+  const {
+    getMembersCustomCallback,
+    navigateBackToChatroomCustomCallback,
+    setSearchKeywordCustomCallback,
+  } = participantsCustomActions;
   const { chatroomDetails } = useContext(LMChatroomContext);
   const [participantsList, setParticipantList] = useState<Member[]>([]);
   const participantListPageCount = useRef<number>(1);
@@ -28,17 +37,19 @@ export function useParticipants(): UseParticipantsReturns {
     useState<boolean>(true);
   const {
     chatroomDetails: {
+      // TODO
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       chatroom: { id: chatroomId },
     },
   } = useContext(LMChatroomContext);
-  const navigate = useNavigate();
+
   /**
    * Navigates back to the chatroom.
    */
   const navigateBackToChatroom = useCallback(() => {
     window.history.back();
-    navigate(`/${routes?.getChannelPath()}/${chatroomId}`);
-  }, [chatroomId, navigate, routes]);
+    // TODO
+  }, []);
 
   /**
    * Fetches the members/participants of a chatroom.
@@ -92,13 +103,42 @@ export function useParticipants(): UseParticipantsReturns {
     };
   }, [getMembers]);
 
+  const participantsListDefaultActions: ParticipantsDefaultActions = {
+    getMembers,
+    navigateBackToChatroom,
+    setSearchKeyword,
+  };
+  const participantsListDataStore: ParticipantsDataStore = {
+    participantsList,
+    searchKeyword,
+    totalParticipantCount: totalParticipantsCount.current,
+  };
+
   return {
     participantsList,
     loadMoreParticipants,
-    getMembers,
-    navigateBackToChatroom,
+    getMembers: getMembersCustomCallback
+      ? getMembersCustomCallback.bind(
+          null,
+          participantsListDefaultActions,
+          participantsListDataStore,
+        )
+      : getMembers,
+    navigateBackToChatroom: navigateBackToChatroomCustomCallback
+      ? navigateBackToChatroomCustomCallback.bind(
+          null,
+          participantsListDefaultActions,
+          participantsListDataStore,
+        )
+      : navigateBackToChatroom,
     searchKeyword,
-    setSearchKeyword,
+    setSearchKeyword: setSearchKeywordCustomCallback
+      ? setSearchKeywordCustomCallback.bind(
+          null,
+          participantsListDefaultActions,
+          participantsListDataStore,
+        )
+      : setSearchKeyword,
     totalParticipantCount: totalParticipantsCount.current,
   };
 }
@@ -110,5 +150,17 @@ export interface UseParticipantsReturns {
   navigateBackToChatroom: ZeroArgVoidReturns;
   searchKeyword: string;
   setSearchKeyword: Dispatch<string>;
+  totalParticipantCount: number;
+}
+
+export interface ParticipantsDefaultActions {
+  getMembers: ZeroArgVoidReturns;
+  navigateBackToChatroom: ZeroArgVoidReturns;
+  setSearchKeyword: Dispatch<string>;
+}
+
+export interface ParticipantsDataStore {
+  participantsList: Member[];
+  searchKeyword: string;
   totalParticipantCount: number;
 }

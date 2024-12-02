@@ -3,19 +3,15 @@ import { ZeroArgVoidReturns } from "./useInput";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import { LMChatroomContext } from "../context/LMChatChatroomContext";
 import UserProviderContext from "../context/LMUserProviderContext";
-import { useLocation, useNavigate } from "react-router-dom";
+
 import { CustomActions } from "../customActions";
-// import {
-//   PARTICIPANTS_PATH,
-//   ROOT_PATH,
-// } from "../shared/constants/lm.routes.constant";
 import { ChatroomAction } from "../enums/lm-chatroom-actions";
 import { ChatroomMenuCustomActions } from "../types/prop-types/CustomComponents";
 
 function useChatroomMenuOptions(
   chatroomMenuCustomActions?: ChatroomMenuCustomActions,
 ): UseChatroomMenuOptions {
-  const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
+  const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { chatroomDetails, setNewChatroom } = useContext(LMChatroomContext);
   const { currentUser, currentCommunity, memberState, logoutUser } =
     useContext(UserProviderContext);
@@ -26,8 +22,7 @@ function useChatroomMenuOptions(
     onLeaveChatroomCustom,
     onUnBlockCustom,
   } = chatroomMenuCustomActions || {};
-  const navigate = useNavigate();
-  const location = useLocation();
+
   const onMute = useCallback(async () => {
     try {
       const call = await lmChatclient?.muteChatroom({
@@ -84,29 +79,18 @@ function useChatroomMenuOptions(
             detail: chatroomDetails?.chatroom.id,
           }),
         );
-        navigate(`${routes?.getRootPath()}`);
       }
     } catch (error) {
       console.log(error);
     }
-  }, [
-    chatroomDetails,
-    currentUser,
-    lmChatclient,
-    navigate,
-    routes,
-    setNewChatroom,
-  ]);
+  }, [chatroomDetails, currentUser, lmChatclient, setNewChatroom]);
   const onViewParticipants = useCallback(async () => {
     try {
       //
-      navigate(
-        `/${routes?.getParticipantsPath()}/${chatroomDetails?.chatroom.id}`,
-      );
     } catch (error) {
       console.log(error);
     }
-  }, [chatroomDetails, navigate, routes]);
+  }, []);
   const onUnBlock = useCallback(async () => {
     try {
       const unblockCall = await lmChatclient?.blockMember({
@@ -206,12 +190,7 @@ function useChatroomMenuOptions(
       onUnBlock,
     };
   }, [onBlock, onLeaveChatroom, onMute, onUnBlock, onViewParticipants]);
-  const router = useMemo(() => {
-    return {
-      location: location,
-      navigate: navigate,
-    };
-  }, [location, navigate]);
+
   const applicationGeneralDataContext = useMemo(() => {
     return {
       currentUser,
@@ -226,7 +205,6 @@ function useChatroomMenuOptions(
           null,
           chatroomMenuDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onLeaveChatroom,
     onMute: onMuteCustom
@@ -234,7 +212,6 @@ function useChatroomMenuOptions(
           null,
           chatroomMenuDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onMute,
 
@@ -243,7 +220,6 @@ function useChatroomMenuOptions(
           null,
           chatroomMenuDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onViewParticipants,
     onBlock: onBlockCustom
@@ -251,7 +227,6 @@ function useChatroomMenuOptions(
           null,
           chatroomMenuDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onBlock,
     onUnBlock: onUnBlockCustom
@@ -259,7 +234,6 @@ function useChatroomMenuOptions(
           null,
           chatroomMenuDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onUnBlock,
   };

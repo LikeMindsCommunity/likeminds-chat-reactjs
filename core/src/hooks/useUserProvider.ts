@@ -39,6 +39,9 @@ export default function useUserProvider(
   const currentBrowserId = useRef<string>("");
 
   useEffect(() => {
+    console.log("starting time");
+    console.time("ai-chatbot-with-new-user");
+    console.time("ai-chatbot");
     const { accessToken, refreshToken, username, uuid, isGuest, apiKey } =
       userDetails;
 
@@ -109,8 +112,8 @@ export default function useUserProvider(
           // Setting the tokens, API key and User in local storage
 
           setTokensInLocalStorage(
-            initiateUserCall.data?.access_token || "",
-            initiateUserCall.data?.refresh_token || "",
+            initiateUserCall.data?.accessToken || "",
+            initiateUserCall.data?.refreshToken || "",
           );
           lmChatclient?.setApiKeyInLocalStorage(apiKey);
           lmChatclient?.setUserInLocalStorage(
@@ -129,8 +132,8 @@ export default function useUserProvider(
             initiateUserCall?.data?.community || null,
           );
           return {
-            accessToken: initiateUserCall.data?.access_token,
-            refreshToken: initiateUserCall.data?.refresh_token,
+            accessToken: initiateUserCall.data?.accessToken,
+            refreshToken: initiateUserCall.data?.refreshToken,
           };
         }
       } catch (error) {
@@ -167,13 +170,9 @@ export default function useUserProvider(
       }
     }
 
-    document.addEventListener(
-      CustomActions.TRIGGER_SET_USER,
-      // setUser,
-      () => {
-        setUser();
-      },
-    );
+    document.addEventListener(CustomActions.TRIGGER_SET_USER, () => {
+      setUser();
+    });
     setUser();
     return () => {
       document.removeEventListener(CustomActions.TRIGGER_SET_USER, () => {
@@ -186,9 +185,6 @@ export default function useUserProvider(
   useEffect(() => {
     async function notification() {
       try {
-        if (deviceNotificationTrigger) {
-          return;
-        }
         const fingerprint = await getCurrentBrowserFingerPrint();
         currentBrowserId.current = fingerprint;
         const token = await generateToken();
@@ -206,13 +202,13 @@ export default function useUserProvider(
         console.log(error);
       }
     }
-    if (!lmChatUser) {
+    if (lmChatUser) {
       notification();
       return () => {
         setDeviceNotificationTrigger(() => false);
       };
     }
-  }, [client, deviceNotificationTrigger, lmChatUser]);
+  }, [client, lmChatUser]);
   useEffect(() => {
     if (deviceNotificationTrigger) {
       return onMessage(messaging, (payload: any) => {

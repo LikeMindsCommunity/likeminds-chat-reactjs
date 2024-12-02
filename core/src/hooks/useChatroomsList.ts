@@ -4,7 +4,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import { GetHomeFeedRequest } from "@likeminds.community/chat-js/dist/pages/home-feed/types";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
-import { useNavigate } from "react-router-dom";
+
 import UserProviderContext from "../context/LMUserProviderContext";
 import { onValue, ref } from "firebase/database";
 import { CustomActions } from "../customActions";
@@ -12,8 +12,10 @@ import { GetSyncConversationsResponse } from "../types/api-responses/getSyncConv
 import { Chatroom } from "../types/models/Chatroom";
 import { Conversation } from "../types/models/conversations";
 import Member from "../types/models/member";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
+import { ChatroomTypes } from "../enums/lm-chatroom-types";
 
-interface ChatroomProviderInterface {
+interface ChannelListInterface {
   groupChatroomsList: Chatroom[] | null;
   groupChatroomConversationsMeta: Record<string, Conversation>;
   groupChatroomMember: Record<string, Member>;
@@ -32,14 +34,49 @@ interface ChatroomProviderInterface {
   selectNewChatroom: OneArgVoidReturns<string>;
 }
 
+export interface ChannelListDefaultActions {
+  getChatroomsMine: ZeroArgVoidReturns;
+  getExploreGroupChatrooms: ZeroArgVoidReturns;
+  joinAChatroom: OneArgVoidReturns<string>;
+  onLeaveChatroom: OneArgVoidReturns<string>;
+  markReadAChatroom: OneArgVoidReturns<string | number>;
+  checkForDmTab: () => Promise<HideDMTabInfo | null>;
+  approveDMRequest: OneArgVoidReturns<string>;
+  rejectDMRequest: OneArgVoidReturns<string>;
+  selectNewChatroom: OneArgVoidReturns<string>;
+}
+
+export interface ChannelListDataStore {
+  groupChatroomsList: Chatroom[];
+  groupChatroomConversationsMeta: Record<string, Conversation>;
+  groupChatroomMember: Record<string, Member>;
+  exploreGroupChatrooms: Chatroom[];
+  loadMoreExploreGroupChatrooms: boolean;
+  loadMoreGroupChatrooms: boolean;
+  currentSelectedChatroomId: string | null;
+}
+
 export default function useChatroomList(
   currentChatroomId: string,
-): ChatroomProviderInterface {
-  const navigate = useNavigate();
+): ChannelListInterface {
   const [chatroomId, setChatroomId] = useState<string | null>(
     currentChatroomId,
   );
-  const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
+  const { channelListCustomActions = {} } = useContext(
+    CustomisationContextProvider,
+  );
+  const {
+    checkForDmTabCustomCallback,
+    approveDMRequestCustomCallback,
+    rejectDMRequestCustomCallback,
+    selectNewChatroomCustomCallback,
+    markReadAChatroomCustomCallback,
+    onLeaveChatroomCustomCallback,
+    joinAChatroomCustomCallback,
+    getChatroomsMineCustomCallback,
+    getExploreGroupChatroomsCustomCallback,
+  } = channelListCustomActions;
+  const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { currentUser, currentCommunity } = useContext(UserProviderContext);
 
   //   state for groupchat chatrooms should come here
@@ -63,7 +100,7 @@ export default function useChatroomList(
     setGroupChatrooms((currentGroupChatroom) => {
       const chatroomId = (eventObject as CustomEvent).detail;
       const groupChatroomsCopy = [...currentGroupChatroom].filter(
-        (chatroom) => chatroom.id.toString() !== chatroomId,
+        (chatroom) => chatroom.id.toString() !== chatroomId.toString(),
       );
       return groupChatroomsCopy;
     });
@@ -71,7 +108,7 @@ export default function useChatroomList(
       const chatroomId = (eventObject as CustomEvent).detail;
       const exploreChatroomsCopy = [...currentExploreChatrooms].map(
         (chatroom) => {
-          if (chatroom.id.toString() === chatroomId) {
+          if (chatroom.id.toString() === chatroomId.toString()) {
             chatroom.followStatus = false;
           }
           return chatroom;
@@ -103,7 +140,6 @@ export default function useChatroomList(
   const selectNewChatroom = (id: string) => {
     markReadAChatroom(id);
     setChatroomId(id);
-    console.log("Chatroom selected", id);
     const NEW_CHATROOM_SELECTED = new CustomEvent(
       CustomActions.NEW_CHATROOM_SELECTED,
       {
@@ -127,9 +163,27 @@ export default function useChatroomList(
             detail: chatroomId,
           }),
         );
-        if (chatroomID.toString() === chatroomId?.toString()) {
-          navigate(`${routes?.getRootPath()}`);
-        }
+        setGroupChatrooms((currentGroupChatrooms) => {
+          const currentGroupChatroomsCopy = [...currentGroupChatrooms];
+          const targetChatroom = currentGroupChatroomsCopy.findIndex(
+            (chatroom) => chatroom.id.toString() === chatroomID.toString(),
+          );
+          if (targetChatroom) {
+            if (targetChatroom >= 0) {
+              currentGroupChatroomsCopy.splice(targetChatroom, 1);
+            }
+          }
+
+          return currentGroupChatroomsCopy;
+        });
+        setExploreGroupChatrooms((currentExpolreChatrooms) => {
+          return [...currentExpolreChatrooms].map((chatroom) => {
+            if (chatroom.id.toString() === chatroomID?.toString()) {
+              chatroom.followStatus = false;
+            }
+            return chatroom;
+          });
+        });
       }
     } catch (error) {
       console.log(error);
@@ -142,6 +196,7 @@ export default function useChatroomList(
         memberId: parseInt(currentUser?.id?.toString() || "0"),
         value: true,
       });
+      selectNewChatroom(collabcardId);
       setExploreGroupChatrooms((currentExpolreChatrooms) => {
         setGroupChatrooms((currentGroupChatrooms) => {
           const currentGroupChatroomsCopy = [...currentGroupChatrooms];
@@ -161,7 +216,7 @@ export default function useChatroomList(
         });
       });
 
-      navigate(`/${routes?.getChannelPath()}/${collabcardId}`);
+      //
     } catch (error) {
       console.log(error);
     }
@@ -195,7 +250,6 @@ export default function useChatroomList(
           const targetChatroom = groupChatroomsCopy.find((chatroom) => {
             return chatroom.id.toString() === chatroomId.toString();
           });
-
           const targetUpdatedChatroom = {
             ...targetChatroom,
             ...chatroomMeta[chatroomId?.toString()],
@@ -207,7 +261,11 @@ export default function useChatroomList(
               return chatroom.id.toString() !== chatroomId.toString();
             },
           );
-          if (targetUpdatedChatroom) {
+          if (
+            targetUpdatedChatroom.followStatus &&
+            targetUpdatedChatroom?.type !==
+              ChatroomTypes.DIRECT_MESSAGE_CHATROOM
+          ) {
             newGroupChatroomsCopy.unshift(
               targetUpdatedChatroom as unknown as any,
             );
@@ -354,23 +412,97 @@ export default function useChatroomList(
       );
     };
   }, [chatroolLeaveActionListener]);
-  return {
-    groupChatroomsList: groupChatrooms,
+  const channelListDefaultActions: ChannelListDefaultActions = {
     getChatroomsMine,
     getExploreGroupChatrooms,
-    exploreGroupChatrooms,
-    loadMoreExploreGroupChatrooms: loadMoreExploreGroupChatrooms.current,
-    loadMoreGroupChatrooms: loadMoreGroupChatrooms.current,
     joinAChatroom,
     onLeaveChatroom,
-    groupChatroomConversationsMeta,
-    groupChatroomMember,
     markReadAChatroom,
     checkForDmTab,
     approveDMRequest,
     rejectDMRequest,
-    currentSelectedChatroomId: chatroomId,
     selectNewChatroom,
+  };
+  const channelListDataStore: ChannelListDataStore = {
+    groupChatroomsList: groupChatrooms,
+    groupChatroomConversationsMeta,
+    groupChatroomMember,
+    exploreGroupChatrooms,
+    loadMoreExploreGroupChatrooms: loadMoreExploreGroupChatrooms.current,
+    loadMoreGroupChatrooms: loadMoreGroupChatrooms.current,
+    currentSelectedChatroomId: chatroomId,
+  };
+  return {
+    groupChatroomsList: groupChatrooms,
+    getChatroomsMine: getChatroomsMineCustomCallback
+      ? getChatroomsMineCustomCallback.bind(
+          null,
+          channelListDefaultActions,
+          channelListDataStore,
+        )
+      : getChatroomsMine,
+    getExploreGroupChatrooms: getExploreGroupChatroomsCustomCallback
+      ? getExploreGroupChatroomsCustomCallback.bind(
+          null,
+          channelListDefaultActions,
+          channelListDataStore,
+        )
+      : getExploreGroupChatrooms,
+    exploreGroupChatrooms,
+    loadMoreExploreGroupChatrooms: loadMoreExploreGroupChatrooms.current,
+    loadMoreGroupChatrooms: loadMoreGroupChatrooms.current,
+    joinAChatroom: joinAChatroomCustomCallback
+      ? joinAChatroomCustomCallback.bind(
+          null,
+          channelListDefaultActions,
+          channelListDataStore,
+        )
+      : joinAChatroom,
+    onLeaveChatroom: onLeaveChatroomCustomCallback
+      ? onLeaveChatroomCustomCallback.bind(
+          null,
+          channelListDefaultActions,
+          channelListDataStore,
+        )
+      : onLeaveChatroom,
+    groupChatroomConversationsMeta,
+    groupChatroomMember,
+    markReadAChatroom: markReadAChatroomCustomCallback
+      ? markReadAChatroomCustomCallback.bind(
+          null,
+          channelListDefaultActions,
+          channelListDataStore,
+        )
+      : markReadAChatroom,
+    checkForDmTab: checkForDmTabCustomCallback
+      ? checkForDmTabCustomCallback.bind(
+          null,
+          channelListDefaultActions,
+          channelListDataStore,
+        )
+      : checkForDmTab,
+    approveDMRequest: approveDMRequestCustomCallback
+      ? approveDMRequestCustomCallback.bind(
+          null,
+          channelListDefaultActions,
+          channelListDataStore,
+        )
+      : approveDMRequest,
+    rejectDMRequest: rejectDMRequestCustomCallback
+      ? rejectDMRequestCustomCallback.bind(
+          null,
+          channelListDefaultActions,
+          channelListDataStore,
+        )
+      : rejectDMRequest,
+    currentSelectedChatroomId: chatroomId,
+    selectNewChatroom: selectNewChatroomCustomCallback
+      ? selectNewChatroomCustomCallback.bind(
+          null,
+          channelListDefaultActions,
+          channelListDataStore,
+        )
+      : selectNewChatroom,
   };
 }
 

@@ -5,10 +5,16 @@ import { OneArgVoidReturns } from "./useInput";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import LMMessageContext from "../context/LMMessageContext";
 import { LMChatroomContext } from "../context/LMChatChatroomContext";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 
 export function useReactions(): UseReactionReturns {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { message, addReactionLocally } = useContext(LMMessageContext);
+  const { reactionCustomActions = {} } = useContext(
+    CustomisationContextProvider,
+  );
+  const { addReactionCustomCallback, removeReactionCustomCallback } =
+    reactionCustomActions;
   const { chatroomDetails } = useContext(LMChatroomContext);
   const addReaction = async (emoji: EmojiData) => {
     try {
@@ -33,12 +39,36 @@ export function useReactions(): UseReactionReturns {
       console.log(error);
     }
   };
-  return {
+  const reactionsDefaultActions: ReactionsDefaultActions = {
     addReaction,
     removeReaction,
+  };
+  const reactionsDataStore: ReactionsDataStore = {};
+  return {
+    addReaction: addReactionCustomCallback
+      ? addReactionCustomCallback.bind(
+          null,
+          reactionsDefaultActions,
+          reactionsDataStore,
+        )
+      : addReaction,
+    removeReaction: removeReactionCustomCallback
+      ? removeReactionCustomCallback.bind(
+          null,
+          reactionsDefaultActions,
+          reactionsDataStore,
+        )
+      : removeReaction,
   };
 }
 export interface UseReactionReturns {
   addReaction: OneArgVoidReturns<EmojiData>;
   removeReaction: OneArgVoidReturns<string>;
 }
+
+export interface ReactionsDefaultActions {
+  addReaction: OneArgVoidReturns<EmojiData>;
+  removeReaction: OneArgVoidReturns<string>;
+}
+
+export interface ReactionsDataStore {}

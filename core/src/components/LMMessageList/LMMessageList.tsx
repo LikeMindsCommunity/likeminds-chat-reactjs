@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { PropsWithChildren, memo, useContext } from "react";
+import React, { PropsWithChildren, memo, useContext, useEffect } from "react";
 import { MessageListProps } from "../../types/prop-types/MessageListProps";
 import MessageListContext from "../../context/LMMessageListContext";
 import { Conversation } from "../../types/models/conversations";
@@ -87,8 +87,7 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       showSkeletonResponse,
     } = useConversations();
 
-    const { searchConversations, resetSearch, onSearchedConversationClick } =
-      useConversationSearch();
+    const { onSearchedConversationClick } = useConversationSearch();
 
     const imageUrl = chatroomTopic?.member.imageUrl;
     const name = chatroomTopic?.member.name;
@@ -96,13 +95,16 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
     if (chatroomTopic?.deletedBy) {
       setChatroomTopic(null);
     }
-    if (showLoader.current) {
-      return (
-        <div className="lm-channel-loader">
-          <CircularProgress />
-        </div>
-      );
-    }
+    useEffect(() => {
+      if (showSkeletonResponse) {
+        bottomReferenceDiv.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+          inline: "nearest",
+        });
+      }
+    }, [bottomReferenceDiv, showSkeletonResponse]);
+
     return (
       <LMMessageListCustomActionsContext.Provider
         value={{
@@ -111,7 +113,10 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       >
         <div className="lm-channel" ref={messageListContainerRef}>
           {/* Set Chatroom Topic */}
-
+          <div
+            className="lm-media-render-portal"
+            id="lm-media-render-portal"
+          ></div>
           {chatroomTopic ? (
             <>
               <div
@@ -201,7 +206,10 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
                       <LMMessageMiddleware
                         message={conversation}
                         index={index}
-                        key={conversation.id}
+                        key={
+                          conversation.temporaryId?.toString() ||
+                          conversation.id
+                        }
                       />
                     );
                   }

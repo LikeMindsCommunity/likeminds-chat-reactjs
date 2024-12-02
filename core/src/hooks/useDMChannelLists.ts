@@ -9,6 +9,7 @@ import { Conversation } from "../types/models/conversations";
 import { Chatroom } from "../types/models/Chatroom";
 import Member from "../types/models/member";
 import { CustomActions } from "../customActions";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 
 /**
  * Custom hook for managing DM channel lists.
@@ -19,6 +20,15 @@ export default function useDmChannelLists(
   currentChatroomId: string,
 ): UseDmChannelLists {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { dmChannelListCustomActions = {} } = useContext(
+    CustomisationContextProvider,
+  );
+  const {
+    getDMChatroomsListCustomCallback,
+    refreshDMChatroomsCustomCallback,
+    markReadADMChatroomCustomCallback,
+    selectNewChatroomCustomCallback,
+  } = dmChannelListCustomActions;
   const { currentCommunity } = useContext(UserProviderContext);
   const [conversationsData, setConversationsData] = useState<
     Record<string, Conversation>
@@ -99,7 +109,6 @@ export default function useDmChannelLists(
   const selectNewChatroom = (id: string) => {
     markReadADMChatroom(id);
     setChatroomId(id);
-    console.log("Chatroom selected", id);
     const NEW_CHATROOM_SELECTED = new CustomEvent(
       CustomActions.NEW_CHATROOM_SELECTED,
       {
@@ -177,15 +186,52 @@ export default function useDmChannelLists(
   useEffect(() => {
     getDMChatroomsList();
   }, [getDMChatroomsList]);
-  return {
-    dmChatrooms,
-    loadMoreDmChatrooms: loadMoreDmChatrooms.current,
+  const dmChannelListDefaultActions: DMChannelListDefaultActions = {
     getDMChatroomsList,
     refreshDMChatrooms,
     markReadADMChatroom,
+    selectNewChatroom,
+  };
+  const dmChannelListDataStore: DMChannelListDataStore = {
+    dmChatrooms,
+    loadMoreDmChatrooms: loadMoreDmChatrooms.current,
+    conversationsData,
+    usersData,
+    currentSelectedChatroomId: chatroomId,
+  };
+  return {
+    dmChatrooms,
+    loadMoreDmChatrooms: loadMoreDmChatrooms.current,
+    getDMChatroomsList: getDMChatroomsListCustomCallback
+      ? getDMChatroomsListCustomCallback.bind(
+          null,
+          dmChannelListDefaultActions,
+          dmChannelListDataStore,
+        )
+      : getDMChatroomsList,
+    refreshDMChatrooms: refreshDMChatroomsCustomCallback
+      ? refreshDMChatroomsCustomCallback.bind(
+          null,
+          dmChannelListDefaultActions,
+          dmChannelListDataStore,
+        )
+      : refreshDMChatrooms,
+    markReadADMChatroom: markReadADMChatroomCustomCallback
+      ? markReadADMChatroomCustomCallback.bind(
+          null,
+          dmChannelListDefaultActions,
+          dmChannelListDataStore,
+        )
+      : markReadADMChatroom,
     usersData,
     conversationsData,
-    selectNewChatroom,
+    selectNewChatroom: selectNewChatroomCustomCallback
+      ? selectNewChatroomCustomCallback.bind(
+          null,
+          dmChannelListDefaultActions,
+          dmChannelListDataStore,
+        )
+      : selectNewChatroom,
     currentSelectedChatroomId: chatroomId,
     // Return any additional functions here
   };
@@ -201,4 +247,19 @@ export interface UseDmChannelLists {
   selectNewChatroom: OneArgVoidReturns<string>;
   currentSelectedChatroomId: string | null;
   // Add any additional functions here
+}
+
+export interface DMChannelListDefaultActions {
+  getDMChatroomsList: ZeroArgVoidReturns;
+  refreshDMChatrooms: OneArgVoidReturns<string | number>;
+  markReadADMChatroom: OneArgVoidReturns<string | number>;
+  selectNewChatroom: OneArgVoidReturns<string>;
+}
+
+export interface DMChannelListDataStore {
+  dmChatrooms: Chatroom[];
+  loadMoreDmChatrooms: boolean;
+  conversationsData: Record<string, Conversation>;
+  usersData: Record<string, Member>;
+  currentSelectedChatroomId: string | null;
 }

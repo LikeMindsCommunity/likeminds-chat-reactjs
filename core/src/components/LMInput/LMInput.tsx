@@ -10,28 +10,19 @@ import { Alert, Collapse, IconButton } from "@mui/material";
 import MediaCarousel from "./LMCarousel";
 import AttachmentsSelector from "./LMAttachmentsSelector";
 import giffyIcon from "../../assets/img/gif.png";
-
 import GiphySearch from "./LMGiphySearch";
-import { PropsWithChildren, useContext, useMemo, useState } from "react";
+import { useContext, useMemo } from "react";
 import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import UserProviderContext from "../../context/LMUserProviderContext";
-import { MemberType } from "../../enums/lm-member-type";
 import { ConstantStrings } from "../../enums/lm-common-strings";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import { ChatRequestStates } from "../../enums/lm-chat-request-states";
 import LMMessageReplyCollapse from "./LMMessageReplyCollapse";
 import LMMessageEditCollapse from "./LMMessageEditCollapse";
-import { InputCustomActions } from "../../types/prop-types/CustomComponents";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
-import { LMInputAttachments } from "../../enums/lm-input-attachment-options";
-interface LMInputProps {
-  inputCustomActions?: InputCustomActions;
-  attachmentOptions?: LMInputAttachments[];
-}
+import { createPortal } from "react-dom";
 
-const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
-  const { inputCustomActions = {}, attachmentOptions } = props;
-
+const LMInput: React.FC = () => {
   const {
     inputBoxRef,
     inputWrapperRef,
@@ -67,45 +58,18 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
     sendDMRequest,
     rejectDMRequest,
     onTextInputKeyUpHandler,
-  } = useInput(inputCustomActions);
+    shouldShowInputBox: ShouldShowInputBox,
+    alertMessage,
+  } = useInput();
   const { currentUser } = useContext(UserProviderContext);
   const { chatroomDetails, conversationToReply, conversationToedit } =
     useContext(LMChatroomContext);
   const { customComponents } = useContext(LMGlobalClientProviderContext);
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  const shouldShowInputBox = useMemo(() => {
-    const canRespondInChatroom = currentUser?.memberRights?.find(
-      (right) => right.state === 3,
-    )?.isSelected
-      ? true
-      : false;
-    if (!canRespondInChatroom) {
-      setAlertMessage(ConstantStrings.USER_MESSAGES_RESTRICTED_BY_CM);
-      return false;
-    } else {
-      setAlertMessage(null);
-    }
-    const memberCanMessage = chatroomDetails?.chatroom.memberCanMessage;
 
-    switch (memberCanMessage) {
-      case true:
-        setAlertMessage(null);
-        return true;
-      case false: {
-        if (currentUser?.state === MemberType.COMMUNITY_MANAGER) {
-          setAlertMessage(null);
-          return true;
-        } else {
-          setAlertMessage(ConstantStrings.ONLY_CM_MESSAGES_ALLOWED);
-          return false;
-        }
-      }
-    }
-  }, [
-    chatroomDetails?.chatroom,
-    currentUser?.memberRights,
-    currentUser?.state,
-  ]);
+  const shouldShowInputBox = useMemo(
+    () => ShouldShowInputBox(),
+    [ShouldShowInputBox],
+  );
   const renderInputBoxComponent = () => {
     let isInputBoxDisabled = false;
     let disabledInputMessage = "";
@@ -161,9 +125,12 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
         <>
           <LMChatTextArea />
           <div className="lm-channel-icon send lm-cursor-pointer">
-            <IconButton onClick={() => postMessage()}>
+            <button
+              onClick={() => postMessage()}
+              className="lm-post-conversation"
+            >
               <img src={sendIcon} alt="sendIcon" />
-            </IconButton>
+            </button>
           </div>
         </>
       );
@@ -193,6 +160,7 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
               onClick={() => {
                 setOpenGifCollapse(!openGifCollapse);
               }}
+              className="lm-giffy-icon"
             />
           </div>
         </>
@@ -263,6 +231,14 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
       }
     }
   };
+  const renderMediaCarousel = () => {
+    if (imagesAndVideosMediaList?.length || documentsMediaList?.length) {
+      return createPortal(
+        <MediaCarousel />,
+        document.getElementById("lm-media-render-portal")!,
+      );
+    }
+  };
   if (!shouldShowInputBox) {
     return (
       <Alert
@@ -315,7 +291,8 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
         rejectDMRequest,
         sendDMRequest,
         onTextInputKeyUpHandler,
-        attachmentOptions,
+        shouldShowInputBox: ShouldShowInputBox,
+        alertMessage,
       }}
     >
       <div className="lm-channel-footer-wrapper">
@@ -391,9 +368,7 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
           {renderDMChatroomStatusComponents()}
         </Collapse>
         {/* Media Carousel */}
-        <div>
-          <MediaCarousel />
-        </div>
+        {renderMediaCarousel()}
 
         <div className="lm-channel-footer">
           {renderAdditionalComponents()}

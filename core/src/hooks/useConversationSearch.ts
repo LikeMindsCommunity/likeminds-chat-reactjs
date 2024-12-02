@@ -11,9 +11,19 @@ import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { LMChatroomContext } from "../context/LMChatChatroomContext";
 
 import { Conversation } from "../types/models/conversations";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 
 export function useConversationSearch(): UseConversationSearch {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { conversationSearchCustomActions = {} } = useContext(
+    CustomisationContextProvider,
+  );
+  const {
+    searchConversationsCustomCallback,
+    resetSearchCustomCallback,
+    setSearchKeyCustomCallback,
+    onSearchedConversationClickCustomCallback,
+  } = conversationSearchCustomActions;
   const { chatroomDetails, setSearchedConversationId } =
     useContext(LMChatroomContext);
   const [searchList, setSearchList] = useState<Conversation[]>([]);
@@ -69,15 +79,49 @@ export function useConversationSearch(): UseConversationSearch {
       pageCount.current = 1;
     };
   }, [searchConversations, searchKey]);
-
-  return {
-    searchList,
+  const conversationSearchDefaultActions: ConversationSearchDefaultActions = {
     searchConversations,
     resetSearch,
-    loadMoreConversations,
-    onSearchedConversationClick,
-    searchKey,
     setSearchKey,
+    onSearchedConversationClick,
+  };
+  const conversationSearchDataStore: ConversationSearchDataStore = {
+    searchKey,
+    searchList,
+    loadMoreConversations,
+  };
+  return {
+    searchList,
+    searchConversations: searchConversationsCustomCallback
+      ? searchConversationsCustomCallback?.bind(
+          null,
+          conversationSearchDefaultActions,
+          conversationSearchDataStore,
+        )
+      : searchConversations,
+    resetSearch: resetSearchCustomCallback
+      ? resetSearchCustomCallback.bind(
+          null,
+          conversationSearchDefaultActions,
+          conversationSearchDataStore,
+        )
+      : resetSearch,
+    loadMoreConversations,
+    onSearchedConversationClick: onSearchedConversationClickCustomCallback
+      ? onSearchedConversationClickCustomCallback.bind(
+          null,
+          conversationSearchDefaultActions,
+          conversationSearchDataStore,
+        )
+      : onSearchedConversationClick,
+    searchKey,
+    setSearchKey: setSearchKeyCustomCallback
+      ? setSearchKeyCustomCallback.bind(
+          null,
+          conversationSearchDefaultActions,
+          conversationSearchDataStore,
+        )
+      : setSearchKey,
   };
 }
 
@@ -89,4 +133,17 @@ interface UseConversationSearch {
   searchConversations: ZeroArgVoidReturns;
   loadMoreConversations: boolean;
   onSearchedConversationClick: OneArgVoidReturns<number>;
+}
+
+export interface ConversationSearchDefaultActions {
+  searchConversations: ZeroArgVoidReturns;
+  resetSearch: ZeroArgVoidReturns;
+  setSearchKey: Dispatch<string>;
+  onSearchedConversationClick: OneArgVoidReturns<number>;
+}
+
+export interface ConversationSearchDataStore {
+  searchKey: string;
+  searchList: Conversation[];
+  loadMoreConversations: boolean;
 }

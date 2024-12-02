@@ -102,8 +102,6 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
         removeReactionLocally: removeReactionLocally,
         addPollOptionLocally: addPollOptionLocally,
         updatePollOnSubmitLocally: updatePollOnSubmitLocally,
-        // Have to set
-        // TODO
         chatroomTopic: () => {},
       }}
     >

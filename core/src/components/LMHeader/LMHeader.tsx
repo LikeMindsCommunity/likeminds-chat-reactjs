@@ -23,7 +23,6 @@ import LMConversationSearch from "../search/LMConversationSearch";
 import { ChatroomMenuCustomActions } from "../../types/prop-types/CustomComponents";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 
-import { useNavigate } from "react-router-dom";
 interface LMHeaderProps {
   chatroomMenuCustomActions?: ChatroomMenuCustomActions;
 }
@@ -54,13 +53,9 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
     return recieverUser;
   }, [chatroomDetails, currentUser]);
 
-  const navigate = useNavigate();
   /**
    * Navigates back to the chatroom.
    */
-  const navigateBack = () => {
-    navigate(`/channel`);
-  };
 
   const chatroomAvatar = useMemo(() => {
     if (
@@ -122,10 +117,7 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
           <>
             <div className="lm-channel-header">
               <div className="lm-header-left">
-                <div
-                  className="back-icon header-back-icon"
-                  onClick={navigateBack}
-                >
+                <div className="back-icon header-back-icon">
                   <img src={backIcon} alt="back-icon" />
                 </div>
                 <div className="lm-channel-img">{chatroomAvatar}</div>

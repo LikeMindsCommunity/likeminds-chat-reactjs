@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Attachment } from "./Attachment";
 import { Chatroom } from "./Chatroom";
 import { Community } from "./Community";
 import Member from "./member";
 
 export interface SearchedChatroom {
-  attachments: any[];
+  attachments: Attachment[];
   attending_status: boolean;
   chatroom: Chatroom;
   community: Community;

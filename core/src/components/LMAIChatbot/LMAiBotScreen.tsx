@@ -9,12 +9,14 @@ const LMAiBotScreen: React.FC<LMAiBotScreenProps> = ({
   aiChatbotChatroomId,
 }) => {
   return (
-    <div className="lm-chat-ai-bot-channel">
-      <LMChatroom currentChatroomId={aiChatbotChatroomId}>
-        <LMChatAiChatbotHeader />
-        <LMMessageList />
-        <LMAiChatbotInput />
-      </LMChatroom>
+    <div className="lm-chat-ai-bot-container">
+      <div className="lm-chat-ai-bot-channel">
+        <LMChatroom currentChatroomId={aiChatbotChatroomId}>
+          <LMChatAiChatbotHeader />
+          <LMMessageList />
+          <LMAiChatbotInput />
+        </LMChatroom>
+      </div>
     </div>
   );
 };

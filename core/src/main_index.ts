@@ -24,7 +24,7 @@ import DmReqBlock from "./components/LMMessageList/LMDMReqBlock";
 import LMMessageMiddleware from "./components/LMMessageList/LMMessageMiddleware";
 import LMMessageList from "./components/LMMessageList/LMMessageList";
 import LMParticipantList from "./components/LMParticipant/LMParticipantList";
-import LMDMChannelList from "./components/LMChannelList/LMDMChatChannels";
+import LMChatDMChannelList from "./components/LMChannelList/LMDMChatChannels";
 import LMJoinedDMChannelTile from "./components/LMChannelList/LMJoinedDMChannelTile";
 import LMMessageReplyCollapse from "./components/LMInput/LMMessageReplyCollapse";
 import LMPollCreationDialog from "./components/LMInput/LMPollCreationDialog";
@@ -97,7 +97,7 @@ export {
   LMMessageList,
   LMParticipantList,
   LMReactGiffySearchComponent,
-  LMDMChannelList as LMDMChatChannels,
+  LMChatDMChannelList as LMDMChatChannels,
   LMJoinedDMChannelTile,
   LMMessageReplyCollapse,
   LMPollCreationDialog,

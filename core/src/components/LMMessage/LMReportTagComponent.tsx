@@ -1,10 +1,10 @@
 import React from "react";
 // import { ReportTagObject } from "../../types/api-responses/getReportTagsResponseChatResponse";
-import { ReportTagObject } from "../../types/models/ReportTags";
+import { ReportTag } from "../../types/models/ReportTags";
 export interface ReportTagComponentProp {
-  selectedTag: ReportTagObject | null;
-  tag: ReportTagObject;
-  setSelectedTag: React.Dispatch<ReportTagObject | null>;
+  selectedTag: ReportTag | null;
+  tag: ReportTag;
+  setSelectedTag: React.Dispatch<ReportTag | null>;
 }
 const ReportTagComponent = ({
   selectedTag,

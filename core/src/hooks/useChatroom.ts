@@ -9,6 +9,7 @@ import {
 } from "../types/api-responses/getChatroomResponse";
 import { ReplyDmQueries } from "../enums/lm-reply-dm-queries";
 import { CustomActions } from "../customActions";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 
 interface UseChatroom {
   chatroomDetails: ChatroomDetails | null;
@@ -22,7 +23,31 @@ interface UseChatroom {
   setSearchedConversationId: React.Dispatch<number | null>;
 }
 
+export interface ChatroomDefaultActions {
+  setChatroom: React.Dispatch<ChatroomDetails | null>;
+  setConversationToReply: React.Dispatch<Conversation | null>;
+  setConversationToEdit: React.Dispatch<Conversation | null>;
+  setSearchedConversationId: React.Dispatch<number | null>;
+}
+
+export interface ChatroomDataStore {
+  chatroomDetails: ChatroomDetails | null;
+  conversationToReply: Conversation | null;
+  conversationToedit: Conversation | null;
+  canUserReplyPrivately: ReplyDmQueries;
+  searchedConversationId: number | null;
+}
+
 export default function useChatroom(chatroomId: string): UseChatroom {
+  const { chatroomCustomActions = {} } = useContext(
+    CustomisationContextProvider,
+  );
+  const {
+    setChatroomCustomCallback,
+    setConversationToEditCustomCallback,
+    setConversationToReplyCustomCallback,
+    setSearchedConversationIdCustomCallback,
+  } = chatroomCustomActions;
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
   const [chatroomDetails, setChatroomDetails] =
@@ -138,6 +163,19 @@ export default function useChatroom(chatroomId: string): UseChatroom {
   function resetChatroom() {
     setChatroomDetails(null);
   }
+  const chatroomDefaultActions: ChatroomDefaultActions = {
+    setChatroom: setChatroomDetails,
+    setConversationToReply: setConversationToReply,
+    setConversationToEdit: setConversationToEdit,
+    setSearchedConversationId: setSearchedConversationId,
+  };
+  const chatroomDataStore: ChatroomDataStore = {
+    chatroomDetails: chatroomDetails,
+    conversationToReply: conversationToReply,
+    conversationToedit: conversationToedit,
+    canUserReplyPrivately: canUserReplyPrivately,
+    searchedConversationId: searchedConversationId,
+  };
 
   function logError(error: unknown): null {
     // Check if the error is an instance of Error
@@ -152,14 +190,38 @@ export default function useChatroom(chatroomId: string): UseChatroom {
   }
   return {
     chatroomDetails: chatroomDetails,
-    setChatroom: setChatroomDetails,
+    setChatroom: setChatroomCustomCallback
+      ? setChatroomCustomCallback.bind(
+          null,
+          chatroomDefaultActions,
+          chatroomDataStore,
+        )
+      : setChatroomDetails,
     conversationToedit,
     conversationToReply,
-    setConversationToEdit,
-    setConversationToReply,
+    setConversationToEdit: setConversationToEditCustomCallback
+      ? setConversationToEditCustomCallback.bind(
+          null,
+          chatroomDefaultActions,
+          chatroomDataStore,
+        )
+      : setConversationToEdit,
+    setConversationToReply: setConversationToReplyCustomCallback
+      ? setConversationToReplyCustomCallback.bind(
+          null,
+          chatroomDefaultActions,
+          chatroomDataStore,
+        )
+      : setConversationToReply,
     canUserReplyPrivately,
     searchedConversationId,
-    setSearchedConversationId,
+    setSearchedConversationId: setSearchedConversationIdCustomCallback
+      ? setSearchedConversationIdCustomCallback.bind(
+          null,
+          chatroomDefaultActions,
+          chatroomDataStore,
+        )
+      : setSearchedConversationId,
   };
 }
 export type UnknownReturnFunction = (...props: unknown[]) => unknown;

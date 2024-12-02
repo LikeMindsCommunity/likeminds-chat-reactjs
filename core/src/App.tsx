@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import { useContext, useState } from "react";
-
+import { FC, useContext, useState } from "react";
+import animationData from "./assets/animation/AiBotLoader.json";
 import {
   LMClientOverlayProvider,
   LMChannel,
@@ -21,6 +21,7 @@ import { Toaster } from "react-hot-toast";
 // import LMChatAIButton from "./components/LMAIChatbot/LMChatAIButton";
 import { LMChatCurrentMode } from "./enums/lm-chat-modes";
 import LMChatAIButton from "./components/LMAIChatbot/LMChatAIButton";
+import Lottie from "lottie-react";
 
 const LMAppLayout = () => {
   const [userDetails, setUserDetails] = useState<{
@@ -31,10 +32,14 @@ const LMAppLayout = () => {
     isGuest?: boolean;
     apiKey?: string;
   }>({
-    apiKey: "",
+    // apiKey: "d4356d31-306e-406d-aa4a-cd49f1b88f19",
+    // Beta Key Below
+    // apiKey: "aa2a3a49-f371-45de-a071-7cafc1fa927a",
+    // AI chatbot key below
+    apiKey: "3966d591-3ba1-46db-b25b-69a45e1414f3",
     isGuest: false,
-    uuid: "Test User 01",
-    username: "Test User 01",
+    uuid: "Test User 62",
+    username: "Test User 62",
   });
   const LMCORECALLBACKS = new LMCoreCallbacks(
     (a: string, b: string) => {
@@ -117,14 +122,33 @@ const LMAppLayout = () => {
           <Route
             path={ROOT_PATH}
             element={
-              // <LMChannel
-              //   currentMode={LMChatCurrentMode.GROUP_CHAT}
-              //   currentChatroomId={"29053"}
-              // />
-              <LMChatAIButton />
+              <LMChannel currentMode={LMChatCurrentMode.DIRECT_MESSAGE} />
             }
           >
-            <Route path={MODE + "/"} element={<LMChatAIButton />} />
+            {/* <LMChatAIButton client={lmChatClient} userDetails={userDetails} /> */}
+            <Route
+              path={MODE + "/" + ID_PATH}
+              element={
+                <>
+                  <LMHeader />
+                  <LMMessageList />
+                  <LMInput />
+                </>
+                // <LMChatAIButton />
+              }
+            />
+            <Route
+              path={PARTICIPANTS_PATH + "/" + ID_PATH}
+              element={<LMParticipantList />}
+            />
+          </Route>
+          <Route
+            path={ROOT_PATH}
+            element={
+              <LMChatAIButton client={lmChatClient} userDetails={userDetails} />
+            }
+          >
+            {/* <Route path={MODE + "/"} element={<LMChatAIButton />} /> */}
             <Route
               path={MODE + "/" + ID_PATH}
               element={
@@ -144,6 +168,30 @@ const LMAppLayout = () => {
         </Routes>
       </LMClientOverlayProvider>
     </BrowserRouter>
+    // <BrowserRouter>
+    // <LMChatAIButton
+    //   lmChatCoreCallbacks={LMCORECALLBACKS}
+    //   client={lmChatClient}
+    //   userDetails={userDetails}
+    //   customComponents={{
+    //     noChatroomSelected: LMChatroomLoader,
+    //   }}
+    // />
+    // </BrowserRouter>
+  );
+};
+
+const LMChatroomLoader: FC = () => {
+  return (
+    <div className="lm-chat-ai-bot-loader">
+      <Lottie
+        animationData={animationData}
+        height={400}
+        width={400}
+        loop={true}
+      />
+      <div className="lm-chai-ai-bot-label">Setting up AI chatbot</div>
+    </div>
   );
 };
 

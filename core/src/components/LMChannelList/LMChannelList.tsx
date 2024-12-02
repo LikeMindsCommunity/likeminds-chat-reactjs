@@ -1,4 +1,4 @@
-import LMDMChannelList from "./LMDMChatChannels";
+import LMChatDMChannelList from "./LMDMChatChannels";
 import LMGroupChatChannelList from "./LMGroupChatChannelList";
 import { LMChatCurrentMode } from "../../enums/lm-chat-modes";
 
@@ -10,7 +10,7 @@ const LMChannelList = ({
     if (currentMode === LMChatCurrentMode.GROUP_CHAT) {
       return <LMGroupChatChannelList currentChatroomId={currentChatroomId} />;
     } else if (currentMode === LMChatCurrentMode.DIRECT_MESSAGE) {
-      return <LMDMChannelList currentChatroomId={currentChatroomId} />;
+      return <LMChatDMChannelList currentChatroomId={currentChatroomId} />;
     }
   };
   return switcher();

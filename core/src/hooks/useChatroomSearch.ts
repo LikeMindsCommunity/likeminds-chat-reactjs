@@ -9,21 +9,29 @@ import {
 // import { SearchedChatroom } from "../types/models/SearchedChatroom";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
-import { useNavigate } from "react-router-dom";
 import { Chatroom } from "../types/models/Chatroom";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 // import { CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
 
 export function useChatroomSearch(): UseChatroomSearch {
-  const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
+  const { chatroomSearchCustomActions = {} } = useContext(
+    CustomisationContextProvider,
+  );
+  const {
+    searchChatroomsCustomCallback,
+    onSearchChatroomClickCustomCallback,
+    setSearchKeyCustomCallback,
+    resetSearchCustomCallback,
+  } = chatroomSearchCustomActions;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { lmChatclient } = useContext(GlobalClientProviderContext);
   const [searchList, setSearchList] = useState<Chatroom[]>([]);
   const [searchKey, setSearchKey] = useState<string>("");
   const [loadMoreChatrooms, setLoadMoreChatrooms] = useState<boolean>(false);
   const pageCount = useRef<number>(1);
   const followStatus = useRef<boolean>(true);
-  const navigate = useNavigate();
-  const onSearchChatroomClick = (chatroomId: number) => {
-    navigate(`/${routes?.getChannelPath()}/${chatroomId}`);
-  };
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const onSearchChatroomClick = (chatroomId: number) => {};
   const searchChatrooms = useCallback(async () => {
     try {
       if (searchKey.length === 0) {
@@ -79,14 +87,49 @@ export function useChatroomSearch(): UseChatroomSearch {
     };
   }, [searchChatrooms, searchKey]);
 
-  return {
-    searchList,
+  const chatroomSearchDefaultActions: ChatroomSearchDefaultActions = {
     searchChatrooms,
+    onSearchChatroomClick,
+    setSearchKey,
     resetSearch,
+  };
+  const chatroomSearchDataStore: ChatroomSearchDataStore = {
     loadMoreChatrooms,
     searchKey,
-    setSearchKey,
-    onSearchChatroomClick,
+    searchList,
+  };
+  return {
+    searchList,
+    searchChatrooms: searchChatroomsCustomCallback
+      ? searchChatroomsCustomCallback.bind(
+          null,
+          chatroomSearchDefaultActions,
+          chatroomSearchDataStore,
+        )
+      : searchChatrooms,
+    resetSearch: resetSearchCustomCallback
+      ? resetSearchCustomCallback.bind(
+          null,
+          chatroomSearchDefaultActions,
+          chatroomSearchDataStore,
+        )
+      : resetSearch,
+    loadMoreChatrooms,
+    searchKey,
+    setSearchKey: setSearchKeyCustomCallback
+      ? setSearchKeyCustomCallback.bind(
+          null,
+          chatroomSearchDefaultActions,
+          chatroomSearchDataStore,
+        )
+      : setSearchKey,
+    onSearchChatroomClick: onSearchChatroomClickCustomCallback
+      ? onSearchChatroomClickCustomCallback.bind(
+          null,
+          chatroomSearchDefaultActions,
+          chatroomSearchDataStore,
+        )
+      : onSearchChatroomClick,
   };
 }
 
@@ -98,4 +141,17 @@ interface UseChatroomSearch {
   searchKey: string;
   setSearchKey: Dispatch<string>;
   onSearchChatroomClick: OneArgVoidReturns<number>;
+}
+
+export interface ChatroomSearchDefaultActions {
+  searchChatrooms: ZeroArgVoidReturns;
+  onSearchChatroomClick: OneArgVoidReturns<number>;
+  setSearchKey: Dispatch<string>;
+  resetSearch: ZeroArgVoidReturns;
+}
+
+export interface ChatroomSearchDataStore {
+  loadMoreChatrooms: boolean;
+  searchKey: string;
+  searchList: Chatroom[];
 }

@@ -23,6 +23,8 @@ import { GetSyncConversationsResponse } from "../types/api-responses/getSyncConv
 import ConversationStates from "../enums/lm-conversation-states";
 import { Utils } from "../utils/helpers";
 import { MemberRole } from "@likeminds.community/chat-js-beta";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
+import Member from "../types/models/member";
 
 interface UseConversations {
   conversations: Conversation[] | null;
@@ -34,7 +36,6 @@ interface UseConversations {
   loadMore: boolean;
   showLoader: MutableRefObject<boolean>;
   showSkeletonResponse: boolean;
-  // showLoader: boolean;
   bottomReferenceDiv: MutableRefObject<HTMLDivElement | null>;
   messageListContainerRef: MutableRefObject<HTMLDivElement | null>;
   unBlockUserInDM: ZeroArgVoidReturns;
@@ -74,8 +75,9 @@ export default function useConversations(): UseConversations {
   const stopAdditionalCalls = useRef<boolean>(false);
   // id of conversation retrieved from bottomScrollGetconversation
   const bottomConversationId = useRef<number | null>(null);
-  // const [showLoader, setShowLoader] = useState<boolean>(false);
   const showLoader = useRef<boolean>(true);
+  const localConversationIds = useRef<Set<number>>(new Set());
+
   const transformConversations = (
     currentConversations: Conversation[],
     chatroomConversationsCall: GetSyncConversationsResponse,
@@ -90,6 +92,8 @@ export default function useConversations(): UseConversations {
       userMeta,
       widgets,
     } = chatroomConversationsCall.data;
+    const newConversationsIdMap = new Map<number, Conversation>();
+    const newConversationRemovedMap = new Map<number, Conversation>();
     currentConversations = [...(currentConversations || [])];
     const newConversations = conversationsData
       .map((conversation) => {
@@ -122,11 +126,7 @@ export default function useConversations(): UseConversations {
           newConversation.member.roles?.includes(MemberRole.Chatbot) &&
             setShowSkeletonResponse(false);
         }
-        // if (conversation?.topic_id) {
-        //   newConversation.topic = conversations_data[
-        //     conversation?.topic_id
-        //   ] as any;
-        // }
+
         if (conversation.state === ConversationStates.MICRO_POLL) {
           newConversation.polls = convPollsMeta[
             conversation?.id!.toString()
@@ -146,7 +146,7 @@ export default function useConversations(): UseConversations {
               convAttachmentsMeta[newConversation.replyId!.toString()];
           }
           const repliedConversationUser = userMeta[
-            newRepliedConversation.user_id.toString()
+            newRepliedConversation.userId.toString()
           ] as any;
           newRepliedConversation.member = repliedConversationUser;
           newConversation.replyConversationObject = newRepliedConversation;
@@ -157,10 +157,44 @@ export default function useConversations(): UseConversations {
         return newConversation;
       })
       .reverse();
+    newConversations.forEach((conversation) => {
+      const tempId = conversation.temporaryId;
+      if (tempId) {
+        newConversationsIdMap.set(parseInt(tempId), conversation);
+      }
+    });
+
+    const newCurrentConversations = currentConversations.map((conversation) => {
+      if (
+        conversation.state === ConversationStates.LOCAL_CONVERSATION_STATE &&
+        localConversationIds.current.has(
+          parseInt(conversation?.temporaryId?.toString() || ""),
+        )
+      ) {
+        const updatedConversation = newConversationsIdMap.get(
+          parseInt(conversation?.temporaryId?.toString() || ""),
+        );
+        if (updatedConversation) {
+          const updatedConversationCopy = { ...updatedConversation };
+          newConversationRemovedMap.set(
+            updatedConversationCopy.id,
+            conversation,
+          );
+          return updatedConversationCopy;
+        } else {
+          return conversation;
+        }
+      } else {
+        return conversation;
+      }
+    });
+
     if (appendAtEnd) {
       const newConversationsList = [
-        ...currentConversations,
-        ...newConversations,
+        ...newCurrentConversations,
+        ...newConversations.filter(
+          (conversation) => !newConversationRemovedMap.has(conversation.id),
+        ),
       ];
       return newConversationsList;
     } else {
@@ -456,7 +490,10 @@ export default function useConversations(): UseConversations {
               if (!targetConversation) return;
               if (targetConversation.data.conversationsData.length === 0)
                 return;
-              setConversations((currentConversations) => {
+              setConversations((currentConversationsArray) => {
+                if (!currentConversationsArray)
+                  return currentConversationsArray;
+                const currentConversations = [...currentConversationsArray];
                 const targetConversationObject =
                   targetConversation?.data?.conversationsData[0];
                 if (!currentConversations) {
@@ -493,13 +530,13 @@ export default function useConversations(): UseConversations {
                 }
               });
 
-              setTimeout(() => {
-                bottomReferenceDiv.current?.scrollIntoView({
-                  behavior: "instant",
-                  block: "end",
-                  inline: "nearest",
-                });
-              }, 100);
+              // setTimeout(() => {
+              //   bottomReferenceDiv.current?.scrollIntoView({
+              //     behavior: "smooth",
+              //     block: "end",
+              //     inline: "nearest",
+              //   });
+              // }, 0);
             })
             .catch(console.log);
         }
@@ -525,6 +562,7 @@ export default function useConversations(): UseConversations {
       };
     }
   }, [chatroomDetails.chatroom, currentUser]);
+
   useEffect(() => {
     document.addEventListener(
       CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED,
@@ -543,6 +581,37 @@ export default function useConversations(): UseConversations {
       );
     };
   }, [handleDMUserActionsConversations]);
+  useEffect(() => {
+    const handleNewConversationPosted = (eventObject: Event) => {
+      const conversation: Conversation = (eventObject as CustomEvent).detail
+        .conversation;
+      if (conversation) {
+        setConversations((currentConversation) => {
+          if (!currentConversation) {
+            return currentConversation;
+          }
+          localConversationIds.current.add(
+            parseInt(conversation?.temporaryId!.toString()),
+          );
+          const newConversations = [
+            ...currentConversation,
+            { ...conversation },
+          ];
+          return newConversations;
+        });
+      }
+    };
+    document.addEventListener(
+      CustomActions.NEW_CONVERSATION_POSTED,
+      handleNewConversationPosted,
+    );
+    return () => {
+      document.removeEventListener(
+        CustomActions.NEW_CONVERSATION_POSTED,
+        handleNewConversationPosted,
+      );
+    };
+  }, []);
   useEffect(() => {
     if (searchedConversationId) {
       searchConversation();
@@ -563,13 +632,13 @@ export default function useConversations(): UseConversations {
       searchedConversationRef &&
       searchedConversationRef.current
     ) {
-      setTimeout(() => {
-        searchedConversationRef?.current?.scrollIntoView({
-          behavior: "auto",
-          inline: "center",
-          block: "nearest",
-        });
-      }, 40);
+      // setTimeout(() => {
+      //   searchedConversationRef?.current?.scrollIntoView({
+      //     behavior: "auto",
+      //     inline: "center",
+      //     block: "nearest",
+      //   });
+      // }, 40);
 
       searchedConversationRef.current.firstElementChild?.classList.add(
         "message-highlight",

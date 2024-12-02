@@ -13,6 +13,8 @@ import Member from "../types/models/member";
 import { validMatchingString } from "./TLDs";
 import { Chatroom } from "@likeminds.community/chat-js-beta";
 import { MemberRole } from "@likeminds.community/chat-js-beta";
+import { ChatroomDetails } from "../types/api-responses/getChatroomResponse";
+import { ChatroomTypes } from "../enums/lm-chatroom-types";
 type StringTagType = {
   text: string;
   type: number;
@@ -20,19 +22,23 @@ type StringTagType = {
 };
 
 export class Utils {
-  private static poolId = "ap-south-1:181963ba-f2db-450b-8199-964a941b38c2";
+  private static poolId =
+    "YXAtc291dGgtMToxODE5NjNiYS1mMmRiLTQ1MGItODE5OS05NjRhOTQxYjM4YzI=";
   private static bucketName = "beta-likeminds-media";
-  private static region = "ap-south-1";
-  private static bucketUrl = "https://beta-likeminds-media.s3.amazonaws.com/";
+  private static region = "YXAtc291dGgtMQ==";
+  // private static region = "ap-south-1";
   static REGEX_USER_SPLITTING = /<<[^<>>]*>>/g;
   static REGEX_USER_TAGGING =
     /<<(?<name>[^<>|]+)\|route:\/\/(?<route>[^<>]+(\?.+)?)>>/g;
+
   static parseAndReplaceTags = (text: string): ReactNode => {
     if (!text) {
       return null; // Return null if text is empty
     }
 
     const tagRegex = /<<([^|]+)\|([^>]+)>>/g;
+    // const boldRegex = /\*\*(.+?)\*\*/g; // Matches text between ** and **
+
     const lines = text.split(/\r?\n/); // Split text into lines
     const elements: ReactNode[] = [];
 
@@ -47,7 +53,8 @@ export class Utils {
       line.replace(tagRegex, (match, name, route, index) => {
         // Add the text before the tag
         if (index > lastIndex) {
-          elements.push(line.substring(lastIndex, index));
+          const textBeforeTag = line.substring(lastIndex, index);
+          elements.push(this.parseBoldText(textBeforeTag));
         }
 
         // Add the user info tag as a clickable span
@@ -69,23 +76,21 @@ export class Utils {
 
       // Add the remaining text after the last tag
       if (lastIndex < line.length) {
-        elements.push(line.substring(lastIndex));
+        const remainingText = line.substring(lastIndex);
+        elements.push(this.parseBoldText(remainingText));
       }
     });
-    // const validTLDs = supportedTLDs;
+
     // Convert URLs to anchor tags
+    const urlRegex = /(https?:\/\/\S+|www\.\S+|\b\w+\.\w+\S*)\b/g;
+
     const textWithLinks = elements.map((element, index) => {
       if (typeof element === "string") {
-        // // Creating a RegExp object
-        // const regex = new RegExp(regexString, "gi");
-        const regex = /(https?:\/\/\S+|www\.\S+|\b\w+\.\w+\S*)\b/g;
-
-        // Convert string to a React fragment containing anchor tags for URLs
         return (
           <React.Fragment key={index}>
-            {element.split(regex).map((part, i) => {
+            {element.split(urlRegex).map((part, i) => {
               if (i % 2 === 0) {
-                return part; // Regular text
+                return this.parseBoldText(part); // Parse bold text within plain strings
               } else {
                 if (!part.match(validMatchingString)) {
                   return part;
@@ -110,6 +115,30 @@ export class Utils {
     });
 
     return textWithLinks;
+  };
+
+  // Helper function to handle bold text
+  static parseBoldText = (text: string): ReactNode => {
+    const boldRegex = /\*\*(.+?)\*\*/g;
+    const parts: ReactNode[] = [];
+    let lastIndex = 0;
+
+    text.replace(boldRegex, (match, boldText, index) => {
+      if (index > lastIndex) {
+        parts.push(text.substring(lastIndex, index)); // Add plain text before bold
+      }
+
+      parts.push(<strong key={`bold-${index}`}>{boldText}</strong>); // Add bold text
+
+      lastIndex = index + match.length;
+      return match;
+    });
+
+    if (lastIndex < text.length) {
+      parts.push(text.substring(lastIndex)); // Add remaining text
+    }
+
+    return parts.length === 1 ? parts[0] : parts; // Return single string or array
   };
 
   static parseAnser(answer: string): JSX.Element[] {
@@ -380,14 +409,16 @@ export class Utils {
     return container;
   }
   static getAWS(): S3Client {
+    const region = atob(this.region);
+
     const credentials = fromCognitoIdentityPool({
-      identityPoolId: this.poolId,
+      identityPoolId: atob(this.poolId),
       clientConfig: {
-        region: this.region,
+        region: region,
       },
     });
 
-    const s3Client = new S3Client({ region: this.region, credentials });
+    const s3Client = new S3Client({ region: region, credentials });
     return s3Client;
   }
 
@@ -439,7 +470,7 @@ export class Utils {
     return `files/collabcard/${chatroomId}/conversation/${uuid}/${conversationInitials}${Date.now()}.${media.name.split(".").reverse()[0]}`;
   }
   static generateFileUrl(keyName: string) {
-    return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${keyName}`;
+    return `https://${this.bucketName}.s3.${atob(this.region)}.amazonaws.com/${keyName}`;
   }
   static returnCSSForTagging(
     refObject: React.MutableRefObject<HTMLDivElement | null>,
@@ -633,6 +664,7 @@ export class Utils {
   }
 
   static isOtherUserAIChatbot(chatroom: Chatroom, currentUser: Member) {
+    console.log(chatroom);
     const currentUUID = currentUser?.uuid;
     const otherMember =
       chatroom.member.sdkClientInfo?.uuid === currentUUID
@@ -643,6 +675,65 @@ export class Utils {
     );
     return isChatroomRolePresent;
   }
+  static formatEpochToDateWithMonthName(epoch: string) {
+    const date = new Date(parseInt(epoch));
+    const year = date.getFullYear();
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const month = monthNames[date.getMonth()]; // Get month name
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${day} ${month} ${year}`;
+  }
+
+  static getChatroomTitle = (
+    chatroomDetails: ChatroomDetails,
+    recieverUser: Member | undefined | null,
+  ) => {
+    if (!chatroomDetails) return "";
+    const chatroomType = chatroomDetails?.chatroom.type;
+
+    if (chatroomType === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+      if (recieverUser) {
+        return recieverUser.name;
+      } else {
+        return "";
+      }
+    } else {
+      return chatroomDetails?.chatroom.header;
+    }
+  };
+
+  static getChatroomReciever = (
+    chatroomDetails: ChatroomDetails,
+    currentUser: Member,
+  ) => {
+    if (!chatroomDetails) {
+      return null;
+    }
+    if (
+      chatroomDetails.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM
+    ) {
+      return null;
+    }
+    const recieverUser =
+      chatroomDetails.chatroom.member.id.toString() ===
+      currentUser.id.toString()
+        ? chatroomDetails.chatroom.chatroomWithUser
+        : chatroomDetails.chatroom.member;
+    return recieverUser;
+  };
 }
 export interface TagInfo {
   tagString: string;

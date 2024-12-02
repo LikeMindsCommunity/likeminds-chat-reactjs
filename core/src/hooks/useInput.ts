@@ -21,7 +21,7 @@ import { LMChatroomContext } from "../context/LMChatChatroomContext";
 import { PostConversationResponse } from "../types/api-responses/postConversationResponse";
 import { FileType } from "../types/enums/Filetype";
 import { CustomActions } from "../customActions";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+
 import { GetOgTagResponse } from "../types/api-responses/getOgTagResponse";
 import { Gif } from "../types/models/GifObject";
 import { ChatroomDetails } from "../types/api-responses/getChatroomResponse";
@@ -41,9 +41,14 @@ import {
 import { PostConversationRequest } from "@likeminds.community/chat-js-beta/dist/pages/chatroom/types";
 import { LMInputAttachments } from "../enums/lm-input-attachment-options";
 import { OgTag } from "../types/models/OgTag";
-export function useInput(
-  inputCustomActions?: InputCustomActions,
-): UseInputReturns {
+import { Conversation } from "../types/models/conversations";
+import ConversationStates from "../enums/lm-conversation-states";
+import { ConstantStrings } from "../enums/lm-common-strings";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
+import { MemberRightsState } from "../enums/lm-member-rights-states";
+export function useInput(): UseInputReturns {
+  //contexts
+  const { inputCustomActions = {} } = useContext(CustomisationContextProvider);
   const {
     onUpdateInputText,
     onOnTextInputKeydownHandler,
@@ -65,10 +70,8 @@ export function useInput(
     onSendDMRequest,
     onRejectDMRequest,
     onAprooveDMRequest,
-  } = inputCustomActions!;
-  const navigate = useNavigate();
-  const location = useLocation();
-  //contexts
+    onShouldShowInputBox,
+  } = inputCustomActions;
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { currentUser, memberState, currentCommunity, logoutUser } =
     useContext(UserProviderContext);
@@ -91,6 +94,7 @@ export function useInput(
   const [matchedTagMembersList, setMatchedTagMembersList] = useState<Member[]>(
     [],
   );
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [imagesAndVideosMediaList, setImagesAndVideosMediaList] = useState<
     File[] | null
   >(null);
@@ -114,6 +118,80 @@ export function useInput(
   const [openGifCollapse, setOpenGifCollapse] = useState<boolean>(false);
   const apiKey = GIPHY_API_KEY;
 
+  function formatEpochToTime(epoch: string) {
+    const date = new Date(parseInt(epoch));
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${hours}:${minutes}`;
+  }
+
+  const shouldShowInputBox = useCallback(() => {
+    const canRespondInChatroom = currentUser!.memberRights!.find(
+      (right) => right.state === MemberRightsState.RespondInChatRooms,
+    )?.isSelected
+      ? true
+      : false;
+    if (!canRespondInChatroom) {
+      setAlertMessage(ConstantStrings.USER_MESSAGES_RESTRICTED_BY_CM);
+      return false;
+    } else {
+      setAlertMessage(null);
+    }
+    const memberCanMessage =
+      chatroomDetails!.chatroom.memberCanMessage || false;
+
+    switch (memberCanMessage) {
+      case true:
+        setAlertMessage(null);
+        return true;
+      case false: {
+        if (currentUser?.state === MemberType.COMMUNITY_MANAGER) {
+          setAlertMessage(null);
+          return true;
+        } else {
+          setAlertMessage(ConstantStrings.ONLY_CM_MESSAGES_ALLOWED);
+          return false;
+        }
+      }
+    }
+  }, [chatroomDetails, currentUser]);
+
+  const createLocalConversation = useCallback(
+    (
+      temporaryId: string,
+      answerText: string,
+      conversationToEdit: Conversation | null,
+      conversationToReply: Conversation | null,
+      attachments: File[],
+      ogTags: OgTag | undefined,
+    ) => {
+      const localConversation: Conversation = {
+        id: 0,
+        communityId: currentCommunity.id,
+        member: currentUser,
+        answer: answerText,
+        state: ConversationStates.LOCAL_CONVERSATION_STATE,
+        lastSeen: true,
+        isEdited: conversationToEdit ? true : false,
+        lastUpdatedAt: parseInt(temporaryId),
+        deletedBy: "",
+        date: Utils.formatEpochToDateWithMonthName(temporaryId),
+        createdEpoch: parseInt(temporaryId),
+        createdAt: formatEpochToTime(temporaryId),
+        attachmentUploaded: false,
+        isAnonymous: false,
+        hasFiles: false,
+        hasReactions: false,
+        attachments: attachments as Attachment[],
+        replyConversationObject: conversationToReply || undefined,
+        ogTags: ogTags,
+        temporaryId: temporaryId.toString(),
+        userId: currentUser.id.toString(),
+      };
+      return localConversation;
+    },
+    [currentCommunity.id, currentUser],
+  );
   const buildGIFAttachment = (gif: Gif) => {
     const attachmentObject: Attachment = {
       url: gif.images.fixed_height.url,
@@ -131,10 +209,13 @@ export function useInput(
   };
   const buildMediaAttachments = useCallback(
     async (mediaList: File[]) => {
+      mediaList = [...mediaList];
+
       const attachments: Attachment[] = [];
       for (let index = 0; index < mediaList.length; index++) {
         const currentAttachment = mediaList[index];
         const { name, size, type } = currentAttachment;
+
         if (type.includes(FileType.video)) {
           const { thumbnailUrl, fileUrl, height, width } =
             await Utils.uploadVideoFile(
@@ -145,7 +226,7 @@ export function useInput(
           if (thumbnailUrl && fileUrl) {
             const attachment: Attachment = {
               url: fileUrl,
-              type: "video",
+              type: FileType.video,
               index,
               width: width,
               height: height,
@@ -166,7 +247,7 @@ export function useInput(
           if (fileUrl) {
             const attachment: Attachment = {
               url: fileUrl,
-              type: "image",
+              type: FileType.image,
               index,
               name,
               meta: {
@@ -350,7 +431,7 @@ export function useInput(
           }
         }
 
-        if (messageText)
+        if (messageText.length)
           if (conversationToedit) {
             // Handling the editing of the conversation
             const call: any = await lmChatclient?.editConversation({
@@ -381,7 +462,7 @@ export function useInput(
           const mediaAttachments = await buildMediaAttachments(attachmentsList);
           attachments.push(...mediaAttachments);
         }
-
+        const temporaryId = Date.now().toString();
         // sending the text part of the conversation
         const chatroomData = chatroomDetails.chatroom;
         const postConversationCallConfig: PostConversationRequest = {
@@ -393,6 +474,8 @@ export function useInput(
             chatroomData as any as Chatroom,
             currentUser,
           ),
+          temporaryId: temporaryId,
+          attachments: attachmentsList,
         };
         if (customWidgetData) {
           postConversationCallConfig.metadata = customWidgetData;
@@ -408,6 +491,23 @@ export function useInput(
         const SHOW_SKELETON_CUSTOM_EVENT = new CustomEvent(
           CustomActions.CONVERSATION_POSTED_ON_AI_CHATBOT,
         );
+        const localConversation = createLocalConversation(
+          temporaryId,
+          messageText,
+          conversationToedit,
+          conversationToReply,
+          attachmentsList,
+          ogTags || undefined,
+        );
+        const NEW_CONVERSATION_POSTED = new CustomEvent(
+          CustomActions.NEW_CONVERSATION_POSTED,
+          {
+            detail: {
+              conversation: localConversation,
+            },
+          },
+        );
+        document.dispatchEvent(NEW_CONVERSATION_POSTED);
         document.dispatchEvent(SHOW_SKELETON_CUSTOM_EVENT);
         // sending the conversation
         const postConversationsCall: PostConversationResponse =
@@ -424,6 +524,7 @@ export function useInput(
       chatroomDetails,
       conversationToReply,
       conversationToedit,
+      createLocalConversation,
       currentUser,
       documentsMediaList,
       gifMedia,
@@ -689,6 +790,7 @@ export function useInput(
       rejectDMRequest,
       aprooveDMRequest,
       gifSearchQuery: gifSearchQuery,
+      shouldShowInputBox,
     };
   }, [
     addDocumentsMedia,
@@ -703,6 +805,7 @@ export function useInput(
     rejectDMRequest,
     sendDMRequest,
     updateInputText,
+    shouldShowInputBox,
   ]);
   const inputDataStore = useMemo(() => {
     return {
@@ -720,8 +823,10 @@ export function useInput(
       errorOnGifs: error,
       openGifCollapse: openGifCollapse,
       gifQuery: query,
+      alertMessage,
     };
   }, [
+    alertMessage,
     documentsMediaList,
     error,
     fetchMoreTags,
@@ -743,10 +848,7 @@ export function useInput(
       currentCommunity,
     };
   }, [currentCommunity, currentUser, logoutUser, memberState]);
-  const router: Router = {
-    location: location,
-    navigate: navigate,
-  };
+
   return {
     inputBoxRef,
     inputWrapperRef,
@@ -763,6 +865,7 @@ export function useInput(
     gifSearchQuery: gifSearchQuery,
     openGifCollapse: openGifCollapse,
     gifQuery: query,
+    alertMessage,
     // Functions
     updateInputText: onUpdateInputText
       ? onUpdateInputText.bind(
@@ -770,7 +873,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : updateInputText,
     onTextInputKeydownHandler: onOnTextInputKeydownHandler
@@ -779,7 +881,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : onTextInputKeydownHandler,
     onTextInputKeyUpHandler: onOnTextInputKeyUpHandler
@@ -788,7 +889,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : onTextInputKeyUpHandler,
     clearTaggingList: onClearTaggingList
@@ -797,7 +897,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : clearTaggingList,
     addEmojiToText: onAddEmojiToText
@@ -806,7 +905,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : addEmojiToText,
     addDocumentsMedia: onAddDocumentsMedia
@@ -815,7 +913,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : addDocumentsMedia,
     addImagesAndVideosMedia: onAddImagesAndVideosMedia
@@ -824,7 +921,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : addImagesAndVideosMedia,
     postMessage: onPostMessage
@@ -833,7 +929,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : postMessage,
     getTaggingMembers: onGetTaggingMembers
@@ -842,7 +937,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : fetchTaggingList,
     removeOgTag: onRemoveOgTag
@@ -851,7 +945,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : removeOgTag,
     setOpenGifCollapse: onSetOpenGifCollapse
@@ -860,7 +953,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : setOpenGifCollapse,
     fetchGifs: onFetchGifs
@@ -869,7 +961,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : fetchGifs,
     handleGifSearch: onHandleGifSearch
@@ -878,7 +969,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : handleSearch,
     setGifMedia: onSetGifMedia
@@ -887,7 +977,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : setGifMedia,
     removeMediaFromImageList: onRemoveMediaFromImageList
@@ -896,7 +985,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : removeMediaFromImageList,
     removeMediaFromDocumentList: onRemoveMediaFromDocumentList
@@ -905,7 +993,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : removeMediaFromDocumentList,
     sendDMRequest: onSendDMRequest
@@ -914,7 +1001,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : sendDMRequest,
     rejectDMRequest: onRejectDMRequest
@@ -923,7 +1009,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : rejectDMRequest,
     aprooveDMRequest: onAprooveDMRequest
@@ -932,9 +1017,16 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : aprooveDMRequest,
+    shouldShowInputBox: onShouldShowInputBox
+      ? onShouldShowInputBox.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+        )
+      : shouldShowInputBox,
   };
 }
 
@@ -973,7 +1065,8 @@ export interface UseInputReturns {
   sendDMRequest: OneArgVoidReturns<string>;
   rejectDMRequest: ZeroArgVoidReturns;
   aprooveDMRequest: ZeroArgVoidReturns;
-  attachmentOptions?: LMInputAttachments[];
+  alertMessage: string | null;
+  shouldShowInputBox: ZeroArgBooleanReturns;
 }
 // single compulsary argument
 export type onChangeUpdateInputText = (
@@ -1008,6 +1101,7 @@ export interface InputDefaultActions {
   sendDMRequest: OneArgVoidReturns<string>;
   rejectDMRequest: ZeroArgVoidReturns;
   aprooveDMRequest: ZeroArgVoidReturns;
+  shouldShowInputBox: ZeroArgBooleanReturns;
 }
 
 export interface InputDataStore {
@@ -1025,4 +1119,5 @@ export interface InputDataStore {
   errorOnGifs: string | null;
   gifQuery: string;
   openGifCollapse: boolean;
+  alertMessage: string | null;
 }

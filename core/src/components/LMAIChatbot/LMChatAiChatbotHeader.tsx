@@ -8,26 +8,14 @@ import { getAvatar } from "../../shared/components/LMUserMedia";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import UserProviderContext from "../../context/LMUserProviderContext";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
+import { Utils } from "../../utils/helpers";
 
 const LMChatAiChatbotHeader = () => {
   const { chatroomDetails } = useContext(LMChatroomContext);
   const { currentUser } = useContext(UserProviderContext);
   const { customComponents } = useContext(LMGlobalClientProviderContext);
   const getChatroomReciever = useCallback(() => {
-    if (!chatroomDetails) {
-      return null;
-    }
-    if (
-      chatroomDetails.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM
-    ) {
-      return null;
-    }
-    const recieverUser =
-      chatroomDetails.chatroom.member.id.toString() ===
-      currentUser.id.toString()
-        ? chatroomDetails.chatroom.chatroomWithUser
-        : chatroomDetails.chatroom.member;
-    return recieverUser;
+    return Utils.getChatroomReciever(chatroomDetails, currentUser);
   }, [chatroomDetails, currentUser]);
 
   const chatroomAvatar = useMemo(() => {
@@ -56,19 +44,7 @@ const LMChatAiChatbotHeader = () => {
     getChatroomReciever,
   ]);
   const chatroomTitle = useMemo(() => {
-    if (!chatroomDetails) return "";
-    const chatroomType = chatroomDetails?.chatroom.type;
-
-    if (chatroomType === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
-      const recieverUser = getChatroomReciever();
-      if (recieverUser) {
-        return recieverUser.name;
-      } else {
-        return "";
-      }
-    } else {
-      return chatroomDetails?.chatroom.header;
-    }
+    return Utils.getChatroomTitle(chatroomDetails, getChatroomReciever());
   }, [chatroomDetails, getChatroomReciever]);
 
   const renderHeaderComponents = () => {

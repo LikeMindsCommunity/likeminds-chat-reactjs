@@ -7,17 +7,26 @@ import {
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import LMMessageContext from "../context/LMMessageContext";
 import { PollMultipleSelectState, PollType } from "../enums/lm-poll-type";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
+import Member from "../types/models/member";
 
 export function usePoll(): UsePoll {
   const { lmChatclient } = useContext(GlobalClientProviderContext);
   const { message, addPollOptionLocally, updatePollOnSubmitLocally } =
     useContext(LMMessageContext);
+  const { pollCustomActions = {} } = useContext(CustomisationContextProvider);
+  const {
+    selectPollOptionCustomCallback,
+    addOptionOnPollCustomCallback,
+    getPollUsersCustomCallback,
+    submitPollCustomCallback,
+  } = pollCustomActions;
   const [temporaryAddOptionText, setTemporaryAddOptionText] =
     useState<string>("");
   const [selectedPollOptions, setSelectedPollOptions] = useState<
     SelectedPollOption[]
   >([]);
-
+  const [pollUsers, setPollUsers] = useState<Member[]>([]);
   //   Regular functions
   const calculateSubmitButtonVisibility = () => {
     if (Date.now() > message.expiryTime!) {
@@ -205,26 +214,61 @@ export function usePoll(): UsePoll {
   const getPollUsers = async (pollId: number) => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const call = await lmChatclient?.getPollUsers({
+      const call = await lmChatclient!.getPollUsers({
         conversationId: message?.id,
         pollId: pollId,
+      });
+      setPollUsers(() => {
+        return call.data.members;
       });
     } catch (error) {
       console.log(error);
     }
   };
-  return {
+  const pollDataStore: PollDataStore = {
+    temporaryAddOptionText,
+    selectedPollOptions,
+    pollUsers,
+  };
+  const pollDefaultActions: PollDefaultActions = {
     submitPoll,
     addOptionOnPoll,
     getPollUsers,
     selectPollOption,
+    setTemporaryAddOptionText,
+    calculateAddPollOptionButtonVisibility,
+    calculateSubmitButtonVisibility,
+  };
+  return {
+    submitPoll: submitPollCustomCallback
+      ? submitPollCustomCallback.bind(null, pollDefaultActions, pollDataStore)
+      : submitPoll,
+    addOptionOnPoll: addOptionOnPollCustomCallback
+      ? addOptionOnPollCustomCallback.bind(
+          null,
+          pollDefaultActions,
+          pollDataStore,
+        )
+      : addOptionOnPoll,
+    getPollUsers: getPollUsersCustomCallback
+      ? getPollUsersCustomCallback.bind(null, pollDefaultActions, pollDataStore)
+      : getPollUsers,
+    selectPollOption: selectPollOptionCustomCallback
+      ? selectPollOptionCustomCallback.bind(
+          null,
+          pollDefaultActions,
+          pollDataStore,
+        )
+      : selectPollOption,
     temporaryAddOptionText,
     setTemporaryAddOptionText,
     selectedPollOptions,
     calculateAddPollOptionButtonVisibility,
     calculateSubmitButtonVisibility,
+    pollUsers,
   };
 }
+
 interface UsePoll {
   submitPoll: ZeroArgVoidReturns;
   addOptionOnPoll: ZeroArgVoidReturns;
@@ -235,7 +279,24 @@ interface UsePoll {
   selectedPollOptions: SelectedPollOption[];
   calculateAddPollOptionButtonVisibility: ZeroArgBooleanReturns;
   calculateSubmitButtonVisibility: ZeroArgBooleanReturns;
+  pollUsers: Member[];
 }
 export interface SelectedPollOption {
   id: string;
+}
+
+export interface PollDefaultActions {
+  submitPoll: ZeroArgVoidReturns;
+  addOptionOnPoll: ZeroArgVoidReturns;
+  getPollUsers: OneArgVoidReturns<number>;
+  selectPollOption: OneArgVoidReturns<React.MouseEvent<HTMLDivElement>>;
+  setTemporaryAddOptionText: React.Dispatch<React.SetStateAction<string>>;
+  calculateAddPollOptionButtonVisibility: ZeroArgBooleanReturns;
+  calculateSubmitButtonVisibility: ZeroArgBooleanReturns;
+}
+
+export interface PollDataStore {
+  temporaryAddOptionText: string;
+  pollUsers: Member[];
+  selectedPollOptions: SelectedPollOption[];
 }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Conversation as LMConversation,
   Poll as LMPoll,
@@ -6,6 +5,7 @@ import {
 } from "@likeminds.community/chat-js-beta";
 import Member from "./member";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface Conversation extends LMConversation {
   widget?: any;
 }

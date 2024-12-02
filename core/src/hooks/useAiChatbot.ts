@@ -6,12 +6,11 @@ import LMGlobalClientProviderContext from "../context/LMGlobalClientProviderCont
 export function useAiChatbot() {
   const { lmChatclient } = useContext(LMGlobalClientProviderContext);
   const [isAiBotOpen, setIsAiBotOpen] = useState<boolean>(false);
-  const [showAnimation, setShowAnimation] = useState<boolean>(false);
+  const [showAnimation, setShowAnimation] = useState<boolean>(true);
   const [aiChatbotChatroomId, setAiChatbotChatroomId] = useState<string>("");
   const aiChatbotPageCount = useRef<number>(1);
 
   const openAiBot = () => {
-    setShowAnimation(true);
     setIsAiBotOpen(true);
   };
 
@@ -20,6 +19,9 @@ export function useAiChatbot() {
   };
   const setAIBotChatroomInLocalPref = (chatroomId: string) => {
     localStorage.setItem("chatroomIdWithAIChatbot", chatroomId);
+  };
+  const getAIBotChatroomFromLocalPref = (): string | null => {
+    return localStorage.getItem("chatroomIdWithAIChatbot");
   };
   const getChatbots = useCallback(async () => {
     try {
@@ -35,6 +37,8 @@ export function useAiChatbot() {
           uuid: chatbotUUID,
           requestFrom: "member_profile",
         });
+        console.log("ending time");
+        console.timeEnd("ai-chatbot");
         if (checkDMStatusCall.success) {
           const cta = checkDMStatusCall.data.cta;
           const ctaURL = new URL(cta);
@@ -50,7 +54,9 @@ export function useAiChatbot() {
                 uuid: chatbotUUID!,
               });
             if (createDMChatroomCall.success) {
-              const chatroomId = createDMChatroomCall.data.id;
+              const chatroomId = createDMChatroomCall.data.chatroom.id;
+              console.timeEnd("ai-chatbot-with-new-user");
+              console.log(chatroomId);
               setAIBotChatroomInLocalPref(chatroomId);
               setAiChatbotChatroomId(chatroomId!);
               setShowAnimation(false);
@@ -63,10 +69,19 @@ export function useAiChatbot() {
     }
   }, [lmChatclient]);
   useEffect(() => {
-    if (isAiBotOpen) {
+    const chatroomId = getAIBotChatroomFromLocalPref();
+    if (chatroomId) {
+      setAiChatbotChatroomId(chatroomId);
+      setShowAnimation(false);
+    } else {
       getChatbots();
     }
-  }, [getChatbots, isAiBotOpen]);
+  }, [getChatbots]);
+  useEffect(() => {
+    return () => {
+      setShowAnimation(true);
+    };
+  }, []);
   return {
     isAiBotOpen,
     openAiBot,

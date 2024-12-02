@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import InfiniteScroll from "react-infinite-scroll-component";
 import useChatroomList from "../../hooks/useChatroomsList";
-import { useNavigate, useParams } from "react-router-dom";
+
 import { ConstantStrings } from "../../enums/lm-common-strings";
 import { Utils } from "../../utils/helpers";
 import { useContext, useState } from "react";
@@ -35,8 +35,6 @@ function LMGroupChatChannelList() {
     onLeaveChatroom,
   } = useChatroomList("");
   const { currentUser } = useContext(UserProviderContext);
-  const { routes } = useContext(LMGlobalClientProviderContext);
-  const navigate = useNavigate();
 
   const {
     chatroomDetails: {
@@ -119,7 +117,6 @@ function LMGroupChatChannelList() {
                 className={`channel-media ${chatroomId?.toString() === chatroom?.id?.toString() ? "selected" : null}`}
                 onClick={() => {
                   markReadAChatroom(chatroom?.id);
-                  navigate(`/${routes?.getChannelPath()}/${chatroom?.id}`);
                 }}
               >
                 <div className="channel-icon">
@@ -200,9 +197,7 @@ function LMGroupChatChannelList() {
               <div
                 className="channel-media"
                 key={chatroom.id.toString()}
-                onClick={() => {
-                  navigate(`/${routes?.getChannelPath()}/${chatroom.id}`);
-                }}
+                onClick={() => {}}
               >
                 <div className="channel-icon">
                   {chatroom.chatroomImageUrl ? (

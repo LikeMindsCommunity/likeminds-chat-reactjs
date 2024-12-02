@@ -4,14 +4,13 @@ import LMMessageContext from "../../context/LMMessageContext";
 import pdfIcon from "../../assets/img/pdf-document.svg";
 import { getAvatar } from "./LMUserMedia";
 import MessageListContext from "../../context/LMMessageListContext";
-import { Attachment } from "@likeminds.community/chat-js-beta";
 import {
   SupportedDocumentMediaType,
   SupportedImageMediaType,
   SupportedVideoMediaType,
 } from "../../types/enums/Filetype";
 
-const MediaRenderer = ({ attachments }: { attachments: Attachment[] }) => {
+const MediaRendererLocal = ({ attachments }: { attachments: File[] }) => {
   const [show, setShow] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const { message } = useContext(LMMessageContext);
@@ -33,26 +32,22 @@ const MediaRenderer = ({ attachments }: { attachments: Attachment[] }) => {
   };
 
   const renderMedia = (
-    attachment: Attachment,
+    attachment: File,
     index: number,
     isThumbnail = false,
   ) => {
-    if (!attachment || !attachment.fileUrl) {
-      // console.error(`Invalid attachment at index ${index}:`, attachment);
-      return null;
-    }
-
-    const fileType = attachment.fileUrl?.split(".")?.pop()?.toLowerCase();
+    const fileType = attachment.type?.split(".")?.pop()?.toLowerCase();
     const fileTypeOther = fileType?.split("&")[0];
     const className = isThumbnail ? "thumbnail" : "carousel-media";
 
     if (
       SupportedImageMediaType.includes(fileType!) ||
-      SupportedImageMediaType.includes(fileTypeOther!)
+      SupportedImageMediaType.includes(fileTypeOther!) ||
+      fileType?.includes("image")
     ) {
       return (
         <img
-          src={attachment.fileUrl}
+          src={URL.createObjectURL(attachment)}
           alt="img"
           key={index}
           className={className}
@@ -62,7 +57,8 @@ const MediaRenderer = ({ attachments }: { attachments: Attachment[] }) => {
       );
     } else if (
       SupportedVideoMediaType.includes(fileType!) ||
-      SupportedImageMediaType.includes(fileTypeOther!)
+      SupportedVideoMediaType.includes(fileTypeOther!) ||
+      fileType?.includes("video")
     ) {
       return (
         <video
@@ -72,14 +68,21 @@ const MediaRenderer = ({ attachments }: { attachments: Attachment[] }) => {
           onClick={() => handleShow(index)}
           onError={handleError}
         >
-          <source src={attachment.fileUrl} type={`video/${fileType}`} />
+          <source
+            src={URL.createObjectURL(attachment)}
+            type={`video/${fileType}`}
+          />
           Your browser does not support the video tag.
         </video>
       );
     } else if (SupportedDocumentMediaType.includes(fileType!)) {
       return (
         <div key={index} className={className}>
-          <a href={attachment.fileUrl} target="_blank" className="pdf">
+          <a
+            href={URL.createObjectURL(attachment)}
+            target="_blank"
+            className="pdf"
+          >
             <img src={pdfIcon} alt="pdf" />
             {!isThumbnail && <div className="pdfName">{attachment.name}</div>}
           </a>
@@ -153,4 +156,4 @@ const MediaRenderer = ({ attachments }: { attachments: Attachment[] }) => {
   );
 };
 
-export default MediaRenderer;
+export default MediaRendererLocal;
