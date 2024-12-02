@@ -31,16 +31,7 @@ const LMAppLayout = () => {
     username?: string;
     isGuest?: boolean;
     apiKey?: string;
-  }>({
-    // apiKey: "d4356d31-306e-406d-aa4a-cd49f1b88f19",
-    // Beta Key Below
-    // apiKey: "aa2a3a49-f371-45de-a071-7cafc1fa927a",
-    // AI chatbot key below
-    apiKey: "3966d591-3ba1-46db-b25b-69a45e1414f3",
-    isGuest: false,
-    uuid: "Test User 62",
-    username: "Test User 62",
-  });
+  }>({});
   const LMCORECALLBACKS = new LMCoreCallbacks(
     (a: string, b: string) => {
       setUserDetails((userDetails) => {
