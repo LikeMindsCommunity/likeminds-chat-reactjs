@@ -373,7 +373,7 @@ export function useInput(): UseInputReturns {
       try {
         const call: GetTaggingListResponse = await lmChatClient?.getTaggingList(
           {
-            feedroomId: chatroomDetails?.chatroom.id,
+            chatroomId: chatroomDetails?.chatroom.id,
             page: pg ? pg : taggingListPageCount.current,
             pageSize: 10,
             searchName: tagSearchKey || "",

@@ -121,9 +121,7 @@ const LMAppLayout = () => {
         <Routes>
           <Route
             path={ROOT_PATH}
-            element={
-              <LMChannel currentMode={LMChatCurrentMode.DIRECT_MESSAGE} />
-            }
+            element={<LMChannel currentMode={LMChatCurrentMode.GROUP_CHAT} />}
           >
             {/* <LMChatAIButton client={lmChatClient} userDetails={userDetails} /> */}
             <Route

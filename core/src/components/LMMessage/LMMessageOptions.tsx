@@ -34,7 +34,7 @@ function MessageOptions() {
     {
       title: ConversationActions.REPLY_PRIVATELY_ON_MESSAGE,
       clickFunction: () => {
-        onReplyPrivately(message.member.id);
+        onReplyPrivately(message.member.sdkClientInfo?.uuid || "");
         closeMenu();
       },
     },

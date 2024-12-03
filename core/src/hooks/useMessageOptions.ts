@@ -109,8 +109,8 @@ export function useMessageOptions(): UseMessageOptionsReturn {
   const onReplyPrivately = useCallback(
     async (memberId: string | number) => {
       try {
-        const checkDMLimitCall = await lmChatClient?.checkDMLimit({
-          memberId: parseInt(memberId.toString()),
+        const checkDMLimitCall = await lmChatClient?.checkDMLimitWithUuid({
+          uuid: memberId,
         });
         if (checkDMLimitCall.success) {
           const chatroomId = checkDMLimitCall.data.chatroomId;
@@ -129,9 +129,10 @@ export function useMessageOptions(): UseMessageOptionsReturn {
           const is_request_dm_limit_exceeded =
             checkDMLimitCall.data.is_request_dm_limit_exceeded;
           if (!is_request_dm_limit_exceeded) {
-            const createDMChatroomCall = await lmChatClient?.createDMChatroom({
-              memberId: parseInt(memberId.toString()),
-            });
+            const createDMChatroomCall =
+              await lmChatClient?.createDMChatroomWithUuid({
+                uuid: memberId,
+              });
             if (createDMChatroomCall.success) {
               const newChatroomId = createDMChatroomCall.data.chatroom.id;
 
