@@ -24,7 +24,7 @@ export interface LMGroupChatChannelListProps {
   currentChatroomId?: string;
 }
 
-function LMGroupChatChannelList({
+function LMChatGroupChannelList({
   currentChatroomId,
 }: LMGroupChatChannelListProps) {
   const {
@@ -265,4 +265,4 @@ function LMGroupChatChannelList({
   );
 }
 
-export default LMGroupChatChannelList;
+export default LMChatGroupChannelList;

@@ -48,7 +48,7 @@ export default function useChatroom(chatroomId: string): UseChatroom {
     setConversationToReplyCustomCallback,
     setSearchedConversationIdCustomCallback,
   } = chatroomCustomActions;
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
   const [chatroomDetails, setChatroomDetails] =
     useState<ChatroomDetails | null>(null);
@@ -63,7 +63,7 @@ export default function useChatroom(chatroomId: string): UseChatroom {
   >(null);
   const checkDMStatus = useCallback(async () => {
     try {
-      const checkDMStatusCall = await lmChatclient?.checkDMStatus({
+      const checkDMStatusCall = await lmChatClient?.checkDMStatus({
         requestFrom: ReplyDmQueries.GROUP_CHANNEL,
       });
       if (checkDMStatusCall.success) {
@@ -95,13 +95,13 @@ export default function useChatroom(chatroomId: string): UseChatroom {
       setCanUserReplyPrivately(ReplyDmQueries.REPLY_PRIVATELY_NOT_ALLOWED);
       console.log(error);
     }
-  }, [lmChatclient]);
+  }, [lmChatClient]);
 
   const getChatroomDetails = useCallback(
     async (chatroomId: string) => {
       try {
         const chatroomDetailsCall: GetChatroomResponse =
-          await lmChatclient?.getChatroom({
+          await lmChatClient?.getChatroom({
             chatroomId,
           });
         return chatroomDetailsCall.data;
@@ -109,7 +109,7 @@ export default function useChatroom(chatroomId: string): UseChatroom {
         return logError(error);
       }
     },
-    [lmChatclient],
+    [lmChatClient],
   );
   const fetchChannel = useCallback(
     async (chatroomId: string) => {

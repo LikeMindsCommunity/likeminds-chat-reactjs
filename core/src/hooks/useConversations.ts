@@ -49,7 +49,7 @@ export default function useConversations(): UseConversations {
       chatroom: { id: chatroomId },
     },
   } = useContext(LMChatroomContext);
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
   const { currentUser } = useContext(UserProviderContext);
   const {
@@ -207,14 +207,14 @@ export default function useConversations(): UseConversations {
   };
   const getChatroomDetails = useCallback(async () => {
     try {
-      const chatroomDetailsCall = await lmChatclient?.getChatroom({
+      const chatroomDetailsCall = await lmChatClient?.getChatroom({
         chatroomId,
       });
       return chatroomDetailsCall.data.chatroom;
     } catch (error) {
       return logError(error);
     }
-  }, [chatroomId, lmChatclient]);
+  }, [chatroomId, lmChatClient]);
   const getChatroomConversationsOnTopScroll = useCallback(async () => {
     try {
       if (stopAdditionalCalls.current) {
@@ -222,7 +222,7 @@ export default function useConversations(): UseConversations {
       }
 
       const chatroomConversationsCall: GetSyncConversationsResponse =
-        await lmChatclient?.getConversations({
+        await lmChatClient?.getConversations({
           chatroomId: parseInt(chatroomId!.toString()),
           pageSize: CONVERSATIONS_PAGINATE_BY || 50,
           maxTimestamp: currentChatroomMaxTimeStamp.current,
@@ -251,13 +251,13 @@ export default function useConversations(): UseConversations {
     } catch (error) {
       return logError(error);
     }
-  }, [lmChatclient, chatroomId]);
+  }, [lmChatClient, chatroomId]);
   const getChatroomConversationsOnBottomScroll = useCallback(async () => {
     try {
       if (stopAdditionalCalls.current) {
         return;
       }
-      const chatroomConversationsCall = await lmChatclient?.getConversation({
+      const chatroomConversationsCall = await lmChatClient?.getConversation({
         chatroomID: parseInt(chatroomId?.toString() || ""),
         paginateBy: CONVERSATIONS_PAGINATE_BY,
         conversationID: bottomConversationId.current || 0,
@@ -289,13 +289,13 @@ export default function useConversations(): UseConversations {
       logError(error);
       return;
     }
-  }, [chatroomId, lmChatclient]);
+  }, [chatroomId, lmChatClient]);
 
   const searchConversation = useCallback(async () => {
     try {
       stopAdditionalCalls.current = true;
       // conversations before the searched conversation
-      const preConversationCall = await lmChatclient?.getConversation({
+      const preConversationCall = await lmChatClient?.getConversation({
         chatroomID: parseInt(chatroomId?.toString() || ""),
         paginateBy: CONVERSATIONS_PAGINATE_BY,
         conversationID: parseInt(searchedConversationId?.toString() || ""),
@@ -304,7 +304,7 @@ export default function useConversations(): UseConversations {
         topNavigate: false,
       });
       // conversation after the searched conversation
-      const postConversationCall = await lmChatclient?.getConversation({
+      const postConversationCall = await lmChatClient?.getConversation({
         chatroomID: parseInt(chatroomId?.toString() || ""),
         paginateBy: CONVERSATIONS_PAGINATE_BY,
         conversationID: parseInt(searchedConversationId?.toString() || ""),
@@ -332,11 +332,10 @@ export default function useConversations(): UseConversations {
     } finally {
       stopAdditionalCalls.current = false;
     }
-  }, [chatroomId, lmChatclient, searchedConversationId]);
+  }, [chatroomId, lmChatClient, searchedConversationId]);
   const unBlockUserInDM = useCallback(async () => {
-    // add login for showing input field
     try {
-      const call = await lmChatclient?.blockMember({
+      const call = await lmChatClient?.blockMember({
         chatroomId: parseInt(chatroomId.toString()),
         status: 1,
       });
@@ -381,19 +380,19 @@ export default function useConversations(): UseConversations {
     } catch (error) {
       console.log(error);
     }
-  }, [chatroomDetails, chatroomId, lmChatclient, setNewChatroom]);
+  }, [chatroomDetails, chatroomId, lmChatClient, setNewChatroom]);
 
   const blockUserInDM = useCallback(async () => {
     // add login for hiding input field
     try {
-      const call = await lmChatclient?.blockMember({
+      const call = await lmChatClient?.blockMember({
         chatroomId: parseInt(chatroomId.toString()),
         status: 0,
       });
     } catch (error) {
       console.log(error);
     }
-  }, [chatroomId, lmChatclient]);
+  }, [chatroomId, lmChatClient]);
 
   const resetConversations = useCallback(() => {
     setConversations(() => null);
@@ -434,12 +433,9 @@ export default function useConversations(): UseConversations {
       try {
         await getChatroomConversationsOnTopScroll();
         newChatroomConversationsLoaded.current = true;
-        // set the loader to false
-        // setShowLoader(() => false);
         showLoader.current = false;
-        // setLoader!(false);
       } catch (error) {
-        // console.log the error
+        console.log(error);
       }
     }
     fetchChannel();
@@ -452,7 +448,7 @@ export default function useConversations(): UseConversations {
   ]);
 
   useEffect(() => {
-    const db = lmChatclient?.fbInstance();
+    const db = lmChatClient?.fbInstance();
     if (!db) {
       return;
     }
@@ -461,7 +457,7 @@ export default function useConversations(): UseConversations {
     ) => {
       try {
         const chatroomConversationsCall: GetSyncConversationsResponse =
-          await lmChatclient?.getConversations({
+          await lmChatClient?.getConversations({
             chatroomId: parseInt(chatroomId!.toString()),
             page: 1,
             pageSize: 1,
@@ -544,7 +540,7 @@ export default function useConversations(): UseConversations {
         console.log(error);
       }
     });
-  }, [chatroomId, lmChatclient]);
+  }, [chatroomId, lmChatClient]);
   useEffect(() => {
     if (Utils.isOtherUserAIChatbot(chatroomDetails.chatroom, currentUser)) {
       const handleConversationPostedOnAIChatbot = () => {
@@ -632,14 +628,6 @@ export default function useConversations(): UseConversations {
       searchedConversationRef &&
       searchedConversationRef.current
     ) {
-      // setTimeout(() => {
-      //   searchedConversationRef?.current?.scrollIntoView({
-      //     behavior: "auto",
-      //     inline: "center",
-      //     block: "nearest",
-      //   });
-      // }, 40);
-
       searchedConversationRef.current.firstElementChild?.classList.add(
         "message-highlight",
       );

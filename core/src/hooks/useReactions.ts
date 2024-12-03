@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useContext } from "react";
 import { EmojiData } from "../types/models/emojiData";
 import { OneArgVoidReturns } from "./useInput";
@@ -8,7 +7,7 @@ import { LMChatroomContext } from "../context/LMChatChatroomContext";
 import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 
 export function useReactions(): UseReactionReturns {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { message, addReactionLocally } = useContext(LMMessageContext);
   const { reactionCustomActions = {} } = useContext(
     CustomisationContextProvider,
@@ -18,7 +17,7 @@ export function useReactions(): UseReactionReturns {
   const { chatroomDetails } = useContext(LMChatroomContext);
   const addReaction = async (emoji: EmojiData) => {
     try {
-      await lmChatclient?.putReaction({
+      await lmChatClient?.putReaction({
         conversationId: parseInt(message!.id.toString()),
         chatroomId: parseInt(chatroomDetails?.chatroom.id.toString() || ""),
         reaction: emoji.native,
@@ -30,7 +29,7 @@ export function useReactions(): UseReactionReturns {
   };
   const removeReaction = async (emoji: string) => {
     try {
-      const call = await lmChatclient?.deleteReaction({
+      await lmChatClient?.deleteReaction({
         chatroomId: chatroomDetails!.chatroom!.id!,
         conversationId: message!.id!,
         reaction: emoji,

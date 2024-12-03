@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { useAiChatbot } from "../../hooks/useAiChatbot";
+import { useAIChatbot } from "../../hooks/useAiChatbot";
 import LMAiBotScreen from "./LMAiBotScreen";
 import { LMChatAIButtonProps } from "./LMChatAIButton";
 import { AIChatbotLoaderScreen } from "./LMAiChatbotLoaderScreen";
@@ -7,7 +7,7 @@ const LMAiChatbot: FC<LMChatAIButtonProps> = ({
   previewText,
   loadingScreenAnimatons,
 }) => {
-  const { showAnimation, aiChatbotChatroomId } = useAiChatbot();
+  const { showAnimation, aiChatbotChatroomId } = useAIChatbot();
 
   const renderAIChatbot = () => {
     if (showAnimation) {

@@ -24,7 +24,7 @@ export function useChatroomSearch(): UseChatroomSearch {
     resetSearchCustomCallback,
   } = chatroomSearchCustomActions;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const [searchList, setSearchList] = useState<Chatroom[]>([]);
   const [searchKey, setSearchKey] = useState<string>("");
   const [loadMoreChatrooms, setLoadMoreChatrooms] = useState<boolean>(false);
@@ -38,7 +38,7 @@ export function useChatroomSearch(): UseChatroomSearch {
         return;
       }
       const PAGE_SIZE = 20;
-      const call = await lmChatclient?.searchChatroom({
+      const call = await lmChatClient?.searchChatroom({
         search: searchKey,
         page: pageCount.current,
         pageSize: PAGE_SIZE,
@@ -64,7 +64,7 @@ export function useChatroomSearch(): UseChatroomSearch {
     } catch (error) {
       console.log(error);
     }
-  }, [lmChatclient, searchKey]);
+  }, [lmChatClient, searchKey]);
   const resetSearch = () => {
     setSearchList(() => {
       return [];

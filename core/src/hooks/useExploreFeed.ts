@@ -8,7 +8,7 @@ import Member from "../types/models/member";
 import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 
 export function useExploreFeed(): useExploreFeed {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { chatroomDetails } = useContext(LMChatroomContext);
   const { exploreFeedCustomActions = {} } = useContext(
     CustomisationContextProvider,
@@ -21,7 +21,7 @@ export function useExploreFeed(): useExploreFeed {
   const getMembers = async () => {
     try {
       const getMembersCall: ViewParticipantsResponse =
-        await lmChatclient?.viewParticipants({
+        await lmChatClient?.viewParticipants({
           chatroomId: chatroomDetails?.chatroom.id || 0,
           isSecret: chatroomDetails?.chatroom.isSecret || false,
           page: participantListPageCount.current,

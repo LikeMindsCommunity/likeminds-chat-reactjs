@@ -14,7 +14,7 @@ import { Conversation } from "../types/models/conversations";
 import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 
 export function useConversationSearch(): UseConversationSearch {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { conversationSearchCustomActions = {} } = useContext(
     CustomisationContextProvider,
   );
@@ -37,7 +37,7 @@ export function useConversationSearch(): UseConversationSearch {
   const searchConversations = useCallback(async () => {
     try {
       const PAGE_SIZE = 20;
-      const call = await lmChatclient?.searchConversation({
+      const call = await lmChatClient?.searchConversation({
         search: searchKey,
         page: pageCount.current,
         pageSize: PAGE_SIZE,
@@ -57,7 +57,7 @@ export function useConversationSearch(): UseConversationSearch {
     } catch (error) {
       console.log(error);
     }
-  }, [chatroomDetails, lmChatclient, searchKey]);
+  }, [chatroomDetails, lmChatClient, searchKey]);
   const resetSearch = () => {
     setSearchList(() => {
       return [];

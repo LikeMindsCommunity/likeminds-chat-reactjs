@@ -27,7 +27,7 @@ export default function useUserProvider(
   client: LMClient | null,
   userDetails: UserDetails,
 ): UserProviderInterface {
-  const lmChatclient = client;
+  const lmChatClient = client;
   const [lmChatUser, setLmChatUser] = useState<null | Member>(null);
   const [lmChatUserMemberState, setLmChatUserMemberState] = useState<
     number | null
@@ -45,15 +45,15 @@ export default function useUserProvider(
     const { accessToken, refreshToken, username, uuid, isGuest, apiKey } =
       userDetails;
 
-    if (!lmChatclient) {
+    if (!lmChatClient) {
       return;
     }
     function setTokensInLocalStorage(
       accessToken: string,
       refreshToken: string,
     ) {
-      lmChatclient?.setAccessTokenInLocalStorage(accessToken);
-      lmChatclient?.setRefreshTokenInLocalStorage(refreshToken);
+      lmChatClient?.setAccessTokenInLocalStorage(accessToken);
+      lmChatClient?.setRefreshTokenInLocalStorage(refreshToken);
     }
     async function validateChatUser(
       localAccessToken: string,
@@ -61,18 +61,18 @@ export default function useUserProvider(
     ) {
       try {
         setTokensInLocalStorage(localAccessToken, localRefreshToken);
-        const validateUserCall = await lmChatclient?.validateUser({
+        const validateUserCall = await lmChatClient?.validateUser({
           accessToken: localAccessToken,
           refreshToken: localRefreshToken,
         });
         if (validateUserCall.success) {
           // Setting tokens in local storage
           setTokensInLocalStorage(localAccessToken, localRefreshToken);
-          lmChatclient?.setUserInLocalStorage(
+          lmChatClient?.setUserInLocalStorage(
             JSON.stringify(validateUserCall.data?.user),
           );
         }
-        const memberStateCall = await lmChatclient?.getMemberState();
+        const memberStateCall = await lmChatClient?.getMemberState();
         if (validateUserCall && memberStateCall?.success) {
           const user = {
             ...validateUserCall.data?.user,
@@ -102,7 +102,7 @@ export default function useUserProvider(
           throw Error("Either API key or UUID or Username not provided");
         }
 
-        const initiateUserCall = await lmChatclient?.initiateUser({
+        const initiateUserCall = await lmChatClient?.initiateUser({
           userUniqueId: uuid,
           userName: username,
           isGuest: isGuest,
@@ -115,12 +115,12 @@ export default function useUserProvider(
             initiateUserCall.data?.accessToken || "",
             initiateUserCall.data?.refreshToken || "",
           );
-          lmChatclient?.setApiKeyInLocalStorage(apiKey);
-          lmChatclient?.setUserInLocalStorage(
+          lmChatClient?.setApiKeyInLocalStorage(apiKey);
+          lmChatClient?.setUserInLocalStorage(
             JSON.stringify(initiateUserCall.data?.user),
           );
         }
-        const memberStateCall = await lmChatclient?.getMemberState();
+        const memberStateCall = await lmChatClient?.getMemberState();
         if (initiateUserCall.success && memberStateCall.success) {
           const user = {
             ...initiateUserCall.data?.user,
@@ -146,9 +146,9 @@ export default function useUserProvider(
       try {
         if (apiKey && username && uuid) {
           const localAccessToken =
-            lmChatclient?.getAccessTokenFromLocalStorage();
+            lmChatClient?.getAccessTokenFromLocalStorage();
           const localRefreshToken =
-            lmChatclient?.getRefreshTokenFromLocalStorage();
+            lmChatClient?.getRefreshTokenFromLocalStorage();
 
           if (
             localAccessToken &&
@@ -179,7 +179,7 @@ export default function useUserProvider(
         setUser();
       });
     };
-  }, [lmChatclient, userDetails]);
+  }, [lmChatClient, userDetails]);
 
   //
   useEffect(() => {

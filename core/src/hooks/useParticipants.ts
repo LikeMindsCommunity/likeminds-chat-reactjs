@@ -19,7 +19,7 @@ import { CustomisationContextProvider } from "../context/LMChatCustomisationCont
  * @returns {UseParticipantsReturns} An object containing the participants list, a flag indicating whether there are more participants to load, a function to fetch the members/participants of a chatroom, and a function to navigate back to the chatroom.
  */
 export function useParticipants(): UseParticipantsReturns {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { participantsCustomActions = {} } = useContext(
     CustomisationContextProvider,
   );
@@ -58,7 +58,7 @@ export function useParticipants(): UseParticipantsReturns {
   const getMembers = useCallback(async () => {
     try {
       const getMembersCall: ViewParticipantsResponse =
-        await lmChatclient?.viewParticipants({
+        await lmChatClient?.viewParticipants({
           chatroomId: chatroomDetails?.chatroom.id || 0,
           isSecret: chatroomDetails?.chatroom.isSecret || false,
           page: participantListPageCount.current,
@@ -88,7 +88,7 @@ export function useParticipants(): UseParticipantsReturns {
   }, [
     chatroomDetails?.chatroom.id,
     chatroomDetails?.chatroom.isSecret,
-    lmChatclient,
+    lmChatClient,
     searchKeyword,
   ]);
   useEffect(() => {

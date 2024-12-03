@@ -19,7 +19,7 @@ import { CustomisationContextProvider } from "../context/LMChatCustomisationCont
 export default function useDmChannelLists(
   currentChatroomId: string,
 ): UseDmChannelLists {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { dmChannelListCustomActions = {} } = useContext(
     CustomisationContextProvider,
   );
@@ -51,7 +51,7 @@ export default function useDmChannelLists(
     try {
       const currentPageCount = dmChatroomsPageCount.current;
       const newChatroomsCall: GetChatroomsSyncResponse =
-        await lmChatclient?.fetchDMFeed({
+        await lmChatClient?.fetchDMFeed({
           page: currentPageCount,
           chatroomTypes: [10],
           pageSize: 50,
@@ -81,7 +81,7 @@ export default function useDmChannelLists(
     } catch (error) {
       console.log(error);
     }
-  }, [lmChatclient]);
+  }, [lmChatClient]);
 
   /**
    * Marks a direct message chatroom as read.
@@ -89,7 +89,7 @@ export default function useDmChannelLists(
    */
   const markReadADMChatroom = async (id: string | number) => {
     try {
-      const call = await lmChatclient?.markReadChatroom({
+      const call = await lmChatClient?.markReadChatroom({
         chatroomId: parseInt(id.toString()),
       });
       if (call.success) {
@@ -121,7 +121,7 @@ export default function useDmChannelLists(
   };
   const onClickNewDMChatroom = async (memberId: string | number) => {
     try {
-      const checkDMLimitCall = await lmChatclient?.checkDMLimit({
+      const checkDMLimitCall = await lmChatClient?.checkDMLimit({
         memberId: parseInt(memberId.toString()),
       });
       if (checkDMLimitCall.success) {
@@ -133,7 +133,7 @@ export default function useDmChannelLists(
         const is_request_dm_limit_exceeded =
           checkDMLimitCall.data.is_request_dm_limit_exceeded;
         if (!is_request_dm_limit_exceeded) {
-          const createDMChatroomCall = await lmChatclient?.createDMChatroom({
+          const createDMChatroomCall = await lmChatClient?.createDMChatroom({
             memberId: parseInt(memberId.toString()),
           });
           if (createDMChatroomCall.success) {
@@ -171,10 +171,10 @@ export default function useDmChannelLists(
   //   TODO TBD
   //   const handleLastConversation = ()=>{}
   useEffect(() => {
-    if (!lmChatclient) {
+    if (!lmChatClient) {
       return;
     }
-    const fb = lmChatclient?.fbInstance();
+    const fb = lmChatClient?.fbInstance();
     const query = ref(fb, `community/${currentCommunity.id}`);
     return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
@@ -182,7 +182,7 @@ export default function useDmChannelLists(
         refreshDMChatrooms(chatroomId);
       }
     });
-  }, [currentCommunity.id, lmChatclient]);
+  }, [currentCommunity.id, lmChatClient]);
   useEffect(() => {
     getDMChatroomsList();
   }, [getDMChatroomsList]);

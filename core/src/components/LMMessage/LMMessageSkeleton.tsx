@@ -10,7 +10,9 @@ const LMMessageSkeleton = () => {
   const {
     chatroomDetails: { chatroom },
   } = useContext(LMChatroomContext);
+
   const { currentUser } = useContext(LMUserProviderContext);
+
   const getOtherUser = (() => {
     const otherMember =
       chatroom.member.sdkClientInfo?.uuid === currentUser.sdkClientInfo?.uuid
@@ -18,10 +20,12 @@ const LMMessageSkeleton = () => {
         : chatroom.member;
     return otherMember;
   })();
+
   const avatarContent = getAvatar({
     imageUrl: getOtherUser?.imageUrl || "",
     name: getOtherUser?.name || "",
   });
+
   return (
     <div className={`lm-chat-card receiver `}>
       <div className="lmUserData">{avatarContent}</div>
@@ -38,8 +42,6 @@ const LMMessageSkeleton = () => {
           <Skeleton animation={false} />
         </div>
       </div>
-
-      {/* <div className="data-pill">{message?.date}</div> */}
     </div>
   );
 };

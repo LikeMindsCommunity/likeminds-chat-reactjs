@@ -14,7 +14,7 @@ import { PollMessages } from "../enums/lm-poll-messages";
 import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 
 export function useCreatePoll(closeDialog?: ZeroArgVoidReturns): UseCreatePoll {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { createPollCustomActions = {} } = useContext(
     CustomisationContextProvider,
   );
@@ -156,8 +156,7 @@ export function useCreatePoll(closeDialog?: ZeroArgVoidReturns): UseCreatePoll {
           }
         }
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const call = await lmChatclient?.postPollConversation({
+      await lmChatClient?.postPollConversation({
         chatroomId: parseInt(chatroomId.toString()),
         state: ConversationStates.MICRO_POLL,
         text: pollText,

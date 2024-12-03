@@ -76,7 +76,7 @@ export default function useChatroomList(
     getChatroomsMineCustomCallback,
     getExploreGroupChatroomsCustomCallback,
   } = channelListCustomActions;
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { currentUser, currentCommunity } = useContext(UserProviderContext);
 
   //   state for groupchat chatrooms should come here
@@ -119,7 +119,7 @@ export default function useChatroomList(
   }, []);
   const markReadAChatroom = async (id: string | number) => {
     try {
-      const call = await lmChatclient?.markReadChatroom({
+      const call = await lmChatClient?.markReadChatroom({
         chatroomId: parseInt(id.toString()),
       });
       setChatroomId(id.toString());
@@ -152,7 +152,7 @@ export default function useChatroomList(
   };
   const onLeaveChatroom = async (chatroomID: string) => {
     try {
-      const call = await lmChatclient?.followChatroom({
+      const call = await lmChatClient?.followChatroom({
         collabcardId: parseInt(chatroomID),
         memberId: parseInt(currentUser?.id.toString() || "0"),
         value: false,
@@ -191,7 +191,7 @@ export default function useChatroomList(
   };
   const joinAChatroom = async (collabcardId: string) => {
     try {
-      const joinCall = await lmChatclient?.followChatroom({
+      const joinCall = await lmChatClient?.followChatroom({
         collabcardId: parseInt(collabcardId),
         memberId: parseInt(currentUser?.id?.toString() || "0"),
         value: true,
@@ -280,7 +280,7 @@ export default function useChatroomList(
   );
   const getExploreGroupChatrooms = useCallback(async () => {
     try {
-      const call = await lmChatclient?.getExploreFeed({
+      const call = await lmChatClient?.getExploreFeed({
         page: exploreGroupChatroomsPageCount.current,
         orderType: 0,
       });
@@ -297,11 +297,11 @@ export default function useChatroomList(
     } catch (error) {
       console.log(error);
     }
-  }, [lmChatclient]);
+  }, [lmChatClient]);
 
   async function approveDMRequest(id: string) {
     try {
-      const call = await lmChatclient?.inviteAction({
+      const call = await lmChatClient?.inviteAction({
         channelId: id,
         inviteStatus: 1,
       });
@@ -311,7 +311,7 @@ export default function useChatroomList(
   }
   async function rejectDMRequest(id: string) {
     try {
-      const call = await lmChatclient?.inviteAction({
+      const call = await lmChatClient?.inviteAction({
         channelId: id,
         inviteStatus: 2,
       });
@@ -321,7 +321,7 @@ export default function useChatroomList(
   }
   const getChatroomsMine = useCallback(async () => {
     try {
-      const getChatroomsMineCall = await lmChatclient?.getHomeFeed({
+      const getChatroomsMineCall = await lmChatClient?.getHomeFeed({
         page: groupChatroomsPageCount.current,
         pageSize: 10,
         chatroomTypes: [0, 7] as unknown,
@@ -357,10 +357,10 @@ export default function useChatroomList(
     } catch (error) {
       console.log(error);
     }
-  }, [lmChatclient]);
+  }, [lmChatClient]);
   const checkForDmTab: () => Promise<HideDMTabInfo | null> = async () => {
     try {
-      const call = await lmChatclient?.checkDMTab();
+      const call = await lmChatClient?.checkDMTab();
       if (call.success) {
         return call.data as HideDMTabInfo;
       }
@@ -374,11 +374,11 @@ export default function useChatroomList(
     getExploreGroupChatrooms();
   }, [getChatroomsMine, getExploreGroupChatrooms]);
   useEffect(() => {
-    if (!lmChatclient) {
+    if (!lmChatClient) {
       return;
     }
 
-    const fb = lmChatclient?.fbInstance();
+    const fb = lmChatClient?.fbInstance();
 
     const query = ref(fb, `community/${currentCommunity.id}`);
 
@@ -387,7 +387,7 @@ export default function useChatroomList(
         const chatroomId = snapshot.val().chatroom_id;
         const conversationId = snapshot.val().conversation_id;
         const chatroomConversationsCall: GetSyncConversationsResponse =
-          await lmChatclient?.getConversations({
+          await lmChatClient?.getConversations({
             chatroomId: parseInt(chatroomId!.toString()),
             page: 1,
             pageSize: 1,
@@ -399,7 +399,7 @@ export default function useChatroomList(
         refreshGroupChatrooms(chatroomId, chatroomConversationsCall);
       }
     });
-  }, [currentCommunity, lmChatclient, refreshGroupChatrooms]);
+  }, [currentCommunity, lmChatClient, refreshGroupChatrooms]);
   useEffect(() => {
     addEventListener(
       CustomActions.CHATROOM_LEAVE_ACTION_COMPLETED,

@@ -72,7 +72,7 @@ export function useInput(): UseInputReturns {
     onAprooveDMRequest,
     onShouldShowInputBox,
   } = inputCustomActions;
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { currentUser, memberState, currentCommunity, logoutUser } =
     useContext(UserProviderContext);
   const {
@@ -284,7 +284,7 @@ export function useInput(): UseInputReturns {
   const sendDMRequest = useCallback(
     async (textMessage: string) => {
       try {
-        const sendDmRequestCall = await lmChatclient?.sendDMRequest({
+        const sendDmRequestCall = await lmChatClient?.sendDMRequest({
           chatRequestState: 0,
           chatroomId: parseInt(chatroomId!.toString()),
           text: textMessage,
@@ -306,11 +306,11 @@ export function useInput(): UseInputReturns {
         console.log(error);
       }
     },
-    [chatroomId, lmChatclient, chatroomDetails, currentUser, setNewChatroom],
+    [chatroomId, lmChatClient, chatroomDetails, currentUser, setNewChatroom],
   );
   const aprooveDMRequest = useCallback(async () => {
     try {
-      const aprooveDmRequestCall = await lmChatclient?.sendDMRequest({
+      const aprooveDmRequestCall = await lmChatClient?.sendDMRequest({
         chatRequestState: 1,
         chatroomId: parseInt(chatroomId!.toString()),
       });
@@ -327,10 +327,10 @@ export function useInput(): UseInputReturns {
     } catch (error) {
       console.log(error);
     }
-  }, [chatroomId, lmChatclient, chatroomDetails, setNewChatroom]);
+  }, [chatroomId, lmChatClient, chatroomDetails, setNewChatroom]);
   const rejectDMRequest = useCallback(async () => {
     try {
-      const rejectDmRequestCall = await lmChatclient?.sendDMRequest({
+      const rejectDmRequestCall = await lmChatClient?.sendDMRequest({
         chatRequestState: 2,
         chatroomId: parseInt(chatroomId!.toString()),
       });
@@ -347,7 +347,7 @@ export function useInput(): UseInputReturns {
     } catch (error) {
       console.log(error);
     }
-  }, [chatroomId, lmChatclient, chatroomDetails, setNewChatroom]);
+  }, [chatroomId, lmChatClient, chatroomDetails, setNewChatroom]);
   const fetchGifs = useCallback(async (url: string) => {
     setLoading(true);
     setError(null);
@@ -371,7 +371,7 @@ export function useInput(): UseInputReturns {
   const fetchTaggingList = useCallback(
     async (pg?: number) => {
       try {
-        const call: GetTaggingListResponse = await lmChatclient?.getTaggingList(
+        const call: GetTaggingListResponse = await lmChatClient?.getTaggingList(
           {
             feedroomId: chatroomDetails?.chatroom.id,
             page: pg ? pg : taggingListPageCount.current,
@@ -395,7 +395,7 @@ export function useInput(): UseInputReturns {
         console.log(error);
       }
     },
-    [chatroomDetails?.chatroom.id, lmChatclient, tagSearchKey],
+    [chatroomDetails?.chatroom.id, lmChatClient, tagSearchKey],
   );
   const postMessage = useCallback(
     async (customWidgetData?: Record<string, any>) => {
@@ -434,7 +434,7 @@ export function useInput(): UseInputReturns {
         if (messageText.length)
           if (conversationToedit) {
             // Handling the editing of the conversation
-            const call: any = await lmChatclient?.editConversation({
+            const call: any = await lmChatClient?.editConversation({
               conversationId: conversationToedit.id,
               text: messageText,
             });
@@ -511,7 +511,7 @@ export function useInput(): UseInputReturns {
         document.dispatchEvent(SHOW_SKELETON_CUSTOM_EVENT);
         // sending the conversation
         const postConversationsCall: PostConversationResponse =
-          await lmChatclient?.postConversation(postConversationCallConfig);
+          await lmChatClient?.postConversation(postConversationCallConfig);
 
         setFocusOnInputField();
         removeOgTag();
@@ -529,7 +529,7 @@ export function useInput(): UseInputReturns {
       documentsMediaList,
       gifMedia,
       imagesAndVideosMediaList,
-      lmChatclient,
+      lmChatClient,
       ogTags,
       sendDMRequest,
       setConversationToEdit,
@@ -736,7 +736,7 @@ export function useInput(): UseInputReturns {
           const firstLinkDetected = linksDetected[0];
           if (firstLinkDetected.toString() !== ogTags?.url.toString()) {
             const getOgTagData: GetOgTagResponse =
-              await lmChatclient?.decodeUrl({ url: firstLinkDetected });
+              await lmChatClient?.decodeUrl({ url: firstLinkDetected });
             if (getOgTagData?.success) {
               setOgTags(getOgTagData.data.ogTags);
             }
@@ -753,7 +753,7 @@ export function useInput(): UseInputReturns {
 
     return () => clearTimeout(checkForLinksTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lmChatclient, inputText]);
+  }, [lmChatClient, inputText]);
   useEffect(() => {
     return () => {
       setConversationToEdit(null);

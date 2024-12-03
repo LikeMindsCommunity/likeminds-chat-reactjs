@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { SyntheticEvent, useContext, useState } from "react";
 import { Modal, Carousel } from "react-bootstrap";
 import LMMessageContext from "../../context/LMMessageContext";
 import pdfIcon from "../../assets/img/pdf-document.svg";
@@ -26,10 +26,11 @@ const MediaRenderer = ({ attachments }: { attachments: Attachment[] }) => {
 
   const handleClose = () => setShow(false);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleError = (e: any) => {
-    e.target.src = "https://via.placeholder.com/100"; // Fallback image URL
-    e.target.onerror = null; // Prevent infinite loop if the fallback also fails
+  const handleError = (
+    e: SyntheticEvent<HTMLImageElement | HTMLVideoElement>,
+  ) => {
+    e.currentTarget.src = "https://via.placeholder.com/100"; // Fallback image URL
+    e.currentTarget.onerror = null; // Prevent infinite loop if the fallback also fails
   };
 
   const renderMedia = (

@@ -7,7 +7,7 @@ import { Chatroom } from "../../types/models/Chatroom";
 interface LMJoinedDMChannelTileProps {
   chatroom: Chatroom;
 }
-const LMJoinedDMChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
+const LMChatJoinedChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
   const {
     usersData,
     conversationsData,
@@ -94,4 +94,4 @@ const LMJoinedDMChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
   );
 };
 
-export default LMJoinedDMChannelTile;
+export default LMChatJoinedChannelTile;

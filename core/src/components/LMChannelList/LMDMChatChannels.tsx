@@ -1,7 +1,7 @@
 import InfiniteScroll from "react-infinite-scroll-component";
 import useDmChannelLists from "../../hooks/useDMChannelLists";
 import { LMDMChannelListContext } from "../../context/LMDMChannelListContext";
-import LMJoinedDMChannelTile from "./LMJoinedDMChannelTile";
+import LMChatJoinedChannelTile from "./LMJoinedDMChannelTile";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { useContext } from "react";
 
@@ -53,7 +53,7 @@ const LMChatDMChannelList = ({ currentChatroomId }: LMDMChannelListProps) => {
           >
             {dmChatrooms.map((chatroom) => {
               return (
-                <LMJoinedDMChannelTile
+                <LMChatJoinedChannelTile
                   key={chatroom.id.toString()}
                   chatroom={chatroom}
                 />

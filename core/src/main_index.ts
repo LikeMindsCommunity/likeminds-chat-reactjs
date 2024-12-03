@@ -7,7 +7,7 @@ import LMMediaCarousel from "./components/LMInput/LMCarousel";
 import LMGiphySearch from "./components/LMInput/LMGiphySearch";
 import LMChatroom from "./components/LMChannel/LMChatChatroom";
 import ScrollContainer from "./components/DualSidePagination/ScrollContainer";
-import LMGroupChatChannelList from "./components/LMChannelList/LMGroupChatChannelList";
+import LMChatGroupChannelList from "./components/LMChannelList/LMGroupChatChannelList";
 import LMClientOverlayProvider from "./components/LMChatProvider/LMClientOverlayProvider";
 import LMAttachmentsSelector from "./components/LMInput/LMAttachmentsSelector";
 import LMChatTextArea from "./components/LMInput/LMChatTextArea";
@@ -25,7 +25,7 @@ import LMMessageMiddleware from "./components/LMMessageList/LMMessageMiddleware"
 import LMMessageList from "./components/LMMessageList/LMMessageList";
 import LMParticipantList from "./components/LMParticipant/LMParticipantList";
 import LMChatDMChannelList from "./components/LMChannelList/LMDMChatChannels";
-import LMJoinedDMChannelTile from "./components/LMChannelList/LMJoinedDMChannelTile";
+import LMChatJoinedChannelTile from "./components/LMChannelList/LMJoinedDMChannelTile";
 import LMMessageReplyCollapse from "./components/LMInput/LMMessageReplyCollapse";
 import LMPollCreationDialog from "./components/LMInput/LMPollCreationDialog";
 import LMMessage from "./components/LMMessage/LMMessage";
@@ -76,7 +76,7 @@ export {
   LMChannel,
   LMChatroom as LMChatChatroom,
   ScrollContainer,
-  LMGroupChatChannelList as LMChannelList,
+  LMChatGroupChannelList as LMChannelList,
   LMClientOverlayProvider,
   LMAttachmentsSelector,
   LMMediaCarousel,
@@ -98,7 +98,7 @@ export {
   LMParticipantList,
   LMReactGiffySearchComponent,
   LMChatDMChannelList as LMDMChatChannels,
-  LMJoinedDMChannelTile,
+  LMChatJoinedChannelTile as LMJoinedDMChannelTile,
   LMMessageReplyCollapse,
   LMPollCreationDialog,
   LMMessage,

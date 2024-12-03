@@ -3,37 +3,32 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { GetAIChatbotsResponse } from "../types/api-responses/getAIChatbotsResponse";
 import LMGlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 
-export function useAiChatbot() {
-  const { lmChatclient } = useContext(LMGlobalClientProviderContext);
-  const [isAiBotOpen, setIsAiBotOpen] = useState<boolean>(false);
+export function useAIChatbot() {
+  const { lmChatClient } = useContext(LMGlobalClientProviderContext);
+
   const [showAnimation, setShowAnimation] = useState<boolean>(true);
-  const [aiChatbotChatroomId, setAiChatbotChatroomId] = useState<string>("");
+  const [aiChatbotChatroomId, setAIChatbotChatroomId] = useState<string>("");
   const aiChatbotPageCount = useRef<number>(1);
 
-  const openAiBot = () => {
-    setIsAiBotOpen(true);
-  };
-
-  const closeAiBot = () => {
-    setIsAiBotOpen(false);
-  };
   const setAIBotChatroomInLocalPref = (chatroomId: string) => {
     localStorage.setItem("chatroomIdWithAIChatbot", chatroomId);
   };
+
   const getAIBotChatroomFromLocalPref = (): string | null => {
     return localStorage.getItem("chatroomIdWithAIChatbot");
   };
+
   const getChatbots = useCallback(async () => {
     try {
       const getChatbotsCall: GetAIChatbotsResponse =
-        await lmChatclient?.getAIChatbots({
+        await lmChatClient?.getAIChatbots({
           page: aiChatbotPageCount.current,
           pageSize: 10,
         });
       if (getChatbotsCall.success) {
         const chatbot = getChatbotsCall.data.users[0];
         const chatbotUUID = chatbot.sdkClientInfo?.uuid;
-        const checkDMStatusCall = await lmChatclient!.checkDMStatus({
+        const checkDMStatusCall = await lmChatClient!.checkDMStatus({
           uuid: chatbotUUID,
           requestFrom: "member_profile",
         });
@@ -46,11 +41,11 @@ export function useAiChatbot() {
           if (hasChatroomId) {
             const chatroomId = ctaURL.searchParams.get("chatroom_id");
             setAIBotChatroomInLocalPref(chatroomId!);
-            setAiChatbotChatroomId(chatroomId!);
+            setAIChatbotChatroomId(chatroomId!);
             setShowAnimation(false);
           } else {
             const createDMChatroomCall =
-              await lmChatclient!.createDMChatroomWithUuid({
+              await lmChatClient!.createDMChatroomWithUuid({
                 uuid: chatbotUUID!,
               });
             if (createDMChatroomCall.success) {
@@ -58,7 +53,7 @@ export function useAiChatbot() {
               console.timeEnd("ai-chatbot-with-new-user");
               console.log(chatroomId);
               setAIBotChatroomInLocalPref(chatroomId);
-              setAiChatbotChatroomId(chatroomId!);
+              setAIChatbotChatroomId(chatroomId!);
               setShowAnimation(false);
             }
           }
@@ -67,25 +62,25 @@ export function useAiChatbot() {
     } catch (error) {
       console.log(error);
     }
-  }, [lmChatclient]);
+  }, [lmChatClient]);
+
   useEffect(() => {
     const chatroomId = getAIBotChatroomFromLocalPref();
     if (chatroomId) {
-      setAiChatbotChatroomId(chatroomId);
+      setAIChatbotChatroomId(chatroomId);
       setShowAnimation(false);
     } else {
       getChatbots();
     }
   }, [getChatbots]);
+
   useEffect(() => {
     return () => {
       setShowAnimation(true);
     };
   }, []);
+
   return {
-    isAiBotOpen,
-    openAiBot,
-    closeAiBot,
     showAnimation,
     aiChatbotChatroomId,
   };
@@ -93,8 +88,7 @@ export function useAiChatbot() {
 
 export interface UseAiChatbot {
   isDialogOpen: boolean;
-  openAiBot: () => void;
-  closeAiBot: () => void;
+
   showAnimation: boolean;
   aiChatbotChatroomId: string;
 }

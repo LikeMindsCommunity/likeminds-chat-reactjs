@@ -11,7 +11,7 @@ import { CustomisationContextProvider } from "../context/LMChatCustomisationCont
 import Member from "../types/models/member";
 
 export function usePoll(): UsePoll {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { message, addPollOptionLocally, updatePollOnSubmitLocally } =
     useContext(LMMessageContext);
   const { pollCustomActions = {} } = useContext(CustomisationContextProvider);
@@ -186,7 +186,7 @@ export function usePoll(): UsePoll {
   const submitPoll = async () => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const call = await lmChatclient?.submitPoll({
+      const call = await lmChatClient?.submitPoll({
         polls: selectedPollOptions,
         conversationId: message?.id,
       });
@@ -198,7 +198,7 @@ export function usePoll(): UsePoll {
   };
   const addOptionOnPoll: ZeroArgVoidReturns = async () => {
     try {
-      const call = await lmChatclient?.addPollOption({
+      const call = await lmChatClient?.addPollOption({
         conversationId: message?.id,
         poll: {
           text: temporaryAddOptionText,
@@ -214,7 +214,7 @@ export function usePoll(): UsePoll {
   const getPollUsers = async (pollId: number) => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const call = await lmChatclient!.getPollUsers({
+      const call = await lmChatClient!.getPollUsers({
         conversationId: message?.id,
         pollId: pollId,
       });

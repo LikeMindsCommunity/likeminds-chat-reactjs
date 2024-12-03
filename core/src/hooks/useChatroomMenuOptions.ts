@@ -11,7 +11,7 @@ import { ChatroomMenuCustomActions } from "../types/prop-types/CustomComponents"
 function useChatroomMenuOptions(
   chatroomMenuCustomActions?: ChatroomMenuCustomActions,
 ): UseChatroomMenuOptions {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { chatroomDetails, setNewChatroom } = useContext(LMChatroomContext);
   const { currentUser, currentCommunity, memberState, logoutUser } =
     useContext(UserProviderContext);
@@ -25,7 +25,7 @@ function useChatroomMenuOptions(
 
   const onMute = useCallback(async () => {
     try {
-      const call = await lmChatclient?.muteChatroom({
+      const call = await lmChatClient?.muteChatroom({
         chatroomId: parseInt(chatroomDetails!.chatroom!.id!.toString()),
         value: chatroomDetails?.chatroomActions.some(
           (option) => option.id === 6,
@@ -62,10 +62,10 @@ function useChatroomMenuOptions(
     } catch (error) {
       console.log(error);
     }
-  }, [chatroomDetails, lmChatclient, setNewChatroom]);
+  }, [chatroomDetails, lmChatClient, setNewChatroom]);
   const onLeaveChatroom = useCallback(async () => {
     try {
-      const call = await lmChatclient?.followChatroom({
+      const call = await lmChatClient?.followChatroom({
         collabcardId: parseInt(
           chatroomDetails?.chatroom?.id?.toString() || "0",
         ),
@@ -83,7 +83,7 @@ function useChatroomMenuOptions(
     } catch (error) {
       console.log(error);
     }
-  }, [chatroomDetails, currentUser, lmChatclient, setNewChatroom]);
+  }, [chatroomDetails, currentUser, lmChatClient, setNewChatroom]);
   const onViewParticipants = useCallback(async () => {
     try {
       //
@@ -93,7 +93,7 @@ function useChatroomMenuOptions(
   }, []);
   const onUnBlock = useCallback(async () => {
     try {
-      const unblockCall = await lmChatclient?.blockMember({
+      const unblockCall = await lmChatClient?.blockMember({
         status: 1,
         chatroomId: chatroomDetails!.chatroom.id,
       });
@@ -135,10 +135,10 @@ function useChatroomMenuOptions(
     } catch (error) {
       console.log(error);
     }
-  }, [chatroomDetails, lmChatclient, setNewChatroom]);
+  }, [chatroomDetails, lmChatClient, setNewChatroom]);
   const onBlock = useCallback(async () => {
     try {
-      const blockCall = await lmChatclient?.blockMember({
+      const blockCall = await lmChatClient?.blockMember({
         status: 0,
         chatroomId: chatroomDetails!.chatroom.id,
       });
@@ -180,7 +180,7 @@ function useChatroomMenuOptions(
     } catch (error) {
       console.log(error);
     }
-  }, [chatroomDetails, lmChatclient, setNewChatroom]);
+  }, [chatroomDetails, lmChatClient, setNewChatroom]);
   const chatroomMenuDefaultActions = useMemo(() => {
     return {
       onLeaveChatroom,

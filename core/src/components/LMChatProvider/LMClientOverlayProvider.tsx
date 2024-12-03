@@ -56,7 +56,7 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
   return (
     <GlobalClientProviderContext.Provider
       value={{
-        lmChatclient: client,
+        lmChatClient: client,
         userDetails: userDetails,
         customComponents: customComponents,
       }}

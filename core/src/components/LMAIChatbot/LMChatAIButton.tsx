@@ -25,16 +25,16 @@ const LMChatAIButton: React.FC<
   loadingScreenAnimatons,
 }) => {
   const [isAiBotOpen, setIsAiBotOpen] = useState<boolean>(false);
-  const openAiBot = () => {
+  const openAIBot = () => {
     setIsAiBotOpen(true);
   };
 
-  const closeAiBot = () => {
+  const closeAIBot = () => {
     setIsAiBotOpen(false);
   };
 
   const openChatbotButton = (
-    <button className="lm-chat-ai-bot-fab-button" onClick={openAiBot}>
+    <button className="lm-chat-ai-bot-fab-button" onClick={openAIBot}>
       <img src={chatBotIcon} alt="AI Chatbot" />
       <span className="lm-chat-ai-bot-fab-title">
         {buttonText || `AI bot lite`}
@@ -43,7 +43,7 @@ const LMChatAIButton: React.FC<
   );
 
   const closeChatbotButton = (
-    <button className="lm-chat-ai-bot-fab-button" onClick={closeAiBot}>
+    <button className="lm-chat-ai-bot-fab-button" onClick={closeAIBot}>
       <img src={closeBotIcon} alt="AI Chatbot" />
       <span className="lm-chat-ai-bot-fab-title">Close Chat</span>
     </button>

@@ -17,7 +17,7 @@ const ReportTagsDialog = ({
   }>;
   closeDialog: ZeroArgVoidReturns;
 }) => {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const [reportTags, setReportTags] = useState<ReportTag[]>([]);
   const [selectedTag, setSelectedTag] = useState<ReportTag | null>(null);
   const [newReasonTagText, setNewReasonTagText] = useState<string>("");
@@ -25,7 +25,7 @@ const ReportTagsDialog = ({
     async function getTags() {
       try {
         const call: GetReportTagsChatResponse =
-          await lmChatclient?.getReportTags({
+          await lmChatClient?.getReportTags({
             type: 0,
           });
         if (call.success) {
@@ -36,7 +36,7 @@ const ReportTagsDialog = ({
       }
     }
     getTags();
-  }, [lmChatclient]);
+  }, [lmChatClient]);
   return (
     <div>
       <div className="lmReportPostWrapper">
