@@ -13,8 +13,8 @@ import {
   LMMessageList,
   initiateLMClient,
   LMMessageContext,
-  // } from "@likeminds.community/likeminds-chat-reactjs";
-} from "likeminds-chat-reactjs-beta";
+} from "@likeminds.community/likeminds-chat-reactjs";
+// } from "likeminds-chat-reactjs-beta";
 import { Toaster } from "react-hot-toast";
 
 const LMAppLayout = () => {
@@ -26,8 +26,8 @@ const LMAppLayout = () => {
     isGuest?: boolean;
     apiKey?: string;
   }>({
-    // apiKey: "d4356d31-306e-406d-aa4a-cd49f1b88f19",
-    apiKey: "aa2a3a49-f371-45de-a071-7cafc1fa927a",
+    apiKey: "d4356d31-306e-406d-aa4a-cd49f1b88f19",
+    // apiKey: "aa2a3a49-f371-45de-a071-7cafc1fa927a",
     isGuest: false,
     uuid: "Test User 01",
     username: "Test User 01",
