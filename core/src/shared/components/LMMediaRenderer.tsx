@@ -87,7 +87,6 @@ const MediaRenderer = ({ attachments }: { attachments: Attachment[] }) => {
         </div>
       );
     } else {
-      console.warn(`Unsupported file type at index ${index}: ${fileType}`);
       return null;
     }
   };

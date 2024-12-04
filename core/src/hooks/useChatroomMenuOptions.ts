@@ -25,7 +25,7 @@ function useChatroomMenuOptions(
 
   const onMute = useCallback(async () => {
     try {
-      const call = await lmChatClient?.muteChatroom({
+      const call = await lmChatClient.muteChatroom({
         chatroomId: parseInt(chatroomDetails!.chatroom!.id!.toString()),
         value: chatroomDetails?.chatroomActions.some(
           (option) => option.id === 6,
@@ -65,7 +65,7 @@ function useChatroomMenuOptions(
   }, [chatroomDetails, lmChatClient, setNewChatroom]);
   const onLeaveChatroom = useCallback(async () => {
     try {
-      const call = await lmChatClient?.followChatroom({
+      const call = await lmChatClient.followChatroom({
         collabcardId: parseInt(
           chatroomDetails?.chatroom?.id?.toString() || "0",
         ),
@@ -93,13 +93,13 @@ function useChatroomMenuOptions(
   }, []);
   const onUnBlock = useCallback(async () => {
     try {
-      const unblockCall = await lmChatClient?.blockMember({
+      const unblockCall = await lmChatClient.blockMember({
         status: 1,
         chatroomId: chatroomDetails!.chatroom.id,
       });
       document.dispatchEvent(
         new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
-          detail: unblockCall.data.conversation,
+          detail: unblockCall?.data.conversation,
         }),
       );
       if (unblockCall.success && chatroomDetails) {
@@ -138,13 +138,13 @@ function useChatroomMenuOptions(
   }, [chatroomDetails, lmChatClient, setNewChatroom]);
   const onBlock = useCallback(async () => {
     try {
-      const blockCall = await lmChatClient?.blockMember({
+      const blockCall = await lmChatClient.blockMember({
         status: 0,
         chatroomId: chatroomDetails!.chatroom.id,
       });
       document.dispatchEvent(
         new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
-          detail: blockCall.data.conversation,
+          detail: blockCall?.data.conversation,
         }),
       );
       if (blockCall.success && chatroomDetails) {

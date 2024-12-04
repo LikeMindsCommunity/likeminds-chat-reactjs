@@ -21,7 +21,7 @@ import { Chatroom } from "../../types/models/Chatroom";
 import { Conversation } from "../../types/models/conversations";
 
 export interface LMGroupChatChannelListProps {
-  currentChatroomId?: string;
+  currentChatroomId?: number;
 }
 
 function LMChatGroupChannelList({
@@ -40,7 +40,7 @@ function LMChatGroupChannelList({
     onLeaveChatroom,
     currentSelectedChatroomId,
     selectNewChatroom,
-  } = useChatroomList(currentChatroomId || "");
+  } = useChatroomList(currentChatroomId);
   const { currentUser } = useContext(UserProviderContext);
 
   // Search in chatroom
@@ -121,7 +121,7 @@ function LMChatGroupChannelList({
                 key={chatroom?.id?.toString()}
                 className={`channel-media ${currentSelectedChatroomId?.toString() === chatroom?.id?.toString() ? "selected" : null}`}
                 onClick={() => {
-                  selectNewChatroom(chatroom?.id?.toString());
+                  selectNewChatroom(chatroom?.id);
                 }}
               >
                 <div className="channel-icon">
@@ -203,7 +203,7 @@ function LMChatGroupChannelList({
                 className="channel-media"
                 key={chatroom.id.toString()}
                 onClick={() => {
-                  selectNewChatroom(chatroom.id.toString());
+                  selectNewChatroom(chatroom.id);
                 }}
               >
                 <div className="channel-icon">
@@ -240,8 +240,8 @@ function LMChatGroupChannelList({
                       onClick={(e) => {
                         e.stopPropagation();
                         chatroom.followStatus
-                          ? onLeaveChatroom(chatroom.id.toString())
-                          : joinAChatroom(chatroom.id.toString());
+                          ? onLeaveChatroom(chatroom.id)
+                          : joinAChatroom(chatroom.id);
                       }}
                       className={chatroom.followStatus ? "joined" : ""}
                     >

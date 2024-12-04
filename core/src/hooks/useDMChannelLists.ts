@@ -17,7 +17,7 @@ import { CustomisationContextProvider } from "../context/LMChatCustomisationCont
  * functions for fetching chatrooms, marking a chatroom as read, and refreshing the chatroom list.
  */
 export default function useDmChannelLists(
-  currentChatroomId: string,
+  currentChatroomId?: number,
 ): UseDmChannelLists {
   const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { dmChannelListCustomActions = {} } = useContext(
@@ -33,7 +33,7 @@ export default function useDmChannelLists(
   const [conversationsData, setConversationsData] = useState<
     Record<string, Conversation>
   >({});
-  const [chatroomId, setChatroomId] = useState<string | null>(
+  const [chatroomId, setChatroomId] = useState<number | undefined>(
     currentChatroomId,
   );
   const [usersData, setUsersData] = useState<Record<string, Member>>({});
@@ -51,7 +51,7 @@ export default function useDmChannelLists(
     try {
       const currentPageCount = dmChatroomsPageCount.current;
       const newChatroomsCall: GetChatroomsSyncResponse =
-        await lmChatClient?.fetchDMFeed({
+        await lmChatClient.fetchDMFeed({
           page: currentPageCount,
           chatroomTypes: [10],
           pageSize: 50,
@@ -89,7 +89,7 @@ export default function useDmChannelLists(
    */
   const markReadADMChatroom = async (id: string | number) => {
     try {
-      const call = await lmChatClient?.markReadChatroom({
+      const call = await lmChatClient.markReadChatroom({
         chatroomId: parseInt(id.toString()),
       });
       if (call.success) {
@@ -106,7 +106,9 @@ export default function useDmChannelLists(
       console.log(error);
     }
   };
-  const selectNewChatroom = (id: string) => {
+
+  // Function to set a new Chatroom
+  const selectNewChatroom = (id: number) => {
     markReadADMChatroom(id);
     setChatroomId(id);
     const NEW_CHATROOM_SELECTED = new CustomEvent(
@@ -118,33 +120,6 @@ export default function useDmChannelLists(
       },
     );
     document.dispatchEvent(NEW_CHATROOM_SELECTED);
-  };
-  const onClickNewDMChatroom = async (memberId: string | number) => {
-    try {
-      const checkDMLimitCall = await lmChatClient?.checkDMLimitWithUuid({
-        uuid: memberId,
-      });
-      if (checkDMLimitCall.success) {
-        const chatroom_id = checkDMLimitCall.data.chatroom_id;
-        if (chatroom_id) {
-          // navigate to the chatroom
-          return;
-        }
-        const is_request_dm_limit_exceeded =
-          checkDMLimitCall.data.is_request_dm_limit_exceeded;
-        if (!is_request_dm_limit_exceeded) {
-          const createDMChatroomCall =
-            await lmChatClient?.createDMChatroomWithUuid({
-              uuid: memberId,
-            });
-          if (createDMChatroomCall.success) {
-            // navigate to the chatroom
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   /**
@@ -175,7 +150,7 @@ export default function useDmChannelLists(
     if (!lmChatClient) {
       return;
     }
-    const fb = lmChatClient?.fbInstance();
+    const fb = lmChatClient.fbInstance();
     const query = ref(fb, `community/${currentCommunity.id}`);
     return onValue(query, (snapshot) => {
       if (snapshot.exists()) {
@@ -245,8 +220,8 @@ export interface UseDmChannelLists {
   getDMChatroomsList: ZeroArgVoidReturns;
   refreshDMChatrooms: OneArgVoidReturns<string | number>;
   markReadADMChatroom: OneArgVoidReturns<string | number>;
-  selectNewChatroom: OneArgVoidReturns<string>;
-  currentSelectedChatroomId: string | null;
+  selectNewChatroom: OneArgVoidReturns<number>;
+  currentSelectedChatroomId?: number;
   // Add any additional functions here
 }
 
@@ -254,7 +229,7 @@ export interface DMChannelListDefaultActions {
   getDMChatroomsList: ZeroArgVoidReturns;
   refreshDMChatrooms: OneArgVoidReturns<string | number>;
   markReadADMChatroom: OneArgVoidReturns<string | number>;
-  selectNewChatroom: OneArgVoidReturns<string>;
+  selectNewChatroom: OneArgVoidReturns<number>;
 }
 
 export interface DMChannelListDataStore {
@@ -262,5 +237,5 @@ export interface DMChannelListDataStore {
   loadMoreDmChatrooms: boolean;
   conversationsData: Record<string, Conversation>;
   usersData: Record<string, Member>;
-  currentSelectedChatroomId: string | null;
+  currentSelectedChatroomId?: number;
 }

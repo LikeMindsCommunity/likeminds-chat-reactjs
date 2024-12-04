@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useContext, useEffect } from "react";
 import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import useChatroom from "../../hooks/useChatroom";
 import noChatSelected from "../../assets/img/no-chat-selected.svg";
-import { LMGlobalClientProviderContext } from "../../main_index";
+import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 
 const LMChatroom: React.FC<PropsWithChildren<LMChatroomProps>> = ({
   currentChatroomId,
@@ -20,7 +20,7 @@ const LMChatroom: React.FC<PropsWithChildren<LMChatroomProps>> = ({
     canUserReplyPrivately,
     searchedConversationId,
     setSearchedConversationId,
-  } = useChatroom(currentChatroomId || "");
+  } = useChatroom(currentChatroomId);
   useEffect(() => {
     if (chatroomDetails) {
       console.timeEnd("ai-chatbot-open");
@@ -55,5 +55,5 @@ const LMChatroom: React.FC<PropsWithChildren<LMChatroomProps>> = ({
 export default LMChatroom;
 
 export interface LMChatroomProps {
-  currentChatroomId?: string;
+  currentChatroomId?: number;
 }

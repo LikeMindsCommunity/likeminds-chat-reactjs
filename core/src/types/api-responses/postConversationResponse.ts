@@ -1,7 +1,7 @@
 import {
-  LMResponseType,
-  PostConversation,
+  LMResponse,
+  PostConversationResponse as LMPostConversationResponse,
 } from "@likeminds.community/chat-js-beta";
 
 export interface PostConversationResponse
-  extends LMResponseType<PostConversation> {}
+  extends LMResponse<LMPostConversationResponse> {}

@@ -1,7 +1,7 @@
 import {
-  GetExploreChatrooms,
-  LMResponseType,
+  GetExploreFeedResponse as LMGetExploreFeedResponse,
+  LMResponse,
 } from "@likeminds.community/chat-js-beta";
 
 export interface GetExploreChatroomsResponse
-  extends LMResponseType<GetExploreChatrooms> {}
+  extends LMResponse<LMGetExploreFeedResponse> {}

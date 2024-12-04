@@ -24,5 +24,5 @@ const LMAiBotScreen: React.FC<LMAiBotScreenProps> = ({
 export default LMAiBotScreen;
 
 export interface LMAiBotScreenProps {
-  aiChatbotChatroomId: string;
+  aiChatbotChatroomId: number;
 }

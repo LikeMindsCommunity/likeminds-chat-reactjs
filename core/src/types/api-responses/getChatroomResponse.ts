@@ -1,4 +1,7 @@
-import { GetChatroom, LMResponseType } from "@likeminds.community/chat-js-beta";
+import {
+  GetChatroomResponse as LMGetChatroomResponse,
+  LMResponse,
+} from "@likeminds.community/chat-js-beta";
 import { Chatroom } from "../models/Chatroom";
 import { Community } from "../models/Community";
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -26,4 +29,5 @@ export interface ChatroomDetails {
   // widgets: any;
 }
 
-export interface GetChatroomResponse extends LMResponseType<GetChatroom> {}
+export interface GetChatroomResponse
+  extends LMResponse<LMGetChatroomResponse> {}

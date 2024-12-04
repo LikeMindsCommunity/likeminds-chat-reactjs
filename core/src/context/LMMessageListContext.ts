@@ -13,6 +13,7 @@ interface MessageListContextInterface {
   searchedConversationRef: MutableRefObject<HTMLDivElement | null>;
   setChatroomTopic: React.Dispatch<Conversation | null>;
   chatroomTopic: Conversation | null;
+  shouldScrollToBottom: MutableRefObject<boolean>;
 }
 
 const MessageListContext = React.createContext<MessageListContextInterface>(

@@ -39,7 +39,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
   const onReport = useCallback(
     async ({ id, reason }: { id: string | number; reason: string | null }) => {
       try {
-        await lmChatClient?.pushReport({
+        await lmChatClient.pushReport({
           conversationId: parseInt(message!.id.toString()),
           tagId: parseInt(id.toString()),
           reason: reason ? reason : undefined,
@@ -53,7 +53,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
 
   const onDelete = useCallback(async () => {
     try {
-      await lmChatClient?.deleteConversation({
+      await lmChatClient.deleteConversation({
         conversationIds: [parseInt(message!.id.toString())],
         reason: "none",
       });
@@ -75,7 +75,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
   // Set Chatroom Topic
   const onSetTopic = useCallback(async () => {
     try {
-      await lmChatClient?.setChatroomTopic({
+      await lmChatClient.setChatroomTopic({
         conversationId: parseInt(message!.id.toString()),
         chatroomId: parseInt(message?.cardId!.toString()),
       });
@@ -109,7 +109,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
   const onReplyPrivately = useCallback(
     async (memberId: string | number) => {
       try {
-        const checkDMLimitCall = await lmChatClient?.checkDMLimitWithUuid({
+        const checkDMLimitCall = await lmChatClient.checkDMLimitWithUuid({
           uuid: memberId,
         });
         if (checkDMLimitCall.success) {
@@ -126,15 +126,15 @@ export function useMessageOptions(): UseMessageOptionsReturn {
             document.dispatchEvent(NEW_CHATROOM_SELECTED);
             return;
           }
-          const is_request_dm_limit_exceeded =
-            checkDMLimitCall.data.is_request_dm_limit_exceeded;
-          if (!is_request_dm_limit_exceeded) {
+          const isRequestDmLimitExceeded =
+            checkDMLimitCall?.data.isRequestDmLimitExceeded;
+          if (!isRequestDmLimitExceeded) {
             const createDMChatroomCall =
-              await lmChatClient?.createDMChatroomWithUuid({
+              await lmChatClient.createDMChatroomWithUuid({
                 uuid: memberId,
               });
             if (createDMChatroomCall.success) {
-              const newChatroomId = createDMChatroomCall.data.chatroom.id;
+              const newChatroomId = createDMChatroomCall?.data.chatroom.id;
 
               const NEW_CHATROOM_SELECTED = new CustomEvent(
                 CustomActions.NEW_CHATROOM_SELECTED,
@@ -159,7 +159,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
   const putReaction = useCallback(
     async (reaction: string) => {
       try {
-        lmChatClient?.putReaction({
+        lmChatClient.putReaction({
           conversationId: parseInt(message!.id.toString()),
           reaction: reaction,
         });
@@ -265,7 +265,6 @@ export interface MessageDefaultActions {
     reason: string | null;
   }>;
   onDelete: ZeroArgVoidReturns;
-  // onSetTopic: ZeroArgVoidReturns;
   onEdit: ZeroArgVoidReturns;
   onReply: ZeroArgVoidReturns;
   putReaction: OneArgVoidReturns<string>;

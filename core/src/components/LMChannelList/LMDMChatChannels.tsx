@@ -16,7 +16,7 @@ const LMChatDMChannelList = ({ currentChatroomId }: LMDMChannelListProps) => {
     usersData,
     selectNewChatroom,
     currentSelectedChatroomId,
-  } = useDmChannelLists(currentChatroomId || "");
+  } = useDmChannelLists(currentChatroomId);
 
   const { customComponents } = useContext(LMGlobalClientProviderContext);
 
@@ -68,5 +68,5 @@ const LMChatDMChannelList = ({ currentChatroomId }: LMDMChannelListProps) => {
 export default LMChatDMChannelList;
 
 export interface LMDMChannelListProps {
-  currentChatroomId?: string;
+  currentChatroomId?: number;
 }

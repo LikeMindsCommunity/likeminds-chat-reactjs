@@ -1,7 +1,7 @@
 import {
   GetAIChatbotsResponse as LMAiChatbotResponse,
-  LMResponseType,
+  LMResponse,
 } from "@likeminds.community/chat-js-beta";
 
 export interface GetAIChatbotsResponse
-  extends LMResponseType<LMAiChatbotResponse> {}
+  extends LMResponse<LMAiChatbotResponse> {}

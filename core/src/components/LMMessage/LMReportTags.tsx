@@ -25,7 +25,7 @@ const ReportTagsDialog = ({
     async function getTags() {
       try {
         const call: GetReportTagsChatResponse =
-          await lmChatClient?.getReportTags({
+          await lmChatClient.getReportTags({
             type: 0,
           });
         if (call.success) {

@@ -1,7 +1,7 @@
 import {
-  GetMemberState,
-  LMResponseType,
+  GetMemberStateResponse as LMGetMemberStateResponse,
+  LMResponse,
 } from "@likeminds.community/chat-js-beta";
 
 export interface GetMemberStateResponse
-  extends LMResponseType<GetMemberState> {}
+  extends LMResponse<LMGetMemberStateResponse> {}

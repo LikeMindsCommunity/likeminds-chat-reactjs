@@ -21,13 +21,13 @@ export function useExploreFeed(): useExploreFeed {
   const getMembers = async () => {
     try {
       const getMembersCall: ViewParticipantsResponse =
-        await lmChatClient?.viewParticipants({
+        await lmChatClient.viewParticipants({
           chatroomId: chatroomDetails?.chatroom.id || 0,
           isSecret: chatroomDetails?.chatroom.isSecret || false,
           page: participantListPageCount.current,
         });
       if (getMembersCall.success) {
-        if (getMembersCall.data.participants.length) {
+        if (getMembersCall?.data.participants.length) {
           participantListPageCount.current += 1;
           setParticipantList((currentParticipants) => {
             return [

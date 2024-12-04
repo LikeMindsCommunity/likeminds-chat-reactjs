@@ -1,3 +1,6 @@
-import { GetOgTag, LMResponseType } from "@likeminds.community/chat-js-beta";
+import {
+  DecodeURLResponse as LMDecodeURLResponse,
+  LMResponse,
+} from "@likeminds.community/chat-js-beta";
 
-export interface GetOgTagResponse extends LMResponseType<GetOgTag> {}
+export interface DecodeURLResponse extends LMResponse<LMDecodeURLResponse> {}

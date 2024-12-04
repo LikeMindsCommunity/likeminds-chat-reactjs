@@ -186,7 +186,7 @@ export function usePoll(): UsePoll {
   const submitPoll = async () => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const call = await lmChatClient?.submitPoll({
+      const call = await lmChatClient.submitPoll({
         polls: selectedPollOptions,
         conversationId: message?.id,
       });
@@ -198,7 +198,7 @@ export function usePoll(): UsePoll {
   };
   const addOptionOnPoll: ZeroArgVoidReturns = async () => {
     try {
-      const call = await lmChatClient?.addPollOption({
+      const call = await lmChatClient.addPollOption({
         conversationId: message?.id,
         poll: {
           text: temporaryAddOptionText,
@@ -219,7 +219,7 @@ export function usePoll(): UsePoll {
         pollId: pollId,
       });
       setPollUsers(() => {
-        return call.data.members;
+        return call?.data.members;
       });
     } catch (error) {
       console.log(error);

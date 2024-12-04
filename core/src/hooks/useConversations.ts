@@ -41,6 +41,7 @@ interface UseConversations {
   unBlockUserInDM: ZeroArgVoidReturns;
   searchedConversationRef: MutableRefObject<HTMLDivElement | null>;
   loadMoreBottomConversation: boolean;
+  shouldScrollToBottom: MutableRefObject<boolean>;
 }
 
 export default function useConversations(): UseConversations {
@@ -77,6 +78,7 @@ export default function useConversations(): UseConversations {
   const bottomConversationId = useRef<number | null>(null);
   const showLoader = useRef<boolean>(true);
   const localConversationIds = useRef<Set<number>>(new Set());
+  const shouldScrollToBottom = useRef<boolean>(true);
 
   const transformConversations = (
     currentConversations: Conversation[],
@@ -231,6 +233,7 @@ export default function useConversations(): UseConversations {
           page: currentChatroomTopPageCount.current,
         });
       if (chatroomConversationsCall.success) {
+        shouldScrollToBottom.current = false;
         const { conversationsData } = chatroomConversationsCall.data;
         if (!conversationsData.length) {
           setLoadMore(false);
@@ -266,6 +269,7 @@ export default function useConversations(): UseConversations {
         topNavigate: false,
       });
       if (chatroomConversationsCall.success) {
+        shouldScrollToBottom.current = false;
         if (chatroomConversationsCall.data.conversations.length) {
           setConversations((currentConversations) => {
             if (!currentConversations) {
@@ -318,9 +322,10 @@ export default function useConversations(): UseConversations {
           ...(preConversationCall.data.conversations || []),
           ...(postConversationCall.data.conversations || []),
         ];
+        shouldScrollToBottom.current = false;
         if (newConversations.length) {
           currentChatroomMaxTimeStamp.current =
-            newConversations[0].created_epoch;
+            newConversations[0].createdEpoch;
           currentChatroomTopPageCount.current = 1;
           bottomConversationId.current =
             newConversations[newConversations.length - 1].id;
@@ -399,6 +404,7 @@ export default function useConversations(): UseConversations {
     lastMessageRef.current = null;
     newChatroomConversationsLoaded.current = false;
     currentChatroomTopPageCount.current = 1;
+    shouldScrollToBottom.current = true;
     setSearchedConversationId(null);
   }, [setSearchedConversationId]);
 
@@ -476,13 +482,9 @@ export default function useConversations(): UseConversations {
     return onValue(query, async (snapshot) => {
       try {
         if (snapshot.exists() && newChatroomConversationsLoaded.current) {
-          // uncomment to stop the scroll to bottom when new conversations come and user is on a searched conversation
-          // if (sessionStorage.getItem(SEARCHED_CONVERSATION_ID) !== null) {
-          //   return;
-          // }
           const collabcardId = snapshot.val().collabcard.answer_id;
-          getChatroomConversationsWithID(collabcardId)
-            .then((targetConversation: GetSyncConversationsResponse | null) => {
+          getChatroomConversationsWithID(collabcardId).then(
+            (targetConversation: GetSyncConversationsResponse | null) => {
               if (!targetConversation) return;
               if (targetConversation.data.conversationsData.length === 0)
                 return;
@@ -525,22 +527,25 @@ export default function useConversations(): UseConversations {
                   return newConversationsList;
                 }
               });
-
-              // setTimeout(() => {
-              //   bottomReferenceDiv.current?.scrollIntoView({
-              //     behavior: "smooth",
-              //     block: "end",
-              //     inline: "nearest",
-              //   });
-              // }, 0);
-            })
-            .catch(console.log);
+            },
+          );
         }
       } catch (error) {
         console.log(error);
       }
     });
   }, [chatroomId, lmChatClient]);
+
+  /**
+   * Sets up an event listener to handle when a conversation is posted on an AI chatbot.
+   * If the current chatroom is identified as an AI chatbot, it triggers a skeleton response display.
+   *
+   * @returns {void} This effect does not return any value.
+   *
+   * @dependencies [chatroomDetails.chatroom, currentUser]
+   * The effect depends on `chatroomDetails.chatroom` and `currentUser` to determine
+   * if the listener should be added or removed.
+   */
   useEffect(() => {
     if (Utils.isOtherUserAIChatbot(chatroomDetails.chatroom, currentUser)) {
       const handleConversationPostedOnAIChatbot = () => {
@@ -654,6 +659,7 @@ export default function useConversations(): UseConversations {
     searchedConversationRef,
     loadMoreBottomConversation,
     chatroomTopic,
+    shouldScrollToBottom,
     // Functions
     setConversations,
     getChatroomConversationsOnBottomScroll,

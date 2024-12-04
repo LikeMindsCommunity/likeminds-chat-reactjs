@@ -37,7 +37,7 @@ export function useConversationSearch(): UseConversationSearch {
   const searchConversations = useCallback(async () => {
     try {
       const PAGE_SIZE = 20;
-      const call = await lmChatClient?.searchConversation({
+      const call = await lmChatClient.searchConversation({
         search: searchKey,
         page: pageCount.current,
         pageSize: PAGE_SIZE,
@@ -47,9 +47,9 @@ export function useConversationSearch(): UseConversationSearch {
       if (call?.data.conversations.length === 0) {
         setLoadMoreConversations(false);
       }
-      if (call!.data.conversations.length > 0) {
+      if (call?.data.conversations.length > 0) {
         setSearchList((currentList) => {
-          const newList = [...currentList, ...call!.data.conversations];
+          const newList = [...currentList, ...call.data.conversations];
           return newList;
         });
         pageCount.current = pageCount.current + 1;

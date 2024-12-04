@@ -57,6 +57,6 @@ const LMChannel = ({
 export default LMChannel;
 
 export interface LMChannelProps {
-  currentChatroomId?: string;
+  currentChatroomId?: number;
   currentMode: LMChatCurrentMode;
 }

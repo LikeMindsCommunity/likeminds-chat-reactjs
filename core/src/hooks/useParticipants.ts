@@ -58,7 +58,7 @@ export function useParticipants(): UseParticipantsReturns {
   const getMembers = useCallback(async () => {
     try {
       const getMembersCall: ViewParticipantsResponse =
-        await lmChatClient?.viewParticipants({
+        await lmChatClient.viewParticipants({
           chatroomId: chatroomDetails?.chatroom.id || 0,
           isSecret: chatroomDetails?.chatroom.isSecret || false,
           page: participantListPageCount.current,
@@ -66,10 +66,10 @@ export function useParticipants(): UseParticipantsReturns {
           pageSize: 100,
         });
       if (getMembersCall.success) {
-        if (getMembersCall.data.participants.length) {
+        if (getMembersCall?.data.participants.length) {
           if (participantListPageCount.current === 1) {
             totalParticipantsCount.current =
-              getMembersCall.data.totalParticipantsCount || 0;
+              getMembersCall?.data.totalParticipantsCount || 0;
           }
           participantListPageCount.current += 1;
           setParticipantList((currentParticipants) => {

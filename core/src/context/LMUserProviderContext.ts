@@ -2,7 +2,7 @@ import React from "react";
 import Member from "../types/models/member";
 import { Community } from "../types/models/Community";
 
-interface UserProviderContextInterface {
+export interface UserProviderContextInterface {
   currentUser: Member;
   memberState: number;
   logoutUser: (() => void) | null;

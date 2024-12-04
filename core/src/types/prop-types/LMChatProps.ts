@@ -6,7 +6,7 @@ import { LMClient } from "../DataLayerExportsTypes";
 import { CustomComponents } from "./CustomComponents";
 
 export interface LMChatProps {
-  client: LMClient | null;
+  client: LMClient;
   userDetails: UserDetails;
   lmChatCoreCallbacks?: LMCoreCallbacks;
   attachmentOptions?: LMInputAttachments[];

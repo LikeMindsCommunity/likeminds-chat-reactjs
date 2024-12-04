@@ -52,7 +52,7 @@ const LMChatJoinedChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
       key={id.toString()}
       className={`channel-media ${currentSelectedChatroomId?.toString() === id.toString() ? "selected" : null}`}
       onClick={() => {
-        selectNewChatroom(id.toString());
+        selectNewChatroom(id);
       }}
     >
       <div className="channel-icon">

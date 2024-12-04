@@ -664,7 +664,6 @@ export class Utils {
   }
 
   static isOtherUserAIChatbot(chatroom: Chatroom, currentUser: Member) {
-    console.log(chatroom);
     const currentUUID = currentUser?.uuid;
     const otherMember =
       chatroom.member.sdkClientInfo?.uuid === currentUUID

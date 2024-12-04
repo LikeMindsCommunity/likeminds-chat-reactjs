@@ -22,7 +22,7 @@ import { PostConversationResponse } from "../types/api-responses/postConversatio
 import { FileType } from "../types/enums/Filetype";
 import { CustomActions } from "../customActions";
 
-import { GetOgTagResponse } from "../types/api-responses/getOgTagResponse";
+import { DecodeURLResponse } from "../types/api-responses/getOgTagResponse";
 import { Gif } from "../types/models/GifObject";
 import { ChatroomDetails } from "../types/api-responses/getChatroomResponse";
 import { ChatroomTypes } from "../enums/lm-chatroom-types";
@@ -192,6 +192,8 @@ export function useInput(): UseInputReturns {
     },
     [currentCommunity.id, currentUser],
   );
+
+  // This function builds a new GIF attachment
   const buildGIFAttachment = (gif: Gif) => {
     const attachmentObject: Attachment = {
       url: gif.images.fixed_height.url,
@@ -207,6 +209,8 @@ export function useInput(): UseInputReturns {
     };
     return attachmentObject;
   };
+
+  // This funciton will build MediaAttachments
   const buildMediaAttachments = useCallback(
     async (mediaList: File[]) => {
       mediaList = [...mediaList];
@@ -284,7 +288,7 @@ export function useInput(): UseInputReturns {
   const sendDMRequest = useCallback(
     async (textMessage: string) => {
       try {
-        const sendDmRequestCall = await lmChatClient?.sendDMRequest({
+        const sendDmRequestCall = await lmChatClient.sendDMRequest({
           chatRequestState: 0,
           chatroomId: parseInt(chatroomId!.toString()),
           text: textMessage,
@@ -292,7 +296,7 @@ export function useInput(): UseInputReturns {
 
         document.dispatchEvent(
           new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
-            detail: sendDmRequestCall.data.conversation,
+            detail: sendDmRequestCall?.data.conversation,
           }),
         );
 
@@ -310,13 +314,13 @@ export function useInput(): UseInputReturns {
   );
   const aprooveDMRequest = useCallback(async () => {
     try {
-      const aprooveDmRequestCall = await lmChatClient?.sendDMRequest({
+      const aprooveDmRequestCall = await lmChatClient.sendDMRequest({
         chatRequestState: 1,
         chatroomId: parseInt(chatroomId!.toString()),
       });
       document.dispatchEvent(
         new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
-          detail: aprooveDmRequestCall.data.conversation,
+          detail: aprooveDmRequestCall?.data.conversation,
         }),
       );
       const newChatroom = { ...chatroomDetails };
@@ -330,13 +334,13 @@ export function useInput(): UseInputReturns {
   }, [chatroomId, lmChatClient, chatroomDetails, setNewChatroom]);
   const rejectDMRequest = useCallback(async () => {
     try {
-      const rejectDmRequestCall = await lmChatClient?.sendDMRequest({
+      const rejectDmRequestCall = await lmChatClient.sendDMRequest({
         chatRequestState: 2,
         chatroomId: parseInt(chatroomId!.toString()),
       });
       document.dispatchEvent(
         new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
-          detail: rejectDmRequestCall.data.conversation,
+          detail: rejectDmRequestCall?.data.conversation,
         }),
       );
       const newChatroom = { ...chatroomDetails };
@@ -354,7 +358,7 @@ export function useInput(): UseInputReturns {
     try {
       const response = await fetch(url);
       const result = await response.json();
-      setGifs(result.data);
+      setGifs(result?.data);
       setQuery(() => "");
     } catch (err) {
       setError("Failed to fetch GIFs. Please try again.");
@@ -371,24 +375,19 @@ export function useInput(): UseInputReturns {
   const fetchTaggingList = useCallback(
     async (pg?: number) => {
       try {
-        const call: GetTaggingListResponse = await lmChatClient?.getTaggingList(
-          {
-            chatroomId: chatroomDetails?.chatroom.id,
-            page: pg ? pg : taggingListPageCount.current,
-            pageSize: 10,
-            searchName: tagSearchKey || "",
-          },
-        );
+        const call: GetTaggingListResponse = await lmChatClient.getTaggingList({
+          chatroomId: chatroomDetails?.chatroom.id,
+          page: pg ? pg : taggingListPageCount.current,
+          pageSize: 10,
+          searchName: tagSearchKey || "",
+        });
         if (call.success) {
           setMatchedTagMembersList((previousState) => {
-            return [
-              ...previousState,
-              ...(call.data?.members || call.data.communityMembers || []),
-            ];
+            return [...previousState, ...(call?.data.communityMembers || [])];
           });
           incrementPageNo();
         }
-        if (!call.data.members?.length && call.data.communityMembers?.length) {
+        if (call?.data.communityMembers?.length) {
           setFetchMoreTags(false);
         }
       } catch (error) {
@@ -434,14 +433,14 @@ export function useInput(): UseInputReturns {
         if (messageText.length)
           if (conversationToedit) {
             // Handling the editing of the conversation
-            const call: any = await lmChatClient?.editConversation({
+            const call: any = await lmChatClient.editConversation({
               conversationId: conversationToedit.id,
               text: messageText,
             });
             setConversationToEdit(null);
             document.dispatchEvent(
               new CustomEvent(CustomActions.EDIT_ACTION_COMPLETED, {
-                detail: call.data.conversation,
+                detail: call?.data.conversation,
               }),
             );
             setFocusOnInputField();
@@ -511,7 +510,7 @@ export function useInput(): UseInputReturns {
         document.dispatchEvent(SHOW_SKELETON_CUSTOM_EVENT);
         // sending the conversation
         const postConversationsCall: PostConversationResponse =
-          await lmChatClient?.postConversation(postConversationCallConfig);
+          await lmChatClient.postConversation(postConversationCallConfig);
 
         setFocusOnInputField();
         removeOgTag();
@@ -735,10 +734,10 @@ export function useInput(): UseInputReturns {
         if (linksDetected.length) {
           const firstLinkDetected = linksDetected[0];
           if (firstLinkDetected.toString() !== ogTags?.url.toString()) {
-            const getOgTagData: GetOgTagResponse =
-              await lmChatClient?.decodeUrl({ url: firstLinkDetected });
+            const getOgTagData: DecodeURLResponse =
+              await lmChatClient.decodeUrl({ url: firstLinkDetected });
             if (getOgTagData?.success) {
-              setOgTags(getOgTagData.data.ogTags);
+              setOgTags(getOgTagData?.data.ogTags);
             }
           }
         } else {

@@ -24,26 +24,26 @@ interface ChannelListInterface {
   exploreGroupChatrooms: Chatroom[];
   loadMoreExploreGroupChatrooms: boolean;
   loadMoreGroupChatrooms: boolean;
-  joinAChatroom: OneArgVoidReturns<string>;
-  markReadAChatroom: OneArgVoidReturns<string | number>;
-  onLeaveChatroom: OneArgVoidReturns<string>;
+  joinAChatroom: OneArgVoidReturns<number>;
+  markReadAChatroom: OneArgVoidReturns<number>;
+  onLeaveChatroom: OneArgVoidReturns<number>;
   checkForDmTab: () => Promise<HideDMTabInfo | null>;
   approveDMRequest: OneArgVoidReturns<string>;
   rejectDMRequest: OneArgVoidReturns<string>;
-  currentSelectedChatroomId: string | null;
-  selectNewChatroom: OneArgVoidReturns<string>;
+  currentSelectedChatroomId: number | undefined;
+  selectNewChatroom: OneArgVoidReturns<number>;
 }
 
 export interface ChannelListDefaultActions {
   getChatroomsMine: ZeroArgVoidReturns;
   getExploreGroupChatrooms: ZeroArgVoidReturns;
-  joinAChatroom: OneArgVoidReturns<string>;
-  onLeaveChatroom: OneArgVoidReturns<string>;
-  markReadAChatroom: OneArgVoidReturns<string | number>;
+  joinAChatroom: OneArgVoidReturns<number>;
+  onLeaveChatroom: OneArgVoidReturns<number>;
+  markReadAChatroom: OneArgVoidReturns<number>;
   checkForDmTab: () => Promise<HideDMTabInfo | null>;
   approveDMRequest: OneArgVoidReturns<string>;
   rejectDMRequest: OneArgVoidReturns<string>;
-  selectNewChatroom: OneArgVoidReturns<string>;
+  selectNewChatroom: OneArgVoidReturns<number>;
 }
 
 export interface ChannelListDataStore {
@@ -53,13 +53,13 @@ export interface ChannelListDataStore {
   exploreGroupChatrooms: Chatroom[];
   loadMoreExploreGroupChatrooms: boolean;
   loadMoreGroupChatrooms: boolean;
-  currentSelectedChatroomId: string | null;
+  currentSelectedChatroomId: number | undefined;
 }
 
 export default function useChatroomList(
-  currentChatroomId: string,
+  currentChatroomId?: number,
 ): ChannelListInterface {
-  const [chatroomId, setChatroomId] = useState<string | null>(
+  const [chatroomId, setChatroomId] = useState<number | undefined>(
     currentChatroomId,
   );
   const { channelListCustomActions = {} } = useContext(
@@ -117,12 +117,12 @@ export default function useChatroomList(
       return exploreChatroomsCopy;
     });
   }, []);
-  const markReadAChatroom = async (id: string | number) => {
+  const markReadAChatroom = async (id: number) => {
     try {
-      const call = await lmChatClient?.markReadChatroom({
+      const call = await lmChatClient.markReadChatroom({
         chatroomId: parseInt(id.toString()),
       });
-      setChatroomId(id.toString());
+      setChatroomId(id);
       if (call.success) {
         setGroupChatrooms((currentGroupChatrooms) => {
           return currentGroupChatrooms.map((chatroom) => {
@@ -137,7 +137,15 @@ export default function useChatroomList(
       console.log(error);
     }
   };
-  const selectNewChatroom = (id: string) => {
+
+  /**
+   * Selects a new chatroom by marking it as read, setting it as the active chatroom,
+   * and dispatching a custom event to notify listeners of the selection.
+   *
+   * @param {string} id - The unique identifier of the chatroom to select.
+   * @returns {void} This function does not return any value.
+   */
+  const selectNewChatroom = (id: number) => {
     markReadAChatroom(id);
     setChatroomId(id);
     const NEW_CHATROOM_SELECTED = new CustomEvent(
@@ -150,17 +158,18 @@ export default function useChatroomList(
     );
     document.dispatchEvent(NEW_CHATROOM_SELECTED);
   };
-  const onLeaveChatroom = async (chatroomID: string) => {
+
+  const onLeaveChatroom = async (chatroomID: number) => {
     try {
-      const call = await lmChatClient?.followChatroom({
-        collabcardId: parseInt(chatroomID),
+      const call = await lmChatClient.followChatroom({
+        collabcardId: chatroomID,
         memberId: parseInt(currentUser?.id.toString() || "0"),
         value: false,
       });
       if (call.success) {
         dispatchEvent(
           new CustomEvent(CustomActions.CHATROOM_LEAVE_ACTION_COMPLETED, {
-            detail: chatroomId,
+            detail: chatroomID,
           }),
         );
         setGroupChatrooms((currentGroupChatrooms) => {
@@ -189,11 +198,11 @@ export default function useChatroomList(
       console.log(error);
     }
   };
-  const joinAChatroom = async (collabcardId: string) => {
+  const joinAChatroom = async (collabcardId: number) => {
     try {
-      const joinCall = await lmChatClient?.followChatroom({
-        collabcardId: parseInt(collabcardId),
-        memberId: parseInt(currentUser?.id?.toString() || "0"),
+      const joinCall = await lmChatClient.followChatroom({
+        collabcardId: collabcardId,
+        memberId: currentUser?.id,
         value: true,
       });
       selectNewChatroom(collabcardId);
@@ -201,7 +210,7 @@ export default function useChatroomList(
         setGroupChatrooms((currentGroupChatrooms) => {
           const currentGroupChatroomsCopy = [...currentGroupChatrooms];
           const targetChatroom = currentExpolreChatrooms.find(
-            (chatroom) => chatroom.id.toString() === collabcardId,
+            (chatroom) => chatroom.id.toString() === collabcardId.toString(),
           );
           if (targetChatroom) {
             currentGroupChatroomsCopy.unshift(targetChatroom);
@@ -280,12 +289,12 @@ export default function useChatroomList(
   );
   const getExploreGroupChatrooms = useCallback(async () => {
     try {
-      const call = await lmChatClient?.getExploreFeed({
+      const call = await lmChatClient.getExploreFeed({
         page: exploreGroupChatroomsPageCount.current,
         orderType: 0,
       });
       if (call?.success) {
-        if (call.data.chatrooms.length) {
+        if (call?.data.chatrooms.length) {
           exploreGroupChatroomsPageCount.current += 1;
           setExploreGroupChatrooms((currentChatrooms) => {
             return [...currentChatrooms, ...call.data.chatrooms];
@@ -301,7 +310,7 @@ export default function useChatroomList(
 
   async function approveDMRequest(id: string) {
     try {
-      const call = await lmChatClient?.inviteAction({
+      const call = await lmChatClient.inviteAction({
         channelId: id,
         inviteStatus: 1,
       });
@@ -311,7 +320,7 @@ export default function useChatroomList(
   }
   async function rejectDMRequest(id: string) {
     try {
-      const call = await lmChatClient?.inviteAction({
+      const call = await lmChatClient.inviteAction({
         channelId: id,
         inviteStatus: 2,
       });
@@ -321,7 +330,7 @@ export default function useChatroomList(
   }
   const getChatroomsMine = useCallback(async () => {
     try {
-      const getChatroomsMineCall = await lmChatClient?.getHomeFeed({
+      const getChatroomsMineCall = await lmChatClient.getHomeFeed({
         page: groupChatroomsPageCount.current,
         pageSize: 10,
         chatroomTypes: [0, 7] as unknown,
@@ -329,7 +338,7 @@ export default function useChatroomList(
         minTimestamp: 0,
       } as GetHomeFeedRequest);
       if (getChatroomsMineCall?.success) {
-        if (!getChatroomsMineCall.data.chatroomsData.length) {
+        if (!getChatroomsMineCall?.data.chatroomsData.length) {
           loadMoreGroupChatrooms.current = false;
           return;
         } else {
@@ -344,13 +353,13 @@ export default function useChatroomList(
         setgroupChatroomConversationsMeta((currentConversationsMeta) => {
           return {
             ...currentConversationsMeta,
-            ...getChatroomsMineCall.data.conversationMeta,
+            ...getChatroomsMineCall?.data.conversationMeta,
           };
         });
         setgroupChatroomMember((currentConversationsMeta) => {
           return {
             ...currentConversationsMeta,
-            ...getChatroomsMineCall.data.userMeta,
+            ...getChatroomsMineCall?.data.userMeta,
           };
         });
       }
@@ -360,7 +369,7 @@ export default function useChatroomList(
   }, [lmChatClient]);
   const checkForDmTab: () => Promise<HideDMTabInfo | null> = async () => {
     try {
-      const call = await lmChatClient?.checkDMTab();
+      const call = await lmChatClient.checkDMTab();
       if (call.success) {
         return call.data as HideDMTabInfo;
       }
@@ -378,7 +387,7 @@ export default function useChatroomList(
       return;
     }
 
-    const fb = lmChatClient?.fbInstance();
+    const fb = lmChatClient.fbInstance();
 
     const query = ref(fb, `community/${currentCommunity.id}`);
 
@@ -387,7 +396,7 @@ export default function useChatroomList(
         const chatroomId = snapshot.val().chatroom_id;
         const conversationId = snapshot.val().conversation_id;
         const chatroomConversationsCall: GetSyncConversationsResponse =
-          await lmChatClient?.getConversations({
+          await lmChatClient.getConversations({
             chatroomId: parseInt(chatroomId!.toString()),
             page: 1,
             pageSize: 1,
@@ -507,8 +516,8 @@ export default function useChatroomList(
 }
 
 export interface HideDMTabInfo {
-  hide_dm_tab: boolean;
-  is_cm: boolean;
-  unread_dm_count: number;
-  hide_dm_text: string | undefined;
+  hideDmTab: boolean;
+  isCm: boolean;
+  unreadDmCount: number;
+  hideDmText: string | undefined;
 }

@@ -5,17 +5,17 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
 
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import { IconButton } from "@mui/material";
-import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import { Conversation } from "../../types/models/conversations";
 import Member from "../../types/models/member";
-import { LMMessageListContext, LMUserProviderContext } from "../../main_index";
+import LMMessageListContext from "../../context/LMMessageListContext";
+import LMUserProviderContext from "../../context/LMUserProviderContext";
+
 //   Debounce creator for creating a debounced variation of the original function
 function createDebouncedFunction(originalFunction: () => void) {
   let hasTheFunctionAlreadyCalled: boolean = false;
@@ -66,9 +66,9 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
   } = props;
 
   const [isScrollToBottomVisible, setIsScrollToBottomVisible] = useState(false);
-  const { conversations } = useContext(LMMessageListContext);
+  const { conversations, shouldScrollToBottom } =
+    useContext(LMMessageListContext);
   const { currentUser } = useContext(LMUserProviderContext);
-  const { chatroomDetails } = useContext(LMChatroomContext);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const scrollTarget = useRef<HTMLDivElement | null>(null);
   const hasAlreadyCalled = useRef<boolean>(false);
@@ -86,8 +86,11 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
       conversation: Conversation,
       currentUser: Member,
       scrollContainer: HTMLDivElement,
-      previousScrollPosition: number,
     ) => {
+      if (!shouldScrollToBottom.current) {
+        shouldScrollToBottom.current = true;
+        return;
+      }
       const userId = conversation.userId;
       const isConversationSentByCurrentUser =
         userId?.toString() === currentUser.id.toString() ? true : false;
@@ -99,7 +102,7 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
         scrollContainer.scrollTop = scrollHeight;
       }
     },
-    [],
+    [shouldScrollToBottom],
   );
   const handleScroll = useCallback(async () => {
     try {
@@ -161,9 +164,13 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        setIsScrollToBottomVisible(!entry.isIntersecting);
+        if (entry.isIntersecting) {
+          setIsScrollToBottomVisible(false);
+        } else {
+          setIsScrollToBottomVisible(true);
+        }
       },
-      { root: scrollContainerRef.current, threshold: 1.0 },
+      { root: scrollContainerRef.current, threshold: 0.01 },
     );
 
     const target =
@@ -184,22 +191,17 @@ const ScrollContainer = (props: PropsWithChildren<ScrollContainerProps>) => {
     if (conversations?.length && scrollContainerRef.current) {
       const conversationLength = conversations?.length || 0;
       const lastConversation = conversations[conversationLength - 1];
-
-      const scrollElement = scrollContainerRef.current.cloneNode(
-        true,
-      ) as HTMLDivElement;
       const scrollPosition = scrollContainerRef.current.scrollTop;
       scrollToTheBottom(
         lastConversation,
         currentUser,
         scrollContainerRef.current,
-        lastScrolledValue.current,
       );
       return () => {
         lastScrolledValue.current = scrollPosition;
       };
     }
-  }, [conversations, currentUser, scrollToTheBottom]);
+  }, [conversations, currentUser, scrollToTheBottom, shouldScrollToBottom]);
 
   if (!children) {
     return null;

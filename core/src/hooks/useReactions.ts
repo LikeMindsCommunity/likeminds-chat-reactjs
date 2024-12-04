@@ -17,7 +17,7 @@ export function useReactions(): UseReactionReturns {
   const { chatroomDetails } = useContext(LMChatroomContext);
   const addReaction = async (emoji: EmojiData) => {
     try {
-      await lmChatClient?.putReaction({
+      await lmChatClient.putReaction({
         conversationId: parseInt(message!.id.toString()),
         chatroomId: parseInt(chatroomDetails?.chatroom.id.toString() || ""),
         reaction: emoji.native,
@@ -29,7 +29,7 @@ export function useReactions(): UseReactionReturns {
   };
   const removeReaction = async (emoji: string) => {
     try {
-      await lmChatClient?.deleteReaction({
+      await lmChatClient.deleteReaction({
         chatroomId: chatroomDetails!.chatroom!.id!,
         conversationId: message!.id!,
         reaction: emoji,

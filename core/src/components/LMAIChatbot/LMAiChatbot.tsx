@@ -18,7 +18,9 @@ const LMAiChatbot: FC<LMChatAIButtonProps> = ({
         />
       );
     } else {
-      return <LMAiBotScreen aiChatbotChatroomId={aiChatbotChatroomId} />;
+      if (aiChatbotChatroomId) {
+        return <LMAiBotScreen aiChatbotChatroomId={aiChatbotChatroomId} />;
+      }
     }
   };
 

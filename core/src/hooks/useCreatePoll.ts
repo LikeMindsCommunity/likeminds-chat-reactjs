@@ -156,7 +156,7 @@ export function useCreatePoll(closeDialog?: ZeroArgVoidReturns): UseCreatePoll {
           }
         }
       }
-      await lmChatClient?.postPollConversation({
+      await lmChatClient.postPollConversation({
         chatroomId: parseInt(chatroomId.toString()),
         state: ConversationStates.MICRO_POLL,
         text: pollText,

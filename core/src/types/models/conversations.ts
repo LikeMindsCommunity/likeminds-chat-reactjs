@@ -4,10 +4,10 @@ import {
   Reaction as LMReaction,
 } from "@likeminds.community/chat-js-beta";
 import Member from "./member";
+import { Widget } from "./Widget";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface Conversation extends LMConversation {
-  widget?: any;
+  widget?: Widget;
 }
 
 export interface Poll extends LMPoll {}

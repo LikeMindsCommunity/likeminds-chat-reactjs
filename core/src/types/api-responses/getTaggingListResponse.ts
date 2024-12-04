@@ -1,9 +1,9 @@
 // import { TaggingMember } from "../models/taggingMember";
 
 import {
-  GetTaggingList,
-  LMResponseType,
+  GetTaggingListResponse as LMGetTaggingListResponse,
+  LMResponse,
 } from "@likeminds.community/chat-js-beta";
 
 export interface GetTaggingListResponse
-  extends LMResponseType<GetTaggingList> {}
+  extends LMResponse<LMGetTaggingListResponse> {}

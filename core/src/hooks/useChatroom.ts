@@ -38,7 +38,7 @@ export interface ChatroomDataStore {
   searchedConversationId: number | null;
 }
 
-export default function useChatroom(chatroomId: string): UseChatroom {
+export default function useChatroom(chatroomId?: number): UseChatroom {
   const { chatroomCustomActions = {} } = useContext(
     CustomisationContextProvider,
   );
@@ -63,15 +63,15 @@ export default function useChatroom(chatroomId: string): UseChatroom {
   >(null);
   const checkDMStatus = useCallback(async () => {
     try {
-      const checkDMStatusCall = await lmChatClient?.checkDMStatus({
+      const checkDMStatusCall = await lmChatClient.checkDMStatus({
         requestFrom: ReplyDmQueries.GROUP_CHANNEL,
       });
       if (checkDMStatusCall.success) {
-        const showDM = checkDMStatusCall.data.show_dm;
+        const showDM = checkDMStatusCall?.data.showDm;
         if (!showDM) {
           setCanUserReplyPrivately(ReplyDmQueries.REPLY_PRIVATELY_NOT_ALLOWED);
         } else {
-          const cta = checkDMStatusCall.data.cta;
+          const cta = checkDMStatusCall?.data.cta;
           const showList = new URL(cta).searchParams
             .get("show_list")
             ?.toString();
@@ -97,30 +97,41 @@ export default function useChatroom(chatroomId: string): UseChatroom {
     }
   }, [lmChatClient]);
 
+  /**
+   * Fetches the details of a chatroom using the provided chatroom ID.
+   *
+   * @param {number} chatroomId - The unique identifier of the chatroom to fetch details for.
+   * @returns {Promise<GetChatroomResponse>} A promise that resolves to the chatroom details or logs an error if the call fails.
+   */
   const getChatroomDetails = useCallback(
-    async (chatroomId: string) => {
+    async (chatroomId: number) => {
       try {
         const chatroomDetailsCall: GetChatroomResponse =
-          await lmChatClient?.getChatroom({
+          await lmChatClient.getChatroom({
             chatroomId,
           });
-        return chatroomDetailsCall.data;
+        return chatroomDetailsCall?.data;
       } catch (error) {
         return logError(error);
       }
     },
     [lmChatClient],
   );
+
+  /**
+   * Fetches and sets the details of a chatroom based on the provided chatroom ID.
+   *
+   * @param {number} chatroomId - The unique identifier of the chatroom to fetch.
+   * @returns {Promise<void>} A promise that resolves when the chatroom details are fetched and set, or logs an error if the operation fails.
+   */
   const fetchChannel = useCallback(
-    async (chatroomId: string) => {
+    async (chatroomId: number) => {
       try {
-        // get the chatroom details
         if (!chatroomId) return;
         const newChatroom = await getChatroomDetails(chatroomId);
         if (newChatroom) {
           setChatroomDetails(newChatroom as ChatroomDetails);
         }
-        // set the loader to false
         if (setLoader) {
           setLoader(false);
         }
@@ -132,6 +143,9 @@ export default function useChatroom(chatroomId: string): UseChatroom {
   );
 
   useEffect(() => {
+    if (!chatroomId) {
+      return;
+    }
     fetchChannel(chatroomId);
     return () => {
       resetChatroom();

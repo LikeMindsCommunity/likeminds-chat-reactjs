@@ -1,7 +1,7 @@
 import Lottie from "lottie-react";
 import animationData from "../../assets/animation/AiBotLoader.json";
 import React, { useContext } from "react";
-import { LMGlobalClientProviderContext } from "../../main_index";
+import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 
 export const AIChatbotLoaderScreen: React.FC<LMAIChatbotLoaderScreenProps> = ({
   previewText,

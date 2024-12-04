@@ -1,7 +1,7 @@
 import {
-  GetConversation,
-  LMResponseType,
+  SyncConversationResponse,
+  LMResponse,
 } from "@likeminds.community/chat-js-beta";
 
 export interface GetSyncConversationsResponse
-  extends LMResponseType<GetConversation> {}
+  extends LMResponse<SyncConversationResponse> {}

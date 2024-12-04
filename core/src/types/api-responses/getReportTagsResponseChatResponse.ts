@@ -1,7 +1,7 @@
 import {
-  LMResponseType,
-  GetReportConverationTags,
+  LMResponse,
+  GetReportTagsResponse,
 } from "@likeminds.community/chat-js-beta";
 
 export interface GetReportTagsChatResponse
-  extends LMResponseType<GetReportConverationTags> {}
+  extends LMResponse<GetReportTagsResponse> {}

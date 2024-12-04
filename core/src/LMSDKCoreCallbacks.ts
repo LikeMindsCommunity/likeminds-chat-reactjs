@@ -3,6 +3,7 @@ import LMChatClient, {
   LMSDKCallbacks,
 } from "@likeminds.community/chat-js-beta";
 import { CustomActions } from "./customActions";
+import Member from "./types/models/member";
 
 export class LMCoreCallbacks {
   constructor(
@@ -10,9 +11,10 @@ export class LMCoreCallbacks {
       accessToken: string,
       refreshToken: string,
     ) => void,
-    onRefreshTokenExpired:
-      | (() => { accessToken: string; refreshToken: string } | null)
-      | (() => Promise<{ accessToken: string; refreshToken: string } | null>),
+    onRefreshTokenExpired: () => Promise<{
+      accessToken: string;
+      refreshToken: string;
+    } | null>,
   ) {
     (this.onAccessTokenExpiredAndRefreshed = onAccessTokenExpiredAndRefreshed),
       (this.onRefreshTokenExpired = onRefreshTokenExpired);
@@ -36,53 +38,49 @@ export class LMSDKCallbacksImplementations extends LMSDKCallbacks {
   }
   async loginFunction() {
     try {
-      const user = this.client?.getUserFromLocalStorage();
-
+      const user = this.client.getUserFromLocalStorage();
       if (!user) {
-        return;
+        return null;
       }
-      const { sdk_client_info, name, is_guest } = JSON.parse(user);
-      const { uuid } = sdk_client_info;
-      const initiateUserCall = await this.client?.initiateUser({
+      const { sdkClientInfo, name, isGuest } = JSON.parse(user);
+      const { uuid } = sdkClientInfo;
+      const initiateUserCall = await this.client.initiateUser({
         userUniqueId: uuid,
-        isGuest: is_guest,
+        isGuest: isGuest,
         userName: name,
         apiKey: this.client.getApiKeyFromLocalStorage(),
       });
       if (initiateUserCall.success) {
         this.setTokensInLocalStorage(
-          initiateUserCall.data?.access_token || "",
-          initiateUserCall.data?.refresh_token || "",
+          initiateUserCall.data.accessToken,
+          initiateUserCall.data.refreshToken,
         );
 
         this.client?.setUserInLocalStorage(
-          JSON.stringify(initiateUserCall.data?.user),
+          JSON.stringify(initiateUserCall?.data?.user),
         );
       }
       const memberStateCall = await this.client?.getMemberState();
-      const userObject = {
-        ...initiateUserCall.data?.user,
+      const userObject: Member = {
+        ...initiateUserCall?.data?.user,
       };
-      userObject.memberRights = memberStateCall.data?.member_rights;
-      userObject.state = memberStateCall.data?.state;
+      userObject.memberRights = memberStateCall?.data?.memberRights;
+      userObject.state = memberStateCall?.data?.state;
       document.dispatchEvent(
         new CustomEvent(CustomActions.TRIGGER_SET_USER, {
           detail: {
             user: userObject,
-            community: initiateUserCall.data?.community,
+            community: initiateUserCall?.data?.community,
           },
         }),
       );
 
       return {
-        accessToken: initiateUserCall.data?.access_token,
-        refreshToken: initiateUserCall.data?.refresh_token,
+        accessToken: initiateUserCall?.data?.accessToken,
+        refreshToken: initiateUserCall?.data?.refreshToken,
       };
     } catch (error) {
-      return {
-        accessToken: "",
-        refreshToken: "",
-      };
+      return null;
     }
   }
   onAccessTokenExpiredAndRefreshed(
@@ -94,19 +92,8 @@ export class LMSDKCallbacksImplementations extends LMSDKCallbacks {
       refreshToken,
     );
   }
-  onRefreshTokenExpired():
-    | any
-    | {
-        accessToken: string;
-        refreshToken: string;
-      }
-    | null
-    | Promise<{
-        accessToken: string;
-        refreshToken: string;
-      } | null> {
-    const apiKey: string | undefined = this.client.getApiKeyFromLocalStorage();
-
+  async onRefreshTokenExpired() {
+    const apiKey = this.client.getApiKeyFromLocalStorage();
     if (apiKey && apiKey.length) {
       return this.loginFunction();
     } else {

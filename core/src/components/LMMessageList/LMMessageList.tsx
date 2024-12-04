@@ -24,11 +24,6 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
     const { chatroomDetails, searchedConversationId } =
       useContext(LMChatroomContext);
     const { currentUser } = useContext(UserProviderContext);
-    const scrollToBottom = () => {
-      if (bottomReferenceDiv && bottomReferenceDiv.current) {
-        bottomReferenceDiv.current.scrollIntoView(false);
-      }
-    };
     const chatroomUser = () => {
       if (
         chatroomDetails?.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM
@@ -85,6 +80,7 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       setChatroomTopic,
       chatroomTopic,
       showSkeletonResponse,
+      shouldScrollToBottom,
     } = useConversations();
 
     const { onSearchedConversationClick } = useConversationSearch();
@@ -159,6 +155,7 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
               searchedConversationRef,
               setChatroomTopic,
               chatroomTopic,
+              shouldScrollToBottom,
             }}
           >
             <ScrollContainer
