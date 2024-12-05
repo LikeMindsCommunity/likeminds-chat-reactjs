@@ -4,7 +4,7 @@ import LMAIBotScreen from "./LMAiBotScreen";
 import { LMChatAIButtonProps } from "./LMChatAIButton";
 import { AIChatbotLoaderScreen } from "./LMAiChatbotLoaderScreen";
 
-const LMAiChatbot: FC<LMChatAIButtonProps> = ({
+const LMAIChatbot: FC<LMChatAIButtonProps> = ({
   previewText,
   loadingScreenAnimatons,
 }) => {
@@ -30,4 +30,4 @@ const LMAiChatbot: FC<LMChatAIButtonProps> = ({
   return renderAIChatbot();
 };
 
-export default LMAiChatbot;
+export default LMAIChatbot;

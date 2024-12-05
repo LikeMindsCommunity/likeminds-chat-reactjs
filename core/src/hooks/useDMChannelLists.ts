@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useContext, useRef, useEffect, useCallback } from "react";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import UserProviderContext from "../context/LMUserProviderContext";

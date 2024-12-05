@@ -26,7 +26,6 @@ export class Utils {
     "YXAtc291dGgtMToxODE5NjNiYS1mMmRiLTQ1MGItODE5OS05NjRhOTQxYjM4YzI=";
   private static bucketName = "beta-likeminds-media";
   private static region = "YXAtc291dGgtMQ==";
-  // private static region = "ap-south-1";
   static REGEX_USER_SPLITTING = /<<[^<>>]*>>/g;
   static REGEX_USER_TAGGING =
     /<<(?<name>[^<>|]+)\|route:\/\/(?<route>[^<>]+(\?.+)?)>>/g;
@@ -37,7 +36,6 @@ export class Utils {
     }
 
     const tagRegex = /<<([^|]+)\|([^>]+)>>/g;
-    // const boldRegex = /\*\*(.+?)\*\*/g; // Matches text between ** and **
 
     const lines = text.split(/\r?\n/); // Split text into lines
     const elements: ReactNode[] = [];

@@ -30,7 +30,6 @@ export interface LMCustomisationContextInterface {
   channelListCustomActions?: ChannelListCustomActions;
   chatroomCustomActions?: ChatroomCustomActions;
   chatroomSearchCustomActions?: ChatroomSearchCustomActions;
-  //
   attachmentOptions?: LMInputAttachments[];
 }
 

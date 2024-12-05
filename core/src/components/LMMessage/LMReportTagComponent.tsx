@@ -1,5 +1,4 @@
 import React from "react";
-// import { ReportTagObject } from "../../types/api-responses/getReportTagsResponseChatResponse";
 import { ReportTag } from "../../types/models/ReportTags";
 export interface ReportTagComponentProp {
   selectedTag: ReportTag | null;

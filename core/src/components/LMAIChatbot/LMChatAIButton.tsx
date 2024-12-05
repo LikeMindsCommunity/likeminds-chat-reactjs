@@ -3,7 +3,7 @@ import chatBotIcon from "../../assets/img/ai-chatbot-icon.png";
 import closeBotIcon from "../../assets/img/close-ai-bot.png";
 import LMClientOverlayProvider from "../LMChatProvider/LMClientOverlayProvider";
 import { LMChatProps } from "../../types/prop-types/LMChatProps";
-import LMAiChatbot from "./LMAiChatbot";
+import LMAIChatbot from "./LMAiChatbot";
 import { AIChatbotLoaderScreen } from "./LMAiChatbotLoaderScreen";
 import { CustomComponents } from "../../types/prop-types/CustomComponents";
 
@@ -75,7 +75,7 @@ const LMChatAIButton: React.FC<
           userDetails={userDetails}
           customComponents={customComponentsProp}
         >
-          <LMAiChatbot
+          <LMAIChatbot
             previewText={previewText}
             loadingScreenAnimatons={loadingScreenAnimatons}
           />

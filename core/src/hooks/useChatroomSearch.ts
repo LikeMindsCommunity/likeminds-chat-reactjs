@@ -23,7 +23,6 @@ export function useChatroomSearch(): UseChatroomSearch {
     resetSearchCustomCallback,
     onSearchChatroomClickCustomCallback,
   } = chatroomSearchCustomActions;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { lmChatClient } = useContext(GlobalClientProviderContext);
   const [searchList, setSearchList] = useState<Chatroom[]>([]);
   const [searchKey, setSearchKey] = useState<string>("");

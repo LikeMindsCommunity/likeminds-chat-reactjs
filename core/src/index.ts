@@ -69,7 +69,7 @@ import { LMMessageListCustomActionsContext } from "./context/LMMessageListCustom
 import { initiateLMClient } from "./getClient";
 import "./App.css";
 import LMAIBotScreen from "./components/LMAIChatbot/LMAiBotScreen";
-import LMAiChatbot from "./components/LMAIChatbot/LMAiChatbot";
+import LMAIChatbot from "./components/LMAIChatbot/LMAiChatbot";
 import LMAIChatbotInput from "./components/LMAIChatbot/LMAiChatbotInput";
 import { AIChatbotLoaderScreen } from "./components/LMAIChatbot/LMAiChatbotLoaderScreen";
 import LMChatAIButton from "./components/LMAIChatbot/LMChatAIButton";
@@ -151,7 +151,7 @@ export {
   LMChatCurrentMode,
   // EXPORTS FOR AI CHATBOT
   LMAIBotScreen,
-  LMAiChatbot,
+  LMAIChatbot as LMAiChatbot,
   LMAIChatbotInput,
   AIChatbotLoaderScreen,
   LMChatAIButton,

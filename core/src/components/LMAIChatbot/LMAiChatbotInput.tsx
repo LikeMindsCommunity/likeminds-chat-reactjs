@@ -53,7 +53,7 @@ const LMAIChatbotInput: React.FC = () => {
     sendDMRequest,
     rejectDMRequest,
     onTextInputKeyUpHandler,
-    shouldShowInputBox: ShouldShowInputBox,
+    shouldShowInputBox: calculateShouldShowInputBox,
     alertMessage,
   } = useInput();
 
@@ -62,8 +62,8 @@ const LMAIChatbotInput: React.FC = () => {
   const { customComponents } = useContext(LMGlobalClientProviderContext);
 
   const shouldShowInputBox = useMemo(
-    () => ShouldShowInputBox(),
-    [ShouldShowInputBox],
+    () => calculateShouldShowInputBox(),
+    [calculateShouldShowInputBox],
   );
 
   const renderInputBoxComponent = () => {
@@ -200,7 +200,7 @@ const LMAIChatbotInput: React.FC = () => {
         rejectDMRequest,
         sendDMRequest,
         onTextInputKeyUpHandler,
-        shouldShowInputBox: ShouldShowInputBox,
+        shouldShowInputBox: calculateShouldShowInputBox,
         alertMessage,
       }}
     >

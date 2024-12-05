@@ -5,7 +5,7 @@ import LMChatAIChatbotHeader from "./LMChatAiChatbotHeader";
 import LMAIChatbotInput from "./LMAiChatbotInput";
 import LMChatroom from "../LMChannel/LMChatChatroom";
 
-const LMAIBotScreen: React.FC<LMAiBotScreenProps> = ({
+const LMAIBotScreen: React.FC<LMAIBotScreenProps> = ({
   aiChatbotChatroomId,
 }) => {
   return (
@@ -23,6 +23,6 @@ const LMAIBotScreen: React.FC<LMAiBotScreenProps> = ({
 
 export default LMAIBotScreen;
 
-export interface LMAiBotScreenProps {
+export interface LMAIBotScreenProps {
   aiChatbotChatroomId: number;
 }

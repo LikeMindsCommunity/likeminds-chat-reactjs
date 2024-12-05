@@ -182,11 +182,9 @@ export function usePoll(): UsePoll {
     });
   };
 
-  //   APIs
   const submitPoll = async () => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const call = await lmChatClient.submitPoll({
+      await lmChatClient.submitPoll({
         polls: selectedPollOptions,
         conversationId: message?.id,
       });
@@ -213,7 +211,6 @@ export function usePoll(): UsePoll {
   };
   const getPollUsers = async (pollId: number) => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const call = await lmChatClient!.getPollUsers({
         conversationId: message?.id,
         pollId: pollId,
