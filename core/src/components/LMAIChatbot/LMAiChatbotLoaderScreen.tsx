@@ -3,14 +3,17 @@ import animationData from "../../assets/animation/AiBotLoader.json";
 import React, { useContext } from "react";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 
+// Loader component for AI Chatbot
 export const AIChatbotLoaderScreen: React.FC<LMAIChatbotLoaderScreenProps> = ({
   previewText,
   loadingScreenAnimatons,
 }) => {
   const { customComponents } = useContext(LMGlobalClientProviderContext);
+
   if (customComponents?.aiChatbotLoaderScreen) {
     return <customComponents.aiChatbotLoaderScreen />;
   }
+
   return (
     <div className="lm-chat-ai-bot-container">
       <div className="lm-chat-ai-bot-loader">

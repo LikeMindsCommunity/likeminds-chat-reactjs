@@ -61,6 +61,7 @@ function MessageOptions() {
       },
     },
   ];
+
   return (
     <div>
       <Dialog open={dialogOpen} onClose={closeDialog}>

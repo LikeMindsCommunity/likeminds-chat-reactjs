@@ -3,6 +3,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { GetAIChatbotsResponse } from "../types/api-responses/getAIChatbotsResponse";
 import LMGlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 
+// Hook for handling the business logic for AI Chatbot
 export function useAIChatbot() {
   const { lmChatClient } = useContext(LMGlobalClientProviderContext);
 
@@ -31,6 +32,7 @@ export function useAIChatbot() {
     return localStorage.getItem("chatroomIdWithAIChatbot");
   };
 
+  // Function to fetch the chatbot's chatroom Id.
   const getChatbots = useCallback(async () => {
     try {
       const getChatbotsCall: GetAIChatbotsResponse =
@@ -73,6 +75,7 @@ export function useAIChatbot() {
     }
   }, [lmChatClient]);
 
+  // Effect to get the chatbot's chatroom Id
   useEffect(() => {
     const chatroomId = getAIBotChatroomFromLocalPref();
     if (chatroomId) {
@@ -83,6 +86,7 @@ export function useAIChatbot() {
     }
   }, [getChatbots]);
 
+  // Effect to reset the animation state
   useEffect(() => {
     return () => {
       setShowAnimation(true);

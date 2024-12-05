@@ -21,20 +21,20 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
   const [localMessageCopy, setLocalMessageCopy] = useState<Conversation | null>(
     null,
   );
-  useEffect(() => {
-    setLocalMessageCopy(message);
-  }, [message]);
+
   function deleteMessage() {
     const currentLocalMessage = { ...localMessageCopy };
     currentLocalMessage["deletedBy"] = currentUser?.id.toString();
     currentLocalMessage["deletedByMember"] = currentUser!;
     setLocalMessageCopy(currentLocalMessage as Conversation);
   }
+
   function editMessageLocally(newMessage: Conversation) {
     if (localMessageCopy?.id === newMessage.id) {
       setLocalMessageCopy(newMessage);
     }
   }
+
   function addReactionLocally(emoji: EmojiData) {
     const currentLocalMessage = { ...localMessageCopy };
     const currentUserUUID = currentUser?.uuid;
@@ -48,6 +48,7 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
     } as Reaction);
     setLocalMessageCopy(currentLocalMessage as Conversation);
   }
+
   function removeReactionLocally() {
     setLocalMessageCopy((currentLocalCopy: any) => {
       currentLocalCopy!.reactions =
@@ -57,6 +58,7 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
       return currentLocalCopy;
     });
   }
+
   function addPollOptionLocally(pollOption: PollOptionNew) {
     setLocalMessageCopy((currentLocalCopy: Conversation | null) => {
       if (!currentLocalCopy) {
@@ -75,6 +77,7 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
       return currentLocalCopy as Conversation;
     });
   }
+
   function updatePollOnSubmitLocally(selectedPollIds: string[]) {
     setLocalMessageCopy((currentLocalCopy: Conversation | null) => {
       if (!currentLocalCopy) {
@@ -91,6 +94,11 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
       return currentLocalCopy;
     });
   }
+
+  useEffect(() => {
+    setLocalMessageCopy(message);
+  }, [message]);
+
   return (
     <LMMessageContext.Provider
       value={{

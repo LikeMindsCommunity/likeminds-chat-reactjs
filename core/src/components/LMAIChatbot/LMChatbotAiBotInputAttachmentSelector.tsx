@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { FC, useContext } from "react";
 import { useMenu } from "../../hooks/useMenu";
 import { Menu, MenuItem } from "@mui/material";
 import InputContext from "../../context/LMInputContext";
@@ -13,7 +13,7 @@ import LMUserProviderContext from "../../context/LMUserProviderContext";
 import { LMInputAttachments } from "../../enums/lm-input-attachment-options";
 import { CustomisationContextProvider } from "../../context/LMChatCustomisationContext";
 
-const LMChatbotAiBotInputAttachmentSelector = () => {
+const LMChatbotAIBotInputAttachmentSelector: FC = () => {
   const { openMenu, closeMenu, menuAnchor } = useMenu();
   const { addImagesAndVideosMedia, documentsMediaList } =
     useContext(InputContext);
@@ -21,6 +21,7 @@ const LMChatbotAiBotInputAttachmentSelector = () => {
   const { chatroomDetails } = useContext(LMChatroomContext);
   const { customComponents } = useContext(LMGlobalClientProviderContext);
   const { currentUser } = useContext(LMUserProviderContext);
+
   // Custom component
   if (customComponents?.input?.chatroomInputAttachmentsSelector) {
     return <customComponents.input.chatroomInputAttachmentsSelector />;
@@ -60,15 +61,18 @@ const LMChatbotAiBotInputAttachmentSelector = () => {
         <div>
           <img src={uploadMedia} alt="media" />
         </div>
-        <div className="title">Photos &amp; Videos</div>
+        <div className="title">Photos</div>
       </label>
     </MenuItem>
   );
+
+  // Function to render the UI block for Attachments Menu
   const renderAttachmentsMenuitems = () => {
     // sending all the default attachment options if not attachmentOptions are provided
     if (!attachmentOptions) {
       return allAttachmentOptions;
     }
+
     // If attachmentOptions are provided, render the custom attachment options
     return attachmentOptions.map((option) => {
       switch (option) {
@@ -153,4 +157,4 @@ const LMChatbotAiBotInputAttachmentSelector = () => {
   );
 };
 
-export default LMChatbotAiBotInputAttachmentSelector;
+export default LMChatbotAIBotInputAttachmentSelector;

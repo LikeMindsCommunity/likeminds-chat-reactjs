@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useContext, useEffect } from "react";
+import React, { PropsWithChildren, useContext } from "react";
 import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import useChatroom from "../../hooks/useChatroom";
 import noChatSelected from "../../assets/img/no-chat-selected.svg";
@@ -21,11 +21,7 @@ const LMChatroom: React.FC<PropsWithChildren<LMChatroomProps>> = ({
     searchedConversationId,
     setSearchedConversationId,
   } = useChatroom(currentChatroomId);
-  useEffect(() => {
-    if (chatroomDetails) {
-      console.timeEnd("ai-chatbot-open");
-    }
-  }, [chatroomDetails]);
+
   return chatroomDetails ? (
     <LMChatroomContext.Provider
       value={{

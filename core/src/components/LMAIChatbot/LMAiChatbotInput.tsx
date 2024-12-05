@@ -14,10 +14,10 @@ import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderC
 
 import LMChatTextArea from "../LMInput/LMChatTextArea";
 import MediaCarousel from "../LMInput/LMCarousel";
-import LMChatbotAiBotInputAttachmentSelector from "./LMChatbotAiBotInputAttachmentSelector";
+import LMChatbotAIBotInputAttachmentSelector from "./LMChatbotAiBotInputAttachmentSelector";
 import { createPortal } from "react-dom";
 
-const LMAiChatbotInput: React.FC = () => {
+const LMAIChatbotInput: React.FC = () => {
   const {
     inputBoxRef,
     inputWrapperRef,
@@ -60,10 +60,12 @@ const LMAiChatbotInput: React.FC = () => {
   const { currentUser } = useContext(UserProviderContext);
   const { chatroomDetails } = useContext(LMChatroomContext);
   const { customComponents } = useContext(LMGlobalClientProviderContext);
+
   const shouldShowInputBox = useMemo(
     () => ShouldShowInputBox(),
     [ShouldShowInputBox],
   );
+
   const renderInputBoxComponent = () => {
     let isInputBoxDisabled = false;
     let disabledInputMessage = "";
@@ -132,7 +134,7 @@ const LMAiChatbotInput: React.FC = () => {
   const renderAdditionalComponents = () => {
     return (
       <div className="lm-channel-icon lm-cursor-pointer">
-        <LMChatbotAiBotInputAttachmentSelector />
+        <LMChatbotAIBotInputAttachmentSelector />
       </div>
     );
   };
@@ -213,4 +215,4 @@ const LMAiChatbotInput: React.FC = () => {
   );
 };
 
-export default LMAiChatbotInput;
+export default LMAIChatbotInput;

@@ -104,8 +104,6 @@ export default function useUserProvider(
           userName: username,
           isGuest: isGuest,
           apiKey: apiKey,
-          tokenExpiryBeta: 1,
-          rtmTokenExpiryBeta: 1,
         });
         if (initiateUserCall.success) {
           // Setting the tokens, API key and User in local storage

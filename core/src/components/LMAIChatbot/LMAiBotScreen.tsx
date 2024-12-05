@@ -1,27 +1,27 @@
 import React from "react";
 
 import LMMessageList from "../LMMessageList/LMMessageList";
-import LMChatAiChatbotHeader from "./LMChatAiChatbotHeader";
-import LMAiChatbotInput from "./LMAiChatbotInput";
+import LMChatAIChatbotHeader from "./LMChatAiChatbotHeader";
+import LMAIChatbotInput from "./LMAiChatbotInput";
 import LMChatroom from "../LMChannel/LMChatChatroom";
 
-const LMAiBotScreen: React.FC<LMAiBotScreenProps> = ({
+const LMAIBotScreen: React.FC<LMAiBotScreenProps> = ({
   aiChatbotChatroomId,
 }) => {
   return (
-    <div className="lm-chat-ai-bot-container">
-      <div className="lm-chat-ai-bot-channel">
-        <LMChatroom currentChatroomId={aiChatbotChatroomId}>
-          <LMChatAiChatbotHeader />
+    <LMChatroom currentChatroomId={aiChatbotChatroomId}>
+      <div className="lm-chat-ai-bot-container">
+        <div className="lm-chat-ai-bot-channel">
+          <LMChatAIChatbotHeader />
           <LMMessageList />
-          <LMAiChatbotInput />
-        </LMChatroom>
+          <LMAIChatbotInput />
+        </div>
       </div>
-    </div>
+    </LMChatroom>
   );
 };
 
-export default LMAiBotScreen;
+export default LMAIBotScreen;
 
 export interface LMAiBotScreenProps {
   aiChatbotChatroomId: number;

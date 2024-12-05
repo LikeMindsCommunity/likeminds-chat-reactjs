@@ -39,7 +39,6 @@ const MediaRenderer = ({ attachments }: { attachments: Attachment[] }) => {
     isThumbnail = false,
   ) => {
     if (!attachment || !attachment.fileUrl) {
-      // console.error(`Invalid attachment at index ${index}:`, attachment);
       return null;
     }
 

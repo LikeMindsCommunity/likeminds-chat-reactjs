@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useState } from "react";
+import React, { PropsWithChildren, useMemo, useState } from "react";
 import chatBotIcon from "../../assets/img/ai-chatbot-icon.png";
 import closeBotIcon from "../../assets/img/close-ai-bot.png";
 import LMClientOverlayProvider from "../LMChatProvider/LMClientOverlayProvider";
@@ -25,6 +25,7 @@ const LMChatAIButton: React.FC<
   loadingScreenAnimatons,
 }) => {
   const [isAiBotOpen, setIsAiBotOpen] = useState<boolean>(false);
+
   const openAIBot = () => {
     setIsAiBotOpen(true);
   };
@@ -33,6 +34,7 @@ const LMChatAIButton: React.FC<
     setIsAiBotOpen(false);
   };
 
+  // Button component for open state
   const openChatbotButton = (
     <button className="lm-chat-ai-bot-fab-button" onClick={openAIBot}>
       <img src={chatBotIcon} alt="AI Chatbot" />
@@ -42,6 +44,7 @@ const LMChatAIButton: React.FC<
     </button>
   );
 
+  // Button component for close state
   const closeChatbotButton = (
     <button className="lm-chat-ai-bot-fab-button" onClick={closeAIBot}>
       <img src={closeBotIcon} alt="AI Chatbot" />
@@ -49,38 +52,36 @@ const LMChatAIButton: React.FC<
     </button>
   );
 
-  const customComponentsProp: CustomComponents = {
-    ...customComponents,
-    userNotLoadedLoaderScreen: customComponents?.aiChatbotLoaderScreen
-      ? customComponents.aiChatbotLoaderScreen
-      : AIChatbotLoaderScreen,
-  };
-
-  useEffect(() => {
-    if (isAiBotOpen) {
-      console.time("ai-chatbot-open");
-    }
-  }, [isAiBotOpen]);
+  // Creating the custom Components object
+  const customComponentsProp: CustomComponents = useMemo(() => {
+    return {
+      ...customComponents,
+      userNotLoadedLoaderScreen: customComponents?.aiChatbotLoaderScreen
+        ? customComponents.aiChatbotLoaderScreen
+        : AIChatbotLoaderScreen,
+      noChatroomSelected: customComponents?.noChatroomSelected
+        ? customComponents?.noChatroomSelected
+        : AIChatbotLoaderScreen,
+    };
+  }, [customComponents]);
 
   return (
-    <>
-      <div className="lm-chat-ai-bot-fab-container">
-        {isAiBotOpen ? closeChatbotButton : openChatbotButton}
-        {isAiBotOpen && (
-          <LMClientOverlayProvider
-            lmChatCoreCallbacks={lmChatCoreCallbacks}
-            client={client}
-            userDetails={userDetails}
-            customComponents={customComponentsProp}
-          >
-            <LMAiChatbot
-              previewText={previewText}
-              loadingScreenAnimatons={loadingScreenAnimatons}
-            />
-          </LMClientOverlayProvider>
-        )}
-      </div>
-    </>
+    <div className="lm-chat-ai-bot-fab-container">
+      {isAiBotOpen ? closeChatbotButton : openChatbotButton}
+      {isAiBotOpen && (
+        <LMClientOverlayProvider
+          lmChatCoreCallbacks={lmChatCoreCallbacks}
+          client={client}
+          userDetails={userDetails}
+          customComponents={customComponentsProp}
+        >
+          <LMAiChatbot
+            previewText={previewText}
+            loadingScreenAnimatons={loadingScreenAnimatons}
+          />
+        </LMClientOverlayProvider>
+      )}
+    </div>
   );
 };
 

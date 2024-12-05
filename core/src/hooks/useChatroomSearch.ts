@@ -8,9 +8,10 @@ import {
 } from "react";
 
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
-import { ZeroArgVoidReturns } from "./useInput";
+import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { Chatroom } from "../types/models/Chatroom";
 import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
+import { CustomActions } from "../customActions";
 
 export function useChatroomSearch(): UseChatroomSearch {
   const { chatroomSearchCustomActions = {} } = useContext(
@@ -20,6 +21,7 @@ export function useChatroomSearch(): UseChatroomSearch {
     searchChatroomsCustomCallback,
     setSearchKeyCustomCallback,
     resetSearchCustomCallback,
+    onSearchChatroomClickCustomCallback,
   } = chatroomSearchCustomActions;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { lmChatClient } = useContext(GlobalClientProviderContext);
@@ -28,6 +30,18 @@ export function useChatroomSearch(): UseChatroomSearch {
   const [loadMoreChatrooms, setLoadMoreChatrooms] = useState<boolean>(false);
   const pageCount = useRef<number>(1);
   const followStatus = useRef<boolean>(true);
+
+  const onSearchChatroomClick = (chatroomId: number) => {
+    const NEW_CHATROOM_SELECTED = new CustomEvent(
+      CustomActions.NEW_CHATROOM_SELECTED,
+      {
+        detail: {
+          chatroomId: chatroomId,
+        },
+      },
+    );
+    document.dispatchEvent(NEW_CHATROOM_SELECTED);
+  };
 
   const searchChatrooms = useCallback(async () => {
     try {
@@ -46,7 +60,6 @@ export function useChatroomSearch(): UseChatroomSearch {
         followStatus.current = false;
         pageCount.current = 1;
         searchChatrooms();
-        // return;
       }
       if (call?.data.chatrooms.length === 0 && followStatus.current === false) {
         setLoadMoreChatrooms(() => false);
@@ -62,6 +75,7 @@ export function useChatroomSearch(): UseChatroomSearch {
       console.log(error);
     }
   }, [lmChatClient, searchKey]);
+
   const resetSearch = () => {
     setSearchList(() => {
       return [];
@@ -71,6 +85,7 @@ export function useChatroomSearch(): UseChatroomSearch {
     followStatus.current = true;
     setLoadMoreChatrooms(true);
   };
+
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       searchChatrooms();
@@ -86,15 +101,16 @@ export function useChatroomSearch(): UseChatroomSearch {
 
   const chatroomSearchDefaultActions: ChatroomSearchDefaultActions = {
     searchChatrooms,
-
     setSearchKey,
     resetSearch,
   };
+
   const chatroomSearchDataStore: ChatroomSearchDataStore = {
     loadMoreChatrooms,
     searchKey,
     searchList,
   };
+
   return {
     searchList,
     searchChatrooms: searchChatroomsCustomCallback
@@ -120,6 +136,13 @@ export function useChatroomSearch(): UseChatroomSearch {
           chatroomSearchDataStore,
         )
       : setSearchKey,
+    onSearchChatroomClick: onSearchChatroomClickCustomCallback
+      ? onSearchChatroomClickCustomCallback.bind(
+          null,
+          chatroomSearchDefaultActions,
+          chatroomSearchDataStore,
+        )
+      : onSearchChatroomClick,
   };
 }
 
@@ -130,6 +153,7 @@ interface UseChatroomSearch {
   loadMoreChatrooms: boolean;
   searchKey: string;
   setSearchKey: Dispatch<string>;
+  onSearchChatroomClick: OneArgVoidReturns<number>;
 }
 
 export interface ChatroomSearchDefaultActions {

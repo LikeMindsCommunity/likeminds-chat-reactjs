@@ -14,8 +14,8 @@ const LMChatJoinedChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
     selectNewChatroom,
     currentSelectedChatroomId,
   } = useContext(LMDMChannelListContext);
-
   const { currentUser } = useContext(UserProviderContext);
+
   const {
     id,
     lastConversationId,
@@ -26,6 +26,7 @@ const LMChatJoinedChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
 
   const lastConversation =
     conversationsData[lastConversationId?.toString() || ""];
+
   const chatroomUser = useMemo(() => {
     if (userId.toString() === currentUser?.id.toString()) {
       const chatroomUser = usersData[chatroomWithUserId || ""];
@@ -35,11 +36,10 @@ const LMChatJoinedChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
       return chatroomUser;
     }
   }, [chatroomWithUserId, currentUser?.id, userId, usersData]);
+
   const showLastConversationTime = () => {
     const presentDate = new Date();
-
     const lastConversationDate = new Date(lastConversation.date!);
-
     if (lastConversationDate.getTime() === presentDate.getTime()) {
       return lastConversation.createdAt;
     } else {

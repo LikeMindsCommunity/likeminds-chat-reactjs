@@ -37,7 +37,6 @@ import { LMDMChannelListContext } from "./context/LMDMChannelListContext";
 import LMMessageContext from "./context/LMMessageContext";
 import MessageListContext from "./context/LMMessageListContext";
 import ErrorSnackbar from "./shared/components/LMErrorSnackbar";
-
 import LmLoader from "./shared/components/LmLoader";
 import MediaRenderer from "./shared/components/LMMediaRenderer";
 import { useExploreFeed } from "./hooks/useExploreFeed";
@@ -66,17 +65,25 @@ import LMLoaderContextProvider from "./context/LMLoaderContextProvider";
 import LMMessageListContext from "./context/LMMessageListContext";
 import LMUserProviderContext from "./context/LMUserProviderContext";
 import { LMCoreCallbacks } from "./LMSDKCoreCallbacks";
-import { LMRoutes } from "./LMRoutes";
 import { LMMessageListCustomActionsContext } from "./context/LMMessageListCustomActionsContext";
 import { initiateLMClient } from "./getClient";
 import "./App.css";
+import LMAIBotScreen from "./components/LMAIChatbot/LMAiBotScreen";
+import LMAiChatbot from "./components/LMAIChatbot/LMAiChatbot";
+import LMAIChatbotInput from "./components/LMAIChatbot/LMAiChatbotInput";
+import { AIChatbotLoaderScreen } from "./components/LMAIChatbot/LMAiChatbotLoaderScreen";
+import LMChatAIButton from "./components/LMAIChatbot/LMChatAIButton";
+import LMChatAIChatbotHeader from "./components/LMAIChatbot/LMChatAiChatbotHeader";
+import LMChatbotAIBotInputAttachmentSelector from "./components/LMAIChatbot/LMChatbotAiBotInputAttachmentSelector";
+import { useAIChatbot } from "./hooks/useAiChatbot";
+import { LMChatCurrentMode } from "./enums/lm-chat-modes";
 export {
   LMInput,
   LMHeader,
   LMChannel,
-  LMChatroom as LMChatChatroom,
+  LMChatroom,
   ScrollContainer,
-  LMChatGroupChannelList as LMChannelList,
+  LMChatGroupChannelList,
   LMClientOverlayProvider,
   LMAttachmentsSelector,
   LMMediaCarousel,
@@ -97,15 +104,15 @@ export {
   LMMessageList,
   LMParticipantList,
   LMReactGiffySearchComponent,
-  LMChatDMChannelList as LMDMChatChannels,
-  LMChatJoinedChannelTile as LMJoinedDMChannelTile,
+  LMChatDMChannelList,
+  LMChatJoinedChannelTile,
   LMMessageReplyCollapse,
   LMPollCreationDialog,
   LMMessage,
   LMMicroPoll,
   LMChatroomSearch,
   LMConversationSearch,
-  LMChatroomContext as LMChatChatroomContext,
+  LMChatroomContext,
   LMChatroomDetailContext,
   LMChatroomListContext,
   LMChatroomProviderContext,
@@ -137,8 +144,17 @@ export {
   usePoll,
   useReactions,
   useUserProvider,
+  useAIChatbot,
   LMCoreCallbacks,
   LMMessageListCustomActionsContext,
-  LMRoutes,
   initiateLMClient,
+  LMChatCurrentMode,
+  // EXPORTS FOR AI CHATBOT
+  LMAIBotScreen,
+  LMAiChatbot,
+  LMAIChatbotInput,
+  AIChatbotLoaderScreen,
+  LMChatAIButton,
+  LMChatAIChatbotHeader,
+  LMChatbotAIBotInputAttachmentSelector,
 };

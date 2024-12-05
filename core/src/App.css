@@ -2681,7 +2681,6 @@ input.disabled-state {
     width: 60%;
   }
 
-  /* .lm-channel .conversation.receiver */
   .lm-channel .conversation {
     max-width: 310px;
   }
