@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { FC, useContext } from "react";
 import { useParticipants } from "../../hooks/useParticipants";
 
 // icons
@@ -7,7 +7,13 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import searchIcon from "../../assets/img/search.svg";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 
-const LMParticipantList = () => {
+export interface LMChatParticipantListProps {
+  chatroomId: number;
+}
+
+const LMChatParticipantList: FC<LMChatParticipantListProps> = ({
+  chatroomId,
+}) => {
   const {
     participantsList,
     navigateBackToChatroom,
@@ -16,7 +22,7 @@ const LMParticipantList = () => {
     searchKeyword,
     setSearchKeyword,
     totalParticipantCount,
-  } = useParticipants();
+  } = useParticipants(chatroomId);
 
   const { customComponents } = useContext(LMGlobalClientProviderContext);
 
@@ -82,4 +88,4 @@ const LMParticipantList = () => {
   );
 };
 
-export default LMParticipantList;
+export default LMChatParticipantList;

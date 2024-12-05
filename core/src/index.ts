@@ -23,7 +23,7 @@ import ReportTagsDialog from "./components/LMMessage/LMReportTags";
 import DmReqBlock from "./components/LMMessageList/LMDMReqBlock";
 import LMMessageMiddleware from "./components/LMMessageList/LMMessageMiddleware";
 import LMMessageList from "./components/LMMessageList/LMMessageList";
-import LMParticipantList from "./components/LMParticipant/LMParticipantList";
+import LMChatParticipantList from "./components/LMParticipant/LMParticipantList";
 import LMChatDMChannelList from "./components/LMChannelList/LMDMChatChannels";
 import LMChatJoinedChannelTile from "./components/LMChannelList/LMJoinedDMChannelTile";
 import LMMessageReplyCollapse from "./components/LMInput/LMMessageReplyCollapse";
@@ -102,7 +102,7 @@ export {
   DmReqBlock,
   LMMessageMiddleware,
   LMMessageList,
-  LMParticipantList,
+  LMChatParticipantList as LMParticipantList,
   LMReactGiffySearchComponent,
   LMChatDMChannelList,
   LMChatJoinedChannelTile,
