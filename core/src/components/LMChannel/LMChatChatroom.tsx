@@ -1,12 +1,17 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
-import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import React, { PropsWithChildren, useContext } from "react";
+import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import useChatroom from "../../hooks/useChatroom";
 import noChatSelected from "../../assets/img/no-chat-selected.svg";
+import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 
-const LMChatChatroom: React.FC = () => {
+const LMChatroom: React.FC<PropsWithChildren<LMChatroomProps>> = ({
+  currentChatroomId,
+  children,
+}) => {
+  const { customComponents = {} } = useContext(LMGlobalClientProviderContext);
+  const { noChatroomSelected: NoChatroomSelected } = customComponents;
   const {
-    chatroom,
+    chatroomDetails,
     conversationToReply,
     conversationToedit,
     setConversationToEdit,
@@ -15,24 +20,26 @@ const LMChatChatroom: React.FC = () => {
     canUserReplyPrivately,
     searchedConversationId,
     setSearchedConversationId,
-  } = useChatroom();
+  } = useChatroom(currentChatroomId);
 
-  return chatroom ? (
-    <LMChatChatroomContext.Provider
+  return chatroomDetails ? (
+    <LMChatroomContext.Provider
       value={{
         conversationToedit,
         conversationToReply,
         setConversationToEdit,
         setConversationToReply,
-        chatroom,
+        chatroomDetails,
         setNewChatroom: setChatroom,
         canUserReplyPrivately,
         searchedConversationId,
         setSearchedConversationId,
       }}
     >
-      <Outlet />
-    </LMChatChatroomContext.Provider>
+      {children}
+    </LMChatroomContext.Provider>
+  ) : NoChatroomSelected !== undefined ? (
+    <NoChatroomSelected />
   ) : (
     <div className="noChatRoom">
       <img src={noChatSelected} alt="No chat selected" />
@@ -41,4 +48,8 @@ const LMChatChatroom: React.FC = () => {
   );
 };
 
-export default LMChatChatroom;
+export default LMChatroom;
+
+export interface LMChatroomProps {
+  currentChatroomId?: number;
+}

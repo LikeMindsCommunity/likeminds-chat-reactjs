@@ -3,17 +3,23 @@ import { EmojiData } from "../types/models/emojiData";
 import { OneArgVoidReturns } from "./useInput";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import LMMessageContext from "../context/LMMessageContext";
-import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../context/LMChatChatroomContext";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 
 export function useReactions(): UseReactionReturns {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { message, addReactionLocally } = useContext(LMMessageContext);
-  const { chatroom } = useContext(LMChatChatroomContext);
+  const { reactionCustomActions = {} } = useContext(
+    CustomisationContextProvider,
+  );
+  const { addReactionCustomCallback, removeReactionCustomCallback } =
+    reactionCustomActions;
+  const { chatroomDetails } = useContext(LMChatroomContext);
   const addReaction = async (emoji: EmojiData) => {
     try {
-      await lmChatclient?.putReaction({
+      await lmChatClient.putReaction({
         conversationId: parseInt(message!.id.toString()),
-        chatroomId: parseInt(chatroom?.chatroom.id.toString() || ""),
+        chatroomId: parseInt(chatroomDetails?.chatroom.id.toString() || ""),
         reaction: emoji.native,
       });
       addReactionLocally(emoji);
@@ -23,8 +29,8 @@ export function useReactions(): UseReactionReturns {
   };
   const removeReaction = async (emoji: string) => {
     try {
-      const call = await lmChatclient?.deleteReaction({
-        chatroomId: chatroom!.chatroom!.id!,
+      await lmChatClient.deleteReaction({
+        chatroomId: chatroomDetails!.chatroom!.id!,
         conversationId: message!.id!,
         reaction: emoji,
       });
@@ -32,12 +38,36 @@ export function useReactions(): UseReactionReturns {
       console.log(error);
     }
   };
-  return {
+  const reactionsDefaultActions: ReactionsDefaultActions = {
     addReaction,
     removeReaction,
+  };
+  const reactionsDataStore: ReactionsDataStore = {};
+  return {
+    addReaction: addReactionCustomCallback
+      ? addReactionCustomCallback.bind(
+          null,
+          reactionsDefaultActions,
+          reactionsDataStore,
+        )
+      : addReaction,
+    removeReaction: removeReactionCustomCallback
+      ? removeReactionCustomCallback.bind(
+          null,
+          reactionsDefaultActions,
+          reactionsDataStore,
+        )
+      : removeReaction,
   };
 }
 export interface UseReactionReturns {
   addReaction: OneArgVoidReturns<EmojiData>;
   removeReaction: OneArgVoidReturns<string>;
 }
+
+export interface ReactionsDefaultActions {
+  addReaction: OneArgVoidReturns<EmojiData>;
+  removeReaction: OneArgVoidReturns<string>;
+}
+
+export interface ReactionsDataStore {}

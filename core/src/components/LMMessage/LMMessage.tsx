@@ -19,11 +19,13 @@ import replyIcon from "../../assets/img/reply.png";
 import MessageReactionHolder from "./LMMessageReactionHolder";
 import LMMicroPoll from "./LMMicroPoll";
 
-import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import { ChatRequestStates } from "../../enums/lm-chat-request-states";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import { useMessageOptions } from "../../hooks/useMessageOptions";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
+import { MemberRole } from "@likeminds.community/chat-js-beta";
+import MediaRendererLocal from "../../shared/components/LMLocalMediaRenderer";
 
 const LMMessage = () => {
   const { customComponents } = useContext(LMGlobalClientProviderContext);
@@ -32,7 +34,7 @@ const LMMessage = () => {
   const { message, index } = useContext(LMMessageContext);
   const { conversations, unBlockUserInDM } = useContext(MessageListContext);
   const { currentUser } = useContext(UserProviderContext);
-  const { chatroom } = useContext(LMChatChatroomContext);
+  const { chatroomDetails } = useContext(LMChatroomContext);
   const isSender = message?.member?.uuid === currentUser?.uuid;
   const messageClass = isSender ? "sender" : "receiver";
   const { onReply } = useMessageOptions();
@@ -42,7 +44,7 @@ const LMMessage = () => {
 
   // custom message component
 
-  if (message?.widget_id?.length && messageBubbles?.customWidget) {
+  if (message?.widgetId?.length && messageBubbles?.customWidget) {
     return <messageBubbles.customWidget />;
   }
   if (CustomMessageComponent) {
@@ -55,12 +57,12 @@ const LMMessage = () => {
   };
   function renderTapToUndo() {
     if (
-      chatroom?.chatroom.chat_request_state.toString() ===
+      chatroomDetails?.chatroom.chatRequestState?.toString() ===
       ChatRequestStates.REJECTED_STATE
     )
       if (
         currentUser.id.toString() ===
-        chatroom?.chatroom.chatroom_with_user?.id.toString()
+        chatroomDetails?.chatroom.chatroomWithUser?.id.toString()
       ) {
         return (
           <span
@@ -82,11 +84,14 @@ const LMMessage = () => {
     }
   }
   function renderStateHeaderMessage() {
-    if (chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+    if (
+      chatroomDetails?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM
+    ) {
       const chatroomuser =
-        chatroom.chatroom.member.id.toString() === currentUser?.id.toString()
-          ? chatroom.chatroom.chatroom_with_user
-          : chatroom.chatroom.member;
+        chatroomDetails.chatroom.member.id.toString() ===
+        currentUser?.id.toString()
+          ? chatroomDetails.chatroom.chatroomWithUser
+          : chatroomDetails.chatroom.member;
       return (
         <div className="data-pill">
           {/* {Utils.parseAndReplaceTags(message?.answer || "")} */}
@@ -103,7 +108,7 @@ const LMMessage = () => {
       );
     }
   }
-  if (message?.deleted_by) {
+  if (message?.deletedBy || message?.deletedByUserId) {
     if (messageBubbles?.chatroomDeletedChatBubble) {
       return <messageBubbles.chatroomDeletedChatBubble />;
     }
@@ -115,13 +120,13 @@ const LMMessage = () => {
             <div className="name">{message?.member.name}</div>
           ) : null}
           <div className="lm-delete-msg">
-            {message?.deleted_by_member?.uuid === currentUser?.uuid
+            {message?.deletedByMember?.uuid === currentUser?.uuid
               ? ConstantStrings.MESSAGE_DELETED_BY_SELF
               : ConstantStrings.MESSAGE_DELETED_NOT_BY_SELF}
           </div>
-          <div className="time">{message?.created_at}</div>
+          <div className="time">{message?.createdAt}</div>
         </div>
-        <div className={`actions ${message?.deleted_by ? "none" : ""}`}>
+        <div className={`actions ${message?.deletedBy ? "none" : ""}`}>
           <div className="lm-cursor-pointer">
             <MessageOptions />
           </div>
@@ -148,30 +153,38 @@ const LMMessage = () => {
           <div className={`lm-chat-card ${message?.state}`}>
             {renderDatePill()}
           </div>
-          <div className={`lm-chat-card ${messageClass} ${message?.state}`}>
+          <div className={`lm-chat-card ${messageClass} ${message?.state} `}>
             {!isSender ? (
               <div className="lmUserData">{avatarContent}</div>
             ) : null}
             <div className="lm-chat-message-reactions-holder-plate">
-              <div className={`conversation ${messageClass}`}>
-                {!isSender ? (
-                  <div className="name">{message?.member.name}</div>
-                ) : null}
+              <div
+                className={`conversation ${messageClass} ${
+                  Utils.isOtherUserAIChatbot(
+                    chatroomDetails.chatroom,
+                    currentUser,
+                  ) && "ai-chatbot-conversation"
+                }`}
+              >
+                {!isSender &&
+                  !message.member.roles?.includes(MemberRole.Chatbot) && (
+                    <div className="name">{message?.member.name}</div>
+                  )}
                 {/* media */}
                 <div className="lm-media">
-                  {message.has_files && message.attachments?.length > 0 ? (
-                    <MediaRenderer attachments={message.attachments} />
+                  {(message.attachments?.length || 0) > 0 ? (
+                    <MediaRenderer attachments={message?.attachments || []} />
                   ) : null}
                 </div>
                 {/* OG Tags */}
 
-                {message.og_tags ? (
+                {message.ogTags ? (
                   <div className="lm-og-tags">
-                    {message.og_tags.image ? (
+                    {message.ogTags.image ? (
                       <>
                         <div className="lm-og-img">
                           <img
-                            src={message.og_tags.image || linkImg}
+                            src={message.ogTags.image || linkImg}
                             alt="image"
                             onError={handleImageError}
                           />
@@ -180,10 +193,10 @@ const LMMessage = () => {
                     ) : null}
                     <div className="lm-og-content">
                       <div className="lm-og-title">
-                        {message?.og_tags?.title}
+                        {message?.ogTags?.title}
                       </div>
                       <div className="lm-og-desc">
-                        {message?.og_tags?.description}
+                        {message?.ogTags?.description}
                       </div>
                     </div>
                   </div>
@@ -191,14 +204,14 @@ const LMMessage = () => {
                 {/* OG Tags */}
 
                 {/* text msg */}
-                {message?.reply_conversation_object && (
+                {message?.replyConversationObject && (
                   <div className="lm-reply-wrapper">
                     <div className="lm-reply-wrapper-content">
                       <div className="lm-reply-wrapper-content-name">
-                        {message.reply_conversation_object.member.name}
+                        {message.replyConversationObject.member.name}
                       </div>
                       <div className="lm-reply-wrapper-content-msg">
-                        {message.reply_conversation_object.answer}
+                        {message.replyConversationObject.answer}
                       </div>
                     </div>
                   </div>
@@ -219,34 +232,39 @@ const LMMessage = () => {
                   )}
                 </div>
                 <div className="time">
-                  {message.is_edited ? (
+                  {message.isEdited ? (
                     <>
                       <div className="error-message">Edited</div>
                       <div className="edited-bullet">&nbsp;</div>
                     </>
                   ) : null}
-                  {message?.created_at}
+                  {message?.createdAt}
                 </div>
               </div>
               <MessageReactionHolder />
             </div>
-            <div className="actions">
-              <div className="lm-cursor-pointer">
-                <img
-                  src={replyIcon}
-                  alt="reply icon"
-                  className="lm-add-emoji"
-                  onClick={onReply}
-                />
-              </div>
+            {!Utils.isOtherUserAIChatbot(
+              chatroomDetails.chatroom,
+              currentUser,
+            ) && (
+              <div className="actions">
+                <div className="lm-cursor-pointer">
+                  <img
+                    src={replyIcon}
+                    alt="reply icon"
+                    className="lm-add-emoji"
+                    onClick={onReply}
+                  />
+                </div>
 
-              <div className="lm-cursor-pointer">
-                <Reactions />
+                <div className="lm-cursor-pointer">
+                  <Reactions />
+                </div>
+                <div className="lm-cursor-pointer">
+                  <MessageOptions />
+                </div>
               </div>
-              <div className="lm-cursor-pointer">
-                <MessageOptions />
-              </div>
-            </div>
+            )}
 
             {/* <div className="data-pill">{message?.date}</div> */}
           </div>
@@ -270,6 +288,7 @@ const LMMessage = () => {
         </>
       );
     }
+
     case ConversationStates.CHAT_ROOM_UNFOLLOWED: {
       if (messageBubbles?.chatroomUnFollowedBubble) {
         return <messageBubbles.chatroomUnFollowedBubble />;
@@ -290,6 +309,7 @@ const LMMessage = () => {
         </>
       );
     }
+
     case ConversationStates.CHAT_ROOM_FOLLOWED: {
       if (messageBubbles?.chatroomFollowedBubble) {
         return <messageBubbles.chatroomFollowedBubble />;
@@ -343,6 +363,132 @@ const LMMessage = () => {
             {Utils.parseAndReplaceTags(message?.answer || "")}
           </div>
         </div>
+      );
+    }
+    case ConversationStates.LOCAL_CONVERSATION_STATE: {
+      if (messageBubbles?.chatroomNormalChatBubble) {
+        return <messageBubbles.chatroomNormalChatBubble />;
+      }
+      return (
+        <>
+          <div className={`lm-chat-card ${messageClass} ${message?.state} `}>
+            {!isSender ? (
+              <div className="lmUserData">{avatarContent}</div>
+            ) : null}
+            <div className="lm-chat-message-reactions-holder-plate">
+              <div
+                className={`conversation ${messageClass} ${
+                  Utils.isOtherUserAIChatbot(
+                    chatroomDetails.chatroom,
+                    currentUser,
+                  ) && "ai-chatbot-conversation"
+                }`}
+              >
+                {!isSender &&
+                  !message.member.roles?.includes(MemberRole.Chatbot) && (
+                    <div className="name">{message?.member.name}</div>
+                  )}
+                {/* media */}
+                <div className="lm-media">
+                  {(message.attachments?.length || 0) > 0 ? (
+                    <MediaRendererLocal
+                      attachments={(message?.attachments || []) as File[]}
+                    />
+                  ) : null}
+                </div>
+                {/* OG Tags */}
+
+                {message.ogTags ? (
+                  <div className="lm-og-tags">
+                    {message.ogTags.image ? (
+                      <>
+                        <div className="lm-og-img">
+                          <img
+                            src={message.ogTags.image || linkImg}
+                            alt="image"
+                            onError={handleImageError}
+                          />
+                        </div>
+                      </>
+                    ) : null}
+                    <div className="lm-og-content">
+                      <div className="lm-og-title">
+                        {message?.ogTags?.title}
+                      </div>
+                      <div className="lm-og-desc">
+                        {message?.ogTags?.description}
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+                {/* OG Tags */}
+
+                {/* text msg */}
+                {message?.replyConversationObject && (
+                  <div className="lm-reply-wrapper">
+                    <div className="lm-reply-wrapper-content">
+                      <div className="lm-reply-wrapper-content-name">
+                        {message.replyConversationObject.member.name}
+                      </div>
+                      <div className="lm-reply-wrapper-content-msg">
+                        {message.replyConversationObject.answer}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="msg">
+                  {message?.answer.includes(
+                    "* This is a gif message. Please update your app *",
+                  ) ? (
+                    message?.answer.replace(
+                      "* This is a gif message. Please update your app *",
+                      "",
+                    )
+                  ) : (
+                    <div>
+                      {Utils.parseAndReplaceTags(message?.answer || "")}
+                    </div>
+                  )}
+                </div>
+                <div className="time">
+                  {message.isEdited ? (
+                    <>
+                      <div className="error-message">Edited</div>
+                      <div className="edited-bullet">&nbsp;</div>
+                    </>
+                  ) : null}
+                  {message?.createdAt}
+                </div>
+              </div>
+              <MessageReactionHolder />
+            </div>
+            {!Utils.isOtherUserAIChatbot(
+              chatroomDetails.chatroom,
+              currentUser,
+            ) && (
+              <div className="actions">
+                <div className="lm-cursor-pointer">
+                  <img
+                    src={replyIcon}
+                    alt="reply icon"
+                    className="lm-add-emoji"
+                    onClick={onReply}
+                  />
+                </div>
+
+                <div className="lm-cursor-pointer">
+                  <Reactions />
+                </div>
+                <div className="lm-cursor-pointer">
+                  <MessageOptions />
+                </div>
+              </div>
+            )}
+
+            {/* <div className="data-pill">{message?.date}</div> */}
+          </div>
+        </>
       );
     }
     default: {

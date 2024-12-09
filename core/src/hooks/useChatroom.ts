@@ -2,18 +2,18 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import LoaderContextProvider from "../context/LMLoaderContextProvider";
-import Conversation from "../types/models/conversations";
+import { Conversation } from "../types/models/conversations";
 import {
-  ChatroomCollabcard,
+  ChatroomDetails,
   GetChatroomResponse,
 } from "../types/api-responses/getChatroomResponse";
-import UserProviderContext from "../context/LMUserProviderContext";
-import { useParams } from "react-router-dom";
 import { ReplyDmQueries } from "../enums/lm-reply-dm-queries";
+import { CustomActions } from "../customActions";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 
 interface UseChatroom {
-  chatroom: ChatroomCollabcard | null;
-  setChatroom: React.Dispatch<ChatroomCollabcard | null>;
+  chatroomDetails: ChatroomDetails | null;
+  setChatroom: React.Dispatch<ChatroomDetails | null>;
   conversationToReply: Conversation | null;
   conversationToedit: Conversation | null;
   setConversationToReply: React.Dispatch<Conversation | null>;
@@ -23,13 +23,35 @@ interface UseChatroom {
   setSearchedConversationId: React.Dispatch<number | null>;
 }
 
-export default function useChatroom(): UseChatroom {
-  // const { chatroomId } = useContext(ChatroomProviderContext);
-  const { id: chatroomId } = useParams();
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+export interface ChatroomDefaultActions {
+  setChatroom: React.Dispatch<ChatroomDetails | null>;
+  setConversationToReply: React.Dispatch<Conversation | null>;
+  setConversationToEdit: React.Dispatch<Conversation | null>;
+  setSearchedConversationId: React.Dispatch<number | null>;
+}
+
+export interface ChatroomDataStore {
+  chatroomDetails: ChatroomDetails | null;
+  conversationToReply: Conversation | null;
+  conversationToedit: Conversation | null;
+  canUserReplyPrivately: ReplyDmQueries;
+  searchedConversationId: number | null;
+}
+
+export default function useChatroom(chatroomId?: number): UseChatroom {
+  const { chatroomCustomActions = {} } = useContext(
+    CustomisationContextProvider,
+  );
+  const {
+    setChatroomCustomCallback,
+    setConversationToEditCustomCallback,
+    setConversationToReplyCustomCallback,
+    setSearchedConversationIdCustomCallback,
+  } = chatroomCustomActions;
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
-  const { currentUser } = useContext(UserProviderContext);
-  const [chatroom, setChatroom] = useState<ChatroomCollabcard | null>(null);
+  const [chatroomDetails, setChatroomDetails] =
+    useState<ChatroomDetails | null>(null);
   const [conversationToReply, setConversationToReply] =
     useState<Conversation | null>(null);
   const [conversationToedit, setConversationToEdit] =
@@ -41,15 +63,15 @@ export default function useChatroom(): UseChatroom {
   >(null);
   const checkDMStatus = useCallback(async () => {
     try {
-      const checkDMStatusCall = await lmChatclient?.checkDMStatus({
+      const checkDMStatusCall = await lmChatClient.checkDMStatus({
         requestFrom: ReplyDmQueries.GROUP_CHANNEL,
       });
       if (checkDMStatusCall.success) {
-        const showDM = checkDMStatusCall.data.show_dm;
+        const showDM = checkDMStatusCall?.data.showDm;
         if (!showDM) {
           setCanUserReplyPrivately(ReplyDmQueries.REPLY_PRIVATELY_NOT_ALLOWED);
         } else {
-          const cta = checkDMStatusCall.data.cta;
+          const cta = checkDMStatusCall?.data.cta;
           const showList = new URL(cta).searchParams
             .get("show_list")
             ?.toString();
@@ -73,44 +95,101 @@ export default function useChatroom(): UseChatroom {
       setCanUserReplyPrivately(ReplyDmQueries.REPLY_PRIVATELY_NOT_ALLOWED);
       console.log(error);
     }
-  }, [lmChatclient]);
+  }, [lmChatClient]);
 
-  const getChatroomDetails = useCallback(async () => {
-    try {
-      const chatroomDetailsCall: GetChatroomResponse =
-        await lmChatclient?.getChatroom({
-          chatroomId,
-        });
-      return chatroomDetailsCall.data;
-    } catch (error) {
-      return logError(error);
-    }
-  }, [chatroomId, lmChatclient]);
-
-  useEffect(() => {
-    async function fetchChannel() {
+  /**
+   * Fetches the details of a chatroom using the provided chatroom ID.
+   *
+   * @param {number} chatroomId - The unique identifier of the chatroom to fetch details for.
+   * @returns {Promise<GetChatroomResponse>} A promise that resolves to the chatroom details or logs an error if the call fails.
+   */
+  const getChatroomDetails = useCallback(
+    async (chatroomId: number) => {
       try {
-        // get the chatroom details
+        const chatroomDetailsCall: GetChatroomResponse =
+          await lmChatClient.getChatroom({
+            chatroomId,
+          });
+        return chatroomDetailsCall?.data;
+      } catch (error) {
+        return logError(error);
+      }
+    },
+    [lmChatClient],
+  );
+
+  /**
+   * Fetches and sets the details of a chatroom based on the provided chatroom ID.
+   *
+   * @param {number} chatroomId - The unique identifier of the chatroom to fetch.
+   * @returns {Promise<void>} A promise that resolves when the chatroom details are fetched and set, or logs an error if the operation fails.
+   */
+  const fetchChannel = useCallback(
+    async (chatroomId: number) => {
+      try {
         if (!chatroomId) return;
-        const newChatroom = await getChatroomDetails();
-        setChatroom(newChatroom);
-        // set the loader to false
-        setLoader!(false);
+        const newChatroom = await getChatroomDetails(chatroomId);
+        if (newChatroom) {
+          setChatroomDetails(newChatroom as ChatroomDetails);
+        }
+        if (setLoader) {
+          setLoader(false);
+        }
       } catch (error) {
         console.log(error);
       }
+    },
+    [getChatroomDetails, setLoader],
+  );
+
+  useEffect(() => {
+    if (!chatroomId) {
+      return;
     }
-    fetchChannel();
+    fetchChannel(chatroomId);
     return () => {
       resetChatroom();
     };
-  }, [chatroomId, getChatroomDetails, currentUser, setLoader]);
+  }, [chatroomId, fetchChannel]);
+
+  useEffect(() => {
+    const handleNewChatroomSelected = (eventObject: Event) => {
+      const chatroomId = (eventObject as CustomEvent).detail.chatroomId;
+      fetchChannel(chatroomId);
+    };
+
+    document.addEventListener(
+      CustomActions.NEW_CHATROOM_SELECTED,
+      handleNewChatroomSelected,
+    );
+
+    return () => {
+      document.removeEventListener(
+        CustomActions.NEW_CHATROOM_SELECTED,
+        handleNewChatroomSelected,
+      );
+    };
+  });
+
   useEffect(() => {
     checkDMStatus();
   }, [checkDMStatus]);
   function resetChatroom() {
-    setChatroom(null);
+    setChatroomDetails(null);
   }
+  const chatroomDefaultActions: ChatroomDefaultActions = {
+    setChatroom: setChatroomDetails,
+    setConversationToReply: setConversationToReply,
+    setConversationToEdit: setConversationToEdit,
+    setSearchedConversationId: setSearchedConversationId,
+  };
+  const chatroomDataStore: ChatroomDataStore = {
+    chatroomDetails: chatroomDetails,
+    conversationToReply: conversationToReply,
+    conversationToedit: conversationToedit,
+    canUserReplyPrivately: canUserReplyPrivately,
+    searchedConversationId: searchedConversationId,
+  };
 
   function logError(error: unknown): null {
     // Check if the error is an instance of Error
@@ -124,15 +203,39 @@ export default function useChatroom(): UseChatroom {
     return null;
   }
   return {
-    chatroom,
-    setChatroom,
+    chatroomDetails: chatroomDetails,
+    setChatroom: setChatroomCustomCallback
+      ? setChatroomCustomCallback.bind(
+          null,
+          chatroomDefaultActions,
+          chatroomDataStore,
+        )
+      : setChatroomDetails,
     conversationToedit,
     conversationToReply,
-    setConversationToEdit,
-    setConversationToReply,
+    setConversationToEdit: setConversationToEditCustomCallback
+      ? setConversationToEditCustomCallback.bind(
+          null,
+          chatroomDefaultActions,
+          chatroomDataStore,
+        )
+      : setConversationToEdit,
+    setConversationToReply: setConversationToReplyCustomCallback
+      ? setConversationToReplyCustomCallback.bind(
+          null,
+          chatroomDefaultActions,
+          chatroomDataStore,
+        )
+      : setConversationToReply,
     canUserReplyPrivately,
     searchedConversationId,
-    setSearchedConversationId,
+    setSearchedConversationId: setSearchedConversationIdCustomCallback
+      ? setSearchedConversationIdCustomCallback.bind(
+          null,
+          chatroomDefaultActions,
+          chatroomDataStore,
+        )
+      : setSearchedConversationId,
   };
 }
 export type UnknownReturnFunction = (...props: unknown[]) => unknown;

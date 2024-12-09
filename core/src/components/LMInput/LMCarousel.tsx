@@ -1,12 +1,12 @@
 import React, { useContext, useState } from "react";
 import InputContext from "../../context/LMInputContext";
 import { FileType } from "../../types/enums/Filetype";
-import { Carousel } from "react-responsive-carousel";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
-import modalCancelIcon from "../../assets/img/cancel-icon.svg";
+
 // Styles
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from "react-responsive-carousel";
 // Icons
 
 import pdfViewIcon from "../../assets/img/pdf-document.svg";
@@ -90,6 +90,7 @@ function renderLocalImage(file: File) {
   return (
     <>
       <img
+        key={file.name}
         src={URL.createObjectURL(file)}
         alt={file.type}
         className="lm-input-carousel-image-element"
@@ -100,6 +101,7 @@ function renderLocalImage(file: File) {
 function renderLocalVideo(file: File) {
   return (
     <video
+      key={file.name}
       src={URL.createObjectURL(file)}
       className="lm-input-carousel-video-element"
     ></video>
@@ -107,7 +109,7 @@ function renderLocalVideo(file: File) {
 }
 function renderLocalDocument(file: File) {
   return (
-    <div className="lm-input-carousel-document-element">
+    <div className="lm-input-carousel-document-element" key={file.name}>
       <img src={pdfViewIcon} alt="pdf-icon" />
       <div className="document-file-details">{file.name}</div>
     </div>

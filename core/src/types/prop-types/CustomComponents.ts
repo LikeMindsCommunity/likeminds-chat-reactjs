@@ -1,9 +1,46 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Location, NavigateFunction } from "react-router-dom";
+
 import { ApplicationGeneralDataContext } from "../../context/LMUserProviderContext";
 import { InputDataStore, InputDefaultActions } from "../../hooks/useInput";
 import { MessageDefaultActions } from "../../hooks/useMessageOptions";
 import { ChatroomMenuDefaultActions } from "../../hooks/useChatroomMenuOptions";
+import { PollDataStore, PollDefaultActions } from "../../hooks/usePolls";
+import {
+  ReactionsDataStore,
+  ReactionsDefaultActions,
+} from "../../hooks/useReactions";
+import {
+  ParticipantsDataStore,
+  ParticipantsDefaultActions,
+} from "../../hooks/useParticipants";
+import {
+  ExploreFeedDataStore,
+  ExploreFeedDefaultActions,
+} from "../../hooks/useExploreFeed";
+import {
+  DMChannelListDataStore,
+  DMChannelListDefaultActions,
+} from "../../hooks/useDMChannelLists";
+import {
+  CreatePollDataStore,
+  CreatePollDefaultActions,
+} from "../../hooks/useCreatePoll";
+import {
+  ConversationSearchDataStore,
+  ConversationSearchDefaultActions,
+} from "../../hooks/useConversationSearch";
+import {
+  ChannelListDataStore,
+  ChannelListDefaultActions,
+} from "../../hooks/useChatroomsList";
+import {
+  ChatroomDataStore,
+  ChatroomDefaultActions,
+} from "../../hooks/useChatroom";
+import {
+  ChatroomSearchDataStore,
+  ChatroomSearchDefaultActions,
+} from "../../hooks/useChatroomSearch";
 
 export interface CustomComponents {
   message?: CustomComponentType; //added
@@ -37,6 +74,9 @@ export interface CustomComponents {
   participantList?: CustomComponentType;
   groupChatChannelList?: CustomComponentType;
   dmChannelList?: CustomComponentType;
+  noChatroomSelected?: CustomComponentType;
+  userNotLoadedLoaderScreen?: CustomComponentType;
+  aiChatbotLoaderScreen?: CustomComponentType;
 }
 
 export interface InputCustomActions {
@@ -60,11 +100,13 @@ export interface InputCustomActions {
   onSendDMRequest?: InputActionsCallback;
   onRejectDMRequest?: InputActionsCallback;
   onAprooveDMRequest?: InputActionsCallback;
+  onShouldShowInputBox?: InputActionsCallback;
 }
 
 export interface MessageCustomActions {
   onReportCustom?: MessageActionsCallback;
   onDeleteCustom?: MessageActionsCallback;
+  onSetTopicCustom?: MessageActionsCallback;
   onEditCustom?: MessageActionsCallback;
   onReplyCustom?: MessageActionsCallback;
   putReactionCustom?: MessageActionsCallback;
@@ -79,13 +121,166 @@ export interface ChatroomMenuCustomActions {
   onUnBlockCustom?: ChatroomHeaderActionsCallback;
 }
 
+// ================== Poll Custom Actions ==================
+export interface PollCustomActions {
+  submitPollCustomCallback?: PollCustomCallback;
+  addOptionOnPollCustomCallback?: PollCustomCallback;
+  getPollUsersCustomCallback?: PollCustomCallback;
+  selectPollOptionCustomCallback?: PollCustomCallback;
+}
+
+export type PollCustomCallback = (
+  pollDefaultActions: PollDefaultActions,
+  pollDataStore: PollDataStore,
+) => any;
+// ================== Poll Custom Actions ==================
+
+// ================== Reactions Custom Actions ==================
+export interface ReactionsCustomActions {
+  addReactionCustomCallback?: ReactionCustomCallback;
+  removeReactionCustomCallback?: ReactionCustomCallback;
+}
+
+export type ReactionCustomCallback = (
+  reactionsDefaultAction: ReactionsDefaultActions,
+  reactionsDataStore: ReactionsDataStore,
+) => any;
+
+// ================== Reactions Custom Actions ==================
+
+// ================== Participants Custom Actions ==================
+
+export interface ParticipantsCustomActions {
+  getMembersCustomCallback?: ParticipantsCustomCallback;
+  navigateBackToChatroomCustomCallback?: ParticipantsCustomCallback;
+  setSearchKeywordCustomCallback?: ParticipantsCustomCallback;
+}
+
+export type ParticipantsCustomCallback = (
+  participantsDefaultActions: ParticipantsDefaultActions,
+  participantsDataStore: ParticipantsDataStore,
+) => any;
+
+// ================== Participants Custom Actions ==================
+
+// ================== ExploreFeed Custom Actions ==================
+
+export interface ExploreFeedCustomActions {
+  getMembersCustomCallback?: ExploreFeedCustomCallback;
+}
+
+export type ExploreFeedCustomCallback = (
+  exploreFeedDefaultActions: ExploreFeedDefaultActions,
+  exploreFeedDataStore: ExploreFeedDataStore,
+) => any;
+
+// ================== ExploreFeed Custom Actions ==================
+
+// ================== DMChannelList Custom Actions ==================
+export interface DMChannelListCustomActions {
+  getDMChatroomsListCustomCallback?: DMChannelListCustomCallback;
+  refreshDMChatroomsCustomCallback?: DMChannelListCustomCallback;
+  markReadADMChatroomCustomCallback?: DMChannelListCustomCallback;
+  selectNewChatroomCustomCallback?: DMChannelListCustomCallback;
+}
+
+export type DMChannelListCustomCallback = (
+  dmChannelListDefaultActions: DMChannelListDefaultActions,
+  dmChannelListDataStore: DMChannelListDataStore,
+) => any;
+
+// ================== DMChannelList Custom Actions ==================
+
+// ================== CreatePoll Custom Actions ==================
+export interface CreatePollCustomActions {
+  addPollOptionCustomCallback?: CreatePollCustomCallback;
+  updatePollOptionCustomCallback?: CreatePollCustomCallback;
+  removePollOptionCustomCallback?: CreatePollCustomCallback;
+  createPollConversationCustomCallback?: CreatePollCustomCallback;
+  changePollTextCustomCallback?: CreatePollCustomCallback;
+  updatePollExpirationDateCustomCallback?: CreatePollCustomCallback;
+  updateAdvancedOptionsCustomCallback?: CreatePollCustomCallback;
+}
+
+export type CreatePollCustomCallback = (
+  pollDefaultActions: CreatePollDefaultActions,
+  pollDataStore: CreatePollDataStore,
+) => any;
+
+// ================== CreatePoll Custom Actions ==================
+
+// ================== ConversationSearch Custom Actions ==================
+export interface ConversationSearchCustomActions {
+  searchConversationsCustomCallback?: ConversationSearchCustomCallback;
+  resetSearchCustomCallback?: ConversationSearchCustomCallback;
+  setSearchKeyCustomCallback?: ConversationSearchCustomCallback;
+  onSearchedConversationClickCustomCallback?: ConversationSearchCustomCallback;
+}
+
+export type ConversationSearchCustomCallback = (
+  searchConversationsDefaultActions: ConversationSearchDefaultActions,
+  searchConversationsDataStore: ConversationSearchDataStore,
+) => any;
+
+// ================== ConversationSearch Custom Actions ==================
+
+// ================== ChannelList Custom Actions ==================
+
+export interface ChannelListCustomActions {
+  getChatroomsMineCustomCallback?: ChannelListCustomCallback;
+  getExploreGroupChatroomsCustomCallback?: ChannelListCustomCallback;
+  joinAChatroomCustomCallback?: ChannelListCustomCallback;
+  onLeaveChatroomCustomCallback?: ChannelListCustomCallback;
+  markReadAChatroomCustomCallback?: ChannelListCustomCallback;
+  checkForDmTabCustomCallback?: ChannelListCustomCallback;
+  approveDMRequestCustomCallback?: ChannelListCustomCallback;
+  rejectDMRequestCustomCallback?: ChannelListCustomCallback;
+  selectNewChatroomCustomCallback?: ChannelListCustomCallback;
+}
+
+export type ChannelListCustomCallback = (
+  channelListDefaultActions: ChannelListDefaultActions,
+  channelListDataStore: ChannelListDataStore,
+) => any;
+
+// ================== ChannelList Custom Actions ==================
+
+// ================== Chatroom Custom Actions ==================
+export interface ChatroomCustomActions {
+  setChatroomCustomCallback?: ChatroomCustomCallback;
+  setConversationToReplyCustomCallback?: ChatroomCustomCallback;
+  setConversationToEditCustomCallback?: ChatroomCustomCallback;
+  setSearchedConversationIdCustomCallback?: ChatroomCustomCallback;
+}
+
+export type ChatroomCustomCallback = (
+  chatroomDefaultActions: ChatroomDefaultActions,
+  chatroomDataStore: ChatroomDataStore,
+) => any;
+
+// ================== Chatroom Custom Actions ==================
+
+// ================== ChatroomSearch Custom Actions ==================
+export interface ChatroomSearchCustomActions {
+  searchChatroomsCustomCallback?: ChatroomSearchCustomCallback;
+  onSearchChatroomClickCustomCallback?: ChatroomSearchCustomCallback;
+  setSearchKeyCustomCallback?: ChatroomSearchCustomCallback;
+  resetSearchCustomCallback?: ChatroomSearchCustomCallback;
+}
+
+export type ChatroomSearchCustomCallback = (
+  chatroomSearchDefaultActions: ChatroomSearchDefaultActions,
+  chatroomSearchDataStore: ChatroomSearchDataStore,
+) => any;
+
+// ================== ChatroomSearch Custom Actions ==================
+
 export type CustomComponentType = React.FC;
 // for input actions callback
 export type InputActionsCallback = (
   inputDefaultActions: InputDefaultActions,
   applicationGeneralDataContext: ApplicationGeneralDataContext,
   inputDataStore: InputDataStore,
-  router: Router,
 ) => any;
 
 // end for input action callback
@@ -93,7 +288,6 @@ export type InputActionsCallback = (
 export type MessageActionsCallback = (
   messageDefaultActions: MessageDefaultActions,
   applicationGeneralDataContext: ApplicationGeneralDataContext,
-  router: Router,
 ) => any;
 // end for message options
 
@@ -102,12 +296,10 @@ export type MessageActionsCallback = (
 export type ChatroomHeaderActionsCallback = (
   chatroomMenuDefaultActions: ChatroomMenuDefaultActions,
   applicationGeneralDataContext: ApplicationGeneralDataContext,
-  router: Router,
 ) => any;
 
 // end for chatroomHeader
 
 export interface Router {
   location: Location;
-  navigate: NavigateFunction;
 }

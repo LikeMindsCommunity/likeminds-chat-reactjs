@@ -1,10 +1,9 @@
 import React from "react";
-import { ReportTagMessage } from "../../types/api-responses/getReportTagsResponseChatResponse";
-
+import { ReportTag } from "../../types/models/ReportTags";
 export interface ReportTagComponentProp {
-  selectedTag: ReportTagMessage | null;
-  tag: ReportTagMessage;
-  setSelectedTag: React.Dispatch<ReportTagMessage | null>;
+  selectedTag: ReportTag | null;
+  tag: ReportTag;
+  setSelectedTag: React.Dispatch<ReportTag | null>;
 }
 const ReportTagComponent = ({
   selectedTag,

@@ -6,16 +6,22 @@ import UserProviderContext from "../../context/LMUserProviderContext";
 import LoaderContextProvider from "../../context/LMLoaderContextProvider";
 import useUserProvider from "../../hooks/useUserProvider";
 import { Snackbar } from "@mui/material";
-import { LMSDKCallbacksImplementations } from "../../LMSDKCoreCallbacks";
-import { LMRoutes } from "../../LMRoutes";
+import {
+  LMCoreCallbacks,
+  LMSDKCallbacksImplementations,
+} from "../../LMSDKCoreCallbacks";
+import { MemberType } from "../../enums/lm-member-type";
+import { CustomisationContextProvider } from "../../context/LMChatCustomisationContext";
+import { Toaster } from "react-hot-toast";
 
 const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
   client,
   children,
   userDetails,
-  lmChatCoreCallbacks,
-  routes,
+  lmChatCoreCallbacks = {} as LMCoreCallbacks,
+  customCallbacks,
   customComponents,
+  attachmentOptions,
 }) => {
   const {
     lmChatUser,
@@ -28,6 +34,7 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
   );
   useEffect(() => {
     if (!client) return;
+
     const sdk = new LMSDKCallbacksImplementations(lmChatCoreCallbacks, client);
     client.setLMSDKCallbacks(sdk);
   }, [client, lmChatCoreCallbacks]);
@@ -40,41 +47,49 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
     setShowSnackbarMessage(() => null);
   };
   if (!lmChatUser) {
-    return null;
+    if (customComponents?.userNotLoadedLoaderScreen) {
+      return <customComponents.userNotLoadedLoaderScreen />;
+    } else {
+      return null;
+    }
   }
 
   return (
     <GlobalClientProviderContext.Provider
       value={{
-        lmChatclient: client,
+        lmChatClient: client,
         userDetails: userDetails,
-        routes: routes || new LMRoutes(),
         customComponents: customComponents,
       }}
     >
-      <UserProviderContext.Provider
-        value={{
-          currentUser: lmChatUser,
-          memberState: lmChatUserMemberState,
-          logoutUser: logoutUser,
-          currentCommunity: lmChatUserCurrentCommunity as unknown as any,
-        }}
+      <CustomisationContextProvider.Provider
+        value={{ ...customCallbacks, attachmentOptions }}
       >
-        <LoaderContextProvider.Provider
+        <UserProviderContext.Provider
           value={{
-            loader: false,
-            setLoader: null,
-            openSnackbar: openSnackbar,
+            currentUser: lmChatUser!,
+            memberState: lmChatUserMemberState || MemberType.MEMBER,
+            logoutUser: logoutUser,
+            currentCommunity: lmChatUserCurrentCommunity as unknown as any,
           }}
         >
-          {lmChatUser ? children : null}
-          <Snackbar
-            open={showSnackbarMessage ? true : false}
-            message={showSnackbarMessage || ""}
-            onClose={closeSnackbar}
-          />
-        </LoaderContextProvider.Provider>
-      </UserProviderContext.Provider>
+          <LoaderContextProvider.Provider
+            value={{
+              loader: false,
+              setLoader: null,
+              openSnackbar: openSnackbar,
+            }}
+          >
+            <Toaster position="top-right" />
+            {children}
+            <Snackbar
+              open={showSnackbarMessage ? true : false}
+              message={showSnackbarMessage || ""}
+              onClose={closeSnackbar}
+            />
+          </LoaderContextProvider.Provider>
+        </UserProviderContext.Provider>
+      </CustomisationContextProvider.Provider>
     </GlobalClientProviderContext.Provider>
   );
 };

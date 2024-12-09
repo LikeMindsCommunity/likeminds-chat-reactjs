@@ -1,4 +1,4 @@
-import { Carousel, Grid } from "@giphy/react-components";
+import { Carousel } from "@giphy/react-components";
 import { GiphyFetch } from "@giphy/js-fetch-api";
 
 export const LMReactGiffySearchComponent = () => {

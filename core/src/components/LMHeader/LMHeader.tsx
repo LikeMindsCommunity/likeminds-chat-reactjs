@@ -6,9 +6,10 @@ import {
   useState,
 } from "react";
 import { Menu, MenuItem } from "@mui/material";
-
+// icons
+import backIcon from "../../assets/img/back-navigation-arrow.svg";
 import useChatroomMenuOptions from "../../hooks/useChatroomMenuOptions";
-import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import { getAvatar } from "../../shared/components/LMUserMedia";
 import { ChatroomAction } from "../../enums/lm-chatroom-actions";
 import { useMenu } from "../../hooks/useMenu";
@@ -21,13 +22,14 @@ import UserProviderContext from "../../context/LMUserProviderContext";
 import LMConversationSearch from "../search/LMConversationSearch";
 import { ChatroomMenuCustomActions } from "../../types/prop-types/CustomComponents";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
+
 interface LMHeaderProps {
   chatroomMenuCustomActions?: ChatroomMenuCustomActions;
 }
 const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
   chatroomMenuCustomActions,
 }) => {
-  const { chatroom } = useContext(LMChatChatroomContext);
+  const { chatroomDetails } = useContext(LMChatroomContext);
   const { currentUser } = useContext(UserProviderContext);
   const { onMute, onLeaveChatroom, onViewParticipants, onBlock, onUnBlock } =
     useChatroomMenuOptions(chatroomMenuCustomActions);
@@ -35,23 +37,33 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
   const { customComponents } = useContext(LMGlobalClientProviderContext);
 
   const getChatroomReciever = useCallback(() => {
-    if (!chatroom) {
+    if (!chatroomDetails) {
       return null;
     }
-    if (chatroom.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+    if (
+      chatroomDetails.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM
+    ) {
       return null;
     }
     const recieverUser =
-      chatroom.chatroom.member.id.toString() === currentUser.id.toString()
-        ? chatroom.chatroom.chatroom_with_user
-        : chatroom.chatroom.member;
+      chatroomDetails.chatroom.member.id.toString() ===
+      currentUser.id.toString()
+        ? chatroomDetails.chatroom.chatroomWithUser
+        : chatroomDetails.chatroom.member;
     return recieverUser;
-  }, [chatroom, currentUser]);
+  }, [chatroomDetails, currentUser]);
+
+  /**
+   * Navigates back to the chatroom.
+   */
+
   const chatroomAvatar = useMemo(() => {
-    if (chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+    if (
+      chatroomDetails?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM
+    ) {
       const recieverUser = getChatroomReciever();
       if (recieverUser) {
-        const imageUrl = recieverUser?.image_url;
+        const imageUrl = recieverUser?.imageUrl;
         const name = recieverUser?.name;
         const avatarContent = getAvatar({ imageUrl, name });
         return avatarContent;
@@ -59,20 +71,20 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
         return null;
       }
     } else {
-      const imageUrl = chatroom?.chatroom.chatroom_image_url;
-      const name = chatroom?.chatroom.header;
+      const imageUrl = chatroomDetails?.chatroom.chatroomImageUrl;
+      const name = chatroomDetails?.chatroom.header;
       const avatarContent = getAvatar({ imageUrl, name });
       return avatarContent;
     }
   }, [
-    chatroom?.chatroom.chatroom_image_url,
-    chatroom?.chatroom.header,
-    chatroom?.chatroom.type,
+    chatroomDetails?.chatroom.chatroomImageUrl,
+    chatroomDetails?.chatroom.header,
+    chatroomDetails?.chatroom.type,
     getChatroomReciever,
   ]);
   const chatroomTitle = useMemo(() => {
-    if (!chatroom) return "";
-    const chatroomType = chatroom?.chatroom.type;
+    if (!chatroomDetails) return "";
+    const chatroomType = chatroomDetails?.chatroom.type;
 
     if (chatroomType === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
       const recieverUser = getChatroomReciever();
@@ -82,9 +94,9 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
         return "";
       }
     } else {
-      return chatroom?.chatroom.header;
+      return chatroomDetails?.chatroom.header;
     }
-  }, [chatroom, getChatroomReciever]);
+  }, [chatroomDetails, getChatroomReciever]);
 
   const [openSearchField, setOpenSearchField] = useState<boolean>(false);
   const onOpenSearch = () => {
@@ -105,14 +117,17 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
           <>
             <div className="lm-channel-header">
               <div className="lm-header-left">
+                <div className="back-icon header-back-icon">
+                  <img src={backIcon} alt="back-icon" />
+                </div>
                 <div className="lm-channel-img">{chatroomAvatar}</div>
                 <div className="lm-channel-desc">
                   <div className="lm-channel-title">{chatroomTitle}</div>
-                  {chatroom?.chatroom?.participants_count &&
-                  chatroom.chatroom.type !==
+                  {chatroomDetails?.chatroom?.participantsCount &&
+                  chatroomDetails.chatroom.type !==
                     ChatroomTypes.DIRECT_MESSAGE_CHATROOM ? (
                     <div className="lm-channel-participants">
-                      {chatroom?.chatroom.participants_count} Participants
+                      {chatroomDetails?.chatroom.participantsCount} Participants
                     </div>
                   ) : null}
                 </div>
@@ -135,7 +150,7 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
                   anchorEl={menuAnchor}
                   onClose={closeMenu}
                 >
-                  {chatroom?.chatroom_actions.map((menuOption) => {
+                  {chatroomDetails?.chatroomActions.map((menuOption) => {
                     return (
                       <MenuItem
                         key={menuOption.id}

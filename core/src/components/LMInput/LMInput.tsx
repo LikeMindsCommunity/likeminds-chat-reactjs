@@ -10,26 +10,19 @@ import { Alert, Collapse, IconButton } from "@mui/material";
 import MediaCarousel from "./LMCarousel";
 import AttachmentsSelector from "./LMAttachmentsSelector";
 import giffyIcon from "../../assets/img/gif.png";
-
 import GiphySearch from "./LMGiphySearch";
-import { PropsWithChildren, useContext, useMemo, useState } from "react";
-import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import { useContext, useMemo } from "react";
+import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import UserProviderContext from "../../context/LMUserProviderContext";
-import { MemberType } from "../../enums/lm-member-type";
 import { ConstantStrings } from "../../enums/lm-common-strings";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import { ChatRequestStates } from "../../enums/lm-chat-request-states";
 import LMMessageReplyCollapse from "./LMMessageReplyCollapse";
 import LMMessageEditCollapse from "./LMMessageEditCollapse";
-import { InputCustomActions } from "../../types/prop-types/CustomComponents";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
-interface LMInputProps {
-  inputCustomActions?: InputCustomActions;
-}
+import { createPortal } from "react-dom";
 
-const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
-  const { inputCustomActions = {} } = props;
-
+const LMInput: React.FC = () => {
   const {
     inputBoxRef,
     inputWrapperRef,
@@ -65,65 +58,42 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
     sendDMRequest,
     rejectDMRequest,
     onTextInputKeyUpHandler,
-  } = useInput(inputCustomActions);
+    shouldShowInputBox: ShouldShowInputBox,
+    alertMessage,
+  } = useInput();
   const { currentUser } = useContext(UserProviderContext);
-  const { chatroom, conversationToReply, conversationToedit } = useContext(
-    LMChatChatroomContext,
-  );
+  const { chatroomDetails, conversationToReply, conversationToedit } =
+    useContext(LMChatroomContext);
   const { customComponents } = useContext(LMGlobalClientProviderContext);
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  const shouldShowInputBox = useMemo(() => {
-    const canRespondInChatroom = currentUser?.memberRights?.find(
-      (right) => right.state === 3,
-    )?.is_selected
-      ? true
-      : false;
-    if (!canRespondInChatroom) {
-      setAlertMessage(ConstantStrings.USER_MESSAGES_RESTRICTED_BY_CM);
-      return false;
-    } else {
-      setAlertMessage(null);
-    }
-    const member_can_message = chatroom?.chatroom.member_can_message;
 
-    switch (member_can_message) {
-      case true:
-        setAlertMessage(null);
-        return true;
-      case false: {
-        if (currentUser?.state === MemberType.COMMUNITY_MANAGER) {
-          setAlertMessage(null);
-          return true;
-        } else {
-          setAlertMessage(ConstantStrings.ONLY_CM_MESSAGES_ALLOWED);
-          return false;
-        }
-      }
-    }
-  }, [chatroom?.chatroom, currentUser?.memberRights, currentUser?.state]);
+  const shouldShowInputBox = useMemo(
+    () => ShouldShowInputBox(),
+    [ShouldShowInputBox],
+  );
   const renderInputBoxComponent = () => {
     let isInputBoxDisabled = false;
     let disabledInputMessage = "";
     const isDMChatroom =
-      chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM;
+      chatroomDetails?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM;
 
     if (isDMChatroom) {
       const chatRequestState =
-        chatroom?.chatroom.chat_request_state?.toString();
+        chatroomDetails?.chatroom.chatRequestState?.toString();
       if (chatRequestState === ChatRequestStates.REJECTED_STATE) {
         isInputBoxDisabled = true;
         disabledInputMessage =
           // chatroom.chatroom.member.id.toString() === currentUser?.id.toString()
-          chatroom.chatroom.chat_requested_by.id.toString() ===
+          chatroomDetails?.chatroom?.chatRequestedBy?.id.toString() ===
           currentUser?.id.toString()
             ? ConstantStrings.DM_REQUEST_REJECTED_MESSAGE_CHATROOM_USER
             : ConstantStrings.DM_REQUEST_REJECTED_MESSAGE_CHATROOM_WITH_USER;
       }
       if (chatRequestState === ChatRequestStates.PENDING_STATE) {
         isInputBoxDisabled = true;
-        chatroom.chatroom.member.id.toString() === currentUser?.id.toString();
+        chatroomDetails.chatroom.member.id.toString() ===
+          currentUser?.id.toString();
         disabledInputMessage =
-          chatroom.chatroom.chat_requested_by.id.toString() ===
+          chatroomDetails.chatroom.chatRequestedBy?.id.toString() ===
           currentUser?.id.toString()
             ? // chatroom.chatroom.member.id.toString() === currentUser?.id.toString()
               ConstantStrings.DM_REQUEST_PENDING_MESSAGING_CHATROOM_USER
@@ -155,9 +125,12 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
         <>
           <LMChatTextArea />
           <div className="lm-channel-icon send lm-cursor-pointer">
-            <IconButton onClick={() => postMessage()}>
+            <button
+              onClick={() => postMessage()}
+              className="lm-post-conversation"
+            >
               <img src={sendIcon} alt="sendIcon" />
-            </IconButton>
+            </button>
           </div>
         </>
       );
@@ -165,8 +138,9 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
   };
   const renderAdditionalComponents = () => {
     if (
-      chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
-      chatroom?.chatroom.chat_request_state.toString() !==
+      chatroomDetails?.chatroom.type ===
+        ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
+      chatroomDetails?.chatroom.chatRequestState?.toString() !==
         ChatRequestStates.APPROVED_STATE
     ) {
       return null;
@@ -186,31 +160,31 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
               onClick={() => {
                 setOpenGifCollapse(!openGifCollapse);
               }}
+              className="lm-giffy-icon"
             />
-            {/* <GiSelector /> */}
           </div>
         </>
       );
     }
   };
   const renderDMChatroomStatusComponents = () => {
-    const currentChatroom = chatroom?.chatroom;
+    const currentChatroom = chatroomDetails?.chatroom;
     const currentChatroomType = currentChatroom?.type;
     if (currentChatroomType !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
       return null;
     }
-    const chatRequestState = currentChatroom?.chat_request_state;
+    const chatRequestState = currentChatroom?.chatRequestState;
     if (chatRequestState === null) {
       return null;
     }
 
     const isRequestSender =
-      chatroom?.chatroom.chat_requested_by?.id.toString() ===
+      chatroomDetails?.chatroom.chatRequestedBy?.id.toString() ===
       currentUser.id.toString()
         ? true
         : false;
 
-    switch (chatRequestState.toString()) {
+    switch (chatRequestState?.toString()) {
       case ChatRequestStates.APPROVED_STATE: {
         return null;
       }
@@ -255,6 +229,14 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
         // this case will be only encountered when the chatroom type is DM and chat_Request_state is null
         break;
       }
+    }
+  };
+  const renderMediaCarousel = () => {
+    if (imagesAndVideosMediaList?.length || documentsMediaList?.length) {
+      return createPortal(
+        <MediaCarousel />,
+        document.getElementById("lm-media-render-portal")!,
+      );
     }
   };
   if (!shouldShowInputBox) {
@@ -309,9 +291,11 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
         rejectDMRequest,
         sendDMRequest,
         onTextInputKeyUpHandler,
+        shouldShowInputBox: ShouldShowInputBox,
+        alertMessage,
       }}
     >
-      <div className="lm-channel-footer-wrapper">
+      <div className="lm-channel-footer-wrapper" id="lm-channel-footer">
         {/* Collapseable  for Edit message*/}
 
         <Collapse
@@ -377,30 +361,21 @@ const LMInput: React.FC<PropsWithChildren<LMInputProps>> = (props) => {
         {/* Collapsable for dm chatroom status component */}
         <Collapse
           in={Boolean(
-            chatroom?.chatroom?.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM,
+            chatroomDetails?.chatroom?.type ===
+              ChatroomTypes.DIRECT_MESSAGE_CHATROOM,
           )}
         >
           {renderDMChatroomStatusComponents()}
         </Collapse>
         {/* Media Carousel */}
-        <div>
-          <MediaCarousel />
-        </div>
+        {renderMediaCarousel()}
 
         <div className="lm-channel-footer">
           {renderAdditionalComponents()}
           {renderInputBoxComponent()}
-          {/* <LMChatTextArea /> */}
         </div>
       </div>
     </InputContext.Provider>
-
-    // Can't Respond
-    // <div className="lm-channel-footer">
-    //   <div className="disable-input">
-    //     You can not respond to a rejected connection. Approve to send a message.
-    //   </div>
-    // </div>
   );
 };
 

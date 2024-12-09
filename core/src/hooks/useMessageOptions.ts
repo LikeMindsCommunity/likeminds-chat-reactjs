@@ -3,22 +3,22 @@ import { useCallback, useContext, useEffect, useMemo } from "react";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import LMMessageContext from "../context/LMMessageContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
-import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../context/LMChatChatroomContext";
 import { CustomActions } from "../customActions";
-import Conversation from "../types/models/conversations";
-import { useLocation, useNavigate } from "react-router-dom";
-// import { DM_CHANNEL_PATH } from "../shared/constants/lm.routes.constant";
+import { Conversation } from "../types/models/conversations";
 import { LMMessageListCustomActionsContext } from "../context/LMMessageListCustomActionsContext";
 import LMUserProviderContext from "../context/LMUserProviderContext";
+import MessageListContext from "../context/LMMessageListContext";
 
 export function useMessageOptions(): UseMessageOptionsReturn {
-  const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { messageCustomActions = {} } = useContext(
     LMMessageListCustomActionsContext,
   );
   const {
     onReportCustom,
     onDeleteCustom,
+    onSetTopicCustom,
     onEditCustom,
     onReplyCustom,
     putReactionCustom,
@@ -28,18 +28,18 @@ export function useMessageOptions(): UseMessageOptionsReturn {
     LMUserProviderContext,
   );
 
-  const { setConversationToEdit, setConversationToReply } = useContext(
-    LMChatChatroomContext,
-  );
+  const { setConversationToEdit, setConversationToReply } =
+    useContext(LMChatroomContext);
   const { message, deleteMessage, editMessageLocally } =
     useContext(LMMessageContext);
 
-  const navigate = useNavigate();
+  const { chatroomTopic, setChatroomTopic, conversations } =
+    useContext(MessageListContext);
+
   const onReport = useCallback(
     async ({ id, reason }: { id: string | number; reason: string | null }) => {
       try {
-        // TODO handle this
-        const reportCall = await lmChatclient?.pushReport({
+        await lmChatClient.pushReport({
           conversationId: parseInt(message!.id.toString()),
           tagId: parseInt(id.toString()),
           reason: reason ? reason : undefined,
@@ -48,20 +48,48 @@ export function useMessageOptions(): UseMessageOptionsReturn {
         console.log(error);
       }
     },
-    [lmChatclient, message],
+    [lmChatClient, message],
   );
+
   const onDelete = useCallback(async () => {
     try {
-      const deleteCall = await lmChatclient?.deleteConversation({
+      await lmChatClient.deleteConversation({
         conversationIds: [parseInt(message!.id.toString())],
         reason: "none",
       });
-
+      if (chatroomTopic?.id.toString() === message.id.toString()) {
+        setChatroomTopic(null);
+      }
       deleteMessage();
     } catch (error) {
       console.log(error);
     }
-  }, [deleteMessage, lmChatclient, message]);
+  }, [
+    chatroomTopic?.id,
+    deleteMessage,
+    lmChatClient,
+    message,
+    setChatroomTopic,
+  ]);
+
+  // Set Chatroom Topic
+  const onSetTopic = useCallback(async () => {
+    try {
+      await lmChatClient.setChatroomTopic({
+        conversationId: parseInt(message!.id.toString()),
+        chatroomId: parseInt(message?.cardId!.toString()),
+      });
+      const convo = conversations?.find(
+        (convo) => convo.id.toString() === message.id.toString(),
+      );
+      if (convo) {
+        setChatroomTopic(convo);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, [conversations, lmChatClient, message, setChatroomTopic]);
+
   const onEdit = useCallback(async () => {
     try {
       setConversationToEdit(message);
@@ -69,6 +97,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
       console.log(error);
     }
   }, [message, setConversationToEdit]);
+
   const onReply = useCallback(async () => {
     try {
       setConversationToReply(message);
@@ -76,29 +105,47 @@ export function useMessageOptions(): UseMessageOptionsReturn {
       console.log(error);
     }
   }, [message, setConversationToReply]);
+
   const onReplyPrivately = useCallback(
     async (memberId: string | number) => {
       try {
-        const checkDMLimitCall = await lmChatclient?.checkDMLimit({
-          memberId: parseInt(memberId.toString()),
+        const checkDMLimitCall = await lmChatClient.checkDMLimitWithUuid({
+          uuid: memberId,
         });
         if (checkDMLimitCall.success) {
-          const chatroomId = checkDMLimitCall.data.chatroom_id;
+          const chatroomId = checkDMLimitCall.data.chatroomId;
           if (chatroomId) {
-            // navigate to the chatroom
-            navigate(`/${routes?.getDmChannelPath()}/${chatroomId}`);
+            const NEW_CHATROOM_SELECTED = new CustomEvent(
+              CustomActions.NEW_CHATROOM_SELECTED,
+              {
+                detail: {
+                  chatroomId: chatroomId,
+                },
+              },
+            );
+            document.dispatchEvent(NEW_CHATROOM_SELECTED);
             return;
           }
-          const is_request_dm_limit_exceeded =
-            checkDMLimitCall.data.is_request_dm_limit_exceeded;
-          if (!is_request_dm_limit_exceeded) {
-            const createDMChatroomCall = await lmChatclient?.createDMChatroom({
-              memberId: parseInt(memberId.toString()),
-            });
+          const isRequestDmLimitExceeded =
+            checkDMLimitCall?.data.isRequestDmLimitExceeded;
+          if (!isRequestDmLimitExceeded) {
+            const createDMChatroomCall =
+              await lmChatClient.createDMChatroomWithUuid({
+                uuid: memberId,
+              });
             if (createDMChatroomCall.success) {
-              const newChatroomId = createDMChatroomCall.data.chatroom.id;
-              navigate(`/${routes?.getDmChannelPath()}/${newChatroomId}`);
-              // navigate to the chatroom
+              const newChatroomId = createDMChatroomCall?.data.chatroom.id;
+
+              const NEW_CHATROOM_SELECTED = new CustomEvent(
+                CustomActions.NEW_CHATROOM_SELECTED,
+                {
+                  detail: {
+                    chatroomId: newChatroomId,
+                  },
+                },
+              );
+              document.dispatchEvent(NEW_CHATROOM_SELECTED);
+              return;
             }
           }
         }
@@ -106,13 +153,13 @@ export function useMessageOptions(): UseMessageOptionsReturn {
         console.log(error);
       }
     },
-    [lmChatclient, navigate, routes],
+    [lmChatClient],
   );
 
   const putReaction = useCallback(
     async (reaction: string) => {
       try {
-        const putReactionsCall = lmChatclient?.putReaction({
+        lmChatClient.putReaction({
           conversationId: parseInt(message!.id.toString()),
           reaction: reaction,
         });
@@ -120,7 +167,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
         console.log(error);
       }
     },
-    [lmChatclient, message],
+    [lmChatClient, message],
   );
   useEffect(() => {
     addEventListener(CustomActions.EDIT_ACTION_COMPLETED, (newEvent) => {
@@ -138,13 +185,7 @@ export function useMessageOptions(): UseMessageOptionsReturn {
       onReplyPrivately,
     };
   }, [onDelete, onEdit, onReply, onReplyPrivately, onReport, putReaction]);
-  const location = useLocation();
-  const router = useMemo(() => {
-    return {
-      location,
-      navigate,
-    };
-  }, [location, navigate]);
+
   const applicationGeneralDataContext = useMemo(() => {
     return {
       currentCommunity,
@@ -159,7 +200,6 @@ export function useMessageOptions(): UseMessageOptionsReturn {
           null,
           messageDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onReport,
     onDelete: onDeleteCustom
@@ -167,15 +207,20 @@ export function useMessageOptions(): UseMessageOptionsReturn {
           null,
           messageDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onDelete,
+    onSetTopic: onSetTopicCustom
+      ? onSetTopicCustom.bind(
+          null,
+          messageDefaultActions,
+          applicationGeneralDataContext,
+        )
+      : onSetTopic,
     onEdit: onEditCustom
       ? onEditCustom.bind(
           null,
           messageDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onEdit,
     onReply: onReplyCustom
@@ -183,7 +228,6 @@ export function useMessageOptions(): UseMessageOptionsReturn {
           null,
           messageDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onReply,
     putReaction: putReactionCustom
@@ -191,7 +235,6 @@ export function useMessageOptions(): UseMessageOptionsReturn {
           null,
           messageDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : putReaction,
     onReplyPrivately: onReplyPrivatelyCustom
@@ -199,7 +242,6 @@ export function useMessageOptions(): UseMessageOptionsReturn {
           null,
           messageDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onReplyPrivately,
   };
@@ -210,6 +252,7 @@ export interface UseMessageOptionsReturn {
     reason: string | null;
   }>;
   onDelete: ZeroArgVoidReturns;
+  onSetTopic: ZeroArgVoidReturns;
   onEdit: ZeroArgVoidReturns;
   onReply: ZeroArgVoidReturns;
   putReaction: OneArgVoidReturns<string>;

@@ -1,34 +1,12 @@
-export default interface Member {
-  customTitle: string;
-  id: number;
-  imageUrl: string;
-  isGuest: boolean;
-  isOwner: boolean;
-  memberSince: string;
-  memberSinceEpoch: number;
-  name: string;
-  organisationName: string | null;
-  route: string;
-  sdkClientInfo: SdkClientInfo;
-  state: number;
-  updatedAt: number;
-  userUniqueId: string;
-  uuid: string;
-  memberRights: MemberRight[];
-}
-interface MemberRight {
-  id: number;
-  is_locked: boolean;
-  is_selected: boolean;
-  state: number;
-  title: string;
-  sub_title?: string;
+import {
+  Member as DLMember,
+  MemberRight as DLMemberRight,
+  SDKClientInfo as DLSdkClientInfo,
+} from "@likeminds.community/chat-js-beta";
+export default interface Member extends DLMember {
+  memberRights?: MemberRight[];
 }
 
-export interface SdkClientInfo {
-  community: number;
-  user: number;
-  userUniqueId: string;
-  uuid: string;
-  widgetId: string;
-}
+export interface MemberRight extends DLMemberRight {}
+
+export interface SdkClientInfo extends DLSdkClientInfo {}

@@ -1,49 +1,47 @@
 import React, { useContext, useMemo } from "react";
-
-import { useNavigate, useParams } from "react-router-dom";
 import { LMDMChannelListContext } from "../../context/LMDMChannelListContext";
-// import { DM_CHANNEL_PATH } from "../../shared/constants/lm.routes.constant";
 import UserProviderContext from "../../context/LMUserProviderContext";
-import { ChatroomData } from "../../types/api-responses/getChatroomSync";
 import document from "../../assets/img/document.svg";
 import { Utils } from "../../utils/helpers";
-import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
+import { Chatroom } from "../../types/models/Chatroom";
 interface LMJoinedDMChannelTileProps {
-  chatroom: ChatroomData;
+  chatroom: Chatroom;
 }
-const LMJoinedDMChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
-  const { id: chatroomId } = useParams();
-  const navigate = useNavigate();
-  const { markReadADMChatroom, usersData, conversationsData } = useContext(
-    LMDMChannelListContext,
-  );
-  const { routes } = useContext(LMGlobalClientProviderContext);
+const LMChatJoinedChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
+  const {
+    usersData,
+    conversationsData,
+    selectNewChatroom,
+    currentSelectedChatroomId,
+  } = useContext(LMDMChannelListContext);
   const { currentUser } = useContext(UserProviderContext);
+
   const {
     id,
-    last_conversation_id,
-    user_id,
-    chatroom_with_user_id,
-    unseen_count,
+    lastConversationId,
+    userId = "",
+    chatroomWithUserId,
+    unseenCount = 0,
   } = chatroom;
 
-  const lastConversation = conversationsData[last_conversation_id.toString()];
+  const lastConversation =
+    conversationsData[lastConversationId?.toString() || ""];
+
   const chatroomUser = useMemo(() => {
-    if (user_id.toString() === currentUser?.id.toString()) {
-      const chatroomUser = usersData[chatroom_with_user_id || ""];
+    if (userId.toString() === currentUser?.id.toString()) {
+      const chatroomUser = usersData[chatroomWithUserId || ""];
       return chatroomUser;
     } else {
-      const chatroomUser = usersData[user_id.toString()];
+      const chatroomUser = usersData[userId.toString()];
       return chatroomUser;
     }
-  }, [chatroom_with_user_id, currentUser?.id, user_id, usersData]);
+  }, [chatroomWithUserId, currentUser?.id, userId, usersData]);
+
   const showLastConversationTime = () => {
     const presentDate = new Date();
-
-    const lastConversationDate = new Date(lastConversation.date);
-
+    const lastConversationDate = new Date(lastConversation.date!);
     if (lastConversationDate.getTime() === presentDate.getTime()) {
-      return lastConversation.created_at;
+      return lastConversation.createdAt;
     } else {
       return lastConversation.date;
     }
@@ -52,16 +50,15 @@ const LMJoinedDMChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
   return (
     <div
       key={id.toString()}
-      className={`channel-media ${chatroomId?.toString() === id.toString() ? "selected" : null}`}
+      className={`channel-media ${currentSelectedChatroomId?.toString() === id.toString() ? "selected" : null}`}
       onClick={() => {
-        markReadADMChatroom(id);
-        navigate(`/${routes?.getDmChannelPath()}/${id}`);
+        selectNewChatroom(id);
       }}
     >
       <div className="channel-icon">
-        {chatroomUser?.image_url ? (
+        {chatroomUser?.imageUrl ? (
           <>
-            <img src={chatroomUser?.image_url || ""} alt="channel icon" />
+            <img src={chatroomUser?.imageUrl || ""} alt="channel icon" />
           </>
         ) : (
           <>{chatroomUser?.name.charAt(0)}</>
@@ -74,11 +71,11 @@ const LMJoinedDMChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
         </div>
         <div className="channel-info">
           <div className="channel-last-conversation">
-            {lastConversation.user_id === currentUser.id
+            {lastConversation.userId?.toString() === currentUser.id.toString()
               ? "You"
               : chatroomUser.name.split(" ")[0]}
             :&nbsp;{" "}
-            {lastConversation?.attachment_count ? (
+            {lastConversation?.attachmentCount ? (
               <>
                 <img src={document} alt="document" />
               </>
@@ -89,12 +86,12 @@ const LMJoinedDMChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
           </div>
         </div>
 
-        {unseen_count > 0 ? (
-          <div className="channel-unseen-convo-count">{unseen_count}</div>
+        {unseenCount > 0 ? (
+          <div className="channel-unseen-convo-count">{unseenCount}</div>
         ) : null}
       </div>
     </div>
   );
 };
 
-export default LMJoinedDMChannelTile;
+export default LMChatJoinedChannelTile;

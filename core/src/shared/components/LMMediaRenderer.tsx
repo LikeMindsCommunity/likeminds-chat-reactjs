@@ -1,49 +1,53 @@
-import React, { useContext, useState } from "react";
-import { Modal, Carousel } from "react-bootstrap";
-import LMMessageContext from "../../context/LMMessageContext";
+import React, { SyntheticEvent, useState } from "react";
+import { Carousel } from "react-bootstrap";
+import crossIcon from "../../assets/img/carousel-cross-icon.svg";
 import pdfIcon from "../../assets/img/pdf-document.svg";
-import { getAvatar } from "./LMUserMedia";
-import MessageListContext from "../../context/LMMessageListContext";
+import { Attachment } from "@likeminds.community/chat-js-beta";
+import {
+  SupportedDocumentMediaType,
+  SupportedImageMediaType,
+  SupportedVideoMediaType,
+} from "../../types/enums/Filetype";
+import { createPortal } from "react-dom";
 
-const MediaRenderer = ({ attachments }) => {
+const MediaRenderer = ({ attachments }: { attachments: Attachment[] }) => {
   const [show, setShow] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const { message } = useContext(LMMessageContext);
-  const { messageListContainerRef } = useContext(MessageListContext);
-  const handleShow = (index) => {
+
+  const handleShow = (index: number) => {
     setCurrentIndex(index);
     setShow(true);
   };
-  const imageUrl = message?.member.imageUrl;
-  const name = message?.member.name;
-  const avatarContent = getAvatar({ imageUrl, name });
 
   const handleClose = () => setShow(false);
 
-  const handleError = (e) => {
-    e.target.src = "https://via.placeholder.com/100"; // Fallback image URL
-    e.target.onerror = null; // Prevent infinite loop if the fallback also fails
+  const handleError = (
+    e: SyntheticEvent<HTMLImageElement | HTMLVideoElement>,
+  ) => {
+    e.currentTarget.src = "https://via.placeholder.com/100"; // Fallback image URL
+    e.currentTarget.onerror = null; // Prevent infinite loop if the fallback also fails
   };
 
-  const renderMedia = (attachment, index, isThumbnail = false) => {
-    if (!attachment || !attachment.file_url) {
-      console.error(`Invalid attachment at index ${index}:`, attachment);
+  const renderMedia = (
+    attachment: Attachment,
+    index: number,
+    isThumbnail = false,
+  ) => {
+    if (!attachment || !attachment.fileUrl) {
       return null;
     }
 
-    const fileType = attachment.file_url.split(".").pop().toLowerCase();
-    const fileTypeOther = fileType.split("&")[0];
+    const fileType = attachment.fileUrl?.split(".")?.pop()?.toLowerCase();
+    const fileTypeOther = fileType?.split("&")[0];
     const className = isThumbnail ? "thumbnail" : "carousel-media";
 
     if (
-      ["jpeg", "jpg", "png", "gif", "bmp", "tiff", "tif"].includes(fileType) ||
-      ["jpeg", "jpg", "png", "gif", "bmp", "tiff", "tif"].includes(
-        fileTypeOther,
-      )
+      SupportedImageMediaType.includes(fileType!) ||
+      SupportedImageMediaType.includes(fileTypeOther!)
     ) {
       return (
         <img
-          src={attachment.file_url}
+          src={attachment.fileUrl}
           alt="img"
           key={index}
           className={className}
@@ -52,8 +56,8 @@ const MediaRenderer = ({ attachments }) => {
         />
       );
     } else if (
-      ["mp4", "mov", "avi", "mkv", "wmv", "flv"].includes(fileType) ||
-      ["mp4", "mov", "avi", "mkv", "wmv", "flv"].includes(fileTypeOther)
+      SupportedVideoMediaType.includes(fileType!) ||
+      SupportedImageMediaType.includes(fileTypeOther!)
     ) {
       return (
         <video
@@ -63,22 +67,53 @@ const MediaRenderer = ({ attachments }) => {
           onClick={() => handleShow(index)}
           onError={handleError}
         >
-          <source src={attachment.file_url} type={`video/${fileType}`} />
+          <source src={attachment.fileUrl} type={`video/${fileType}`} />
           Your browser does not support the video tag.
         </video>
       );
-    } else if (fileType === "pdf") {
+    } else if (SupportedDocumentMediaType.includes(fileType!)) {
       return (
         <div key={index} className={className}>
-          <a href={attachment.file_url} target="_blank" className="pdf">
+          <a href={attachment.fileUrl} target="_blank" className="pdf">
             <img src={pdfIcon} alt="pdf" />
             {!isThumbnail && <div className="pdfName">{attachment.name}</div>}
           </a>
         </div>
       );
     } else {
-      console.error(`Unsupported file type at index ${index}: ${fileType}`);
       return null;
+    }
+  };
+
+  const MediaRenderingModal = (
+    <div className="lm-message-media-carousel-wrapper">
+      <button className="lm-media-render-close-icon" onClick={handleClose}>
+        <img src={crossIcon} alt="cancel" />
+      </button>
+      <div className="modal-content-wrapper">
+        <Carousel
+          activeIndex={currentIndex}
+          onSelect={(selectedIndex) => setCurrentIndex(selectedIndex)}
+          indicators={attachments.length > 1}
+          controls={attachments.length > 1}
+        >
+          {attachments.map((attachment, index) => (
+            <Carousel.Item key={index} className="lm-modal-media">
+              {renderMedia(attachment, index)}
+            </Carousel.Item>
+          ))}
+        </Carousel>
+      </div>
+    </div>
+  );
+
+  // Renders a carousel in `lm-media-render-portal`
+  const renderMediaCarousel = () => {
+    if (show) {
+      return createPortal(
+        MediaRenderingModal,
+        document.getElementById("lm-media-render-portal")!,
+      );
     }
   };
 
@@ -100,46 +135,7 @@ const MediaRenderer = ({ attachments }) => {
           ))}
         </div>
       )}
-
-      <Modal
-        show={show}
-        onHide={handleClose}
-        centered
-        backdrop={false}
-        dialogClassName="lm-dialog-modal"
-        contentClassName="lm-dialog-content-modal"
-        container={messageListContainerRef.current}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <div className="lm-carousel-header">
-              <div className="lm-profile">{avatarContent}</div>
-              <div className="lm-profile-info">
-                <div className="lm-name">{message?.member.name}</div>
-                <div className="lm-desc">
-                  {message?.date} at {message?.created_at}
-                </div>
-              </div>
-            </div>
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="modal-content-wrapper">
-            <Carousel
-              activeIndex={currentIndex}
-              onSelect={(selectedIndex) => setCurrentIndex(selectedIndex)}
-              indicators={attachments.length > 1}
-              controls={attachments.length > 1}
-            >
-              {attachments.map((attachment, index) => (
-                <Carousel.Item key={index} className="lm-modal-media">
-                  {renderMedia(attachment, index)}
-                </Carousel.Item>
-              ))}
-            </Carousel>
-          </div>
-        </Modal.Body>
-      </Modal>
+      {renderMediaCarousel()}
     </div>
   );
 };

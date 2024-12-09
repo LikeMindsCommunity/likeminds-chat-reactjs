@@ -1,13 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export interface ReportTagMessage {
-  id: number;
-  name: string;
-}
+import {
+  LMResponse,
+  GetReportTagsResponse,
+} from "@likeminds.community/chat-js-beta";
 
-export interface GetReportTagsChatResponse {
-  success: boolean;
-  data?: {
-    report_tags: ReportTagMessage[];
-  };
-  error?: any;
-}
+export interface GetReportTagsChatResponse
+  extends LMResponse<GetReportTagsResponse> {}

@@ -1,30 +1,33 @@
 import { useContext, useRef, useState } from "react";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 
-import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../context/LMChatChatroomContext";
 import { ZeroArgVoidReturns } from "./useInput";
-import {
-  Participant,
-  ViewParticipantsResponse,
-} from "../types/api-responses/viewParticipants";
+import { ViewParticipantsResponse } from "../types/api-responses/viewParticipants";
+import Member from "../types/models/member";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 
-export function useExploreFeed(): UseParticipantsReturns {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
-  const { chatroom } = useContext(LMChatChatroomContext);
-  const [participantsList, setParticipantList] = useState<Participant[]>([]);
+export function useExploreFeed(): useExploreFeed {
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
+  const { chatroomDetails } = useContext(LMChatroomContext);
+  const { exploreFeedCustomActions = {} } = useContext(
+    CustomisationContextProvider,
+  );
+  const { getMembersCustomCallback } = exploreFeedCustomActions;
+  const [participantsList, setParticipantList] = useState<Member[]>([]);
   const participantListPageCount = useRef<number>(1);
   const [loadMoreParticipants, setLoadMoreParticipants] =
     useState<boolean>(true);
   const getMembers = async () => {
     try {
       const getMembersCall: ViewParticipantsResponse =
-        await lmChatclient?.viewParticipants({
-          chatroomId: chatroom?.chatroom.id || 0,
-          isSecret: chatroom?.chatroom.is_secret || false,
+        await lmChatClient.viewParticipants({
+          chatroomId: chatroomDetails?.chatroom.id || 0,
+          isSecret: chatroomDetails?.chatroom.isSecret || false,
           page: participantListPageCount.current,
         });
       if (getMembersCall.success) {
-        if (getMembersCall.data.participants.length) {
+        if (getMembersCall?.data.participants.length) {
           participantListPageCount.current += 1;
           setParticipantList((currentParticipants) => {
             return [
@@ -40,16 +43,38 @@ export function useExploreFeed(): UseParticipantsReturns {
       console.log(error);
     }
   };
+  const exploreFeedDefaultActions: ExploreFeedDefaultActions = {
+    getMembers,
+  };
+  const exploreFeedDataStore: ExploreFeedDataStore = {
+    participantsList,
+    loadMoreParticipants,
+  };
 
   return {
     participantsList,
     loadMoreParticipants,
-    getMembers,
+    getMembers: getMembersCustomCallback
+      ? getMembersCustomCallback.bind(
+          null,
+          exploreFeedDefaultActions,
+          exploreFeedDataStore,
+        )
+      : getMembers,
   };
 }
 
-export interface UseParticipantsReturns {
-  participantsList: Participant[];
+export interface useExploreFeed {
+  participantsList: Member[];
   loadMoreParticipants: boolean;
   getMembers: ZeroArgVoidReturns;
+}
+
+export interface ExploreFeedDefaultActions {
+  getMembers: ZeroArgVoidReturns;
+}
+
+export interface ExploreFeedDataStore {
+  participantsList: Member[];
+  loadMoreParticipants: boolean;
 }

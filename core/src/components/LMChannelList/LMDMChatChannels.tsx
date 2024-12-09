@@ -1,11 +1,11 @@
 import InfiniteScroll from "react-infinite-scroll-component";
 import useDmChannelLists from "../../hooks/useDMChannelLists";
 import { LMDMChannelListContext } from "../../context/LMDMChannelListContext";
-import LMJoinedDMChannelTile from "./LMJoinedDMChannelTile";
+import LMChatJoinedChannelTile from "./LMJoinedDMChannelTile";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { useContext } from "react";
 
-const LMDMChatChannels = () => {
+const LMChatDMChannelList = ({ currentChatroomId }: LMDMChannelListProps) => {
   const {
     dmChatrooms,
     loadMoreDmChatrooms,
@@ -14,7 +14,9 @@ const LMDMChatChannels = () => {
     markReadADMChatroom,
     conversationsData,
     usersData,
-  } = useDmChannelLists();
+    selectNewChatroom,
+    currentSelectedChatroomId,
+  } = useDmChannelLists(currentChatroomId);
 
   const { customComponents } = useContext(LMGlobalClientProviderContext);
 
@@ -38,6 +40,8 @@ const LMDMChatChannels = () => {
             markReadADMChatroom,
             usersData,
             conversationsData,
+            selectNewChatroom,
+            currentSelectedChatroomId,
           }}
         >
           <InfiniteScroll
@@ -45,12 +49,11 @@ const LMDMChatChannels = () => {
             next={getDMChatroomsList}
             hasMore={loadMoreDmChatrooms}
             loader={null}
-            //   endMessage={<EndMessage />}
             scrollableTarget="lm-channel-list-dm"
           >
             {dmChatrooms.map((chatroom) => {
               return (
-                <LMJoinedDMChannelTile
+                <LMChatJoinedChannelTile
                   key={chatroom.id.toString()}
                   chatroom={chatroom}
                 />
@@ -62,4 +65,8 @@ const LMDMChatChannels = () => {
     </div>
   );
 };
-export default LMDMChatChannels;
+export default LMChatDMChannelList;
+
+export interface LMDMChannelListProps {
+  currentChatroomId?: number;
+}

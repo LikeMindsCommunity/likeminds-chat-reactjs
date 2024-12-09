@@ -15,7 +15,7 @@ import { getMessaging, getToken } from "firebase/messaging";
 // const vapidKey =
 //   "BH7RhEM3kdPrZy-TDwOp6dPg7wH2nLa17V_c4DO_jfg-ih1L25fi8gNWxXNWWMK4eAC2-RqE8U5jAoCtjwRlmyo";
 
-// Prod
+// Prod;
 const firebaseConfig = {
   apiKey: "AIzaSyCmu_u-n31x2WMQlWAciP5RDXGn2qMuXrg",
   authDomain: "collabmates-3d601.firebaseapp.com",

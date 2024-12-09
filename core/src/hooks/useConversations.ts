@@ -12,48 +12,59 @@ import GlobalClientProviderContext from "../context/LMGlobalClientProviderContex
 import { onValue, ref } from "firebase/database";
 import { CONVERSATIONS_PAGINATE_BY } from "../constants/LMConstants";
 import LoaderContextProvider from "../context/LMLoaderContextProvider";
-import Conversation from "../types/models/conversations";
+import { Conversation } from "../types/models/conversations";
 import UserProviderContext from "../context/LMUserProviderContext";
-import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
-import { useParams } from "react-router-dom";
+import { LMChatroomContext } from "../context/LMChatChatroomContext";
 import { CustomActions } from "../customActions";
 import { ZeroArgVoidReturns } from "./useInput";
 import { ChatroomAction } from "../enums/lm-chatroom-actions";
-import { ChatroomCollabcard } from "../types/api-responses/getChatroomResponse";
+import { ChatroomDetails } from "../types/api-responses/getChatroomResponse";
 import { GetSyncConversationsResponse } from "../types/api-responses/getSyncConversationsResponse";
 import ConversationStates from "../enums/lm-conversation-states";
+import { Utils } from "../utils/helpers";
+import { MemberRole } from "@likeminds.community/chat-js-beta";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
+import Member from "../types/models/member";
 
 interface UseConversations {
   conversations: Conversation[] | null;
+  setChatroomTopic: React.Dispatch<Conversation | null>;
+  chatroomTopic: Conversation | null;
   setConversations: React.Dispatch<Conversation[] | null>;
   getChatroomConversationsOnTopScroll: UnknownGetConversationFunction;
   getChatroomConversationsOnBottomScroll: UnknownGetConversationFunction;
   loadMore: boolean;
   showLoader: MutableRefObject<boolean>;
-  // showLoader: boolean;
+  showSkeletonResponse: boolean;
   bottomReferenceDiv: MutableRefObject<HTMLDivElement | null>;
   messageListContainerRef: MutableRefObject<HTMLDivElement | null>;
   unBlockUserInDM: ZeroArgVoidReturns;
   searchedConversationRef: MutableRefObject<HTMLDivElement | null>;
   loadMoreBottomConversation: boolean;
+  shouldScrollToBottom: MutableRefObject<boolean>;
 }
 
 export default function useConversations(): UseConversations {
-  // const { chatroomId } = useContext(ChatroomProviderContext);
-  const { id: chatroomId } = useParams();
-  // const {chatroom} = useContext(LMChatChatroomContext)
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+  const {
+    chatroomDetails: {
+      chatroom: { id: chatroomId },
+    },
+  } = useContext(LMChatroomContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { setLoader } = useContext(LoaderContextProvider);
   const { currentUser } = useContext(UserProviderContext);
   const {
-    chatroom,
+    chatroomDetails,
     setNewChatroom,
     searchedConversationId,
     setSearchedConversationId,
-  } = useContext(LMChatChatroomContext);
+  } = useContext(LMChatroomContext);
   const [conversations, setConversations] = useState<Conversation[] | null>([]);
   const [loadMore, setLoadMore] = useState<boolean>(true);
+  const [chatroomTopic, setChatroomTopic] = useState<Conversation | null>(null);
   const [loadMoreBottomConversation, setLoadMoreBottomConversation] =
+    useState<boolean>(false);
+  const [showSkeletonResponse, setShowSkeletonResponse] =
     useState<boolean>(false);
   const newChatroomConversationsLoaded = useRef<boolean>(false);
   const lastMessageRef = useRef<number | null>(null);
@@ -65,90 +76,127 @@ export default function useConversations(): UseConversations {
   const stopAdditionalCalls = useRef<boolean>(false);
   // id of conversation retrieved from bottomScrollGetconversation
   const bottomConversationId = useRef<number | null>(null);
-  // const [showLoader, setShowLoader] = useState<boolean>(false);
   const showLoader = useRef<boolean>(true);
-  // const params = useParams();
+  const localConversationIds = useRef<Set<number>>(new Set());
+  const shouldScrollToBottom = useRef<boolean>(true);
+
   const transformConversations = (
     currentConversations: Conversation[],
     chatroomConversationsCall: GetSyncConversationsResponse,
     appendAtEnd?: boolean,
   ) => {
     const {
-      conv_attachments_meta,
-      conv_polls_meta,
-      conv_reactions_meta,
-      conversations_data,
-      conversation_meta,
-      user_meta,
+      convAttachmentsMeta,
+      convPollsMeta,
+      convReactionsMeta,
+      conversationsData,
+      conversationMeta,
+      userMeta,
       widgets,
     } = chatroomConversationsCall.data;
+    const newConversationsIdMap = new Map<number, Conversation>();
+    const newConversationRemovedMap = new Map<number, Conversation>();
     currentConversations = [...(currentConversations || [])];
-    const newConversations = conversations_data
+    const newConversations = conversationsData
       .map((conversation) => {
         const newConversation = {
           ...conversation,
         } as unknown as Conversation;
-        if (conversation.attachment_count) {
-          newConversation.attachments =
-            conv_attachments_meta[conversation.id.toString()];
+
+        if (conversation.attachmentCount) {
+          newConversation.attachments = convAttachmentsMeta[conversation.id!];
         } else {
           newConversation.attachments = [];
         }
-        if (conversation.has_reactions) {
-          newConversation.reactions = conv_reactions_meta[
-            conversation.id.toString()
+
+        if (conversation.hasReactions) {
+          newConversation.reactions = convReactionsMeta[
+            conversation.id!.toString()
           ]?.map((reaction) => {
             return {
-              member: user_meta[reaction.user_id.toString()] as any,
-              reaction: reaction.reaction,
+              member: userMeta[reaction.userId!.toString()] as any,
+              ...reaction,
             };
           });
         } else {
           newConversation.reactions = [];
         }
-        if (conversation.user_id) {
-          newConversation.member = user_meta[
-            conversation.user_id.toString()
+        if (conversation.userId) {
+          newConversation.member = userMeta[
+            conversation.userId!.toString()
           ] as any;
+          newConversation.member.roles?.includes(MemberRole.Chatbot) &&
+            setShowSkeletonResponse(false);
         }
+
         if (conversation.state === ConversationStates.MICRO_POLL) {
-          newConversation.polls = conv_polls_meta[
-            conversation.id.toString()
+          newConversation.polls = convPollsMeta[
+            conversation?.id!.toString()
           ]?.map((poll) => {
             return {
-              id: poll.id,
-              is_selected: poll.is_selected,
-              member: user_meta[poll.user_id.toString()] as any,
-              no_votes: poll.no_votes,
-              percentage: poll.percentage || 0,
-              text: poll.text,
+              ...poll,
+              member: userMeta[poll.userId!.toString()] as any,
             };
           });
         }
-        if (conversation.reply_id) {
-          const newRepliedConversation = conversation_meta[
-            newConversation.reply_id
+        if (conversation.replyId) {
+          const newRepliedConversation = conversationMeta[
+            conversation.replyId
           ] as any;
           if (newRepliedConversation.attachment_count) {
             newRepliedConversation.attachments =
-              conv_attachments_meta[newConversation.reply_id.toString()];
+              convAttachmentsMeta[newConversation.replyId!.toString()];
           }
-          const repliedConversationUser = user_meta[
-            newRepliedConversation.user_id.toString()
+          const repliedConversationUser = userMeta[
+            newRepliedConversation.userId.toString()
           ] as any;
           newRepliedConversation.member = repliedConversationUser;
-          newConversation.reply_conversation_object = newRepliedConversation;
+          newConversation.replyConversationObject = newRepliedConversation;
         }
-        if (conversation.widget_id.length) {
-          newConversation.widget = widgets[conversation.widget_id];
+        if (conversation?.widgetId?.length) {
+          newConversation.widget = widgets[conversation.widgetId];
         }
         return newConversation;
       })
       .reverse();
+    newConversations.forEach((conversation) => {
+      const tempId = conversation.temporaryId;
+      if (tempId) {
+        newConversationsIdMap.set(parseInt(tempId), conversation);
+      }
+    });
+
+    const newCurrentConversations = currentConversations.map((conversation) => {
+      if (
+        conversation.state === ConversationStates.LOCAL_CONVERSATION_STATE &&
+        localConversationIds.current.has(
+          parseInt(conversation?.temporaryId?.toString() || ""),
+        )
+      ) {
+        const updatedConversation = newConversationsIdMap.get(
+          parseInt(conversation?.temporaryId?.toString() || ""),
+        );
+        if (updatedConversation) {
+          const updatedConversationCopy = { ...updatedConversation };
+          newConversationRemovedMap.set(
+            updatedConversationCopy.id,
+            conversation,
+          );
+          return updatedConversationCopy;
+        } else {
+          return conversation;
+        }
+      } else {
+        return conversation;
+      }
+    });
+
     if (appendAtEnd) {
       const newConversationsList = [
-        ...currentConversations,
-        ...newConversations,
+        ...newCurrentConversations,
+        ...newConversations.filter(
+          (conversation) => !newConversationRemovedMap.has(conversation.id),
+        ),
       ];
       return newConversationsList;
     } else {
@@ -161,14 +209,14 @@ export default function useConversations(): UseConversations {
   };
   const getChatroomDetails = useCallback(async () => {
     try {
-      const chatroomDetailsCall = await lmChatclient?.getChatroom({
+      const chatroomDetailsCall = await lmChatClient?.getChatroom({
         chatroomId,
       });
       return chatroomDetailsCall.data.chatroom;
     } catch (error) {
       return logError(error);
     }
-  }, [chatroomId, lmChatclient]);
+  }, [chatroomId, lmChatClient]);
   const getChatroomConversationsOnTopScroll = useCallback(async () => {
     try {
       if (stopAdditionalCalls.current) {
@@ -176,7 +224,7 @@ export default function useConversations(): UseConversations {
       }
 
       const chatroomConversationsCall: GetSyncConversationsResponse =
-        await lmChatclient?.getConversations({
+        await lmChatClient?.getConversations({
           chatroomId: parseInt(chatroomId!.toString()),
           pageSize: CONVERSATIONS_PAGINATE_BY || 50,
           maxTimestamp: currentChatroomMaxTimeStamp.current,
@@ -185,8 +233,9 @@ export default function useConversations(): UseConversations {
           page: currentChatroomTopPageCount.current,
         });
       if (chatroomConversationsCall.success) {
-        const { conversations_data } = chatroomConversationsCall.data;
-        if (!conversations_data.length) {
+        shouldScrollToBottom.current = false;
+        const { conversationsData } = chatroomConversationsCall.data;
+        if (!conversationsData.length) {
           setLoadMore(false);
         } else {
           setConversations((currentConversations) => {
@@ -205,13 +254,13 @@ export default function useConversations(): UseConversations {
     } catch (error) {
       return logError(error);
     }
-  }, [lmChatclient, chatroomId]);
+  }, [lmChatClient, chatroomId]);
   const getChatroomConversationsOnBottomScroll = useCallback(async () => {
     try {
       if (stopAdditionalCalls.current) {
         return;
       }
-      const chatroomConversationsCall = await lmChatclient?.getConversation({
+      const chatroomConversationsCall = await lmChatClient?.getConversation({
         chatroomID: parseInt(chatroomId?.toString() || ""),
         paginateBy: CONVERSATIONS_PAGINATE_BY,
         conversationID: bottomConversationId.current || 0,
@@ -220,6 +269,7 @@ export default function useConversations(): UseConversations {
         topNavigate: false,
       });
       if (chatroomConversationsCall.success) {
+        shouldScrollToBottom.current = false;
         if (chatroomConversationsCall.data.conversations.length) {
           setConversations((currentConversations) => {
             if (!currentConversations) {
@@ -243,13 +293,13 @@ export default function useConversations(): UseConversations {
       logError(error);
       return;
     }
-  }, [chatroomId, lmChatclient]);
+  }, [chatroomId, lmChatClient]);
 
   const searchConversation = useCallback(async () => {
     try {
       stopAdditionalCalls.current = true;
       // conversations before the searched conversation
-      const preConversationCall = await lmChatclient?.getConversation({
+      const preConversationCall = await lmChatClient?.getConversation({
         chatroomID: parseInt(chatroomId?.toString() || ""),
         paginateBy: CONVERSATIONS_PAGINATE_BY,
         conversationID: parseInt(searchedConversationId?.toString() || ""),
@@ -258,7 +308,7 @@ export default function useConversations(): UseConversations {
         topNavigate: false,
       });
       // conversation after the searched conversation
-      const postConversationCall = await lmChatclient?.getConversation({
+      const postConversationCall = await lmChatClient?.getConversation({
         chatroomID: parseInt(chatroomId?.toString() || ""),
         paginateBy: CONVERSATIONS_PAGINATE_BY,
         conversationID: parseInt(searchedConversationId?.toString() || ""),
@@ -272,9 +322,10 @@ export default function useConversations(): UseConversations {
           ...(preConversationCall.data.conversations || []),
           ...(postConversationCall.data.conversations || []),
         ];
+        shouldScrollToBottom.current = false;
         if (newConversations.length) {
           currentChatroomMaxTimeStamp.current =
-            newConversations[0].created_epoch;
+            newConversations[0].createdEpoch;
           currentChatroomTopPageCount.current = 1;
           bottomConversationId.current =
             newConversations[newConversations.length - 1].id;
@@ -286,26 +337,25 @@ export default function useConversations(): UseConversations {
     } finally {
       stopAdditionalCalls.current = false;
     }
-  }, [chatroomId, lmChatclient, searchedConversationId]);
+  }, [chatroomId, lmChatClient, searchedConversationId]);
   const unBlockUserInDM = useCallback(async () => {
-    // add login for showing input field
     try {
-      const call = await lmChatclient?.blockMember({
-        chatroomId: parseInt(chatroomId!),
+      const call = await lmChatClient?.blockMember({
+        chatroomId: parseInt(chatroomId.toString()),
         status: 1,
       });
       if (call.success) {
-        const newChatroom = { ...chatroom };
+        const newChatroom = { ...chatroomDetails };
         if (!(newChatroom && newChatroom.chatroom)) {
           return;
         }
-        newChatroom.chatroom.chat_request_state = 1;
+        newChatroom.chatroom.chatRequestState = 1;
         if (
-          newChatroom?.chatroom_actions?.some(
+          newChatroom?.chatroomActions?.some(
             (option) => option.id === ChatroomAction.ACTION_UNBLOCK_CHATROOM,
           )
         ) {
-          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+          newChatroom!.chatroomActions = newChatroom.chatroomActions?.map(
             (options) => {
               if (options.id === ChatroomAction.ACTION_UNBLOCK_CHATROOM) {
                 return { id: 27, title: "Block" };
@@ -315,7 +365,7 @@ export default function useConversations(): UseConversations {
             },
           );
         } else {
-          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+          newChatroom!.chatroomActions = newChatroom.chatroomActions?.map(
             (options) => {
               if (options.id === ChatroomAction.ACTION_BLOCK_CHATROOM) {
                 return { id: 28, title: "Unblock" };
@@ -325,7 +375,7 @@ export default function useConversations(): UseConversations {
             },
           );
         }
-        setNewChatroom(newChatroom as ChatroomCollabcard);
+        setNewChatroom(newChatroom as ChatroomDetails);
         document.dispatchEvent(
           new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
             detail: call.data.conversation,
@@ -335,25 +385,26 @@ export default function useConversations(): UseConversations {
     } catch (error) {
       console.log(error);
     }
-  }, [chatroom, chatroomId, lmChatclient, setNewChatroom]);
+  }, [chatroomDetails, chatroomId, lmChatClient, setNewChatroom]);
 
   const blockUserInDM = useCallback(async () => {
     // add login for hiding input field
     try {
-      const call = await lmChatclient?.blockMember({
-        chatroomId: parseInt(chatroomId!),
+      const call = await lmChatClient?.blockMember({
+        chatroomId: parseInt(chatroomId.toString()),
         status: 0,
       });
     } catch (error) {
       console.log(error);
     }
-  }, [chatroomId, lmChatclient]);
+  }, [chatroomId, lmChatClient]);
 
   const resetConversations = useCallback(() => {
     setConversations(() => null);
     lastMessageRef.current = null;
     newChatroomConversationsLoaded.current = false;
     currentChatroomTopPageCount.current = 1;
+    shouldScrollToBottom.current = true;
     setSearchedConversationId(null);
   }, [setSearchedConversationId]);
 
@@ -388,12 +439,9 @@ export default function useConversations(): UseConversations {
       try {
         await getChatroomConversationsOnTopScroll();
         newChatroomConversationsLoaded.current = true;
-        // set the loader to false
-        // setShowLoader(() => false);
         showLoader.current = false;
-        // setLoader!(false);
       } catch (error) {
-        // console.log the error
+        console.log(error);
       }
     }
     fetchChannel();
@@ -406,7 +454,7 @@ export default function useConversations(): UseConversations {
   ]);
 
   useEffect(() => {
-    const db = lmChatclient?.fbInstance();
+    const db = lmChatClient?.fbInstance();
     if (!db) {
       return;
     }
@@ -415,7 +463,7 @@ export default function useConversations(): UseConversations {
     ) => {
       try {
         const chatroomConversationsCall: GetSyncConversationsResponse =
-          await lmChatclient?.getConversations({
+          await lmChatClient?.getConversations({
             chatroomId: parseInt(chatroomId!.toString()),
             page: 1,
             pageSize: 1,
@@ -434,19 +482,18 @@ export default function useConversations(): UseConversations {
     return onValue(query, async (snapshot) => {
       try {
         if (snapshot.exists() && newChatroomConversationsLoaded.current) {
-          // uncomment to stop the scroll to bottom when new conversations come and user is on a searched conversation
-          // if (sessionStorage.getItem(SEARCHED_CONVERSATION_ID) !== null) {
-          //   return;
-          // }
           const collabcardId = snapshot.val().collabcard.answer_id;
-          getChatroomConversationsWithID(collabcardId)
-            .then((targetConversation: GetSyncConversationsResponse | null) => {
+          getChatroomConversationsWithID(collabcardId).then(
+            (targetConversation: GetSyncConversationsResponse | null) => {
               if (!targetConversation) return;
-              if (targetConversation.data.conversations_data.length === 0)
+              if (targetConversation.data.conversationsData.length === 0)
                 return;
-              setConversations((currentConversations) => {
+              setConversations((currentConversationsArray) => {
+                if (!currentConversationsArray)
+                  return currentConversationsArray;
+                const currentConversations = [...currentConversationsArray];
                 const targetConversationObject =
-                  targetConversation?.data?.conversations_data[0];
+                  targetConversation?.data?.conversationsData[0];
                 if (!currentConversations) {
                   return currentConversations;
                 }
@@ -460,8 +507,8 @@ export default function useConversations(): UseConversations {
                 ) {
                   const conversationObject = currentConversations[index];
                   if (
-                    conversationObject.id.toString() ===
-                    targetConversationObject.id.toString()
+                    conversationObject?.id!.toString() ===
+                    targetConversationObject?.id!.toString()
                   ) {
                     alreadyHasIt = true;
                     break;
@@ -476,24 +523,46 @@ export default function useConversations(): UseConversations {
                     targetConversation,
                     true,
                   );
+
                   return newConversationsList;
                 }
               });
-              setTimeout(() => {
-                bottomReferenceDiv.current?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "end",
-                  inline: "nearest",
-                });
-              }, 100);
-            })
-            .catch(console.log);
+            },
+          );
         }
       } catch (error) {
         console.log(error);
       }
     });
-  }, [chatroomId, lmChatclient]);
+  }, [chatroomId, lmChatClient]);
+
+  /**
+   * Sets up an event listener to handle when a conversation is posted on an AI chatbot.
+   * If the current chatroom is identified as an AI chatbot, it triggers a skeleton response display.
+   *
+   * @returns {void} This effect does not return any value.
+   *
+   * @dependencies [chatroomDetails.chatroom, currentUser]
+   * The effect depends on `chatroomDetails.chatroom` and `currentUser` to determine
+   * if the listener should be added or removed.
+   */
+  useEffect(() => {
+    if (Utils.isOtherUserAIChatbot(chatroomDetails.chatroom, currentUser)) {
+      const handleConversationPostedOnAIChatbot = () => {
+        setShowSkeletonResponse(true);
+      };
+      document.addEventListener(
+        CustomActions.CONVERSATION_POSTED_ON_AI_CHATBOT,
+        handleConversationPostedOnAIChatbot,
+      );
+      return () => {
+        document.removeEventListener(
+          CustomActions.CONVERSATION_POSTED_ON_AI_CHATBOT,
+          handleConversationPostedOnAIChatbot,
+        );
+      };
+    }
+  }, [chatroomDetails.chatroom, currentUser]);
 
   useEffect(() => {
     document.addEventListener(
@@ -514,6 +583,37 @@ export default function useConversations(): UseConversations {
     };
   }, [handleDMUserActionsConversations]);
   useEffect(() => {
+    const handleNewConversationPosted = (eventObject: Event) => {
+      const conversation: Conversation = (eventObject as CustomEvent).detail
+        .conversation;
+      if (conversation) {
+        setConversations((currentConversation) => {
+          if (!currentConversation) {
+            return currentConversation;
+          }
+          localConversationIds.current.add(
+            parseInt(conversation?.temporaryId!.toString()),
+          );
+          const newConversations = [
+            ...currentConversation,
+            { ...conversation },
+          ];
+          return newConversations;
+        });
+      }
+    };
+    document.addEventListener(
+      CustomActions.NEW_CONVERSATION_POSTED,
+      handleNewConversationPosted,
+    );
+    return () => {
+      document.removeEventListener(
+        CustomActions.NEW_CONVERSATION_POSTED,
+        handleNewConversationPosted,
+      );
+    };
+  }, []);
+  useEffect(() => {
     if (searchedConversationId) {
       searchConversation();
     }
@@ -533,14 +633,6 @@ export default function useConversations(): UseConversations {
       searchedConversationRef &&
       searchedConversationRef.current
     ) {
-      setTimeout(() => {
-        searchedConversationRef?.current?.scrollIntoView({
-          behavior: "auto",
-          inline: "center",
-          block: "nearest",
-        });
-      }, 40);
-
       searchedConversationRef.current.firstElementChild?.classList.add(
         "message-highlight",
       );
@@ -549,19 +641,31 @@ export default function useConversations(): UseConversations {
       };
     }
   }, [conversations, searchedConversationId, setSearchedConversationId]);
+
+  useEffect(() => {
+    const chatroomTopic = chatroomDetails?.chatroom?.topic;
+    if (chatroomTopic) {
+      setChatroomTopic(chatroomTopic);
+    }
+  }, [chatroomDetails]);
+
   return {
     conversations,
     loadMore,
+    showSkeletonResponse,
     showLoader,
     bottomReferenceDiv,
     messageListContainerRef,
     searchedConversationRef,
     loadMoreBottomConversation,
+    chatroomTopic,
+    shouldScrollToBottom,
     // Functions
     setConversations,
     getChatroomConversationsOnBottomScroll,
     getChatroomConversationsOnTopScroll,
     unBlockUserInDM,
+    setChatroomTopic,
   };
 }
 export type UnknownReturnFunction = (...props: unknown[]) => unknown;

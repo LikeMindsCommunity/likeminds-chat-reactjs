@@ -17,18 +17,14 @@ import GlobalClientProviderContext from "../context/LMGlobalClientProviderContex
 import { Utils } from "../utils/helpers";
 import { GetTaggingListResponse } from "../types/api-responses/getTaggingListResponse";
 import { EmojiData } from "../types/models/emojiData";
-import { PostConversation } from "@likeminds.community/chat-js/dist/pages/chatroom/types";
-import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../context/LMChatChatroomContext";
 import { PostConversationResponse } from "../types/api-responses/postConversationResponse";
 import { FileType } from "../types/enums/Filetype";
 import { CustomActions } from "../customActions";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import {
-  GetOgTagResponse,
-  OgTag,
-} from "../types/api-responses/getOgTagResponse";
+
+import { DecodeURLResponse } from "../types/api-responses/getOgTagResponse";
 import { Gif } from "../types/models/GifObject";
-import { ChatroomCollabcard } from "../types/api-responses/getChatroomResponse";
+import { ChatroomDetails } from "../types/api-responses/getChatroomResponse";
 import { ChatroomTypes } from "../enums/lm-chatroom-types";
 import UserProviderContext from "../context/LMUserProviderContext";
 import { MemberType } from "../enums/lm-member-type";
@@ -37,10 +33,22 @@ import {
   Router,
 } from "../types/prop-types/CustomComponents";
 import { GIPHY_API_KEY } from "../apiKeys";
-
-export function useInput(
-  inputCustomActions?: InputCustomActions,
-): UseInputReturns {
+import {
+  Attachment,
+  AttachmentMeta,
+  Chatroom,
+} from "@likeminds.community/chat-js-beta";
+import { PostConversationRequest } from "@likeminds.community/chat-js-beta/dist/pages/chatroom/types";
+import { LMInputAttachments } from "../enums/lm-input-attachment-options";
+import { OgTag } from "../types/models/OgTag";
+import { Conversation } from "../types/models/conversations";
+import ConversationStates from "../enums/lm-conversation-states";
+import { ConstantStrings } from "../enums/lm-common-strings";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
+import { MemberRightsState } from "../enums/lm-member-rights-states";
+export function useInput(): UseInputReturns {
+  //contexts
+  const { inputCustomActions = {} } = useContext(CustomisationContextProvider);
   const {
     onUpdateInputText,
     onOnTextInputKeydownHandler,
@@ -62,28 +70,31 @@ export function useInput(
     onSendDMRequest,
     onRejectDMRequest,
     onAprooveDMRequest,
-  } = inputCustomActions!;
-  const { id: chatroomId } = useParams();
-  const navigate = useNavigate();
-  const location = useLocation();
-  //contexts
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
+    onShouldShowInputBox,
+  } = inputCustomActions;
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { currentUser, memberState, currentCommunity, logoutUser } =
     useContext(UserProviderContext);
   const {
-    chatroom,
+    chatroomDetails,
     conversationToedit,
     setConversationToEdit,
     conversationToReply,
     setConversationToReply,
     setNewChatroom,
-  } = useContext(LMChatChatroomContext);
+  } = useContext(LMChatroomContext);
+  const {
+    chatroomDetails: {
+      chatroom: { id: chatroomId },
+    },
+  } = useContext(LMChatroomContext);
   // state
   const [inputText, setInputText] = useState<string>("");
   const [tagSearchKey, setTagSearchKey] = useState<string | null>(null);
   const [matchedTagMembersList, setMatchedTagMembersList] = useState<Member[]>(
     [],
   );
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [imagesAndVideosMediaList, setImagesAndVideosMediaList] = useState<
     File[] | null
   >(null);
@@ -107,11 +118,177 @@ export function useInput(
   const [openGifCollapse, setOpenGifCollapse] = useState<boolean>(false);
   const apiKey = GIPHY_API_KEY;
 
+  function formatEpochToTime(epoch: string) {
+    const date = new Date(parseInt(epoch));
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${hours}:${minutes}`;
+  }
+
+  const shouldShowInputBox = useCallback(() => {
+    const canRespondInChatroom = currentUser!.memberRights!.find(
+      (right) => right.state === MemberRightsState.RespondInChatRooms,
+    )?.isSelected
+      ? true
+      : false;
+    if (!canRespondInChatroom) {
+      setAlertMessage(ConstantStrings.USER_MESSAGES_RESTRICTED_BY_CM);
+      return false;
+    } else {
+      setAlertMessage(null);
+    }
+    const memberCanMessage =
+      chatroomDetails!.chatroom.memberCanMessage || false;
+
+    switch (memberCanMessage) {
+      case true:
+        setAlertMessage(null);
+        return true;
+      case false: {
+        if (currentUser?.state === MemberType.COMMUNITY_MANAGER) {
+          setAlertMessage(null);
+          return true;
+        } else {
+          setAlertMessage(ConstantStrings.ONLY_CM_MESSAGES_ALLOWED);
+          return false;
+        }
+      }
+    }
+  }, [chatroomDetails, currentUser]);
+
+  const createLocalConversation = useCallback(
+    (
+      temporaryId: string,
+      answerText: string,
+      conversationToEdit: Conversation | null,
+      conversationToReply: Conversation | null,
+      attachments: File[],
+      ogTags: OgTag | undefined,
+    ) => {
+      const localConversation: Conversation = {
+        id: 0,
+        communityId: currentCommunity.id,
+        member: currentUser,
+        answer: answerText,
+        state: ConversationStates.LOCAL_CONVERSATION_STATE,
+        lastSeen: true,
+        isEdited: conversationToEdit ? true : false,
+        lastUpdatedAt: parseInt(temporaryId),
+        deletedBy: "",
+        date: Utils.formatEpochToDateWithMonthName(temporaryId),
+        createdEpoch: parseInt(temporaryId),
+        createdAt: formatEpochToTime(temporaryId),
+        attachmentUploaded: false,
+        isAnonymous: false,
+        hasFiles: false,
+        hasReactions: false,
+        attachments: attachments as Attachment[],
+        replyConversationObject: conversationToReply || undefined,
+        ogTags: ogTags,
+        temporaryId: temporaryId.toString(),
+        userId: currentUser.id.toString(),
+      };
+      return localConversation;
+    },
+    [currentCommunity.id, currentUser],
+  );
+
+  // This function builds a new GIF attachment
+  const buildGIFAttachment = (gif: Gif) => {
+    const attachmentObject: Attachment = {
+      url: gif.images.fixed_height.url,
+      type: "gif",
+      index: 0,
+      width: parseInt(gif.images.fixed_height.width),
+      height: parseInt(gif.images.fixed_height.height),
+      thumbnailUrl: gif.images["480w_still"]?.url,
+      name: gif.title,
+      meta: {
+        size: parseInt(gif.images.fixed_height.size),
+      },
+    };
+    return attachmentObject;
+  };
+
+  // This funciton will build MediaAttachments
+  const buildMediaAttachments = useCallback(
+    async (mediaList: File[]) => {
+      mediaList = [...mediaList];
+
+      const attachments: Attachment[] = [];
+      for (let index = 0; index < mediaList.length; index++) {
+        const currentAttachment = mediaList[index];
+        const { name, size, type } = currentAttachment;
+
+        if (type.includes(FileType.video)) {
+          const { thumbnailUrl, fileUrl, height, width } =
+            await Utils.uploadVideoFile(
+              currentAttachment,
+              chatroomId.toString() || "",
+              currentUser!.sdkClientInfo!.uuid,
+            );
+          if (thumbnailUrl && fileUrl) {
+            const attachment: Attachment = {
+              url: fileUrl,
+              type: FileType.video,
+              index,
+              width: width,
+              height: height,
+              thumbnailUrl: thumbnailUrl,
+              name,
+              meta: {
+                size,
+              },
+            };
+            attachments.push(attachment);
+          }
+        } else if (type.includes(FileType.image)) {
+          const { fileUrl } = await Utils.uploadImageOrDocument(
+            currentAttachment,
+            chatroomId.toString() || "",
+            currentUser.sdkClientInfo!.uuid,
+          );
+          if (fileUrl) {
+            const attachment: Attachment = {
+              url: fileUrl,
+              type: FileType.image,
+              index,
+              name,
+              meta: {
+                size,
+              },
+            };
+            attachments.push(attachment);
+          }
+        } else {
+          const { fileUrl } = await Utils.uploadImageOrDocument(
+            currentAttachment,
+            chatroomId.toString() || "",
+            currentUser!.sdkClientInfo!.uuid!,
+          );
+          if (fileUrl) {
+            const attachment: Attachment = {
+              url: fileUrl,
+              type: "pdf",
+              index,
+              name,
+              meta: {
+                size,
+              },
+            };
+            attachments.push(attachment);
+          }
+        }
+      }
+      return attachments;
+    },
+    [chatroomId, currentUser],
+  );
   //   api calls
   const sendDMRequest = useCallback(
     async (textMessage: string) => {
       try {
-        const sendDmRequestCall = await lmChatclient?.sendDMRequest({
+        const sendDmRequestCall = await lmChatClient.sendDMRequest({
           chatRequestState: 0,
           chatroomId: parseInt(chatroomId!.toString()),
           text: textMessage,
@@ -119,69 +296,69 @@ export function useInput(
 
         document.dispatchEvent(
           new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
-            detail: sendDmRequestCall.data.conversation,
+            detail: sendDmRequestCall?.data.conversation,
           }),
         );
 
-        const newChatroom = { ...chatroom };
+        const newChatroom = { ...chatroomDetails };
         if (newChatroom.chatroom && newChatroom.chatroom) {
-          newChatroom.chatroom.chat_request_state = 0;
-          newChatroom.chatroom.chat_requested_by = currentUser;
+          newChatroom.chatroom.chatRequestState = 0;
+          newChatroom.chatroom.chatRequestedBy = currentUser;
         }
-        setNewChatroom(newChatroom as ChatroomCollabcard);
+        setNewChatroom(newChatroom as ChatroomDetails);
       } catch (error) {
         console.log(error);
       }
     },
-    [chatroomId, lmChatclient, chatroom, currentUser, setNewChatroom],
+    [chatroomId, lmChatClient, chatroomDetails, currentUser, setNewChatroom],
   );
   const aprooveDMRequest = useCallback(async () => {
     try {
-      const aprooveDmRequestCall = await lmChatclient?.sendDMRequest({
+      const aprooveDmRequestCall = await lmChatClient.sendDMRequest({
         chatRequestState: 1,
         chatroomId: parseInt(chatroomId!.toString()),
       });
       document.dispatchEvent(
         new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
-          detail: aprooveDmRequestCall.data.conversation,
+          detail: aprooveDmRequestCall?.data.conversation,
         }),
       );
-      const newChatroom = { ...chatroom };
+      const newChatroom = { ...chatroomDetails };
       if (newChatroom.chatroom && newChatroom.chatroom) {
-        newChatroom.chatroom.chat_request_state = 1;
+        newChatroom.chatroom.chatRequestState = 1;
       }
-      setNewChatroom(newChatroom as ChatroomCollabcard);
+      setNewChatroom(newChatroom as ChatroomDetails);
     } catch (error) {
       console.log(error);
     }
-  }, [chatroomId, lmChatclient, chatroom, setNewChatroom]);
+  }, [chatroomId, lmChatClient, chatroomDetails, setNewChatroom]);
   const rejectDMRequest = useCallback(async () => {
     try {
-      const rejectDmRequestCall = await lmChatclient?.sendDMRequest({
+      const rejectDmRequestCall = await lmChatClient.sendDMRequest({
         chatRequestState: 2,
         chatroomId: parseInt(chatroomId!.toString()),
       });
       document.dispatchEvent(
         new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
-          detail: rejectDmRequestCall.data.conversation,
+          detail: rejectDmRequestCall?.data.conversation,
         }),
       );
-      const newChatroom = { ...chatroom };
+      const newChatroom = { ...chatroomDetails };
       if (newChatroom.chatroom && newChatroom.chatroom) {
-        newChatroom.chatroom.chat_request_state = 2;
+        newChatroom.chatroom.chatRequestState = 2;
       }
-      setNewChatroom(newChatroom as ChatroomCollabcard);
+      setNewChatroom(newChatroom as ChatroomDetails);
     } catch (error) {
       console.log(error);
     }
-  }, [chatroomId, lmChatclient, chatroom, setNewChatroom]);
+  }, [chatroomId, lmChatClient, chatroomDetails, setNewChatroom]);
   const fetchGifs = useCallback(async (url: string) => {
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(url);
       const result = await response.json();
-      setGifs(result.data);
+      setGifs(result?.data);
       setQuery(() => "");
     } catch (err) {
       setError("Failed to fetch GIFs. Please try again.");
@@ -198,83 +375,131 @@ export function useInput(
   const fetchTaggingList = useCallback(
     async (pg?: number) => {
       try {
-        const call: GetTaggingListResponse = await lmChatclient?.getTaggingList(
-          {
-            feedroomId: chatroom?.chatroom.id,
-            page: pg ? pg : taggingListPageCount.current,
-            pageSize: 10,
-            searchName: tagSearchKey || "",
-          },
-        );
+        const call: GetTaggingListResponse = await lmChatClient.getTaggingList({
+          chatroomId: chatroomDetails?.chatroom.id,
+          page: pg ? pg : taggingListPageCount.current,
+          pageSize: 10,
+          searchName: tagSearchKey || "",
+        });
         if (call.success) {
           setMatchedTagMembersList((previousState) => {
-            return [
-              ...previousState,
-              ...(call.data?.members || call.data.community_members || []),
-            ];
+            return [...previousState, ...(call?.data.communityMembers || [])];
           });
           incrementPageNo();
         }
-        if (!call.data.members?.length && call.data.community_members?.length) {
+        if (call?.data.communityMembers?.length) {
           setFetchMoreTags(false);
         }
       } catch (error) {
         console.log(error);
       }
     },
-    [chatroom?.chatroom.id, lmChatclient, tagSearchKey],
+    [chatroomDetails?.chatroom.id, lmChatClient, tagSearchKey],
   );
   const postMessage = useCallback(
     async (customWidgetData?: Record<string, any>) => {
       try {
-        if (!chatroom) {
+        if (!chatroomDetails) {
           return;
         }
         const messageText = Utils.extractTextFromNode(
           inputBoxRef.current!,
         ).trim();
         if (
-          chatroom.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
-          chatroom.chatroom.chat_request_state === null &&
-          chatroom.chatroom.member.state !== MemberType.COMMUNITY_MANAGER &&
-          chatroom.chatroom.chatroom_with_user?.state !==
+          chatroomDetails.chatroom.type ===
+            ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
+          chatroomDetails.chatroom.chatRequestState === null &&
+          chatroomDetails.chatroom.member.state !==
+            MemberType.COMMUNITY_MANAGER &&
+          chatroomDetails.chatroom.chatroomWithUser?.state !==
             MemberType.COMMUNITY_MANAGER
         ) {
           await sendDMRequest(messageText);
 
           return;
         }
-        if (
-          (!messageText || !messageText.length) &&
-          !imagesAndVideosMediaList?.length &&
-          imagesAndVideosMediaList?.length
-        ) {
-          return;
+
+        // returns when no message text ans no media
+        if (!messageText.length) {
+          if (
+            !imagesAndVideosMediaList?.length &&
+            !documentsMediaList?.length &&
+            !gifMedia
+          ) {
+            return;
+          }
         }
-        if (Utils.extractTextFromNode(inputBoxRef.current!).trim())
+
+        if (messageText.length)
           if (conversationToedit) {
-            const call: any = await lmChatclient?.editConversation({
+            // Handling the editing of the conversation
+            const call: any = await lmChatClient.editConversation({
               conversationId: conversationToedit.id,
               text: messageText,
             });
             setConversationToEdit(null);
-            dispatchEvent(
+            document.dispatchEvent(
               new CustomEvent(CustomActions.EDIT_ACTION_COMPLETED, {
-                detail: call.data.conversation,
+                detail: call?.data.conversation,
               }),
             );
-
             setFocusOnInputField();
             return;
           }
+
+        const attachmentsList = imagesAndVideosMediaList
+          ? [...imagesAndVideosMediaList]
+          : [...(documentsMediaList || [])];
+        setImagesAndVideosMediaList([]);
+        setDocumentMediaList([]);
+        const temporaryId = Date.now().toString();
+        const SHOW_SKELETON_CUSTOM_EVENT = new CustomEvent(
+          CustomActions.CONVERSATION_POSTED_ON_AI_CHATBOT,
+        );
+
+        const localConversation = createLocalConversation(
+          temporaryId,
+          messageText,
+          conversationToedit,
+          conversationToReply,
+          attachmentsList,
+          ogTags || undefined,
+        );
+
+        const NEW_CONVERSATION_POSTED = new CustomEvent(
+          CustomActions.NEW_CONVERSATION_POSTED,
+          {
+            detail: {
+              conversation: localConversation,
+            },
+          },
+        );
+        document.dispatchEvent(NEW_CONVERSATION_POSTED);
+        document.dispatchEvent(SHOW_SKELETON_CUSTOM_EVENT);
+        const attachments: Attachment[] = [];
+        if (gifMedia) {
+          const gifAttachment = buildGIFAttachment(gifMedia);
+          attachments.push(gifAttachment);
+        }
+        if (attachmentsList.length) {
+          const mediaAttachments = await buildMediaAttachments(attachmentsList);
+          attachments.push(...mediaAttachments);
+        }
+
         // sending the text part of the conversation
-        const chatroomData = chatroom.chatroom;
-        const postConversationCallConfig = {
+        const chatroomData = chatroomDetails.chatroom;
+        const postConversationCallConfig: PostConversationRequest = {
           text: messageText,
           chatroomId: parseInt(chatroomData.id.toString()),
           hasFiles: false,
           ogTags: ogTags || undefined,
-        } as unknown as any;
+          triggerBot: Utils.isOtherUserAIChatbot(
+            chatroomData as any as Chatroom,
+            currentUser,
+          ),
+          temporaryId: temporaryId,
+          attachments: attachmentsList,
+        };
         if (customWidgetData) {
           postConversationCallConfig.metadata = customWidgetData;
         }
@@ -283,173 +508,31 @@ export function useInput(
             conversationToReply.id;
           setConversationToReply(null);
         }
-        const attachmentsList =
-          imagesAndVideosMediaList || documentsMediaList || [];
-        if (attachmentsList.length) {
-          postConversationCallConfig.hasFiles = true;
-          postConversationCallConfig.attachmentCount = attachmentsList.length;
+        if (attachments.length) {
+          postConversationCallConfig.attachments = attachments;
         }
-        if (gifMedia) {
-          postConversationCallConfig.hasFiles = true;
-          postConversationCallConfig.attachmentCount = 1;
-        }
+
+        // sending the conversation
         const postConversationsCall: PostConversationResponse =
-          await lmChatclient?.postConversation(postConversationCallConfig);
+          await lmChatClient.postConversation(postConversationCallConfig);
+
         setFocusOnInputField();
         removeOgTag();
-        if (gifMedia) {
-          setGifMedia(null);
-          const onUploadConfig = {
-            conversationId: parseInt(
-              postConversationsCall.data.conversation.id.toString(),
-              10,
-            ),
-            filesCount: 1,
-            index: 0,
-            meta: {
-              size: parseInt(gifMedia.images.fixed_height.size.toString()),
-              // size: parseInt(giphyUrl?.images?.fixed_height?.size?.toString()),
-            },
-            name: gifMedia?.title,
-            type: gifMedia?.type,
-            url: gifMedia?.images?.fixed_height?.url,
-            thumbnailUrl: gifMedia?.images["480w_still"]?.url,
-          };
-          lmChatclient?.putMultimedia(onUploadConfig);
-          setOpenGifCollapse(false);
-          return;
-        }
-        for (let index = 0; index < attachmentsList.length; index++) {
-          const conversation = postConversationsCall.data.conversation;
-          const attachment = attachmentsList[index];
-          const { name, size, type } = attachment;
-          if (type.includes(FileType.video)) {
-            const video = document.createElement("video");
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            const localIndex = index;
-            // Load the video
-            const url = URL.createObjectURL(attachment);
-            video.src = url;
-            let blobEl = null;
-            video.addEventListener("loadedmetadata", async () => {
-              // Set canvas dimensions to match video dimensions
-
-              canvas.width = video.videoWidth;
-              canvas.height = video.videoHeight;
-              video.currentTime = 1;
-              video.addEventListener("seeked", async () => {
-                ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                // Convert canvas content to blob
-                canvas.toBlob(
-                  (blob) => {
-                    blobEl = blob;
-                    const thumbnailFile = new File(
-                      [blobEl!],
-                      conversation.id.toString().concat("thumbnail.jpeg"),
-                    );
-
-                    Utils.uploadMedia(
-                      attachment,
-                      conversation.id.toString(),
-                      chatroom.chatroom.id.toString(),
-                    ).then((response: any) => {
-                      const thumbnailUrl = Utils.generateFileUrl(response);
-                      // const thumbnailUrl = response;
-                      Utils.uploadMedia(
-                        attachment,
-                        conversation.id.toString(),
-                        chatroom.chatroom.id.toString(),
-                      ).then((response) => {
-                        // const fileUrl = response;
-                        const fileUrl = Utils.generateFileUrl(
-                          response as unknown as string,
-                        );
-                        const onUploadConfig: {
-                          conversationId: number;
-                          filesCount: number;
-                          index: number;
-                          meta: { size: number };
-                          name: string;
-                          type: string;
-                          url: string;
-                          thumbnailUrl: undefined | string;
-                        } = {
-                          conversationId: parseInt(
-                            conversation.id.toString(),
-                            10,
-                          ),
-                          filesCount: 1,
-                          index: localIndex,
-                          meta: { size: size },
-                          name: name,
-                          type: "video",
-                          url: (fileUrl as string) || "",
-                          thumbnailUrl: thumbnailUrl,
-                        };
-
-                        lmChatclient?.putMultimedia(onUploadConfig);
-                      });
-                    });
-                  },
-                  "image/jpeg",
-                  0.8,
-                );
-              });
-            });
-
-            video.load();
-          } else {
-            await Utils.uploadMedia(
-              attachment,
-              conversation.id.toString(),
-              chatroom.chatroom.id.toString(),
-            ).then((response: any) => {
-              // const fileUrl = response;
-              const fileUrl = Utils.generateFileUrl(response);
-              const onUploadConfig: {
-                conversationId: number;
-                filesCount: number;
-                index: number;
-                meta: { size: number };
-                name: string;
-                type: string;
-                url: string;
-                thumbnail_url: null | string;
-              } = {
-                conversationId: parseInt(
-                  postConversationsCall.data.id.toString(),
-                  10,
-                ),
-                filesCount: 1,
-                index,
-                meta: { size: size },
-                name: name,
-                // type: type,
-                type: type.includes(FileType.image) ? FileType.image : "pdf",
-                url: fileUrl || "",
-                thumbnail_url: null,
-              };
-
-              lmChatclient?.putMultimedia(onUploadConfig);
-            });
-          }
-          setImagesAndVideosMediaList(null);
-          setDocumentMediaList(null);
-        }
       } catch (error) {
         console.log(error);
       }
     },
     [
-      chatroom,
+      buildMediaAttachments,
+      chatroomDetails,
       conversationToReply,
       conversationToedit,
+      createLocalConversation,
+      currentUser,
       documentsMediaList,
       gifMedia,
       imagesAndVideosMediaList,
-      lmChatclient,
+      lmChatClient,
       ogTags,
       sendDMRequest,
       setConversationToEdit,
@@ -517,7 +600,9 @@ export function useInput(
         return;
       }
       const textContentFocusNode = focusNode.textContent;
-      if (chatroom?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+      if (
+        chatroomDetails?.chatroom.type === ChatroomTypes.DIRECT_MESSAGE_CHATROOM
+      ) {
         return;
       }
       const tagOp = Utils.findTag(textContentFocusNode!);
@@ -528,7 +613,7 @@ export function useInput(
         setTagSearchKey(null);
       }
     },
-    [chatroom?.chatroom.type],
+    [chatroomDetails?.chatroom.type],
   );
   const onTextInputKeydownHandler: onKeydownEvent = useCallback(
     (change) => {
@@ -643,7 +728,7 @@ export function useInput(
   useEffect(() => {
     manageInputOnChatroomChange();
     return () => {
-      storeInputOnChatroomLeave(chatroomId || "");
+      storeInputOnChatroomLeave(chatroomId.toString() || "");
     };
   }, [chatroomId, manageInputOnChatroomChange, storeInputOnChatroomLeave]);
   useEffect(() => {
@@ -653,10 +738,10 @@ export function useInput(
         if (linksDetected.length) {
           const firstLinkDetected = linksDetected[0];
           if (firstLinkDetected.toString() !== ogTags?.url.toString()) {
-            const getOgTagData: GetOgTagResponse =
-              await lmChatclient?.decodeUrl({ url: firstLinkDetected });
+            const getOgTagData: DecodeURLResponse =
+              await lmChatClient.decodeUrl({ url: firstLinkDetected });
             if (getOgTagData?.success) {
-              setOgTags(getOgTagData.data.og_tags);
+              setOgTags(getOgTagData?.data.ogTags);
             }
           }
         } else {
@@ -671,7 +756,7 @@ export function useInput(
 
     return () => clearTimeout(checkForLinksTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lmChatclient, inputText]);
+  }, [lmChatClient, inputText]);
   useEffect(() => {
     return () => {
       setConversationToEdit(null);
@@ -708,6 +793,7 @@ export function useInput(
       rejectDMRequest,
       aprooveDMRequest,
       gifSearchQuery: gifSearchQuery,
+      shouldShowInputBox,
     };
   }, [
     addDocumentsMedia,
@@ -722,6 +808,7 @@ export function useInput(
     rejectDMRequest,
     sendDMRequest,
     updateInputText,
+    shouldShowInputBox,
   ]);
   const inputDataStore = useMemo(() => {
     return {
@@ -739,8 +826,10 @@ export function useInput(
       errorOnGifs: error,
       openGifCollapse: openGifCollapse,
       gifQuery: query,
+      alertMessage,
     };
   }, [
+    alertMessage,
     documentsMediaList,
     error,
     fetchMoreTags,
@@ -762,10 +851,7 @@ export function useInput(
       currentCommunity,
     };
   }, [currentCommunity, currentUser, logoutUser, memberState]);
-  const router: Router = {
-    location: location,
-    navigate: navigate,
-  };
+
   return {
     inputBoxRef,
     inputWrapperRef,
@@ -782,6 +868,7 @@ export function useInput(
     gifSearchQuery: gifSearchQuery,
     openGifCollapse: openGifCollapse,
     gifQuery: query,
+    alertMessage,
     // Functions
     updateInputText: onUpdateInputText
       ? onUpdateInputText.bind(
@@ -789,7 +876,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : updateInputText,
     onTextInputKeydownHandler: onOnTextInputKeydownHandler
@@ -798,7 +884,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : onTextInputKeydownHandler,
     onTextInputKeyUpHandler: onOnTextInputKeyUpHandler
@@ -807,7 +892,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : onTextInputKeyUpHandler,
     clearTaggingList: onClearTaggingList
@@ -816,7 +900,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : clearTaggingList,
     addEmojiToText: onAddEmojiToText
@@ -825,7 +908,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : addEmojiToText,
     addDocumentsMedia: onAddDocumentsMedia
@@ -834,7 +916,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : addDocumentsMedia,
     addImagesAndVideosMedia: onAddImagesAndVideosMedia
@@ -843,7 +924,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : addImagesAndVideosMedia,
     postMessage: onPostMessage
@@ -852,7 +932,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : postMessage,
     getTaggingMembers: onGetTaggingMembers
@@ -861,7 +940,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : fetchTaggingList,
     removeOgTag: onRemoveOgTag
@@ -870,7 +948,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : removeOgTag,
     setOpenGifCollapse: onSetOpenGifCollapse
@@ -879,7 +956,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : setOpenGifCollapse,
     fetchGifs: onFetchGifs
@@ -888,7 +964,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : fetchGifs,
     handleGifSearch: onHandleGifSearch
@@ -897,7 +972,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : handleSearch,
     setGifMedia: onSetGifMedia
@@ -906,7 +980,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : setGifMedia,
     removeMediaFromImageList: onRemoveMediaFromImageList
@@ -915,7 +988,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : removeMediaFromImageList,
     removeMediaFromDocumentList: onRemoveMediaFromDocumentList
@@ -924,7 +996,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : removeMediaFromDocumentList,
     sendDMRequest: onSendDMRequest
@@ -933,7 +1004,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : sendDMRequest,
     rejectDMRequest: onRejectDMRequest
@@ -942,7 +1012,6 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : rejectDMRequest,
     aprooveDMRequest: onAprooveDMRequest
@@ -951,9 +1020,16 @@ export function useInput(
           inputDefaultActions,
           applicationGeneralDataContext,
           inputDataStore,
-          router,
         )
       : aprooveDMRequest,
+    shouldShowInputBox: onShouldShowInputBox
+      ? onShouldShowInputBox.bind(
+          null,
+          inputDefaultActions,
+          applicationGeneralDataContext,
+          inputDataStore,
+        )
+      : shouldShowInputBox,
   };
 }
 
@@ -992,6 +1068,8 @@ export interface UseInputReturns {
   sendDMRequest: OneArgVoidReturns<string>;
   rejectDMRequest: ZeroArgVoidReturns;
   aprooveDMRequest: ZeroArgVoidReturns;
+  alertMessage: string | null;
+  shouldShowInputBox: ZeroArgBooleanReturns;
 }
 // single compulsary argument
 export type onChangeUpdateInputText = (
@@ -1026,6 +1104,7 @@ export interface InputDefaultActions {
   sendDMRequest: OneArgVoidReturns<string>;
   rejectDMRequest: ZeroArgVoidReturns;
   aprooveDMRequest: ZeroArgVoidReturns;
+  shouldShowInputBox: ZeroArgBooleanReturns;
 }
 
 export interface InputDataStore {
@@ -1043,4 +1122,5 @@ export interface InputDataStore {
   errorOnGifs: string | null;
   gifQuery: string;
   openGifCollapse: boolean;
+  alertMessage: string | null;
 }

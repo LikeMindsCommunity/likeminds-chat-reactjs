@@ -1,15 +1,11 @@
-import { Community } from "../models/community";
-import { User } from "../models/member";
+import {
+  LMResponse,
+  ValidateUserResponse as LMValidateUserResponse,
+  InitiateUserResponse as LMInitiateUserResponse,
+} from "@likeminds.community/chat-js-beta";
 
-export interface ValidateUserData {
-  accessToken: string;
-  appAccess: boolean;
-  community: Community;
-  hasAnswers: boolean;
-  refreshToken: string;
-  user: User;
-}
-export interface ValidateUserResponse {
-  success: boolean;
-  data?: ValidateUserData;
-}
+export interface ValidateUserResponse
+  extends LMResponse<LMValidateUserResponse> {}
+
+export interface InitiateUserResponse
+  extends LMResponse<LMInitiateUserResponse> {}

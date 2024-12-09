@@ -1,49 +1,51 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { PropsWithChildren, memo, useContext } from "react";
+import React, { PropsWithChildren, memo, useContext, useEffect } from "react";
 import { MessageListProps } from "../../types/prop-types/MessageListProps";
 import MessageListContext from "../../context/LMMessageListContext";
-import Conversation from "../../types/models/conversations";
+import { Conversation } from "../../types/models/conversations";
 import ScrollContainer from "../DualSidePagination/ScrollContainer";
 import useConversations from "../../hooks/useConversations";
 import LMMessageMiddleware from "./LMMessageMiddleware";
 
 import { CircularProgress } from "@mui/material";
-import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import UserProviderContext from "../../context/LMUserProviderContext";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import { MemberType } from "../../enums/lm-member-type";
 import { LMMessageListCustomActionsContext } from "../../context/LMMessageListCustomActionsContext";
+import { getAvatar } from "../../shared/components/LMUserMedia";
+import { useConversationSearch } from "../../hooks/useConversationSearch";
+import { Utils } from "../../utils/helpers";
+import LMMessageSkeleton from "../LMMessage/LMMessageSkeleton";
 
 const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
   (props) => {
     const { messageCustomActions } = props;
-    const { chatroom, searchedConversationId } = useContext(
-      LMChatChatroomContext,
-    );
+    const { chatroomDetails, searchedConversationId } =
+      useContext(LMChatroomContext);
     const { currentUser } = useContext(UserProviderContext);
-
-    const scrollToBottom = () => {
-      if (bottomReferenceDiv && bottomReferenceDiv.current) {
-        bottomReferenceDiv.current.scrollIntoView(false);
-      }
-    };
     const chatroomUser = () => {
-      if (chatroom?.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+      if (
+        chatroomDetails?.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM
+      ) {
         return;
       }
       if (
-        chatroom?.chatroom.member.id.toString() === currentUser?.id.toString()
+        chatroomDetails?.chatroom.member.id.toString() ===
+        currentUser?.id.toString()
       ) {
-        const chatroomUser = chatroom?.chatroom.chatroom_with_user;
+        const chatroomUser = chatroomDetails?.chatroom.chatroomWithUser;
         return chatroomUser;
       } else {
-        const chatroomUser = chatroom?.chatroom.member;
+        const chatroomUser = chatroomDetails?.chatroom.member;
         return chatroomUser;
       }
     };
 
     const showInitiateDMRequestMessage: () => boolean = () => {
-      if (chatroom?.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM) {
+      if (
+        chatroomDetails?.chatroom.type !== ChatroomTypes.DIRECT_MESSAGE_CHATROOM
+      ) {
         return false;
       }
       if (
@@ -52,7 +54,7 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       ) {
         return false;
       }
-      const chatRequestState = chatroom?.chatroom.chat_request_state;
+      const chatRequestState = chatroomDetails?.chatroom.chatRequestState;
       if (chatRequestState === null) {
         return true;
       } else {
@@ -75,15 +77,30 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
       searchedConversationRef,
       unBlockUserInDM,
       loadMoreBottomConversation,
+      setChatroomTopic,
+      chatroomTopic,
+      showSkeletonResponse,
+      shouldScrollToBottom,
     } = useConversations();
 
-    if (showLoader.current) {
-      return (
-        <div className="lm-channel-loader">
-          <CircularProgress />
-        </div>
-      );
+    const { onSearchedConversationClick } = useConversationSearch();
+
+    const imageUrl = chatroomTopic?.member.imageUrl;
+    const name = chatroomTopic?.member.name;
+    const avatarContent = getAvatar({ imageUrl, name });
+    if (chatroomTopic?.deletedBy) {
+      setChatroomTopic(null);
     }
+    useEffect(() => {
+      if (showSkeletonResponse) {
+        bottomReferenceDiv.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+          inline: "nearest",
+        });
+      }
+    }, [bottomReferenceDiv, showSkeletonResponse]);
+
     return (
       <LMMessageListCustomActionsContext.Provider
         value={{
@@ -91,6 +108,37 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
         }}
       >
         <div className="lm-channel" ref={messageListContainerRef}>
+          {/* Set Chatroom Topic */}
+          <div
+            className="lm-media-render-portal"
+            id="lm-media-render-portal"
+          ></div>
+          {chatroomTopic ? (
+            <>
+              <div
+                className="lm-channel-header topicHeader"
+                onClick={() => {
+                  onSearchedConversationClick(chatroomTopic?.id);
+                }}
+              >
+                <div className="lm-header-left">
+                  <div className="lm-channel-img">{avatarContent}</div>
+                  <div className="lm-channel-desc">
+                    <div className="lm-channel-title">
+                      {chatroomTopic?.member?.name}
+                    </div>
+
+                    <div className="lm-channel-participants lm-chatroom-topic">
+                      {Utils.parseAndReplaceTags(chatroomTopic?.answer || "")}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : null}
+
+          {/* Set Chatroom Topic */}
+
           {showInitiateDMRequestMessage() && (
             <p className="initiate-dm-request-message">
               {getInitiateDmRequestMessage()}
@@ -105,6 +153,9 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
               messageListContainerRef,
               unBlockUserInDM,
               searchedConversationRef,
+              setChatroomTopic,
+              chatroomTopic,
+              shouldScrollToBottom,
             }}
           >
             <ScrollContainer
@@ -152,16 +203,22 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
                       <LMMessageMiddleware
                         message={conversation}
                         index={index}
-                        key={conversation.id}
+                        key={
+                          conversation.temporaryId?.toString() ||
+                          conversation.id
+                        }
                       />
                     );
                   }
                 },
               )}
+              {Utils.isOtherUserAIChatbot(
+                chatroomDetails?.chatroom,
+                currentUser,
+              ) &&
+                showSkeletonResponse && <LMMessageSkeleton />}
             </ScrollContainer>
           </MessageListContext.Provider>
-          {/* DM Request Block */}
-          {/* <DmReqBlock /> */}
         </div>
       </LMMessageListCustomActionsContext.Provider>
     );
