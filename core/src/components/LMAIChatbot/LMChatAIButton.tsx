@@ -61,6 +61,7 @@ const LMChatAIButton: React.FC<
     </button>
   );
 
+  // This returns a FC with default props loaded
   const returnWithDefaultProps = useCallback(
     (
       previewText: string | undefined,

@@ -456,6 +456,7 @@ export function useInput(): UseInputReturns {
         const SHOW_SKELETON_CUSTOM_EVENT = new CustomEvent(
           CustomActions.CONVERSATION_POSTED_ON_AI_CHATBOT,
         );
+
         const localConversation = createLocalConversation(
           temporaryId,
           messageText,
@@ -464,6 +465,7 @@ export function useInput(): UseInputReturns {
           attachmentsList,
           ogTags || undefined,
         );
+
         const NEW_CONVERSATION_POSTED = new CustomEvent(
           CustomActions.NEW_CONVERSATION_POSTED,
           {

@@ -106,6 +106,8 @@ const MediaRenderer = ({ attachments }: { attachments: Attachment[] }) => {
       </div>
     </div>
   );
+
+  // Renders a carousel in `lm-media-render-portal`
   const renderMediaCarousel = () => {
     if (show) {
       return createPortal(

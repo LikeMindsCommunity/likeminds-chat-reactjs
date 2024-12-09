@@ -90,6 +90,7 @@ const MediaRendererLocal = ({ attachments }: { attachments: File[] }) => {
     }
   };
 
+  // UI block for carousel
   const MediaRenderingModal = (
     <div className="lm-message-media-carousel-wrapper">
       <button className="lm-media-render-close-icon" onClick={handleClose}>
@@ -111,6 +112,8 @@ const MediaRendererLocal = ({ attachments }: { attachments: File[] }) => {
       </div>
     </div>
   );
+
+  // Renders a carousel in `lm-media-render-portal`
   const renderMediaCarousel = () => {
     if (show) {
       return createPortal(
