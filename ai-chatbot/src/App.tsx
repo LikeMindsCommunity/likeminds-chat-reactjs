@@ -6,6 +6,7 @@ import {
   // } from "@likeminds.community/likeminds-chat-reactjs";
 } from "likeminds-chat-reactjs-beta";
 import React from "react";
+import "./App.css";
 
 const App = () => {
   const [userDetails, setUserDetails] = useState<{

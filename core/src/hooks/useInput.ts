@@ -452,6 +452,28 @@ export function useInput(): UseInputReturns {
           : [...(documentsMediaList || [])];
         setImagesAndVideosMediaList([]);
         setDocumentMediaList([]);
+        const temporaryId = Date.now().toString();
+        const SHOW_SKELETON_CUSTOM_EVENT = new CustomEvent(
+          CustomActions.CONVERSATION_POSTED_ON_AI_CHATBOT,
+        );
+        const localConversation = createLocalConversation(
+          temporaryId,
+          messageText,
+          conversationToedit,
+          conversationToReply,
+          attachmentsList,
+          ogTags || undefined,
+        );
+        const NEW_CONVERSATION_POSTED = new CustomEvent(
+          CustomActions.NEW_CONVERSATION_POSTED,
+          {
+            detail: {
+              conversation: localConversation,
+            },
+          },
+        );
+        document.dispatchEvent(NEW_CONVERSATION_POSTED);
+        document.dispatchEvent(SHOW_SKELETON_CUSTOM_EVENT);
         const attachments: Attachment[] = [];
         if (gifMedia) {
           const gifAttachment = buildGIFAttachment(gifMedia);
@@ -461,7 +483,7 @@ export function useInput(): UseInputReturns {
           const mediaAttachments = await buildMediaAttachments(attachmentsList);
           attachments.push(...mediaAttachments);
         }
-        const temporaryId = Date.now().toString();
+
         // sending the text part of the conversation
         const chatroomData = chatroomDetails.chatroom;
         const postConversationCallConfig: PostConversationRequest = {
@@ -487,27 +509,7 @@ export function useInput(): UseInputReturns {
         if (attachments.length) {
           postConversationCallConfig.attachments = attachments;
         }
-        const SHOW_SKELETON_CUSTOM_EVENT = new CustomEvent(
-          CustomActions.CONVERSATION_POSTED_ON_AI_CHATBOT,
-        );
-        const localConversation = createLocalConversation(
-          temporaryId,
-          messageText,
-          conversationToedit,
-          conversationToReply,
-          attachmentsList,
-          ogTags || undefined,
-        );
-        const NEW_CONVERSATION_POSTED = new CustomEvent(
-          CustomActions.NEW_CONVERSATION_POSTED,
-          {
-            detail: {
-              conversation: localConversation,
-            },
-          },
-        );
-        document.dispatchEvent(NEW_CONVERSATION_POSTED);
-        document.dispatchEvent(SHOW_SKELETON_CUSTOM_EVENT);
+
         // sending the conversation
         const postConversationsCall: PostConversationResponse =
           await lmChatClient.postConversation(postConversationCallConfig);

@@ -9,7 +9,6 @@ import {
   LMChatCurrentMode,
   // } from "@likeminds.community/likeminds-chat-reactjs";
 } from "likeminds-chat-reactjs-beta";
-import { Toaster } from "react-hot-toast";
 
 const App = () => {
   const [userDetails, setUserDetails] = useState<{
@@ -38,7 +37,6 @@ const App = () => {
 
   return (
     <LMClientOverlayProvider client={lmChatClient} userDetails={userDetails}>
-      <Toaster position="top-right" />
       <LMChannel currentMode={LMChatCurrentMode.GROUP_CHAT} />
     </LMClientOverlayProvider>
   );

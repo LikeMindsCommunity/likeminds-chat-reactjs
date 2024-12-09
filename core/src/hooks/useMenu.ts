@@ -2,9 +2,9 @@ import { MouseEventHandler, useState } from "react";
 import { ZeroArgVoidReturns } from "./useInput";
 
 export function useMenu(): UseMenuReturns {
-  const [menuAnchor, setMenuAnchor] = useState<HTMLImageElement | null>(null);
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const openMenu: MouseEventHandler = (event) => {
-    setMenuAnchor(event.currentTarget as HTMLImageElement);
+    setMenuAnchor(event.currentTarget as HTMLElement);
   };
   const closeMenu: ZeroArgVoidReturns = () => {
     setMenuAnchor(null);
@@ -17,7 +17,7 @@ export function useMenu(): UseMenuReturns {
 }
 
 export interface UseMenuReturns {
-  menuAnchor: HTMLImageElement | null;
-  openMenu: React.MouseEventHandler<HTMLImageElement>;
+  menuAnchor: HTMLElement | null;
+  openMenu: React.MouseEventHandler<HTMLElement>;
   closeMenu: ZeroArgVoidReturns;
 }

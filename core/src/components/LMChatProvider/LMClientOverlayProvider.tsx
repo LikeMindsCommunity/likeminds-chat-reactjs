@@ -12,6 +12,7 @@ import {
 } from "../../LMSDKCoreCallbacks";
 import { MemberType } from "../../enums/lm-member-type";
 import { CustomisationContextProvider } from "../../context/LMChatCustomisationContext";
+import { Toaster } from "react-hot-toast";
 
 const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
   client,
@@ -79,6 +80,7 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
               openSnackbar: openSnackbar,
             }}
           >
+            <Toaster position="top-right" />
             {children}
             <Snackbar
               open={showSnackbarMessage ? true : false}

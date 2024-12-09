@@ -295,7 +295,7 @@ const LMInput: React.FC = () => {
         alertMessage,
       }}
     >
-      <div className="lm-channel-footer-wrapper">
+      <div className="lm-channel-footer-wrapper" id="lm-channel-footer">
         {/* Collapseable  for Edit message*/}
 
         <Collapse

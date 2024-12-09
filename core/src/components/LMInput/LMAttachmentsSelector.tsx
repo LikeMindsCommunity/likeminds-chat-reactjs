@@ -1,6 +1,6 @@
-import React, { useContext, useMemo } from "react";
+import React, { useContext, useEffect, useMemo, useRef } from "react";
 import { useMenu } from "../../hooks/useMenu";
-import { Dialog, Menu, MenuItem } from "@mui/material";
+import { Dialog } from "@mui/material";
 import InputContext from "../../context/LMInputContext";
 
 // Icons
@@ -32,6 +32,7 @@ const LMAttachmentsSelector = () => {
   const { chatroomDetails } = useContext(LMChatroomContext);
   const { customComponents } = useContext(LMGlobalClientProviderContext);
   const { currentUser } = useContext(LMUserProviderContext);
+  const attachmentMenuRef = useRef<HTMLDivElement>(null);
 
   const isOtherUserAiChatbot = useMemo(() => {
     return Utils.isOtherUserAIChatbot(
@@ -40,13 +41,33 @@ const LMAttachmentsSelector = () => {
     );
   }, [chatroomDetails?.chatroom, currentUser]);
 
+  useEffect(() => {
+    const handleClick: EventListener = (event) => {
+      const target = event.target;
+      const iconElement = document.getElementById("lm-input-attachment-icon");
+      if (attachmentMenuRef && attachmentMenuRef.current && target) {
+        const doesClickContainsRef = attachmentMenuRef.current.contains(
+          target as Node,
+        );
+        if (!doesClickContainsRef || iconElement?.contains(target as Node)) {
+          closeMenu();
+        }
+        event.stopPropagation();
+      }
+    };
+    document.addEventListener("click", handleClick, true);
+    return () => {
+      document.removeEventListener("click", handleClick, true);
+    };
+  }, [closeMenu, menuAnchor]);
+
   // Custom component
   if (customComponents?.input?.chatroomInputAttachmentsSelector) {
     return <customComponents.input.chatroomInputAttachmentsSelector />;
   }
 
   const allAttachmentOptions = [
-    <MenuItem className="lm-chat-input-attachment-label" key={"mediaOption"}>
+    <div className="lm-chat-input-attachment-label" key={"mediaOption"}>
       <label htmlFor="media">
         <input
           id="media"
@@ -76,9 +97,9 @@ const LMAttachmentsSelector = () => {
         </div>
         <div className="title">Photos &amp; Videos</div>
       </label>
-    </MenuItem>,
+    </div>,
 
-    <MenuItem className="lm-chat-input-attachment-label" key={"docOption"}>
+    <div className="lm-chat-input-attachment-label" key={"docOption"}>
       <label htmlFor="doc">
         <input
           id="doc"
@@ -96,18 +117,18 @@ const LMAttachmentsSelector = () => {
         </div>
         <div className="title">Document</div>
       </label>
-    </MenuItem>,
+    </div>,
 
     chatroomDetails?.chatroom.type !==
       ChatroomTypes.DIRECT_MESSAGE_CHATROOM && (
-      <MenuItem className="lm-chat-input-attachment-label" key={"pollOption"}>
+      <div className="lm-chat-input-attachment-label" key={"pollOption"}>
         <label onClick={openDialog}>
           <div>
             <img src={PollIcon} alt="poll" />
           </div>
           <div className="title">Polls</div>
         </label>
-      </MenuItem>
+      </div>
     ),
   ];
 
@@ -121,10 +142,7 @@ const LMAttachmentsSelector = () => {
       switch (option) {
         case LMInputAttachments.GALLERY: {
           return (
-            <MenuItem
-              className="lm-chat-input-attachment-label"
-              key={"mediaOption"}
-            >
+            <div className="lm-chat-input-attachment-label" key={"mediaOption"}>
               <label htmlFor="media">
                 <input
                   id="media"
@@ -154,15 +172,12 @@ const LMAttachmentsSelector = () => {
                 </div>
                 <div className="title">Photos &amp; Videos</div>
               </label>
-            </MenuItem>
+            </div>
           );
         }
         case LMInputAttachments.DOCUMENT: {
           return (
-            <MenuItem
-              className="lm-chat-input-attachment-label"
-              key={"docOption"}
-            >
+            <div className="lm-chat-input-attachment-label" key={"docOption"}>
               <label htmlFor="doc">
                 <input
                   id="doc"
@@ -180,7 +195,7 @@ const LMAttachmentsSelector = () => {
                 </div>
                 <div className="title">Document</div>
               </label>
-            </MenuItem>
+            </div>
           );
         }
         case LMInputAttachments.POLL: {
@@ -189,7 +204,7 @@ const LMAttachmentsSelector = () => {
             ChatroomTypes.DIRECT_MESSAGE_CHATROOM
           ) {
             return (
-              <MenuItem
+              <div
                 className="lm-chat-input-attachment-label"
                 key={"pollOption"}
               >
@@ -199,7 +214,7 @@ const LMAttachmentsSelector = () => {
                   </div>
                   <div className="title">Polls</div>
                 </label>
-              </MenuItem>
+              </div>
             );
           }
         }
@@ -212,30 +227,28 @@ const LMAttachmentsSelector = () => {
       <Dialog open={dialogOpen} onClose={closeDialog}>
         <LMPollCreationDialog closeDialog={closeDialog} />
       </Dialog>
-      <Menu
-        open={Boolean(menuAnchor)}
-        onClose={closeMenu}
-        anchorEl={menuAnchor}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          horizontal: "left",
-          vertical: "bottom",
-        }}
-        sx={{
-          padding: "0",
-        }}
-        classes={{ paper: "lm-custom-menu" }}
-      >
-        {renderAttachmentsMenuitems()}
-      </Menu>
+      {Boolean(menuAnchor) && (
+        <div
+          className="lm-input-attachments-menu-sheet-wrapper"
+          ref={attachmentMenuRef}
+        >
+          <div className="lm-input-attachments-menu-sheet">
+            {renderAttachmentsMenuitems()}
+          </div>
+        </div>
+      )}
       <img
-        onClick={openMenu}
+        onClick={(e) => {
+          if (menuAnchor) {
+            closeMenu();
+          } else {
+            openMenu(e);
+          }
+        }}
         src={attachmentIcon}
         alt="attachment"
         className="lm-cursor-pointer"
+        id="lm-input-attachment-icon"
       />
     </div>
   );

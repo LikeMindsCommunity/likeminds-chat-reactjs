@@ -210,6 +210,11 @@ export default function useUserProvider(
     if (deviceNotificationTrigger) {
       return onMessage(messaging, (payload: any) => {
         toast(payload?.notification?.body);
+        console.log("as");
+        const NEW_NOTIFICATIONS_RECIEVED = new CustomEvent(
+          CustomActions.NEW_NOTIFICATIONS_RECIEVED,
+        );
+        dispatchEvent(NEW_NOTIFICATIONS_RECIEVED);
       });
     }
   }, [deviceNotificationTrigger]);

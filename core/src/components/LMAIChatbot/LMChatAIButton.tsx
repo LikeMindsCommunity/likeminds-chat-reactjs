@@ -1,10 +1,19 @@
-import React, { PropsWithChildren, useMemo, useState } from "react";
+import React, {
+  FC,
+  PropsWithChildren,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import chatBotIcon from "../../assets/img/ai-chatbot-icon.png";
 import closeBotIcon from "../../assets/img/close-ai-bot.png";
 import LMClientOverlayProvider from "../LMChatProvider/LMClientOverlayProvider";
 import { LMChatProps } from "../../types/prop-types/LMChatProps";
 import LMAIChatbot from "./LMAiChatbot";
-import { AIChatbotLoaderScreen } from "./LMAiChatbotLoaderScreen";
+import {
+  AIChatbotLoaderScreen,
+  LMAIChatbotLoaderScreenProps,
+} from "./LMAiChatbotLoaderScreen";
 import { CustomComponents } from "../../types/prop-types/CustomComponents";
 
 export interface LMChatAIButtonProps {
@@ -52,18 +61,38 @@ const LMChatAIButton: React.FC<
     </button>
   );
 
+  const returnWithDefaultProps = useCallback(
+    (
+      previewText: string | undefined,
+      loadingScreenAnimations: JSON | undefined,
+    ): FC<LMAIChatbotLoaderScreenProps> => {
+      return () => (
+        <AIChatbotLoaderScreen
+          previewText={previewText}
+          loadingScreenAnimatons={loadingScreenAnimations}
+        />
+      );
+    },
+    [],
+  );
+
   // Creating the custom Components object
   const customComponentsProp: CustomComponents = useMemo(() => {
     return {
       ...customComponents,
       userNotLoadedLoaderScreen: customComponents?.aiChatbotLoaderScreen
         ? customComponents.aiChatbotLoaderScreen
-        : AIChatbotLoaderScreen,
+        : returnWithDefaultProps(previewText, loadingScreenAnimatons),
       noChatroomSelected: customComponents?.noChatroomSelected
         ? customComponents?.noChatroomSelected
-        : AIChatbotLoaderScreen,
+        : returnWithDefaultProps(previewText, loadingScreenAnimatons),
     };
-  }, [customComponents]);
+  }, [
+    customComponents,
+    loadingScreenAnimatons,
+    previewText,
+    returnWithDefaultProps,
+  ]);
 
   return (
     <div className="lm-chat-ai-bot-fab-container">
