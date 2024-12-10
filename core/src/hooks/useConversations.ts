@@ -22,7 +22,7 @@ import { ChatroomDetails } from "../types/api-responses/getChatroomResponse";
 import { GetSyncConversationsResponse } from "../types/api-responses/getSyncConversationsResponse";
 import ConversationStates from "../enums/lm-conversation-states";
 import { Utils } from "../utils/helpers";
-import { MemberRole } from "@likeminds.community/chat-js-beta";
+import { MemberRole } from "@likeminds.community/chat-js";
 import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 import Member from "../types/models/member";
 

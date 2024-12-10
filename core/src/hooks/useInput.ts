@@ -37,8 +37,8 @@ import {
   Attachment,
   AttachmentMeta,
   Chatroom,
-} from "@likeminds.community/chat-js-beta";
-import { PostConversationRequest } from "@likeminds.community/chat-js-beta/dist/pages/chatroom/types";
+} from "@likeminds.community/chat-js";
+import { PostConversationRequest } from "@likeminds.community/chat-js/dist/pages/chatroom/types";
 import { LMInputAttachments } from "../enums/lm-input-attachment-options";
 import { OgTag } from "../types/models/OgTag";
 import { Conversation } from "../types/models/conversations";

@@ -11,8 +11,8 @@ import { FileType } from "../types/enums/Filetype";
 import { FileTypeInitials } from "../enums/lm-file-type-initials";
 import Member from "../types/models/member";
 import { validMatchingString } from "./TLDs";
-import { Chatroom } from "@likeminds.community/chat-js-beta";
-import { MemberRole } from "@likeminds.community/chat-js-beta";
+import { Chatroom } from "@likeminds.community/chat-js";
+import { MemberRole } from "@likeminds.community/chat-js";
 import { ChatroomDetails } from "../types/api-responses/getChatroomResponse";
 import { ChatroomTypes } from "../enums/lm-chatroom-types";
 type StringTagType = {

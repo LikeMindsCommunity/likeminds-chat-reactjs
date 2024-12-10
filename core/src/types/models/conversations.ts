@@ -2,7 +2,7 @@ import {
   Conversation as LMConversation,
   Poll as LMPoll,
   Reaction as LMReaction,
-} from "@likeminds.community/chat-js-beta";
+} from "@likeminds.community/chat-js";
 import Member from "./member";
 import { Widget } from "./Widget";
 

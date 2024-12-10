@@ -63,8 +63,6 @@ export default function useUserProvider(
           refreshToken: localRefreshToken,
         });
         if (validateUserCall?.success) {
-          // Setting tokens in local storage
-          setTokensInLocalStorage(localAccessToken, localRefreshToken);
           lmChatClient.setUserInLocalStorage(
             JSON.stringify(validateUserCall?.data?.user),
           );
@@ -107,7 +105,6 @@ export default function useUserProvider(
         });
         if (initiateUserCall.success) {
           // Setting the tokens, API key and User in local storage
-
           setTokensInLocalStorage(
             initiateUserCall?.data?.accessToken || "",
             initiateUserCall?.data?.refreshToken || "",

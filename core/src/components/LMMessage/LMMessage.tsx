@@ -24,7 +24,7 @@ import { ChatRequestStates } from "../../enums/lm-chat-request-states";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import { useMessageOptions } from "../../hooks/useMessageOptions";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
-import { MemberRole } from "@likeminds.community/chat-js-beta";
+import { MemberRole } from "@likeminds.community/chat-js";
 import MediaRendererLocal from "../../shared/components/LMLocalMediaRenderer";
 
 const LMMessage = () => {

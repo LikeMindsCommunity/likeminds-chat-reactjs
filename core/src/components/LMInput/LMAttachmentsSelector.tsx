@@ -14,7 +14,7 @@ import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { Utils } from "../../utils/helpers";
-import { Chatroom } from "@likeminds.community/chat-js-beta";
+import { Chatroom } from "@likeminds.community/chat-js";
 import LMUserProviderContext from "../../context/LMUserProviderContext";
 import { LMInputAttachments } from "../../enums/lm-input-attachment-options";
 import { CustomisationContextProvider } from "../../context/LMChatCustomisationContext";
