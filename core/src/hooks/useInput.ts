@@ -415,10 +415,8 @@ export function useInput(): UseInputReturns {
             MemberType.COMMUNITY_MANAGER
         ) {
           await sendDMRequest(messageText);
-
           return;
         }
-
         // returns when no message text ans no media
         if (!messageText.length) {
           if (
@@ -429,7 +427,6 @@ export function useInput(): UseInputReturns {
             return;
           }
         }
-
         if (messageText.length)
           if (conversationToedit) {
             // Handling the editing of the conversation
@@ -456,7 +453,6 @@ export function useInput(): UseInputReturns {
         const SHOW_SKELETON_CUSTOM_EVENT = new CustomEvent(
           CustomActions.CONVERSATION_POSTED_ON_AI_CHATBOT,
         );
-
         const localConversation = createLocalConversation(
           temporaryId,
           messageText,
@@ -465,7 +461,6 @@ export function useInput(): UseInputReturns {
           attachmentsList,
           ogTags || undefined,
         );
-
         const NEW_CONVERSATION_POSTED = new CustomEvent(
           CustomActions.NEW_CONVERSATION_POSTED,
           {
@@ -485,7 +480,6 @@ export function useInput(): UseInputReturns {
           const mediaAttachments = await buildMediaAttachments(attachmentsList);
           attachments.push(...mediaAttachments);
         }
-
         // sending the text part of the conversation
         const chatroomData = chatroomDetails.chatroom;
         const postConversationCallConfig: PostConversationRequest = {

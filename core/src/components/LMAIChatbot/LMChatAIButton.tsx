@@ -45,19 +45,17 @@ const LMChatAIButton: React.FC<
 
   // Button component for open state
   const openChatbotButton = (
-    <button className="lm-chat-ai-bot-fab-button" onClick={openAIBot}>
+    <button className="lm-chat-ai-bot-fab-button close" onClick={openAIBot}>
       <img src={chatBotIcon} alt="AI Chatbot" />
-      <span className="lm-chat-ai-bot-fab-title">
-        {buttonText || `AI bot lite`}
-      </span>
+      <span className="lm-chat-ai-bot-fab-title">{buttonText || `AI Bot`}</span>
     </button>
   );
 
   // Button component for close state
   const closeChatbotButton = (
-    <button className="lm-chat-ai-bot-fab-button" onClick={closeAIBot}>
+    <button className="lm-chat-ai-bot-fab-button open" onClick={closeAIBot}>
       <img src={closeBotIcon} alt="AI Chatbot" />
-      <span className="lm-chat-ai-bot-fab-title">Close Chat</span>
+      <span className="lm-chat-ai-bot-fab-title">Close chat</span>
     </button>
   );
 
@@ -96,21 +94,23 @@ const LMChatAIButton: React.FC<
   ]);
 
   return (
-    <div className="lm-chat-ai-bot-fab-container">
-      {isAiBotOpen ? closeChatbotButton : openChatbotButton}
-      {isAiBotOpen && (
-        <LMClientOverlayProvider
-          lmChatCoreCallbacks={lmChatCoreCallbacks}
-          client={client}
-          userDetails={userDetails}
-          customComponents={customComponentsProp}
-        >
-          <LMAIChatbot
-            previewText={previewText}
-            loadingScreenAnimatons={loadingScreenAnimatons}
-          />
-        </LMClientOverlayProvider>
-      )}
+    <div className="lm-chat-ai-bot-button">
+      <div className="lm-chat-ai-bot-fab-container">
+        {isAiBotOpen ? closeChatbotButton : openChatbotButton}
+        {isAiBotOpen && (
+          <LMClientOverlayProvider
+            lmChatCoreCallbacks={lmChatCoreCallbacks}
+            client={client}
+            userDetails={userDetails}
+            customComponents={customComponentsProp}
+          >
+            <LMAIChatbot
+              previewText={previewText}
+              loadingScreenAnimatons={loadingScreenAnimatons}
+            />
+          </LMClientOverlayProvider>
+        )}
+      </div>
     </div>
   );
 };

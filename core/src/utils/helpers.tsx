@@ -306,7 +306,7 @@ export class Utils {
       } else if (node.nodeName === "BR") {
         return "\n"; // Add a new line
       } else if (node.nodeName === "SPAN") {
-        return "";
+        return node.textContent || "";
       } else {
         let text = "";
         const childNodes = node.childNodes;

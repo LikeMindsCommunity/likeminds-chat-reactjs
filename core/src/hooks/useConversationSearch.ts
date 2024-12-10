@@ -36,6 +36,9 @@ export function useConversationSearch(): UseConversationSearch {
   };
   const searchConversations = useCallback(async () => {
     try {
+      if (!searchKey.length) {
+        return;
+      }
       const PAGE_SIZE = 20;
       const call = await lmChatClient.searchConversation({
         search: searchKey,
