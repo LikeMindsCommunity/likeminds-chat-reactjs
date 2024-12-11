@@ -6,16 +6,33 @@ import {
 } from "./useInput";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import ConversationStates from "../enums/lm-conversation-states";
-import { useParams } from "react-router-dom";
-import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
+
+import { LMChatroomContext } from "../context/LMChatChatroomContext";
 import { SelectChangeEvent } from "@mui/material";
 import LoaderContextProvider from "../context/LMLoaderContextProvider";
 import { PollMessages } from "../enums/lm-poll-messages";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 
 export function useCreatePoll(closeDialog?: ZeroArgVoidReturns): UseCreatePoll {
-  const { id: chatroomId } = useParams();
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
-  const { conversationToReply } = useContext(LMChatChatroomContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
+  const { createPollCustomActions = {} } = useContext(
+    CustomisationContextProvider,
+  );
+  const {
+    addPollOptionCustomCallback,
+    updateAdvancedOptionsCustomCallback,
+    removePollOptionCustomCallback,
+    changePollTextCustomCallback,
+    createPollConversationCustomCallback,
+    updatePollOptionCustomCallback,
+    updatePollExpirationDateCustomCallback,
+  } = createPollCustomActions;
+  const { conversationToReply } = useContext(LMChatroomContext);
+  const {
+    chatroomDetails: {
+      chatroom: { id: chatroomId },
+    },
+  } = useContext(LMChatroomContext);
   const { openSnackbar } = useContext(LoaderContextProvider);
   const [pollText, setPollText] = useState<string>("");
   const [advancedPollOptions, setAdvancedPollOptions] =
@@ -139,8 +156,8 @@ export function useCreatePoll(closeDialog?: ZeroArgVoidReturns): UseCreatePoll {
           }
         }
       }
-      const call = await lmChatclient?.postPollConversation({
-        chatroomId: parseInt(chatroomId!),
+      await lmChatClient.postPollConversation({
+        chatroomId: parseInt(chatroomId.toString()),
         state: ConversationStates.MICRO_POLL,
         text: pollText,
         repliedConversationId: conversationToReply
@@ -171,18 +188,76 @@ export function useCreatePoll(closeDialog?: ZeroArgVoidReturns): UseCreatePoll {
     const text = changeEvent.target.value;
     setPollText(text);
   };
-  return {
+
+  const createPollDataStore: CreatePollDataStore = {
     pollOptions,
-    addPollOption,
-    removePollOption,
-    updatePollOption,
-    createPollConversation,
-    changePollText,
     pollText,
-    updatePollExpirationDate,
     pollExpirationDate,
     advancedOptions: advancedPollOptions,
+  };
+  const createPollDefaultActions: CreatePollDefaultActions = {
+    addPollOption,
+    updatePollOption,
+    removePollOption,
+    createPollConversation,
+    changePollText,
+    updatePollExpirationDate,
     updateAdvancedOptions,
+  };
+  return {
+    pollOptions,
+    addPollOption: addPollOptionCustomCallback
+      ? addPollOptionCustomCallback.bind(
+          null,
+          createPollDefaultActions,
+          createPollDataStore,
+        )
+      : addPollOption,
+    removePollOption: removePollOptionCustomCallback
+      ? removePollOptionCustomCallback.bind(
+          null,
+          createPollDefaultActions,
+          createPollDataStore,
+        )
+      : removePollOption,
+    updatePollOption: updatePollOptionCustomCallback
+      ? updatePollOptionCustomCallback.bind(
+          null,
+          createPollDefaultActions,
+          createPollDataStore,
+        )
+      : updatePollOption,
+    createPollConversation: createPollConversationCustomCallback
+      ? createPollConversationCustomCallback.bind(
+          null,
+          createPollDefaultActions,
+          createPollDataStore,
+        )
+      : createPollConversation,
+    changePollText: changePollTextCustomCallback
+      ? changePollTextCustomCallback.bind(
+          null,
+          createPollDefaultActions,
+          createPollDataStore,
+        )
+      : changePollText,
+    pollText,
+    updatePollExpirationDate: updatePollExpirationDateCustomCallback
+      ? updatePollExpirationDateCustomCallback.bind(
+          null,
+          createPollDefaultActions,
+          createPollDataStore,
+        )
+      : updatePollExpirationDate,
+    pollExpirationDate,
+    advancedOptions: advancedPollOptions,
+    updateAdvancedOptions: updateAdvancedOptionsCustomCallback
+      ? updateAdvancedOptionsCustomCallback.bind(
+          null,
+          createPollDefaultActions,
+          createPollDataStore,
+        )
+      : updateAdvancedOptions,
   };
 }
 
@@ -200,6 +275,25 @@ export interface UseCreatePoll {
   updateAdvancedOptions: OneArgVoidReturns<
     React.ChangeEvent<HTMLInputElement> | SelectChangeEvent<number>
   >;
+}
+
+export interface CreatePollDefaultActions {
+  addPollOption: ZeroArgVoidReturns;
+  updatePollOption: TwoArgVoidReturns<string, number>;
+  removePollOption: OneArgVoidReturns<number>;
+  createPollConversation: ZeroArgVoidReturns;
+  changePollText: OneArgVoidReturns<React.ChangeEvent<HTMLTextAreaElement>>;
+  updatePollExpirationDate: OneArgVoidReturns<number | null>;
+  updateAdvancedOptions: OneArgVoidReturns<
+    React.ChangeEvent<HTMLInputElement> | SelectChangeEvent<number>
+  >;
+}
+
+export interface CreatePollDataStore {
+  pollOptions: PollOption[];
+  pollText: string;
+  pollExpirationDate: number | null;
+  advancedOptions: AdvancedPollOptions;
 }
 
 export interface AdvancedPollOptions {

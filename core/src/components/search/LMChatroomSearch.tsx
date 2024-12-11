@@ -13,7 +13,6 @@ const LMChatroomSearch = ({ onCloseSearch }: LMChatroomSearchProps) => {
   const {
     searchList,
     searchChatrooms,
-    resetSearch,
     loadMoreChatrooms,
     onSearchChatroomClick,
     searchKey,
@@ -55,19 +54,17 @@ const LMChatroomSearch = ({ onCloseSearch }: LMChatroomSearchProps) => {
                 className="lm-chatroom-search-list-item lm-cursor-pointer"
                 onClick={() => {
                   onCloseSearch();
-                  onSearchChatroomClick(chatroom.chatroom.id);
+                  onSearchChatroomClick(chatroom?.id);
                 }}
               >
                 <div className="search-chatroom-member-icon">
                   {getAvatar({
-                    imageUrl: chatroom.chatroom.chatroom_image_url,
-                    name: chatroom.chatroom.header,
+                    imageUrl: chatroom.chatroomImageUrl,
+                    name: chatroom.header,
                   })}
                 </div>
                 <div className="search-chatroom-content">
-                  <p className="search-chatroom-user-meta">
-                    {chatroom.chatroom.header}
-                  </p>
+                  <p className="search-chatroom-user-meta">{chatroom.header}</p>
                   <p className="search-chatroom-message">
                     {/* {chatroom.answer} */}
                   </p>

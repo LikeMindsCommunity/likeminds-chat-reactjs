@@ -1,9 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import GlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
-import {
-  GetReportTagsChatResponse,
-  ReportTagMessage,
-} from "../../types/api-responses/getReportTagsResponseChatResponse";
+import { GetReportTagsChatResponse } from "../../types/api-responses/getReportTagsResponseChatResponse";
+import { ReportTag } from "../../types/models/ReportTags";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "../../hooks/useInput";
 import ReportTagComponent from "./LMReportTagComponent";
 
@@ -19,26 +17,26 @@ const ReportTagsDialog = ({
   }>;
   closeDialog: ZeroArgVoidReturns;
 }) => {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
-  const [reportTags, setReportTags] = useState<ReportTagMessage[]>([]);
-  const [selectedTag, setSelectedTag] = useState<ReportTagMessage | null>(null);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
+  const [reportTags, setReportTags] = useState<ReportTag[]>([]);
+  const [selectedTag, setSelectedTag] = useState<ReportTag | null>(null);
   const [newReasonTagText, setNewReasonTagText] = useState<string>("");
   useEffect(() => {
     async function getTags() {
       try {
         const call: GetReportTagsChatResponse =
-          await lmChatclient?.getReportTags({
+          await lmChatClient.getReportTags({
             type: 0,
           });
         if (call.success) {
-          setReportTags(() => call?.data?.report_tags || []);
+          setReportTags(() => call?.data?.reportTags || []);
         }
       } catch (error) {
         console.log(error);
       }
     }
     getTags();
-  }, [lmChatclient]);
+  }, [lmChatClient]);
   return (
     <div>
       <div className="lmReportPostWrapper">

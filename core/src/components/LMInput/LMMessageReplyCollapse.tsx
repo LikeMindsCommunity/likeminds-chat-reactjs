@@ -1,12 +1,11 @@
 import React, { useContext } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
-import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { Utils } from "../../utils/helpers";
 function LMMessageReplyCollapse() {
-  const { conversationToReply, setConversationToReply } = useContext(
-    LMChatChatroomContext,
-  );
+  const { conversationToReply, setConversationToReply } =
+    useContext(LMChatroomContext);
   function closeReply() {
     setConversationToReply(null);
   }

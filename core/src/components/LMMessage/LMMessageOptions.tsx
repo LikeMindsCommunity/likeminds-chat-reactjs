@@ -8,7 +8,7 @@ import { useDialog } from "../../hooks/useDialog";
 import ReportTagsDialog from "./LMReportTags";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { ConversationActions } from "../../enums/lm-message-options";
-import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import { ReplyDmQueries } from "../../enums/lm-reply-dm-queries";
 import { MemberType } from "../../enums/lm-member-type";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
@@ -16,20 +16,14 @@ import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 function MessageOptions() {
   const { message } = useContext(LMMessageContext);
   const { currentUser } = useContext(UserProviderContext);
-  const { canUserReplyPrivately, chatroom } = useContext(LMChatChatroomContext);
-  const { onDelete, onSetTopic, onReport, onEdit, onReply, onReplyPrivately } =
+  const { canUserReplyPrivately, chatroomDetails } =
+    useContext(LMChatroomContext);
+  const { onDelete, onSetTopic, onReport, onEdit, onReplyPrivately } =
     useMessageOptions();
   const { menuAnchor, openMenu, closeMenu } = useMenu();
   const { openDialog, dialogOpen, closeDialog } = useDialog();
 
   const options = [
-    // {
-    //   title: ConversationActions.REPLY_ON_MESSAGE,
-    //   clickFunction: () => {
-    //     onReply();
-    //     closeMenu();
-    //   },
-    // },
     {
       title: ConversationActions.SET_AS_CURRENT_TOPIC,
       clickFunction: () => {
@@ -40,7 +34,7 @@ function MessageOptions() {
     {
       title: ConversationActions.REPLY_PRIVATELY_ON_MESSAGE,
       clickFunction: () => {
-        onReplyPrivately(message.member.id);
+        onReplyPrivately(message.member.sdkClientInfo?.uuid || "");
         closeMenu();
       },
     },
@@ -67,6 +61,7 @@ function MessageOptions() {
       },
     },
   ];
+
   return (
     <div>
       <Dialog open={dialogOpen} onClose={closeDialog}>
@@ -103,7 +98,7 @@ function MessageOptions() {
             message.member.id.toString() === currentUser?.id.toString() &&
             canUserReplyPrivately !==
               ReplyDmQueries.REPLY_PRIVATELY_NOT_ALLOWED &&
-            chatroom?.chatroom.type.toString() !==
+            chatroomDetails?.chatroom.type?.toString() !==
               ChatroomTypes.DIRECT_MESSAGE_CHATROOM.toString()
           ) {
             if (

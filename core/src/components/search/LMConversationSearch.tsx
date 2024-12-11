@@ -13,7 +13,6 @@ const LMConversationSearch = ({ onCloseSearch }: LMConversationSearchProps) => {
   const {
     searchList,
     searchConversations,
-    resetSearch,
     loadMoreConversations,
     onSearchedConversationClick,
     searchKey,
@@ -71,7 +70,7 @@ const LMConversationSearch = ({ onCloseSearch }: LMConversationSearchProps) => {
               >
                 <div className="search-conversation-member-icon">
                   {getAvatar({
-                    imageUrl: conversation.member.image_url,
+                    imageUrl: conversation.member.imageUrl,
                     name: conversation.member.name,
                   })}
                 </div>

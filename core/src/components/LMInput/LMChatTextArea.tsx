@@ -1,10 +1,16 @@
 import React, { useContext } from "react";
 import InputContext from "../../context/LMInputContext";
-import { LMChatChatroomContext } from "../../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Utils } from "../../utils/helpers";
 
-const LMChatTextArea = () => {
+interface LMChatTextAreaProps {
+  placeholderText?: string;
+}
+
+const LMChatTextArea: React.FC<LMChatTextAreaProps> = ({
+  placeholderText = "",
+}) => {
   const {
     inputWrapperRef,
     inputBoxRef,
@@ -16,7 +22,7 @@ const LMChatTextArea = () => {
     getTaggingMembers,
     clearTaggingList,
   } = useContext(InputContext);
-  const { chatroom } = useContext(LMChatChatroomContext);
+  const { chatroomDetails } = useContext(LMChatroomContext);
   return (
     <div
       className="lm-chat-text-area lm-chat-text-area-wrapper"
@@ -112,9 +118,10 @@ const LMChatTextArea = () => {
         autoFocus={true}
         id="lm-feed-content-editable-text-area"
         data-placeholder={
-          chatroom?.chatroom.member_can_message
+          placeholderText ??
+          (chatroomDetails?.chatroom.memberCanMessage
             ? `Type a message`
-            : `Members can't message in this chatroom`
+            : `Members can't message in this chatroom`)
         }
         className="lm-chat-text-area__input-box"
         onKeyDown={onTextInputKeydownHandler}

@@ -1,22 +1,18 @@
 import { useCallback, useContext, useMemo } from "react";
 import { ZeroArgVoidReturns } from "./useInput";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
-import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
+import { LMChatroomContext } from "../context/LMChatChatroomContext";
 import UserProviderContext from "../context/LMUserProviderContext";
-import { useLocation, useNavigate } from "react-router-dom";
+
 import { CustomActions } from "../customActions";
-// import {
-//   PARTICIPANTS_PATH,
-//   ROOT_PATH,
-// } from "../shared/constants/lm.routes.constant";
 import { ChatroomAction } from "../enums/lm-chatroom-actions";
 import { ChatroomMenuCustomActions } from "../types/prop-types/CustomComponents";
 
 function useChatroomMenuOptions(
   chatroomMenuCustomActions?: ChatroomMenuCustomActions,
 ): UseChatroomMenuOptions {
-  const { lmChatclient, routes } = useContext(GlobalClientProviderContext);
-  const { chatroom, setNewChatroom } = useContext(LMChatChatroomContext);
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
+  const { chatroomDetails, setNewChatroom } = useContext(LMChatroomContext);
   const { currentUser, currentCommunity, memberState, logoutUser } =
     useContext(UserProviderContext);
   const {
@@ -26,21 +22,22 @@ function useChatroomMenuOptions(
     onLeaveChatroomCustom,
     onUnBlockCustom,
   } = chatroomMenuCustomActions || {};
-  const navigate = useNavigate();
-  const location = useLocation();
+
   const onMute = useCallback(async () => {
     try {
-      const call = await lmChatclient?.muteChatroom({
-        chatroomId: parseInt(chatroom!.chatroom!.id!.toString()),
-        value: chatroom?.chatroom_actions.some((option) => option.id === 6)
+      const call = await lmChatClient.muteChatroom({
+        chatroomId: parseInt(chatroomDetails!.chatroom!.id!.toString()),
+        value: chatroomDetails?.chatroomActions.some(
+          (option) => option.id === 6,
+        )
           ? true
           : false,
       });
-      if (call.success && chatroom) {
-        const newChatroom = { ...chatroom };
+      if (call.success && chatroomDetails) {
+        const newChatroom = { ...chatroomDetails };
 
-        if (newChatroom?.chatroom_actions?.some((option) => option.id === 6)) {
-          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+        if (newChatroom?.chatroomActions?.some((option) => option.id === 6)) {
+          newChatroom!.chatroomActions = newChatroom.chatroomActions?.map(
             (options) => {
               if (options.id === 6) {
                 return { id: 8, title: "Unmute notifications" };
@@ -50,7 +47,7 @@ function useChatroomMenuOptions(
             },
           );
         } else {
-          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+          newChatroom!.chatroomActions = newChatroom.chatroomActions?.map(
             (options) => {
               if (options.id === 8) {
                 return { id: 6, title: "Mute notifications" };
@@ -65,11 +62,13 @@ function useChatroomMenuOptions(
     } catch (error) {
       console.log(error);
     }
-  }, [chatroom, lmChatclient, setNewChatroom]);
+  }, [chatroomDetails, lmChatClient, setNewChatroom]);
   const onLeaveChatroom = useCallback(async () => {
     try {
-      const call = await lmChatclient?.followChatroom({
-        collabcardId: parseInt(chatroom?.chatroom?.id?.toString() || "0"),
+      const call = await lmChatClient.followChatroom({
+        collabcardId: parseInt(
+          chatroomDetails?.chatroom?.id?.toString() || "0",
+        ),
         memberId: parseInt(currentUser?.id.toString() || "0"),
         value: false,
       });
@@ -77,43 +76,41 @@ function useChatroomMenuOptions(
         setNewChatroom(null);
         dispatchEvent(
           new CustomEvent(CustomActions.CHATROOM_LEAVE_ACTION_COMPLETED, {
-            detail: chatroom?.chatroom.id,
+            detail: chatroomDetails?.chatroom.id,
           }),
         );
-        navigate(`${routes?.getRootPath()}`);
       }
     } catch (error) {
       console.log(error);
     }
-  }, [chatroom, currentUser, lmChatclient, navigate, routes, setNewChatroom]);
+  }, [chatroomDetails, currentUser, lmChatClient, setNewChatroom]);
   const onViewParticipants = useCallback(async () => {
     try {
       //
-      navigate(`/${routes?.getParticipantsPath()}/${chatroom?.chatroom.id}`);
     } catch (error) {
       console.log(error);
     }
-  }, [chatroom, navigate, routes]);
+  }, []);
   const onUnBlock = useCallback(async () => {
     try {
-      const unblockCall = await lmChatclient?.blockMember({
+      const unblockCall = await lmChatClient.blockMember({
         status: 1,
-        chatroomId: chatroom?.chatroom.id || 0,
+        chatroomId: chatroomDetails!.chatroom.id,
       });
       document.dispatchEvent(
         new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
-          detail: unblockCall.data.conversation,
+          detail: unblockCall?.data.conversation,
         }),
       );
-      if (unblockCall.success && chatroom) {
-        const newChatroom = { ...chatroom };
-        newChatroom.chatroom.chat_request_state = 1;
+      if (unblockCall.success && chatroomDetails) {
+        const newChatroom = { ...chatroomDetails };
+        newChatroom.chatroom.chatRequestState = 1;
         if (
-          newChatroom?.chatroom_actions?.some(
+          newChatroom?.chatroomActions?.some(
             (option) => option.id === ChatroomAction.ACTION_UNBLOCK_CHATROOM,
           )
         ) {
-          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+          newChatroom!.chatroomActions = newChatroom.chatroomActions?.map(
             (options) => {
               if (options.id === ChatroomAction.ACTION_UNBLOCK_CHATROOM) {
                 return { id: 27, title: "Block" };
@@ -123,7 +120,7 @@ function useChatroomMenuOptions(
             },
           );
         } else {
-          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+          newChatroom!.chatroomActions = newChatroom.chatroomActions?.map(
             (options) => {
               if (options.id === ChatroomAction.ACTION_BLOCK_CHATROOM) {
                 return { id: 28, title: "Unblock" };
@@ -138,27 +135,27 @@ function useChatroomMenuOptions(
     } catch (error) {
       console.log(error);
     }
-  }, [chatroom, lmChatclient, setNewChatroom]);
+  }, [chatroomDetails, lmChatClient, setNewChatroom]);
   const onBlock = useCallback(async () => {
     try {
-      const blockCall = await lmChatclient?.blockMember({
+      const blockCall = await lmChatClient.blockMember({
         status: 0,
-        chatroomId: chatroom?.chatroom.id || 0,
+        chatroomId: chatroomDetails!.chatroom.id,
       });
       document.dispatchEvent(
         new CustomEvent(CustomActions.DM_CHAT_REQUEST_STATUS_CHANGED, {
-          detail: blockCall.data.conversation,
+          detail: blockCall?.data.conversation,
         }),
       );
-      if (blockCall.success && chatroom) {
-        const newChatroom = { ...chatroom };
-        newChatroom.chatroom.chat_request_state = 2;
+      if (blockCall.success && chatroomDetails) {
+        const newChatroom = { ...chatroomDetails };
+        newChatroom.chatroom.chatRequestState = 2;
         if (
-          newChatroom?.chatroom_actions?.some(
+          newChatroom?.chatroomActions?.some(
             (option) => option.id === ChatroomAction.ACTION_BLOCK_CHATROOM,
           )
         ) {
-          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+          newChatroom!.chatroomActions = newChatroom.chatroomActions?.map(
             (options) => {
               if (options.id === ChatroomAction.ACTION_BLOCK_CHATROOM) {
                 return { id: 28, title: "Unblock" };
@@ -168,7 +165,7 @@ function useChatroomMenuOptions(
             },
           );
         } else {
-          newChatroom!.chatroom_actions = newChatroom.chatroom_actions?.map(
+          newChatroom!.chatroomActions = newChatroom.chatroomActions?.map(
             (options) => {
               if (options.id === ChatroomAction.ACTION_UNBLOCK_CHATROOM) {
                 return { id: 27, title: "Block" };
@@ -183,7 +180,7 @@ function useChatroomMenuOptions(
     } catch (error) {
       console.log(error);
     }
-  }, [chatroom, lmChatclient, setNewChatroom]);
+  }, [chatroomDetails, lmChatClient, setNewChatroom]);
   const chatroomMenuDefaultActions = useMemo(() => {
     return {
       onLeaveChatroom,
@@ -193,12 +190,7 @@ function useChatroomMenuOptions(
       onUnBlock,
     };
   }, [onBlock, onLeaveChatroom, onMute, onUnBlock, onViewParticipants]);
-  const router = useMemo(() => {
-    return {
-      location: location,
-      navigate: navigate,
-    };
-  }, [location, navigate]);
+
   const applicationGeneralDataContext = useMemo(() => {
     return {
       currentUser,
@@ -213,7 +205,6 @@ function useChatroomMenuOptions(
           null,
           chatroomMenuDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onLeaveChatroom,
     onMute: onMuteCustom
@@ -221,7 +212,6 @@ function useChatroomMenuOptions(
           null,
           chatroomMenuDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onMute,
 
@@ -230,7 +220,6 @@ function useChatroomMenuOptions(
           null,
           chatroomMenuDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onViewParticipants,
     onBlock: onBlockCustom
@@ -238,7 +227,6 @@ function useChatroomMenuOptions(
           null,
           chatroomMenuDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onBlock,
     onUnBlock: onUnBlockCustom
@@ -246,7 +234,6 @@ function useChatroomMenuOptions(
           null,
           chatroomMenuDefaultActions,
           applicationGeneralDataContext,
-          router,
         )
       : onUnBlock,
   };

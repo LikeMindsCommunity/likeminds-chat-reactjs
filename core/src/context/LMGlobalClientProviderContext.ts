@@ -4,7 +4,7 @@ import { CustomComponents } from "../types/prop-types/CustomComponents";
 import { LMRoutes } from "../LMRoutes";
 
 interface GlobalChatProviderContextInterface {
-  lmChatclient: LMClient | null;
+  lmChatClient: LMClient;
   userDetails: UserDetails;
   customComponents?: CustomComponents;
   routes?: LMRoutes;
@@ -17,7 +17,6 @@ export interface UserDetails {
   refreshToken?: string;
   apiKey?: string;
 }
-export default React.createContext<GlobalChatProviderContextInterface>({
-  lmChatclient: null,
-  userDetails: {} as UserDetails,
-});
+export default React.createContext<GlobalChatProviderContextInterface>(
+  {} as GlobalChatProviderContextInterface,
+);

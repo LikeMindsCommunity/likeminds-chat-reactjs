@@ -8,15 +8,25 @@ import {
 } from "react";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
-import { LMChatChatroomContext } from "../context/LMChatChatroomContext";
-import { SearchedConversation } from "../types/models/SearchedConversation";
+import { LMChatroomContext } from "../context/LMChatChatroomContext";
+
+import { Conversation } from "../types/models/conversations";
+import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 
 export function useConversationSearch(): UseConversationSearch {
-  const { lmChatclient } = useContext(GlobalClientProviderContext);
-  const { chatroom, setSearchedConversationId } = useContext(
-    LMChatChatroomContext,
+  const { lmChatClient } = useContext(GlobalClientProviderContext);
+  const { conversationSearchCustomActions = {} } = useContext(
+    CustomisationContextProvider,
   );
-  const [searchList, setSearchList] = useState<SearchedConversation[]>([]);
+  const {
+    searchConversationsCustomCallback,
+    resetSearchCustomCallback,
+    setSearchKeyCustomCallback,
+    onSearchedConversationClickCustomCallback,
+  } = conversationSearchCustomActions;
+  const { chatroomDetails, setSearchedConversationId } =
+    useContext(LMChatroomContext);
+  const [searchList, setSearchList] = useState<Conversation[]>([]);
   const [searchKey, setSearchKey] = useState<string>("");
   const [loadMoreConversations, setLoadMoreConversations] =
     useState<boolean>(false);
@@ -26,18 +36,21 @@ export function useConversationSearch(): UseConversationSearch {
   };
   const searchConversations = useCallback(async () => {
     try {
+      if (!searchKey.length) {
+        return;
+      }
       const PAGE_SIZE = 20;
-      const call = await lmChatclient?.searchConversation({
+      const call = await lmChatClient.searchConversation({
         search: searchKey,
         page: pageCount.current,
         pageSize: PAGE_SIZE,
-        chatroomId: chatroom!.chatroom.id!,
+        chatroomId: chatroomDetails!.chatroom.id!,
         followStatus: true,
       });
-      if (call.data.conversations.length === 0) {
+      if (call?.data.conversations.length === 0) {
         setLoadMoreConversations(false);
       }
-      if (call.data.conversations.length > 0) {
+      if (call?.data.conversations.length > 0) {
         setSearchList((currentList) => {
           const newList = [...currentList, ...call.data.conversations];
           return newList;
@@ -47,7 +60,7 @@ export function useConversationSearch(): UseConversationSearch {
     } catch (error) {
       console.log(error);
     }
-  }, [chatroom, lmChatclient, searchKey]);
+  }, [chatroomDetails, lmChatClient, searchKey]);
   const resetSearch = () => {
     setSearchList(() => {
       return [];
@@ -69,24 +82,71 @@ export function useConversationSearch(): UseConversationSearch {
       pageCount.current = 1;
     };
   }, [searchConversations, searchKey]);
-
-  return {
-    searchList,
+  const conversationSearchDefaultActions: ConversationSearchDefaultActions = {
     searchConversations,
     resetSearch,
-    loadMoreConversations,
-    onSearchedConversationClick,
-    searchKey,
     setSearchKey,
+    onSearchedConversationClick,
+  };
+  const conversationSearchDataStore: ConversationSearchDataStore = {
+    searchKey,
+    searchList,
+    loadMoreConversations,
+  };
+  return {
+    searchList,
+    searchConversations: searchConversationsCustomCallback
+      ? searchConversationsCustomCallback?.bind(
+          null,
+          conversationSearchDefaultActions,
+          conversationSearchDataStore,
+        )
+      : searchConversations,
+    resetSearch: resetSearchCustomCallback
+      ? resetSearchCustomCallback.bind(
+          null,
+          conversationSearchDefaultActions,
+          conversationSearchDataStore,
+        )
+      : resetSearch,
+    loadMoreConversations,
+    onSearchedConversationClick: onSearchedConversationClickCustomCallback
+      ? onSearchedConversationClickCustomCallback.bind(
+          null,
+          conversationSearchDefaultActions,
+          conversationSearchDataStore,
+        )
+      : onSearchedConversationClick,
+    searchKey,
+    setSearchKey: setSearchKeyCustomCallback
+      ? setSearchKeyCustomCallback.bind(
+          null,
+          conversationSearchDefaultActions,
+          conversationSearchDataStore,
+        )
+      : setSearchKey,
   };
 }
 
 interface UseConversationSearch {
   searchKey: string;
   setSearchKey: Dispatch<string>;
-  searchList: SearchedConversation[];
+  searchList: Conversation[];
   resetSearch: ZeroArgVoidReturns;
   searchConversations: ZeroArgVoidReturns;
   loadMoreConversations: boolean;
   onSearchedConversationClick: OneArgVoidReturns<number>;
+}
+
+export interface ConversationSearchDefaultActions {
+  searchConversations: ZeroArgVoidReturns;
+  resetSearch: ZeroArgVoidReturns;
+  setSearchKey: Dispatch<string>;
+  onSearchedConversationClick: OneArgVoidReturns<number>;
+}
+
+export interface ConversationSearchDataStore {
+  searchKey: string;
+  searchList: Conversation[];
+  loadMoreConversations: boolean;
 }

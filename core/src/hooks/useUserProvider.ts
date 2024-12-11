@@ -8,12 +8,13 @@ import { onMessage } from "firebase/messaging";
 import { generateToken, messaging } from "../notifications/firebase";
 import toast from "react-hot-toast";
 import { CustomActions } from "../customActions";
+import { Community } from "../types/models/Community";
 
 interface UserProviderInterface {
   lmChatUser: null | Member;
-  lmChatUserMemberState: unknown;
+  lmChatUserMemberState: number | null;
   logoutUser: () => void;
-  lmChatUserCurrentCommunity: unknown;
+  lmChatUserCurrentCommunity: Community | null;
 }
 interface Device {
   token: string;
@@ -23,15 +24,16 @@ interface Device {
   xPlatformCode: string;
 }
 export default function useUserProvider(
-  client: LMClient | null,
+  client: LMClient,
   userDetails: UserDetails,
 ): UserProviderInterface {
-  const lmChatclient = client;
+  const lmChatClient = client;
   const [lmChatUser, setLmChatUser] = useState<null | Member>(null);
-  const [lmChatUserMemberState, setLmChatUserMemberState] =
-    useState<unknown>(null);
+  const [lmChatUserMemberState, setLmChatUserMemberState] = useState<
+    number | null
+  >(null);
   const [lmChatUserCurrentCommunity, setLmChatUserCurrentCommunity] =
-    useState<unknown>(null);
+    useState<Community | null>(null);
   const [deviceNotificationTrigger, setDeviceNotificationTrigger] =
     useState<boolean>(false);
   const currentBrowserId = useRef<string>("");
@@ -40,15 +42,15 @@ export default function useUserProvider(
     const { accessToken, refreshToken, username, uuid, isGuest, apiKey } =
       userDetails;
 
-    if (!lmChatclient) {
+    if (!lmChatClient) {
       return;
     }
     function setTokensInLocalStorage(
       accessToken: string,
       refreshToken: string,
     ) {
-      lmChatclient?.setAccessTokenInLocalStorage(accessToken);
-      lmChatclient?.setRefreshTokenInLocalStorage(refreshToken);
+      lmChatClient.setAccessTokenInLocalStorage(accessToken);
+      lmChatClient.setRefreshTokenInLocalStorage(refreshToken);
     }
     async function validateChatUser(
       localAccessToken: string,
@@ -56,24 +58,22 @@ export default function useUserProvider(
     ) {
       try {
         setTokensInLocalStorage(localAccessToken, localRefreshToken);
-        const validateUserCall = await lmChatclient?.validateUser({
+        const validateUserCall = await lmChatClient.validateUser({
           accessToken: localAccessToken,
           refreshToken: localRefreshToken,
         });
-        if (validateUserCall.success) {
-          // Setting tokens in local storage
-          setTokensInLocalStorage(localAccessToken, localRefreshToken);
-          lmChatclient?.setUserInLocalStorage(
-            JSON.stringify(validateUserCall.data?.user),
+        if (validateUserCall?.success) {
+          lmChatClient.setUserInLocalStorage(
+            JSON.stringify(validateUserCall?.data?.user),
           );
         }
-        const memberStateCall = await lmChatclient?.getMemberState();
+        const memberStateCall = await lmChatClient.getMemberState();
         if (validateUserCall && memberStateCall?.success) {
-          const user = {
-            ...validateUserCall.data?.user,
+          const user: Member = {
+            ...validateUserCall?.data?.user,
           };
-          user.state = memberStateCall.data.state;
-          user.memberRights = memberStateCall.data.member_rights;
+          user.state = memberStateCall?.data.state;
+          user.memberRights = memberStateCall?.data.memberRights;
           setLmChatUser(user || null);
           setLmChatUserCurrentCommunity(
             validateUserCall?.data?.community || null,
@@ -97,7 +97,7 @@ export default function useUserProvider(
           throw Error("Either API key or UUID or Username not provided");
         }
 
-        const initiateUserCall = await lmChatclient?.initiateUser({
+        const initiateUserCall = await lmChatClient.initiateUser({
           userUniqueId: uuid,
           userName: username,
           isGuest: isGuest,
@@ -105,30 +105,29 @@ export default function useUserProvider(
         });
         if (initiateUserCall.success) {
           // Setting the tokens, API key and User in local storage
-
           setTokensInLocalStorage(
-            initiateUserCall.data?.access_token || "",
-            initiateUserCall.data?.refresh_token || "",
+            initiateUserCall?.data?.accessToken || "",
+            initiateUserCall?.data?.refreshToken || "",
           );
-          lmChatclient?.setApiKeyInLocalStorage(apiKey);
-          lmChatclient?.setUserInLocalStorage(
-            JSON.stringify(initiateUserCall.data?.user),
+          lmChatClient.setApiKeyInLocalStorage(apiKey);
+          lmChatClient.setUserInLocalStorage(
+            JSON.stringify(initiateUserCall?.data?.user),
           );
         }
-        const memberStateCall = await lmChatclient?.getMemberState();
+        const memberStateCall = await lmChatClient.getMemberState();
         if (initiateUserCall.success && memberStateCall.success) {
-          const user = {
-            ...initiateUserCall.data?.user,
+          const user: Member = {
+            ...initiateUserCall?.data?.user,
           };
-          user.state = memberStateCall.data.state;
-          user.memberRights = memberStateCall.data.member_rights;
+          user.state = memberStateCall?.data.state;
+          user.memberRights = memberStateCall?.data.memberRights;
           setLmChatUser(user || null);
           setLmChatUserCurrentCommunity(
             initiateUserCall?.data?.community || null,
           );
           return {
-            accessToken: initiateUserCall.data?.access_token,
-            refreshToken: initiateUserCall.data?.refresh_token,
+            accessToken: initiateUserCall?.data?.accessToken,
+            refreshToken: initiateUserCall?.data?.refreshToken,
           };
         }
       } catch (error) {
@@ -136,25 +135,14 @@ export default function useUserProvider(
         return error;
       }
     }
-    // document.addEventListener(
-    //   CustomActions.TRIGGER_SET_USER,
-    //   (event) => {
-    //     const { user, community } = (event as CustomEvent).detail;
-    //     setLmFeedUser(user || null);
-    //     setLmFeedUserCurrentCommunity(community || null);
-    //   },
-    // );
-
-    // calling initiateuser and memberstate apis and setting the user details
-    // TODO add a check for tokens
 
     async function setUser() {
       try {
         if (apiKey && username && uuid) {
           const localAccessToken =
-            lmChatclient?.getAccessTokenFromLocalStorage();
+            lmChatClient.getAccessTokenFromLocalStorage();
           const localRefreshToken =
-            lmChatclient?.getRefreshTokenFromLocalStorage();
+            lmChatClient.getRefreshTokenFromLocalStorage();
 
           if (
             localAccessToken &&
@@ -176,28 +164,21 @@ export default function useUserProvider(
       }
     }
 
-    document.addEventListener(
-      CustomActions.TRIGGER_SET_USER,
-      // setUser,
-      () => {
-        setUser();
-      },
-    );
+    document.addEventListener(CustomActions.TRIGGER_SET_USER, () => {
+      setUser();
+    });
     setUser();
     return () => {
       document.removeEventListener(CustomActions.TRIGGER_SET_USER, () => {
         setUser();
       });
     };
-  }, [lmChatclient, userDetails]);
+  }, [lmChatClient, userDetails]);
 
   //
   useEffect(() => {
     async function notification() {
       try {
-        if (deviceNotificationTrigger) {
-          return;
-        }
         const fingerprint = await getCurrentBrowserFingerPrint();
         currentBrowserId.current = fingerprint;
         const token = await generateToken();
@@ -215,17 +196,21 @@ export default function useUserProvider(
         console.log(error);
       }
     }
-    if (!lmChatUser) {
+    if (lmChatUser) {
       notification();
       return () => {
         setDeviceNotificationTrigger(() => false);
       };
     }
-  }, [client, deviceNotificationTrigger, lmChatUser]);
+  }, [client, lmChatUser]);
   useEffect(() => {
     if (deviceNotificationTrigger) {
       return onMessage(messaging, (payload: any) => {
         toast(payload?.notification?.body);
+        const NEW_NOTIFICATIONS_RECIEVED = new CustomEvent(
+          CustomActions.NEW_NOTIFICATIONS_RECIEVED,
+        );
+        dispatchEvent(NEW_NOTIFICATIONS_RECIEVED);
       });
     }
   }, [deviceNotificationTrigger]);

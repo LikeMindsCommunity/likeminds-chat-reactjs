@@ -1,11 +1,10 @@
 import React, { MutableRefObject } from "react";
-import Conversation from "../types/models/conversations";
+import { Conversation } from "../types/models/conversations";
 import { UnknownGetConversationFunction } from "../hooks/useChatroom";
 import { ZeroArgVoidReturns } from "../hooks/useInput";
 
 interface MessageListContextInterface {
   conversations: Conversation[] | null;
-  // setConversations: React.Dispatch<Conversation[]> | null;
   getChatroomConversationsOnTopScroll?: UnknownGetConversationFunction;
   getChatroomConversationsOnBottomScroll?: UnknownGetConversationFunction;
   bottomReferenceDiv: MutableRefObject<HTMLDivElement | null>;
@@ -14,6 +13,7 @@ interface MessageListContextInterface {
   searchedConversationRef: MutableRefObject<HTMLDivElement | null>;
   setChatroomTopic: React.Dispatch<Conversation | null>;
   chatroomTopic: Conversation | null;
+  shouldScrollToBottom: MutableRefObject<boolean>;
 }
 
 const MessageListContext = React.createContext<MessageListContextInterface>(
