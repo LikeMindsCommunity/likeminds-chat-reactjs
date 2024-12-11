@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import LMChatClient, {
-  LMSDKCallbacks,
-} from "@likeminds.community/chat-js-beta";
+import LMChatClient, { LMSDKCallbacks } from "@likeminds.community/chat-js";
 import { CustomActions } from "./customActions";
 import Member from "./types/models/member";
 

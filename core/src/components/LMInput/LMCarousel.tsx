@@ -47,11 +47,11 @@ const LMMediaCarousel = () => {
             selectedItem={currentSelectedIndex}
             onChange={setCurrentSelectedIndex}
           >
-            {imagesAndVideosMediaList.map((file) => {
+            {imagesAndVideosMediaList.map((file, index) => {
               if (file.type.includes(FileType.image)) {
-                return renderLocalImage(file);
+                return renderLocalImage(file, index);
               } else {
-                return renderLocalVideo(file);
+                return renderLocalVideo(file, index);
               }
             })}
           </Carousel>
@@ -86,11 +86,11 @@ const LMMediaCarousel = () => {
     return null;
   }
 };
-function renderLocalImage(file: File) {
+function renderLocalImage(file: File, index: number) {
   return (
     <>
       <img
-        key={file.name}
+        key={file.name.concat(index.toString())}
         src={URL.createObjectURL(file)}
         alt={file.type}
         className="lm-input-carousel-image-element"
@@ -98,10 +98,10 @@ function renderLocalImage(file: File) {
     </>
   );
 }
-function renderLocalVideo(file: File) {
+function renderLocalVideo(file: File, index: number) {
   return (
     <video
-      key={file.name}
+      key={file.name.concat(index.toString())}
       src={URL.createObjectURL(file)}
       className="lm-input-carousel-video-element"
     ></video>

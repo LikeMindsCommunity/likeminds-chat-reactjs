@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-
 import {
   LMChatAIButton,
   initiateLMClient,
-  // } from "@likeminds.community/likeminds-chat-reactjs";
-} from "likeminds-chat-reactjs-beta";
+} from "@likeminds.community/likeminds-chat-reactjs";
 import React from "react";
 import "./App.css";
 

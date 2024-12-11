@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-
 import {
   LMClientOverlayProvider,
   LMChannel,
   initiateLMClient,
   LMChatCurrentMode,
-  // } from "@likeminds.community/likeminds-chat-reactjs";
-} from "likeminds-chat-reactjs-beta";
+} from "@likeminds.community/likeminds-chat-reactjs";
 
 const App = () => {
   const [userDetails, setUserDetails] = useState<{

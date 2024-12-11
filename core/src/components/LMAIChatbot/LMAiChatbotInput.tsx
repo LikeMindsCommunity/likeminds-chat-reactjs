@@ -117,7 +117,7 @@ const LMAIChatbotInput: React.FC = () => {
       // Default component
       return (
         <>
-          <LMChatTextArea />
+          <LMChatTextArea placeholderText="Ask your query" />
           <div className="lm-channel-icon send lm-cursor-pointer">
             <button
               onClick={() => postMessage()}

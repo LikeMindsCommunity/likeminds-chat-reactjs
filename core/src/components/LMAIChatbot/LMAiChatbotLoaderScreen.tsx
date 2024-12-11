@@ -23,9 +23,7 @@ export const AIChatbotLoaderScreen: React.FC<LMAIChatbotLoaderScreenProps> = ({
           width={400}
           loop={true}
         />
-        <div className="lm-chai-ai-bot-label">
-          {previewText || `Setting up AI chatbot`}
-        </div>
+        <div className="lm-chai-ai-bot-label">{previewText || ""}</div>
       </div>
     </div>
   );

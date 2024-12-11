@@ -2,7 +2,7 @@ import React, { SyntheticEvent, useState } from "react";
 import { Carousel } from "react-bootstrap";
 import crossIcon from "../../assets/img/carousel-cross-icon.svg";
 import pdfIcon from "../../assets/img/pdf-document.svg";
-import { Attachment } from "@likeminds.community/chat-js-beta";
+import { Attachment } from "@likeminds.community/chat-js";
 import {
   SupportedDocumentMediaType,
   SupportedImageMediaType,
