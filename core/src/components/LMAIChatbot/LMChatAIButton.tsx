@@ -51,6 +51,7 @@ const LMChatAIButton: React.FC<
       }, 3000);
       return () => {
         clearTimeout(timeoutId);
+        setShowSettingUpChatbotText(false);
       };
     }
   }, [isAIBotOpen]);
