@@ -7,8 +7,12 @@ import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderC
 export const AIChatbotLoaderScreen: React.FC<LMAIChatbotLoaderScreenProps> = ({
   previewText,
   loadingScreenAnimatons,
+  showSettingUpChatbotText = true,
 }) => {
   const { customComponents } = useContext(LMGlobalClientProviderContext);
+
+  // String to show if loading take more than 3 seconds
+  const SETTING_UP_CHATBOT_TEXT = "setting up the chatbot";
 
   if (customComponents?.aiChatbotLoaderScreen) {
     return <customComponents.aiChatbotLoaderScreen />;
@@ -23,7 +27,10 @@ export const AIChatbotLoaderScreen: React.FC<LMAIChatbotLoaderScreenProps> = ({
           width={400}
           loop={true}
         />
-        <div className="lm-chai-ai-bot-label">{previewText || ""}</div>
+        <div className="lm-chai-ai-bot-label">
+          {previewText ||
+            `${showSettingUpChatbotText ? SETTING_UP_CHATBOT_TEXT : ""}`}
+        </div>
       </div>
     </div>
   );
@@ -31,4 +38,5 @@ export const AIChatbotLoaderScreen: React.FC<LMAIChatbotLoaderScreenProps> = ({
 export interface LMAIChatbotLoaderScreenProps {
   loadingScreenAnimatons?: JSON;
   previewText?: string;
+  showSettingUpChatbotText?: boolean;
 }

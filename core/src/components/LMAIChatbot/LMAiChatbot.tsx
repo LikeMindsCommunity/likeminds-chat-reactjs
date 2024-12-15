@@ -7,6 +7,8 @@ import { AIChatbotLoaderScreen } from "./LMAiChatbotLoaderScreen";
 const LMAIChatbot: FC<LMChatAIButtonProps> = ({
   previewText,
   loadingScreenAnimatons,
+  closeAIChatbot,
+  showSettingUpChatbotText = false,
 }) => {
   // Variables destructured form Hook
   const { showAnimation, aiChatbotChatroomId } = useAIChatbot();
@@ -18,11 +20,17 @@ const LMAIChatbot: FC<LMChatAIButtonProps> = ({
         <AIChatbotLoaderScreen
           previewText={previewText}
           loadingScreenAnimatons={loadingScreenAnimatons}
+          showSettingUpChatbotText={showSettingUpChatbotText}
         />
       );
     } else {
       if (aiChatbotChatroomId) {
-        return <LMAIBotScreen aiChatbotChatroomId={aiChatbotChatroomId} />;
+        return (
+          <LMAIBotScreen
+            closeAIChatbot={closeAIChatbot}
+            aiChatbotChatroomId={aiChatbotChatroomId}
+          />
+        );
       }
     }
   };

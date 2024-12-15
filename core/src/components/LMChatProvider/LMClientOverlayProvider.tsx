@@ -28,6 +28,7 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
     lmChatUserMemberState,
     logoutUser,
     lmChatUserCurrentCommunity,
+    userNotLoadedErrorState,
   } = useUserProvider(client, userDetails);
   const [showSnackbarMessage, setShowSnackbarMessage] = useState<string | null>(
     null,
@@ -46,6 +47,14 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
   const closeSnackbar = () => {
     setShowSnackbarMessage(() => null);
   };
+
+  if (userNotLoadedErrorState) {
+    if (customComponents?.userNotLoadedErrorScreen) {
+      return <customComponents.userNotLoadedErrorScreen />;
+    } else {
+      return null;
+    }
+  }
   if (!lmChatUser) {
     if (customComponents?.userNotLoadedLoaderScreen) {
       return <customComponents.userNotLoadedLoaderScreen />;
@@ -53,7 +62,6 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
       return null;
     }
   }
-
   return (
     <GlobalClientProviderContext.Provider
       value={{
