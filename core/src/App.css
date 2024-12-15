@@ -2772,6 +2772,65 @@ input.disabled-state {
   border: 1px solid #E6EBF5;
 }
 
+.lm-ai-chatbot-error-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.lm-ai-chatbot-error-state>span {
+  font-size: 16px;
+  line-height: 20px;
+  text-align: center;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  margin-top: 21px;
+  color: #8E8E93;
+}
+
+.close-ai-chatbot {
+  display: none;
+}
+
+@media only screen and (max-width: 475px) {
+  .lm-chat-ai-bot-button.open-state {
+    position: static
+  }
+
+  .lm-chat-ai-bot-fab-container {
+    display: block !important;
+  }
+
+  .lm-chat-ai-bot-container {
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+  }
+
+  .lm-channel {
+    padding: 0;
+  }
+
+  .lm-chat-ai-bot-fab-button.open {
+    display: none;
+  }
+
+  .close-ai-chatbot {
+    display: inline-block;
+    position: absolute;
+    right: 20px;
+    top: 22px;
+    cursor: pointer;
+  }
+
+  .lm-chat-ai-bot-channel .lm-chat-card.receiver {
+    width: 80vw;
+  }
+}
+
+
 .lm-chat-ai-bot-loader {
   height: 100%;
 }
@@ -2781,6 +2840,7 @@ input.disabled-state {
   bottom: 117px;
   text-align: center;
   width: 100%;
+  color: #9B9B9B;
 }
 
 .lm-chat-ai-bot-fab-button {

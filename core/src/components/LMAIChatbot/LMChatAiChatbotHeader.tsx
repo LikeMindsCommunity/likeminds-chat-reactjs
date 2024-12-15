@@ -5,8 +5,15 @@ import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import UserProviderContext from "../../context/LMUserProviderContext";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { Utils } from "../../utils/helpers";
+import CloseIconImage from "../../assets/img/close-chatbot-mobile-icon.png";
 
-const LMChatAIChatbotHeader: FC = () => {
+export interface LMChatAIChatbotHeaderInterface {
+  closeAiChatbot?: () => void;
+}
+
+const LMChatAIChatbotHeader: FC<LMChatAIChatbotHeaderInterface> = ({
+  closeAiChatbot,
+}) => {
   const { chatroomDetails } = useContext(LMChatroomContext);
   const { currentUser } = useContext(UserProviderContext);
   const { customComponents } = useContext(LMGlobalClientProviderContext);
@@ -58,6 +65,9 @@ const LMChatAIChatbotHeader: FC = () => {
           <div className="lm-channel-img">{chatroomAvatar}</div>
           <div className="lm-channel-desc">
             <div className="lm-channel-title">{chatroomTitle}</div>
+            <span className="close-ai-chatbot" onClick={closeAiChatbot}>
+              <img src={CloseIconImage} alt="CloseIcon" className="src" />
+            </span>
           </div>
         </div>
       </div>

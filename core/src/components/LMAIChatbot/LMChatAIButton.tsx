@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useMemo,
   useState,
+  useEffect,
 } from "react";
 import chatBotIcon from "../../assets/img/ai-chatbot-icon.png";
 import closeBotIcon from "../../assets/img/close-ai-bot.png";
@@ -15,11 +16,16 @@ import {
   LMAIChatbotLoaderScreenProps,
 } from "./LMAiChatbotLoaderScreen";
 import { CustomComponents } from "../../types/prop-types/CustomComponents";
+import LMAIChatbotErrorScreen, {
+  LMAIChatbotErrorScreenProps,
+} from "./LMAIChatbotErrorScreen";
 
 export interface LMChatAIButtonProps {
   buttonText?: string;
   loadingScreenAnimatons?: JSON;
   previewText?: string;
+  closeAiChatbot?: () => void;
+  showSettingUpChatbotText?: boolean;
 }
 
 const LMChatAIButton: React.FC<
@@ -34,7 +40,20 @@ const LMChatAIButton: React.FC<
   loadingScreenAnimatons,
 }) => {
   const [isAiBotOpen, setIsAiBotOpen] = useState<boolean>(false);
+  const [showSettingUpChatbotText, setShowSettingUpChatbotText] =
+    useState<boolean>(false);
 
+  // Effect to show  Setting up chatbot text, if loader screen is on for more than 3 seconds
+  useEffect(() => {
+    if (isAiBotOpen) {
+      const timeoutId = setTimeout(() => {
+        setShowSettingUpChatbotText(true);
+      }, 3000);
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    }
+  }, [isAiBotOpen]);
   const openAIBot = () => {
     setIsAiBotOpen(true);
   };
@@ -64,13 +83,22 @@ const LMChatAIButton: React.FC<
     (
       previewText: string | undefined,
       loadingScreenAnimations: JSON | undefined,
+      showSettingUpChatbotText?: boolean,
     ): FC<LMAIChatbotLoaderScreenProps> => {
       return () => (
         <AIChatbotLoaderScreen
           previewText={previewText}
           loadingScreenAnimatons={loadingScreenAnimations}
+          showSettingUpChatbotText={showSettingUpChatbotText}
         />
       );
+    },
+    [],
+  );
+
+  const renderErrorScreenWithDefaultProps = useCallback(
+    (errorMessage?: string): FC<LMAIChatbotErrorScreenProps> => {
+      return () => <LMAIChatbotErrorScreen errorMessage={errorMessage} />;
     },
     [],
   );
@@ -81,20 +109,35 @@ const LMChatAIButton: React.FC<
       ...customComponents,
       userNotLoadedLoaderScreen: customComponents?.aiChatbotLoaderScreen
         ? customComponents.aiChatbotLoaderScreen
-        : returnWithDefaultProps(previewText, loadingScreenAnimatons),
+        : returnWithDefaultProps(
+            previewText,
+            loadingScreenAnimatons,
+            showSettingUpChatbotText,
+          ),
       noChatroomSelected: customComponents?.noChatroomSelected
         ? customComponents?.noChatroomSelected
-        : returnWithDefaultProps(previewText, loadingScreenAnimatons),
+        : returnWithDefaultProps(
+            previewText,
+            loadingScreenAnimatons,
+            showSettingUpChatbotText,
+          ),
+      userNotLoadedErrorScreen: customComponents?.userNotLoadedErrorScreen
+        ? customComponents.userNotLoadedErrorScreen
+        : renderErrorScreenWithDefaultProps(),
     };
   }, [
     customComponents,
     loadingScreenAnimatons,
     previewText,
+    renderErrorScreenWithDefaultProps,
     returnWithDefaultProps,
+    showSettingUpChatbotText,
   ]);
 
   return (
-    <div className="lm-chat-ai-bot-button">
+    <div
+      className={`lm-chat-ai-bot-button ${isAiBotOpen ? "open-state" : "close-state"}`}
+    >
       <div className="lm-chat-ai-bot-fab-container">
         {isAiBotOpen ? closeChatbotButton : openChatbotButton}
         {isAiBotOpen && (
@@ -107,6 +150,8 @@ const LMChatAIButton: React.FC<
             <LMAIChatbot
               previewText={previewText}
               loadingScreenAnimatons={loadingScreenAnimatons}
+              closeAiChatbot={closeAIBot}
+              showSettingUpChatbotText={showSettingUpChatbotText}
             />
           </LMClientOverlayProvider>
         )}

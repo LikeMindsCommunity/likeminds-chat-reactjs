@@ -15,6 +15,7 @@ interface UserProviderInterface {
   lmChatUserMemberState: number | null;
   logoutUser: () => void;
   lmChatUserCurrentCommunity: Community | null;
+  userNotLoadedErrorState: boolean;
 }
 interface Device {
   token: string;
@@ -35,6 +36,8 @@ export default function useUserProvider(
   const [lmChatUserCurrentCommunity, setLmChatUserCurrentCommunity] =
     useState<Community | null>(null);
   const [deviceNotificationTrigger, setDeviceNotificationTrigger] =
+    useState<boolean>(false);
+  const [userNotLoadedErrorState, setUserNotLoadedErrorState] =
     useState<boolean>(false);
   const currentBrowserId = useRef<string>("");
 
@@ -161,6 +164,7 @@ export default function useUserProvider(
         }
       } catch (error) {
         console.log(error);
+        setUserNotLoadedErrorState(true);
       }
     }
 
@@ -224,5 +228,6 @@ export default function useUserProvider(
     lmChatUserMemberState,
     logoutUser,
     lmChatUserCurrentCommunity,
+    userNotLoadedErrorState,
   };
 }

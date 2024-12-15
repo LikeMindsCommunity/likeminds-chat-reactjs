@@ -77,6 +77,7 @@ export interface CustomComponents {
   noChatroomSelected?: CustomComponentType;
   userNotLoadedLoaderScreen?: CustomComponentType;
   aiChatbotLoaderScreen?: CustomComponentType;
+  userNotLoadedErrorScreen?: CustomComponentType;
 }
 
 export interface InputCustomActions {
