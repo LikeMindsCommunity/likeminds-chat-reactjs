@@ -8,11 +8,11 @@ import { Utils } from "../../utils/helpers";
 import CloseIconImage from "../../assets/img/close-chatbot-mobile-icon.png";
 
 export interface LMChatAIChatbotHeaderInterface {
-  closeAiChatbot?: () => void;
+  closeAIChatbot?: () => void;
 }
 
 const LMChatAIChatbotHeader: FC<LMChatAIChatbotHeaderInterface> = ({
-  closeAiChatbot,
+  closeAIChatbot,
 }) => {
   const { chatroomDetails } = useContext(LMChatroomContext);
   const { currentUser } = useContext(UserProviderContext);
@@ -65,7 +65,7 @@ const LMChatAIChatbotHeader: FC<LMChatAIChatbotHeaderInterface> = ({
           <div className="lm-channel-img">{chatroomAvatar}</div>
           <div className="lm-channel-desc">
             <div className="lm-channel-title">{chatroomTitle}</div>
-            <span className="close-ai-chatbot" onClick={closeAiChatbot}>
+            <span className="close-ai-chatbot" onClick={closeAIChatbot}>
               <img src={CloseIconImage} alt="CloseIcon" className="src" />
             </span>
           </div>

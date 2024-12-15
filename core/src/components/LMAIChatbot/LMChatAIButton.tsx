@@ -24,7 +24,7 @@ export interface LMChatAIButtonProps {
   buttonText?: string;
   loadingScreenAnimatons?: JSON;
   previewText?: string;
-  closeAiChatbot?: () => void;
+  closeAIChatbot?: () => void;
   showSettingUpChatbotText?: boolean;
 }
 
@@ -39,13 +39,13 @@ const LMChatAIButton: React.FC<
   previewText,
   loadingScreenAnimatons,
 }) => {
-  const [isAiBotOpen, setIsAiBotOpen] = useState<boolean>(false);
+  const [isAIBotOpen, setIsAIBotOpen] = useState<boolean>(false);
   const [showSettingUpChatbotText, setShowSettingUpChatbotText] =
     useState<boolean>(false);
 
   // Effect to show  Setting up chatbot text, if loader screen is on for more than 3 seconds
   useEffect(() => {
-    if (isAiBotOpen) {
+    if (isAIBotOpen) {
       const timeoutId = setTimeout(() => {
         setShowSettingUpChatbotText(true);
       }, 3000);
@@ -53,13 +53,13 @@ const LMChatAIButton: React.FC<
         clearTimeout(timeoutId);
       };
     }
-  }, [isAiBotOpen]);
+  }, [isAIBotOpen]);
   const openAIBot = () => {
-    setIsAiBotOpen(true);
+    setIsAIBotOpen(true);
   };
 
   const closeAIBot = () => {
-    setIsAiBotOpen(false);
+    setIsAIBotOpen(false);
   };
 
   // Button component for open state
@@ -136,11 +136,11 @@ const LMChatAIButton: React.FC<
 
   return (
     <div
-      className={`lm-chat-ai-bot-button ${isAiBotOpen ? "open-state" : "close-state"}`}
+      className={`lm-chat-ai-bot-button ${isAIBotOpen ? "open-state" : "close-state"}`}
     >
       <div className="lm-chat-ai-bot-fab-container">
-        {isAiBotOpen ? closeChatbotButton : openChatbotButton}
-        {isAiBotOpen && (
+        {isAIBotOpen ? closeChatbotButton : openChatbotButton}
+        {isAIBotOpen && (
           <LMClientOverlayProvider
             lmChatCoreCallbacks={lmChatCoreCallbacks}
             client={client}
@@ -150,7 +150,7 @@ const LMChatAIButton: React.FC<
             <LMAIChatbot
               previewText={previewText}
               loadingScreenAnimatons={loadingScreenAnimatons}
-              closeAiChatbot={closeAIBot}
+              closeAIChatbot={closeAIBot}
               showSettingUpChatbotText={showSettingUpChatbotText}
             />
           </LMClientOverlayProvider>

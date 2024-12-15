@@ -7,7 +7,7 @@ import { AIChatbotLoaderScreen } from "./LMAiChatbotLoaderScreen";
 const LMAIChatbot: FC<LMChatAIButtonProps> = ({
   previewText,
   loadingScreenAnimatons,
-  closeAiChatbot,
+  closeAIChatbot,
   showSettingUpChatbotText = false,
 }) => {
   // Variables destructured form Hook
@@ -27,7 +27,7 @@ const LMAIChatbot: FC<LMChatAIButtonProps> = ({
       if (aiChatbotChatroomId) {
         return (
           <LMAIBotScreen
-            closeAiChatbot={closeAiChatbot}
+            closeAIChatbot={closeAIChatbot}
             aiChatbotChatroomId={aiChatbotChatroomId}
           />
         );
