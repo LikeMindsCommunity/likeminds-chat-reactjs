@@ -1,0 +1,5 @@
+export enum LMChatTheme {
+  COMMUNITY_THEME = "COMMUNITY_THEME",
+  NETWORK_THEME = "NETWORK_THEME",
+  HYBRID = "HYBRID",
+}

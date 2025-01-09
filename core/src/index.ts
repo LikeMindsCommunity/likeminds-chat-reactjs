@@ -77,6 +77,7 @@ import LMChatAIChatbotHeader from "./components/LMAIChatbot/LMChatAiChatbotHeade
 import LMChatbotAIBotInputAttachmentSelector from "./components/LMAIChatbot/LMChatbotAiBotInputAttachmentSelector";
 import { useAIChatbot } from "./hooks/useAiChatbot";
 import { LMChatCurrentMode } from "./enums/lm-chat-modes";
+import { LMChatTheme } from "./enums/lm-chat-theme";
 export {
   LMInput,
   LMHeader,
@@ -149,6 +150,7 @@ export {
   LMMessageListCustomActionsContext,
   initiateLMClient,
   LMChatCurrentMode,
+  LMChatTheme,
   // EXPORTS FOR AI CHATBOT
   LMAIBotScreen,
   LMAIChatbot as LMAiChatbot,
