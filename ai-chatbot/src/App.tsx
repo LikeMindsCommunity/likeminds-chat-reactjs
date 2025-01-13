@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   LMChatAIButton,
+  LMChatTheme,
   initiateLMClient,
 } from "@likeminds.community/likeminds-chat-reactjs";
 import React from "react";
@@ -31,7 +32,13 @@ const App = () => {
     });
   }, []);
 
-  return <LMChatAIButton client={lmChatClient} userDetails={userDetails} />;
+  return (
+    <LMChatAIButton
+      client={lmChatClient}
+      userDetails={userDetails}
+      lmChatTheme={LMChatTheme.NETWORK_THEME}
+    />
+  );
 };
 
 export default App;
