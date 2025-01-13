@@ -35,11 +35,6 @@ const App = () => {
   return (
     <LMClientOverlayProvider
       client={lmChatClient}
-      // userDetails={{
-      //   apiKey: "3966d591-3ba1-46db-b25b-69a45e1414f3",
-      //   username: "testUser0002",
-      //   uuid: "testUser0002",
-      // }}
       userDetails={userDetails}
       lmChatTheme={LMChatTheme.COMMUNITY_THEME}
     >
