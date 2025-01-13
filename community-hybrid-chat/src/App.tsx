@@ -59,7 +59,7 @@ const App = () => {
       <LMClientOverlayProvider
         client={lmChatClient}
         userDetails={userDetails}
-        lmChatTheme={LMChatTheme.HYBRID}
+        lmChatTheme={LMChatTheme.COMMUNITY_HYBRID_CHAT}
       >
         <LMChannel currentMode={currentChatMode} />
       </LMClientOverlayProvider>
