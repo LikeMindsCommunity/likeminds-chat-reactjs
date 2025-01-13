@@ -2925,6 +2925,8 @@ input.disabled-state {
   background: white;
   background: rgba(0, 0, 0, 0.7);
   display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .lm-media-render-close-icon {
@@ -2974,4 +2976,8 @@ input.disabled-state {
 ::-webkit-scrollbar-corner {
   background: #f0f0f0;
   /* Match the track background */
+}
+
+.lm-dual-scroll-container-bottom-block {
+  height: 2px;
 }

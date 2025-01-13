@@ -67,7 +67,7 @@ function MessageOptions() {
 
   return (
     <div>
-      <Dialog open={dialogOpen} onClose={closeDialog}>
+      <Dialog open={dialogOpen} onClose={closeDialog} aria-hidden="false">
         <ReportTagsDialog reportCallback={onReport} closeDialog={closeDialog} />
       </Dialog>
       <Menu
