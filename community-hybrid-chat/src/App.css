@@ -1,0 +1,20 @@
+.chat-switcher {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 12px;
+    border-bottom: 0.5px solid #EEEEEE;
+}
+
+.chat-switch {
+    background-color: #3EB489;
+    padding: 8px 12px;
+    font-weight: 600;
+    color: #FFFFFF;
+    font-size: 24px;
+    border: none;
+    outline: none;
+    margin: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+}
