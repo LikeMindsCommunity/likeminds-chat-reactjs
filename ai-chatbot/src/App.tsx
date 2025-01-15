@@ -36,7 +36,7 @@ const App = () => {
     <LMChatAIButton
       client={lmChatClient}
       userDetails={userDetails}
-      lmChatTheme={LMChatTheme.NETWORK_THEME}
+      lmChatTheme={LMChatTheme.NETWORKING_CHAT}
     />
   );
 };

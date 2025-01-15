@@ -2,6 +2,8 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+  ;
 }
 
 #root {
@@ -362,7 +364,7 @@ body {
 }
 
 .reactionUser .remove-emoji-text {
-  font-family: Roboto;
+  font-family: "Roboto", sans-serif;
   font-size: 0.875rem;
   font-weight: normal;
   font-stretch: normal;
@@ -390,7 +392,7 @@ body {
 }
 
 .lm-chat-message-reaction .reaction-count {
-  font-family: Roboto;
+  font-family: "Roboto", sans-serif;
   font-size: 0.688rem;
   font-weight: normal;
   font-stretch: normal;
@@ -1211,6 +1213,7 @@ body {
 
 .lm-media .pdf img {
   width: 24px;
+  border-radius: 0px;
 }
 
 .lm-media .pdf .pdfName {
@@ -1830,7 +1833,7 @@ body {
 }
 
 .poll-options-head-text {
-  font-family: Roboto;
+  font-family: "Roboto", sans-serif;
   font-size: 12px;
   font-weight: 400;
   line-height: 20px;
@@ -1877,7 +1880,7 @@ body {
 }
 
 .poll-expires-heading {
-  font-family: Roboto;
+  font-family: "Roboto", sans-serif;
   font-size: 12px;
   font-weight: 400;
   line-height: 20px;
@@ -1934,6 +1937,7 @@ body {
 }
 
 .poll-create-button {
+  margin-top: 12px !important;
   width: 54px;
   height: 54px;
   background-color: #00897B !important;
@@ -2349,7 +2353,7 @@ body {
 }
 
 p.dm-request-respond-message {
-  font-family: Roboto;
+  font-family: "Roboto", sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
@@ -2370,7 +2374,7 @@ p.dm-request-respond-message {
   width: 111px;
   height: 48px;
   border-radius: 4px;
-  font-family: Roboto;
+  font-family: "Roboto", sans-serif;
   font-size: 14px;
   font-weight: 500;
   line-height: 16.41px;
@@ -2980,4 +2984,8 @@ input.disabled-state {
 
 .lm-dual-scroll-container-bottom-block {
   height: 2px;
+}
+
+.lm-chat-conversation-preview-icon {
+  margin-bottom: -4px;
 }

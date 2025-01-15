@@ -42,7 +42,7 @@ const LMChannel = ({
           <LMChannelList
             currentChatroomId={currentChatroomId}
             currentMode={
-              lmChatTheme === LMChatTheme.NETWORK_THEME
+              lmChatTheme === LMChatTheme.NETWORKING_CHAT
                 ? LMChatCurrentMode.DIRECT_MESSAGE
                 : currentMode
             }

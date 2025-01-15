@@ -405,6 +405,8 @@ export function useInput(): UseInputReturns {
         const messageText = Utils.extractTextFromNode(
           inputBoxRef.current!,
         ).trim();
+        setOpenGifCollapse(false);
+        setGifMedia(null);
         if (
           chatroomDetails.chatroom.type ===
             ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
@@ -446,7 +448,10 @@ export function useInput(): UseInputReturns {
 
         const attachmentsList = imagesAndVideosMediaList
           ? [...imagesAndVideosMediaList]
-          : [...(documentsMediaList || [])];
+          : documentsMediaList
+            ? [...documentsMediaList]
+            : [];
+
         setImagesAndVideosMediaList([]);
         setDocumentMediaList([]);
         const temporaryId = Date.now().toString();

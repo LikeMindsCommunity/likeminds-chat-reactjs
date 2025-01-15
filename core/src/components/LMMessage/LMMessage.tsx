@@ -137,14 +137,6 @@ const LMMessage = () => {
           </div>
           <div className="time">{message?.createdAt}</div>
         </div>
-        <div className={`actions ${message?.deletedBy ? "none" : ""}`}>
-          <div className="lm-cursor-pointer">
-            <MessageOptions />
-          </div>
-          <div className="lm-cursor-pointer">
-            <Reactions />
-          </div>
-        </div>
       </div>
     );
   }

@@ -148,7 +148,7 @@ const LMChatAIButton: React.FC<
             client={client}
             userDetails={userDetails}
             customComponents={customComponentsProp}
-            lmChatTheme={LMChatTheme.NETWORK_THEME}
+            lmChatTheme={LMChatTheme.NETWORKING_CHAT}
           >
             <LMAIChatbot
               previewText={previewText}

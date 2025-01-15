@@ -36,7 +36,7 @@ const App = () => {
     <LMClientOverlayProvider
       client={lmChatClient}
       userDetails={userDetails}
-      lmChatTheme={LMChatTheme.NETWORK_THEME}
+      lmChatTheme={LMChatTheme.NETWORKING_CHAT}
     >
       <LMChannel currentMode={LMChatCurrentMode.GROUP_CHAT} />
     </LMClientOverlayProvider>

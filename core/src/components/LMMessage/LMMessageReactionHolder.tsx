@@ -31,98 +31,106 @@ const MessageReactionHolder = () => {
   }
   return (
     <div className="lm-chat-message-reactions-holder">
-      <Dialog
-        open={dialogOpen}
-        onClose={closeDialog}
-        className="reactions-dialog"
-      >
-        <div className="message-reactions-members-list">
-          <div className="reactionHeader">
-            Reactions({message?.reactions?.length})
-            <img
-              src={cancelIcon}
-              alt="close"
-              className="close-icon"
-              onClick={closeDialog}
-            />
-          </div>
-
-          <Tabs
-            value={selectedReaction}
-            onChange={(_, newValue) => {
-              setSelectedReaction(newValue);
-            }}
-          >
-            <div className="reactions-selection-tabs">
-              <Tab value={""} label={"All"} />
-
-              {Object.keys(messageReactionMap).map((reaction, index) => {
-                return (
-                  <Tab
-                    key={reaction.concat(index.toString())}
-                    value={reaction}
-                    label={reaction}
-                  />
-                );
-              })}
+      {message?.reactions?.length ? (
+        <Dialog
+          open={dialogOpen}
+          onClose={closeDialog}
+          className="reactions-dialog"
+        >
+          <div className="message-reactions-members-list">
+            <div className="reactionHeader">
+              Reactions({message?.reactions?.length})
+              <img
+                src={cancelIcon}
+                alt="close"
+                className="close-icon"
+                onClick={closeDialog}
+              />
             </div>
-          </Tabs>
 
-          <div className="reaction-users-list">
-            {selectedReaction.length !== 0
-              ? messageReactionMap[selectedReaction]?.map((reactions) => {
+            <Tabs
+              value={selectedReaction}
+              onChange={(_, newValue) => {
+                setSelectedReaction(newValue);
+              }}
+            >
+              <div className="reactions-selection-tabs">
+                <Tab value={""} label={"All"} />
+
+                {Object.keys(messageReactionMap).map((reaction, index) => {
                   return (
-                    <div className="reactionUser" key={reactions?.member?.uuid}>
-                      <div className="userImg">
-                        {reactions?.member?.imageUrl ? (
-                          <img src={reactions.member.imageUrl} alt="image" />
-                        ) : (
-                          <div>{reactions?.member?.name[0]}</div>
-                        )}
-                      </div>
-                      <div className="userName">
-                        <div className="name">{reactions?.member?.name}</div>
-                        <div
-                          className="remove-emoji-text"
-                          onClick={() => {
-                            removeReactionLocally();
-                            removeReaction(reactions.reaction.toString());
-                          }}
-                        >
-                          {ConstantStrings.CLICK_TO_REMOVE_REACTION}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })
-              : message?.reactions?.map((reactions) => {
-                  return (
-                    <div className="reactionUser" key={reactions?.member?.uuid}>
-                      <div className="userImg">
-                        {reactions?.member?.imageUrl ? (
-                          <img src={reactions.member.imageUrl} alt="image" />
-                        ) : (
-                          <div>{reactions.member?.name[0]}</div>
-                        )}
-                      </div>
-                      <div className="userName">
-                        <div className="name">{reactions?.member?.name}</div>
-                        <div
-                          className="remove-emoji-text"
-                          onClick={() => {
-                            removeReactionLocally();
-                            removeReaction(reactions.reaction.toString());
-                          }}
-                        >
-                          {ConstantStrings.CLICK_TO_REMOVE_REACTION}
-                        </div>
-                      </div>
-                    </div>
+                    <Tab
+                      key={reaction.concat(index.toString())}
+                      value={reaction}
+                      label={reaction}
+                    />
                   );
                 })}
+              </div>
+            </Tabs>
+
+            <div className="reaction-users-list">
+              {selectedReaction.length !== 0
+                ? messageReactionMap[selectedReaction]?.map((reactions) => {
+                    return (
+                      <div
+                        className="reactionUser"
+                        key={reactions?.member?.uuid}
+                      >
+                        <div className="userImg">
+                          {reactions?.member?.imageUrl ? (
+                            <img src={reactions.member.imageUrl} alt="image" />
+                          ) : (
+                            <div>{reactions?.member?.name[0]}</div>
+                          )}
+                        </div>
+                        <div className="userName">
+                          <div className="name">{reactions?.member?.name}</div>
+                          <div
+                            className="remove-emoji-text"
+                            onClick={() => {
+                              removeReactionLocally();
+                              removeReaction(reactions.reaction.toString());
+                            }}
+                          >
+                            {ConstantStrings.CLICK_TO_REMOVE_REACTION}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                : message?.reactions?.map((reactions) => {
+                    return (
+                      <div
+                        className="reactionUser"
+                        key={reactions?.member?.uuid}
+                      >
+                        <div className="userImg">
+                          {reactions?.member?.imageUrl ? (
+                            <img src={reactions.member.imageUrl} alt="image" />
+                          ) : (
+                            <div>{reactions.member?.name[0]}</div>
+                          )}
+                        </div>
+                        <div className="userName">
+                          <div className="name">{reactions?.member?.name}</div>
+                          <div
+                            className="remove-emoji-text"
+                            onClick={() => {
+                              removeReactionLocally();
+                              removeReaction(reactions.reaction.toString());
+                            }}
+                          >
+                            {ConstantStrings.CLICK_TO_REMOVE_REACTION}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+            </div>
           </div>
-        </div>
-      </Dialog>
+        </Dialog>
+      ) : null}
 
       {Object.keys(messageReactionMap).map((reaction, index) => {
         const reactionObject = messageReactionMap[reaction];

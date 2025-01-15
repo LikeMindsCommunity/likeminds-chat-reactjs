@@ -114,7 +114,7 @@ function MessageOptions() {
             if (message.member.id.toString() === currentUser?.id.toString()) {
               return null;
             }
-            if (lmChatTheme === LMChatTheme.NETWORK_THEME) {
+            if (lmChatTheme === LMChatTheme.NETWORKING_CHAT) {
               return null;
             }
           }

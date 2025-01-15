@@ -20,6 +20,13 @@ import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderC
 import { Chatroom } from "../../types/models/Chatroom";
 import { Conversation } from "../../types/models/conversations";
 
+import previewIconImage from "../../assets/img/preview-icon-image.svg";
+import previewIconDoc from "../../assets/img/preview-icon-file.svg";
+import previewIconPoll from "../../assets/img/preview-icon-poll.svg";
+import { Attachment } from "../../types/models/Attachment";
+import { FileTypeInitials } from "../../enums/lm-file-type-initials";
+import { FileType } from "../../types/enums/Filetype";
+
 export interface LMGroupChatChannelListProps {
   currentChatroomId?: number;
 }
@@ -52,6 +59,44 @@ function LMChatGroupChannelList({
   const onCloseSearch = () => {
     setOpenSearchField(false);
   };
+
+  function returnAttachmentPreviewIcon(conversation: Conversation) {
+    if (conversation.polls) {
+      return (
+        <img
+          src={previewIconPoll}
+          alt="poll-preview-icon"
+          className="lm-chat-conversation-preview-icon"
+        />
+      );
+    }
+    if (conversation.attachmentCount) {
+      const attachmentArray = conversation.attachments!;
+      if (!attachmentArray) {
+        return null;
+      }
+      const firstAttachment = attachmentArray[0];
+      const attachmentType = firstAttachment?.type;
+      switch (attachmentType) {
+        case "pdf":
+          return (
+            <img
+              src={previewIconDoc}
+              alt="doc-preview-icon"
+              className="lm-chat-conversation-preview-icon"
+            />
+          );
+        default:
+          return (
+            <img
+              src={previewIconImage}
+              alt="image-preview-icon"
+              className="lm-chat-conversation-preview-icon"
+            />
+          );
+      }
+    } else return null;
+  }
 
   const renderLastConversationUsername = (chatroom: Chatroom) => {
     const lastConversationId = chatroom?.lastConversationId || "";
@@ -148,26 +193,45 @@ function LMChatGroupChannelList({
                     </div>
                   </div>
                   <div className="channel-info">
-                    <div className="channel-last-conversation">
-                      {renderLastConversationUsername(chatroom)}
-                      :&nbsp;{" "}
-                      {groupChatroomConversationsMeta[
+                    {
+                      // Block for rendering the last conversation
+
+                      groupChatroomConversationsMeta[
                         chatroom?.lastConversationId || ""
-                      ]?.attachmentCount ? (
-                        <>
-                          <img src={document} alt="document" />
-                        </>
-                      ) : null}
-                      {groupChatroomConversationsMeta[
-                        chatroom?.lastConversationId || ""
-                      ]
-                        ? Utils.parseAnser(
-                            groupChatroomConversationsMeta[
-                              chatroom?.lastConversationId || ""
-                            ]?.answer,
-                          )
-                        : null}
-                    </div>
+                      ]?.deletedByUserId ? (
+                        <div className="channel-last-conversation">
+                          {groupChatroomConversationsMeta[
+                            chatroom?.lastConversationId || ""
+                          ]?.deletedByMember?.uuid ===
+                          currentUser.sdkClientInfo?.uuid
+                            ? ConstantStrings.MESSAGE_DELETED_BY_SELF
+                            : ConstantStrings.MESSAGE_DELETED_NOT_BY_SELF}
+                        </div>
+                      ) : (
+                        <div className="channel-last-conversation">
+                          {renderLastConversationUsername(chatroom)}
+                          :&nbsp;{" "}
+                          {groupChatroomConversationsMeta[
+                            chatroom?.lastConversationId || ""
+                          ]?.attachmentCount
+                            ? returnAttachmentPreviewIcon(
+                                groupChatroomConversationsMeta[
+                                  chatroom?.lastConversationId || ""
+                                ],
+                              )
+                            : null}
+                          {groupChatroomConversationsMeta[
+                            chatroom?.lastConversationId || ""
+                          ]
+                            ? Utils.parseAnser(
+                                groupChatroomConversationsMeta[
+                                  chatroom?.lastConversationId || ""
+                                ]?.answer,
+                              )
+                            : null}
+                        </div>
+                      )
+                    }
                   </div>
 
                   {(chatroom?.unseenCount || 0) > 0 ? (

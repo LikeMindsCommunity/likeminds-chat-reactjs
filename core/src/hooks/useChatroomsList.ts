@@ -236,8 +236,12 @@ export default function useChatroomList(
       conversationData?: GetSyncConversationsResponse,
     ) => {
       if (conversationData) {
-        const { conversationsData, userMeta, chatroomMeta } =
-          conversationData.data;
+        const {
+          conversationsData,
+          userMeta,
+          chatroomMeta,
+          convAttachmentsMeta,
+        } = conversationData.data;
         const targetConversation = conversationsData[0];
         if (!targetConversation) {
           return;
@@ -245,6 +249,8 @@ export default function useChatroomList(
         setgroupChatroomConversationsMeta((currentConversationsMeta) => {
           currentConversationsMeta = { ...currentConversationsMeta };
           currentConversationsMeta[targetConversation.id!] = targetConversation;
+          currentConversationsMeta[targetConversation.id!].attachments =
+            convAttachmentsMeta[targetConversation.id!];
           return currentConversationsMeta;
         });
         setgroupChatroomMember((currentMembersMeta) => {
@@ -421,6 +427,42 @@ export default function useChatroomList(
       );
     };
   }, [chatroolLeaveActionListener]);
+
+  useEffect(() => {
+    function deleteConversationHandler(eventObject: Event) {
+      const conversation: Conversation = (eventObject as CustomEvent).detail
+        .conversation;
+
+      const { id } = conversation;
+      const metaConversation = {
+        ...groupChatroomConversationsMeta,
+      };
+      let deletedConversationFromMetaConversations = metaConversation[id];
+
+      if (deletedConversationFromMetaConversations) {
+        deletedConversationFromMetaConversations = {
+          ...deletedConversationFromMetaConversations,
+          ...conversation,
+        };
+        deletedConversationFromMetaConversations.deletedByUserId =
+          currentUser.sdkClientInfo?.uuid;
+      }
+
+      metaConversation[id] = deletedConversationFromMetaConversations;
+      setgroupChatroomConversationsMeta(metaConversation);
+    }
+    document.addEventListener(
+      CustomActions.CONVERSATION_DELETED,
+      deleteConversationHandler,
+    );
+
+    return () => {
+      document.removeEventListener(
+        CustomActions.CONVERSATION_DELETED,
+        deleteConversationHandler,
+      );
+    };
+  });
   const channelListDefaultActions: ChannelListDefaultActions = {
     getChatroomsMine,
     getExploreGroupChatrooms,
