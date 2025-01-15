@@ -60,6 +60,7 @@ function LMChatGroupChannelList({
     setOpenSearchField(false);
   };
 
+  // Function to return the preview icon for the attachment's conversation
   function returnAttachmentPreviewIcon(conversation: Conversation) {
     if (conversation.polls) {
       return (
