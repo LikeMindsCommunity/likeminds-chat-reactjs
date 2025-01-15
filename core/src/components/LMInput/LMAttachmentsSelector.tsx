@@ -33,7 +33,7 @@ const LMAttachmentsSelector = () => {
   const { customComponents } = useContext(LMGlobalClientProviderContext);
   const { currentUser } = useContext(LMUserProviderContext);
   const attachmentMenuRef = useRef<HTMLDivElement>(null);
-  // const pollOptionRef = useRef<HTMLElement>(null);
+
   const isOtherUserAiChatbot = useMemo(() => {
     return Utils.isOtherUserAIChatbot(
       chatroomDetails?.chatroom as unknown as Chatroom,
