@@ -75,8 +75,8 @@ const LMMediaCarousel = () => {
             selectedItem={currentSelectedIndex}
             onChange={setCurrentSelectedIndex}
           >
-            {documentsMediaList.map((file) => {
-              return renderLocalDocument(file);
+            {documentsMediaList.map((file, index) => {
+              return renderLocalDocument(file, index);
             })}
           </Carousel>
         </div>
@@ -107,9 +107,12 @@ function renderLocalVideo(file: File, index: number) {
     ></video>
   );
 }
-function renderLocalDocument(file: File) {
+function renderLocalDocument(file: File, index: number) {
   return (
-    <div className="lm-input-carousel-document-element" key={file.name}>
+    <div
+      className="lm-input-carousel-document-element"
+      key={file.name.concat(index.toString())}
+    >
       <img src={pdfViewIcon} alt="pdf-icon" />
       <div className="document-file-details">{file.name}</div>
     </div>

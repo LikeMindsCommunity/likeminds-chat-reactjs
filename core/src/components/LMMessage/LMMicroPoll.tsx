@@ -53,7 +53,10 @@ const LMMicroPoll = () => {
   // Default component
 
   return (
-    <div className={`lm-chat-card  ${messageClass}`}>
+    <div
+      className={`lm-chat-card  ${messageClass}`}
+      id={`lm-chat-message-${message.id}-${message.temporaryId}-${message.state}`}
+    >
       {!isSender ? <div className="lmUserData">{avatarContent}</div> : null}
       <div className={`conversation lm-poll  ${messageClass}`}>
         <div className="user-profile">

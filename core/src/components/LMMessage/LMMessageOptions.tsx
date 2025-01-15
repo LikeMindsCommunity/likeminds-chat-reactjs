@@ -12,9 +12,12 @@ import { LMChatroomContext } from "../../context/LMChatChatroomContext";
 import { ReplyDmQueries } from "../../enums/lm-reply-dm-queries";
 import { MemberType } from "../../enums/lm-member-type";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
+import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
+import { LMChatTheme } from "../../enums/lm-chat-theme";
 
 function MessageOptions() {
   const { message } = useContext(LMMessageContext);
+  const { lmChatTheme } = useContext(LMGlobalClientProviderContext);
   const { currentUser } = useContext(UserProviderContext);
   const { canUserReplyPrivately, chatroomDetails } =
     useContext(LMChatroomContext);
@@ -64,7 +67,7 @@ function MessageOptions() {
 
   return (
     <div>
-      <Dialog open={dialogOpen} onClose={closeDialog}>
+      <Dialog open={dialogOpen} onClose={closeDialog} aria-hidden="false">
         <ReportTagsDialog reportCallback={onReport} closeDialog={closeDialog} />
       </Dialog>
       <Menu
@@ -109,6 +112,9 @@ function MessageOptions() {
               return null;
             }
             if (message.member.id.toString() === currentUser?.id.toString()) {
+              return null;
+            }
+            if (lmChatTheme === LMChatTheme.NETWORKING_CHAT) {
               return null;
             }
           }

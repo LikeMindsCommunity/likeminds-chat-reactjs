@@ -44,15 +44,17 @@ const LMAttachmentsSelector = () => {
   useEffect(() => {
     const handleClick: EventListener = (event) => {
       const target = event.target;
+
       const iconElement = document.getElementById("lm-input-attachment-icon");
       if (attachmentMenuRef && attachmentMenuRef.current && target) {
         const doesClickContainsRef = attachmentMenuRef.current.contains(
           target as Node,
         );
+
         if (!doesClickContainsRef || iconElement?.contains(target as Node)) {
           closeMenu();
+          event.stopPropagation();
         }
-        event.stopPropagation();
       }
     };
     document.addEventListener("click", handleClick, true);
@@ -122,8 +124,12 @@ const LMAttachmentsSelector = () => {
     chatroomDetails?.chatroom.type !==
       ChatroomTypes.DIRECT_MESSAGE_CHATROOM && (
       <div className="lm-chat-input-attachment-label" key={"pollOption"}>
-        <label onClick={openDialog}>
-          <div>
+        <label>
+          <div
+            onClick={() => {
+              openDialog();
+            }}
+          >
             <img src={PollIcon} alt="poll" />
           </div>
           <div className="title">Polls</div>
@@ -207,13 +213,14 @@ const LMAttachmentsSelector = () => {
               <div
                 className="lm-chat-input-attachment-label"
                 key={"pollOption"}
+                onClick={() => {
+                  openDialog();
+                }}
               >
-                <label onClick={openDialog}>
-                  <div>
-                    <img src={PollIcon} alt="poll" />
-                  </div>
-                  <div className="title">Polls</div>
-                </label>
+                <div>
+                  <img src={PollIcon} alt="poll" />
+                </div>
+                <div className="title">Polls</div>
               </div>
             );
           }

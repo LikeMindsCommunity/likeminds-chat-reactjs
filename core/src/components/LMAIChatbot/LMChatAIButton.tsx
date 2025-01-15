@@ -19,6 +19,7 @@ import { CustomComponents } from "../../types/prop-types/CustomComponents";
 import LMAIChatbotErrorScreen, {
   LMAIChatbotErrorScreenProps,
 } from "./LMAIChatbotErrorScreen";
+import { LMChatTheme } from "../../enums/lm-chat-theme";
 
 export interface LMChatAIButtonProps {
   buttonText?: string;
@@ -147,6 +148,7 @@ const LMChatAIButton: React.FC<
             client={client}
             userDetails={userDetails}
             customComponents={customComponentsProp}
+            lmChatTheme={LMChatTheme.NETWORKING_CHAT}
           >
             <LMAIChatbot
               previewText={previewText}

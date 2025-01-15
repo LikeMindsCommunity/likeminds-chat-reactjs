@@ -514,7 +514,6 @@ export default function useConversations(): UseConversations {
                     break;
                   }
                 }
-
                 if (alreadyHasIt) {
                   return currentConversations;
                 } else {

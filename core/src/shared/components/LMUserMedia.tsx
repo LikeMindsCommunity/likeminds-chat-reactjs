@@ -7,13 +7,13 @@ const getInitials = (name: string): string => {
   } else if (words.length === 2) {
     // Two words, return the initials of both
     const firstInitial = words[0][0];
-    const secondInitial = words[1][0];
-    return (firstInitial + secondInitial).toUpperCase();
+
+    return firstInitial.toUpperCase();
   } else {
     // More than two words, return the initials of the first and last names
     const firstInitial = words[0][0];
-    const lastInitial = words[words.length - 1][0];
-    return (firstInitial + lastInitial).toUpperCase();
+
+    return firstInitial.toUpperCase();
   }
 };
 

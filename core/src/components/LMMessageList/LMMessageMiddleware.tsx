@@ -10,6 +10,7 @@ import LMMessageContext from "../../context/LMMessageContext";
 import LMMessage from "../LMMessage/LMMessage";
 import UserProviderContext from "../../context/LMUserProviderContext";
 import { EmojiData } from "../../types/models/emojiData";
+import { CustomActions } from "../../customActions";
 
 interface LMMessageMiddlewareProps {
   message: Conversation;
@@ -27,6 +28,11 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
     currentLocalMessage["deletedBy"] = currentUser?.id.toString();
     currentLocalMessage["deletedByMember"] = currentUser!;
     setLocalMessageCopy(currentLocalMessage as Conversation);
+    document.dispatchEvent(
+      new CustomEvent(CustomActions.CONVERSATION_DELETED, {
+        detail: { conversation: currentLocalMessage },
+      }),
+    );
   }
 
   function editMessageLocally(newMessage: Conversation) {
@@ -50,7 +56,8 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
   }
 
   function removeReactionLocally() {
-    setLocalMessageCopy((currentLocalCopy: any) => {
+    setLocalMessageCopy((currentLocalReactionsCopy: any) => {
+      const currentLocalCopy = { ...currentLocalReactionsCopy };
       currentLocalCopy!.reactions =
         currentLocalCopy?.reactions.filter((reaction: any) => {
           return reaction.member.id.toString() !== currentUser?.id.toString();

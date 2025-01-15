@@ -2,6 +2,7 @@ import {
   PropsWithChildren,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -105,6 +106,11 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
   const onCloseSearch = () => {
     setOpenSearchField(false);
   };
+  useEffect(() => {
+    return () => {
+      setOpenSearchField(false);
+    };
+  }, [chatroomDetails.chatroom.id]);
   const renderHeaderComponents = () => {
     switch (openSearchField) {
       case true: {
