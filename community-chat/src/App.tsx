@@ -6,6 +6,7 @@ import {
   LMChatCurrentMode,
   LMChatTheme,
 } from "@likeminds.community/likeminds-chat-reactjs";
+import LMChatClient from "@likeminds.community/chat-js-beta";
 
 const App = () => {
   const [userDetails, setUserDetails] = useState<{
@@ -17,8 +18,14 @@ const App = () => {
     apiKey?: string;
   }>({});
 
-  const lmChatClient = initiateLMClient();
-
+  // const lmChatClient = initiateLMClient();
+  const VERSION_CODE = 42;
+  const PLATFORM_CODE = "rt";
+  const EXCLUDED_CONVERSATION_STATES = [] as number[];
+  const lmChatClient = LMChatClient.setPlatformCode(PLATFORM_CODE)
+    .setVersionCode(VERSION_CODE)
+    .setExcludedConversationStates(EXCLUDED_CONVERSATION_STATES)
+    .build();
   useEffect(() => {
     const queryString = window.location.search;
     const params = new URLSearchParams(queryString);
@@ -35,8 +42,13 @@ const App = () => {
   return (
     <LMClientOverlayProvider
       client={lmChatClient}
-      userDetails={userDetails}
-      lmChatTheme={LMChatTheme.COMMUNITY_CHAT}
+      // userDetails={userDetails}
+      userDetails={{
+        apiKey: "270b0d18-407f-48fd-ae07-51cee92658dc",
+        username: "Test_user",
+        uuid: "Test_user",
+      }}
+      // lmChatTheme={LMChatTheme.COMMUNITY_CHAT}
     >
       <LMChannel currentMode={LMChatCurrentMode.GROUP_CHAT} />
     </LMClientOverlayProvider>

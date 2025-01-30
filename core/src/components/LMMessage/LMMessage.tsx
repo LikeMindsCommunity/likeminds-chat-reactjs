@@ -26,6 +26,8 @@ import { useMessageOptions } from "../../hooks/useMessageOptions";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { MemberRole } from "@likeminds.community/chat-js";
 import MediaRendererLocal from "../../shared/components/LMLocalMediaRenderer";
+import { LMConversationAttachments } from "../../enums/lm-conversation-attachments";
+import { LMMessageVoiceNote } from "./LMMessageVoiceNote";
 
 const LMMessage = () => {
   const { customComponents } = useContext(LMGlobalClientProviderContext);
@@ -41,7 +43,6 @@ const LMMessage = () => {
   const imageUrl = message?.member.imageUrl;
   const name = message?.member.name;
   const avatarContent = getAvatar({ imageUrl, name });
-
   // custom message component
 
   if (message?.widgetId?.length && messageBubbles?.customWidget) {
@@ -151,6 +152,18 @@ const LMMessage = () => {
       if (messageBubbles?.chatroomNormalChatBubble) {
         return <messageBubbles.chatroomNormalChatBubble />;
       }
+
+      if (message.attachments?.length) {
+        const hasVoiceNoteAttachment = message.attachments?.some(
+          (attachment) =>
+            attachment.type === LMConversationAttachments.VOICE_NOTE,
+        );
+        console.log(hasVoiceNoteAttachment);
+        if (hasVoiceNoteAttachment) {
+          return <LMMessageVoiceNote attachment={message!.attachments![0]} />;
+        }
+      }
+
       return (
         <>
           {renderDatePill()}
