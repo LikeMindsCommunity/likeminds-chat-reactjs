@@ -3,7 +3,6 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Roboto", sans-serif;
-  ;
 }
 
 #root {
@@ -3018,4 +3017,18 @@ input.disabled-state {
 
 .rhap_container {
   background-color: transparent;
+}
+
+/* Styles for toggle switch */
+
+.lm-chat-channel-toggle button {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+}
+.lm-chat-channel-toggle .Mui-selected {
+  color: #00897B !important;
+}
+.lm-chat-channel-toggle .MuiTabs-indicator{
+  background-color: #00897B;
 }

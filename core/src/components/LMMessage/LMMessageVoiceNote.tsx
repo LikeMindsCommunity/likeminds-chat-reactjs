@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import AudioPlayer, { RHAP_UI } from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import { Attachment } from "../../types/models/Attachment";
+import { CustomActions } from "../../customActions";
 
 export interface LMMessageVoiceNoteProps {
   attachment: Attachment;
@@ -10,46 +11,79 @@ export interface LMMessageVoiceNoteProps {
 export const LMMessageVoiceNote: React.FC<LMMessageVoiceNoteProps> = ({
   attachment,
 }) => {
+  const [playState, setPlayState] = useState<boolean>(false);
+
   const audio = useMemo(() => {
     const audioElement = new Audio(attachment.url);
     audioElement.addEventListener("ended", function () {
       setPlayState(false);
     });
     return audioElement;
-  }, [attachment]);
-  const timeToPercent = useCallback(
-    (val: number) => {
-      return (val / audio.duration) * 100;
-    },
-    [audio.duration],
-  );
-  const timeUpdate = useCallback(
-    function () {
-      rangeRef.current!.value = timeToPercent(audio.currentTime).toString();
-      axisRef.current!.style.width = `calc(${timeToPercent(audio.currentTime)
-        .toString()
-        .concat("%")})`;
-    },
-    [audio.currentTime, timeToPercent],
-  );
-  const [playState, setPlayState] = useState<boolean>(false);
+  }, [attachment.url]);
 
   const rangeRef = useRef<HTMLInputElement | null>(null);
   const axisRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    const timeToPercent = (val: number) => {
+      return (val / audio.duration) * 100;
+    };
+
+    const timeUpdate = () => {
+      rangeRef.current!.value = timeToPercent(audio.currentTime).toString();
+      axisRef.current!.style.width = `calc(${timeToPercent(audio.currentTime)
+        .toString()
+        .concat("%")})`;
+    };
     if (playState) {
       audio.addEventListener("timeupdate", timeUpdate);
-      audio?.play();
+      // audio?.play();
     } else {
-      audio?.pause();
+      // audio?.pause();
       audio.removeEventListener("timeupdate", timeUpdate);
     }
-  }, [audio, playState, timeUpdate]);
+  }, [audio, playState]);
+
+  // useEffect(() => {
+  //   if (playState) {
+  //     document.dispatchEvent(
+  //       new CustomEvent(CustomActions.VOICE_NOTE_PLAYED, {
+  //         detail: { fileName: attachment.name },
+  //       }),
+  //     );
+  //   }
+  // }, [attachment.name, playState]);
+
+  useEffect(() => {
+    const onPlayOrPauseUpdateHandler = (event: Event) => {
+      const currentPlayedFileName = (event as CustomEvent).detail.fileName;
+      console.log("currentPlayedFileName", currentPlayedFileName);
+      if (currentPlayedFileName !== attachment.name) {
+        if (playState) {
+          console.log("The audio is not the same as the current audio");
+          audio.pause();
+          audio.currentTime = 0;
+          setPlayState(false);
+        }
+      }
+    };
+
+    document.addEventListener(
+      CustomActions.VOICE_NOTE_PLAYED,
+      onPlayOrPauseUpdateHandler,
+    );
+    return () => {
+      document.removeEventListener(
+        CustomActions.VOICE_NOTE_PLAYED,
+        onPlayOrPauseUpdateHandler,
+      );
+    };
+  }, [attachment.name, audio, playState]);
+
   return (
     <div>
       <AudioPlayer
-        src={attachment.url}
+        src={attachment.fileUrl}
         volume={0.5}
         customControlsSection={[RHAP_UI.MAIN_CONTROLS]}
         layout={"horizontal-reverse"}
@@ -88,6 +122,25 @@ export const LMMessageVoiceNote: React.FC<LMMessageVoiceNoteProps> = ({
               />
             </svg>
           ),
+        }}
+        onPlay={() => {
+          console.log("onPlay");
+          console.log(attachment.name);
+
+          document.dispatchEvent(
+            new CustomEvent(CustomActions.VOICE_NOTE_PLAYED, {
+              detail: { fileName: attachment.name },
+            }),
+          );
+          setPlayState(true);
+        }}
+        onPause={() => {
+          console.log("onPause");
+          setPlayState(false);
+        }}
+        onEnded={() => {
+          console.log("onEnded");
+          setPlayState(false);
         }}
       />
     </div>

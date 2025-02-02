@@ -2,17 +2,12 @@ import React, { useState, useEffect, useContext } from "react";
 
 import LMChannelList from "../LMChannelList/LMChannelList";
 import LMChatroom from "./LMChatChatroom";
-import { LMChatCurrentMode } from "../../enums/lm-chat-modes";
 import LMHeader from "../LMHeader/LMHeader";
 import LMMessageList from "../LMMessageList/LMMessageList";
 import LMInput from "../LMInput/LMInput";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
-import { LMChatTheme } from "../../enums/lm-chat-theme";
 
-const LMChannel = ({
-  currentChatroomId,
-  currentMode = LMChatCurrentMode.GROUP_CHAT,
-}: LMChannelProps) => {
+const LMChannel = ({ currentChatroomId }: LMChannelProps) => {
   const { lmChatTheme } = useContext(LMGlobalClientProviderContext);
 
   // State to track whether the screen is mobile size
@@ -41,11 +36,12 @@ const LMChannel = ({
         >
           <LMChannelList
             currentChatroomId={currentChatroomId}
-            currentMode={
-              lmChatTheme === LMChatTheme.NETWORKING_CHAT
-                ? LMChatCurrentMode.DIRECT_MESSAGE
-                : currentMode
-            }
+            // currentMode={
+            //   lmChatTheme === LMChatTheme.NETWORKING_CHAT
+            //     ? LMChatCurrentMode.DIRECT_MESSAGE
+            //     : currentMode
+            // }
+            currentTheme={lmChatTheme}
           />
         </div>
       )}
@@ -66,5 +62,4 @@ export default LMChannel;
 
 export interface LMChannelProps {
   currentChatroomId?: number;
-  currentMode: LMChatCurrentMode;
 }

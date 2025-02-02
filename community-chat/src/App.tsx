@@ -48,9 +48,9 @@ const App = () => {
         username: "Test_user",
         uuid: "Test_user",
       }}
-      // lmChatTheme={LMChatTheme.COMMUNITY_CHAT}
+      lmChatTheme={LMChatTheme.COMMUNITY_CHAT}
     >
-      <LMChannel currentMode={LMChatCurrentMode.GROUP_CHAT} />
+      <LMChannel />
     </LMClientOverlayProvider>
   );
 };

@@ -3,10 +3,11 @@ import {
   LMClientOverlayProvider,
   LMChannel,
   initiateLMClient,
-  LMChatCurrentMode,
   LMChatTheme,
 } from "@likeminds.community/likeminds-chat-reactjs";
+
 import "./App.css";
+
 const App = () => {
   const [userDetails, setUserDetails] = useState<{
     accessToken?: string;
@@ -16,9 +17,7 @@ const App = () => {
     isGuest?: boolean;
     apiKey?: string;
   }>({});
-  const [currentChatMode, setCurrentChatMode] = useState<LMChatCurrentMode>(
-    LMChatCurrentMode.GROUP_CHAT
-  );
+
   const lmChatClient = initiateLMClient();
 
   useEffect(() => {
@@ -33,37 +32,20 @@ const App = () => {
       username: username || "",
     });
   }, []);
-  function changeChatMode(mode: LMChatCurrentMode) {
-    setCurrentChatMode(mode);
-  }
+
   return (
-    <>
-      <div className="chat-switcher">
-        <button
-          className="community-chat chat-switch"
-          onClick={() => {
-            changeChatMode(LMChatCurrentMode.GROUP_CHAT);
-          }}
-        >
-          Community
-        </button>
-        <button
-          className="network-chat chat-switch"
-          onClick={() => {
-            changeChatMode(LMChatCurrentMode.DIRECT_MESSAGE);
-          }}
-        >
-          DM
-        </button>
-      </div>
-      <LMClientOverlayProvider
-        client={lmChatClient}
-        userDetails={userDetails}
-        lmChatTheme={LMChatTheme.COMMUNITY_HYBRID_CHAT}
-      >
-        <LMChannel currentMode={currentChatMode} />
-      </LMClientOverlayProvider>
-    </>
+    <LMClientOverlayProvider
+      client={lmChatClient}
+      // userDetails={userDetails}
+      userDetails={{
+        apiKey: "c142bc84-4c40-4412-ad09-c7e59b93a2ca",
+        uuid: "Test_User_01",
+        username: "Test_User_01",
+      }}
+      lmChatTheme={LMChatTheme.COMMUNITY_HYBRID_CHAT}
+    >
+      <LMChannel />
+    </LMClientOverlayProvider>
   );
 };
 export default App;

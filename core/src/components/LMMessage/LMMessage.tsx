@@ -153,16 +153,16 @@ const LMMessage = () => {
         return <messageBubbles.chatroomNormalChatBubble />;
       }
 
-      if (message.attachments?.length) {
-        const hasVoiceNoteAttachment = message.attachments?.some(
-          (attachment) =>
-            attachment.type === LMConversationAttachments.VOICE_NOTE,
-        );
-        console.log(hasVoiceNoteAttachment);
-        if (hasVoiceNoteAttachment) {
-          return <LMMessageVoiceNote attachment={message!.attachments![0]} />;
-        }
-      }
+      // if (message.attachments?.length) {
+      //   const hasVoiceNoteAttachment = message.attachments?.some(
+      //     (attachment) =>
+      //       attachment.type === LMConversationAttachments.VOICE_NOTE,
+      //   );
+      //   console.log(hasVoiceNoteAttachment);
+      //   if (hasVoiceNoteAttachment) {
+      //     return <LMMessageVoiceNote attachment={message!.attachments![0]} />;
+      //   }
+      // }
 
       return (
         <>
@@ -235,7 +235,12 @@ const LMMessage = () => {
                     </div>
                   </div>
                 )}
-
+                {message.attachments?.some(
+                  (attachment) =>
+                    attachment.type === LMConversationAttachments.VOICE_NOTE,
+                ) ? (
+                  <LMMessageVoiceNote attachment={message!.attachments![0]} />
+                ) : null}
                 <div className="msg">
                   {message?.answer.includes(
                     "* This is a gif message. Please update your app *",
