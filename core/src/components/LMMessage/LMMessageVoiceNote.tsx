@@ -12,7 +12,7 @@ export const LMMessageVoiceNote: React.FC<LMMessageVoiceNoteProps> = ({
   attachment,
 }) => {
   const [playState, setPlayState] = useState<boolean>(false);
-
+  const audioRef = useRef<AudioPlayer>(null);
   const audio = useMemo(() => {
     const audioElement = new Audio(attachment.url);
     audioElement.addEventListener("ended", function () {
@@ -21,49 +21,15 @@ export const LMMessageVoiceNote: React.FC<LMMessageVoiceNoteProps> = ({
     return audioElement;
   }, [attachment.url]);
 
-  const rangeRef = useRef<HTMLInputElement | null>(null);
-  const axisRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const timeToPercent = (val: number) => {
-      return (val / audio.duration) * 100;
-    };
-
-    const timeUpdate = () => {
-      rangeRef.current!.value = timeToPercent(audio.currentTime).toString();
-      axisRef.current!.style.width = `calc(${timeToPercent(audio.currentTime)
-        .toString()
-        .concat("%")})`;
-    };
-    if (playState) {
-      audio.addEventListener("timeupdate", timeUpdate);
-      // audio?.play();
-    } else {
-      // audio?.pause();
-      audio.removeEventListener("timeupdate", timeUpdate);
-    }
-  }, [audio, playState]);
-
-  // useEffect(() => {
-  //   if (playState) {
-  //     document.dispatchEvent(
-  //       new CustomEvent(CustomActions.VOICE_NOTE_PLAYED, {
-  //         detail: { fileName: attachment.name },
-  //       }),
-  //     );
-  //   }
-  // }, [attachment.name, playState]);
-
   useEffect(() => {
     const onPlayOrPauseUpdateHandler = (event: Event) => {
       const currentPlayedFileName = (event as CustomEvent).detail.fileName;
-      console.log("currentPlayedFileName", currentPlayedFileName);
-      if (currentPlayedFileName !== attachment.name) {
+      if (currentPlayedFileName !== attachment.fileUrl) {
         if (playState) {
-          console.log("The audio is not the same as the current audio");
           audio.pause();
           audio.currentTime = 0;
           setPlayState(false);
+          audioRef.current?.audio.current?.pause();
         }
       }
     };
@@ -78,7 +44,7 @@ export const LMMessageVoiceNote: React.FC<LMMessageVoiceNoteProps> = ({
         onPlayOrPauseUpdateHandler,
       );
     };
-  }, [attachment.name, audio, playState]);
+  }, [attachment.fileUrl, audio, playState]);
 
   return (
     <div>
@@ -90,6 +56,7 @@ export const LMMessageVoiceNote: React.FC<LMMessageVoiceNoteProps> = ({
         showJumpControls={false}
         customProgressBarSection={[RHAP_UI.PROGRESS_BAR]}
         showDownloadProgress={false}
+        ref={audioRef}
         customIcons={{
           play: (
             <svg
@@ -124,22 +91,17 @@ export const LMMessageVoiceNote: React.FC<LMMessageVoiceNoteProps> = ({
           ),
         }}
         onPlay={() => {
-          console.log("onPlay");
-          console.log(attachment.name);
-
           document.dispatchEvent(
             new CustomEvent(CustomActions.VOICE_NOTE_PLAYED, {
-              detail: { fileName: attachment.name },
+              detail: { fileName: attachment.fileUrl },
             }),
           );
           setPlayState(true);
         }}
         onPause={() => {
-          console.log("onPause");
           setPlayState(false);
         }}
         onEnded={() => {
-          console.log("onEnded");
           setPlayState(false);
         }}
       />

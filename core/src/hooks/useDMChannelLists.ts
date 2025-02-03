@@ -9,6 +9,7 @@ import { Chatroom } from "../types/models/Chatroom";
 import Member from "../types/models/member";
 import { CustomActions } from "../customActions";
 import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
+import { ReplyDmQueries } from "../enums/lm-reply-dm-queries";
 
 /**
  * Custom hook for managing DM channel lists.
@@ -37,6 +38,8 @@ export default function useDmChannelLists(
   );
   const [usersData, setUsersData] = useState<Record<string, Member>>({});
   const [dmChatrooms, setDmChatrooms] = useState<Chatroom[]>([]);
+  const [showDM, setShowDM] = useState<boolean>(false);
+  const [showList, setShowList] = useState<number>(1);
   const dmChatroomsPageCount = useRef<number>(1);
   const loadMoreDmChatrooms = useRef<boolean>(true);
 
@@ -143,8 +146,29 @@ export default function useDmChannelLists(
       return dmChatroomsCopy;
     });
   };
-  //   TODO TBD
-  //   const handleLastConversation = ()=>{}
+
+  useEffect(() => {
+    async function checkDMStatus() {
+      try {
+        const call = await lmChatClient.checkDMStatus({
+          requestFrom: ReplyDmQueries.DM_CHANNEL,
+        });
+        if (call.data.showDm) {
+          setShowDM(true);
+        }
+        const cta = call.data.cta;
+        const URLSearchParams = new URL(cta).searchParams;
+        const showList = URLSearchParams.get("show_list");
+        if (showList) {
+          setShowList(parseInt(showList));
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    checkDMStatus();
+  }, [lmChatClient]);
+
   useEffect(() => {
     if (!lmChatClient) {
       return;
@@ -158,9 +182,11 @@ export default function useDmChannelLists(
       }
     });
   }, [currentCommunity.id, lmChatClient]);
+
   useEffect(() => {
     getDMChatroomsList();
   }, [getDMChatroomsList]);
+
   const dmChannelListDefaultActions: DMChannelListDefaultActions = {
     getDMChatroomsList,
     refreshDMChatrooms,
@@ -208,6 +234,8 @@ export default function useDmChannelLists(
         )
       : selectNewChatroom,
     currentSelectedChatroomId: chatroomId,
+    showDM,
+    showList,
     // Return any additional functions here
   };
 }
@@ -221,6 +249,8 @@ export interface UseDmChannelLists {
   markReadADMChatroom: OneArgVoidReturns<string | number>;
   selectNewChatroom: OneArgVoidReturns<number>;
   currentSelectedChatroomId?: number;
+  showDM: boolean;
+  showList: number;
   // Add any additional functions here
 }
 
