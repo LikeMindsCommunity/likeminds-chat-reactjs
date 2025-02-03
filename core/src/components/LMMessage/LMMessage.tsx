@@ -153,17 +153,6 @@ const LMMessage = () => {
         return <messageBubbles.chatroomNormalChatBubble />;
       }
 
-      // if (message.attachments?.length) {
-      //   const hasVoiceNoteAttachment = message.attachments?.some(
-      //     (attachment) =>
-      //       attachment.type === LMConversationAttachments.VOICE_NOTE,
-      //   );
-      //   console.log(hasVoiceNoteAttachment);
-      //   if (hasVoiceNoteAttachment) {
-      //     return <LMMessageVoiceNote attachment={message!.attachments![0]} />;
-      //   }
-      // }
-
       return (
         <>
           {renderDatePill()}
@@ -289,8 +278,6 @@ const LMMessage = () => {
                 </div>
               </div>
             )}
-
-            {/* <div className="data-pill">{message?.date}</div> */}
           </div>
         </>
       );
