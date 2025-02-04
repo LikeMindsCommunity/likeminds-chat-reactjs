@@ -228,7 +228,13 @@ const LMMessage = () => {
                   (attachment) =>
                     attachment.type === LMConversationAttachments.VOICE_NOTE,
                 ) ? (
-                  <LMMessageVoiceNote attachment={message!.attachments![0]} />
+                  messageBubbles?.voiceNote ? (
+                    <messageBubbles.voiceNote
+                      attachment={message!.attachments![0]}
+                    />
+                  ) : (
+                    <LMMessageVoiceNote attachment={message!.attachments![0]} />
+                  )
                 ) : null}
                 <div className="msg">
                   {message?.answer.includes(

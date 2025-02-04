@@ -13,6 +13,7 @@ import { CustomActions } from "../../customActions";
 import { ZeroArgVoidReturns } from "../../hooks/useInput";
 import LMUserProviderContext from "../../context/LMUserProviderContext";
 import { MemberType } from "../../enums/lm-member-type";
+import LMLoaderContextProvider from "../../context/LMLoaderContextProvider";
 
 interface LMChatAllMembersScreenProps {
   showList?: number;
@@ -25,6 +26,7 @@ const LMChatAllMembersScreen = ({
 }: LMChatAllMembersScreenProps) => {
   const { lmChatClient } = useContext(GlobalClientProviderContext);
   const { currentUser } = useContext(LMUserProviderContext);
+  const { openSnackbar } = useContext(LMLoaderContextProvider);
   const [members, setMembers] = useState<Member[]>([]);
   const [loadMoreMembers, setLoadMoreMembers] = useState<boolean>(true);
   const currentPageCount = useRef<number>(1);
@@ -71,6 +73,12 @@ const LMChatAllMembersScreen = ({
               document.dispatchEvent(NEW_CHATROOM_SELECTED);
               return;
             }
+          } else {
+            const newTimeStamp = checkDMLimitCall.data.newRequestDmTimestamp;
+            const outputMessage = `DM Limit expired, You can request again on ${new Date(newTimeStamp!).toDateString()}`;
+            if (openSnackbar) {
+              openSnackbar(outputMessage);
+            }
           }
         }
       } catch (error) {
@@ -98,7 +106,6 @@ const LMChatAllMembersScreen = ({
           }
           setMembers((currentMembers) => {
             const newMembers = [...currentMembers, ...call.data.members];
-            console.log(newMembers);
             return newMembers;
           });
         }

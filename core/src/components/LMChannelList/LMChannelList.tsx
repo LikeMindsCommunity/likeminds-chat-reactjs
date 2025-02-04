@@ -25,7 +25,6 @@ const LMChannelList = ({
 
 export interface LMChannelListProps {
   currentChatroomId?: number;
-  // currentMode: LMChatCurrentMode;
   currentTheme: LMChatTheme;
 }
 

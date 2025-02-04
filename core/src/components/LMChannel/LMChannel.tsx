@@ -36,11 +36,6 @@ const LMChannel = ({ currentChatroomId }: LMChannelProps) => {
         >
           <LMChannelList
             currentChatroomId={currentChatroomId}
-            // currentMode={
-            //   lmChatTheme === LMChatTheme.NETWORKING_CHAT
-            //     ? LMChatCurrentMode.DIRECT_MESSAGE
-            //     : currentMode
-            // }
             currentTheme={lmChatTheme}
           />
         </div>
