@@ -170,7 +170,9 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
                             case ChatroomAction.ACTION_UNFOLLOW:
                               return onLeaveChatroom();
                             case ChatroomAction.ACTION_VIEW_PARTICIPANTS:
-                              return onViewParticipants();
+                              return onViewParticipants(
+                                chatroomDetails.chatroom.id,
+                              );
                             case ChatroomAction.ACTION_BLOCK_CHATROOM:
                               return onBlock();
                             case ChatroomAction.ACTION_UNBLOCK_CHATROOM:

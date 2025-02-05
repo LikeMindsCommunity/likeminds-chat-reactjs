@@ -3,7 +3,6 @@ import {
   LMClientOverlayProvider,
   LMChannel,
   initiateLMClient,
-  LMChatCurrentMode,
   LMChatTheme,
 } from "@likeminds.community/likeminds-chat-reactjs";
 
@@ -38,7 +37,7 @@ const App = () => {
       userDetails={userDetails}
       lmChatTheme={LMChatTheme.NETWORKING_CHAT}
     >
-      <LMChannel currentMode={LMChatCurrentMode.GROUP_CHAT} />
+      <LMChannel />
     </LMClientOverlayProvider>
   );
 };
