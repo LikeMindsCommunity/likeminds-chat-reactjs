@@ -63,7 +63,7 @@ const LMMessage = () => {
     )
       if (
         currentUser.id.toString() ===
-        chatroomDetails?.chatroom.chatroomWithUser?.id.toString()
+        chatroomDetails?.chatroom.chatRequestedBy?.id.toString()
       ) {
         return (
           <span
@@ -103,7 +103,6 @@ const LMMessage = () => {
           : chatroomDetails.chatroom.member;
       return (
         <div className="data-pill">
-          {/* {Utils.parseAndReplaceTags(message?.answer || "")} */}
           {`This is the very beginning of your direct message with ${
             chatroomuser?.name
           }`}

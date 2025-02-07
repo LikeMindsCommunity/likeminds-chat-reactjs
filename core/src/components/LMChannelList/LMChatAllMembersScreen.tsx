@@ -80,8 +80,14 @@ const LMChatAllMembersScreen = ({
               openSnackbar(outputMessage);
             }
           }
+        } else {
+          const outputMessage = `${checkDMLimitCall.errorMessage}`;
+          if (openSnackbar) {
+            openSnackbar(outputMessage);
+          }
         }
       } catch (error) {
+        console.log("loggin error");
         console.log(error);
       }
     },
@@ -116,35 +122,38 @@ const LMChatAllMembersScreen = ({
     [lmChatClient, showList],
   );
   useEffect(() => {
-    getMembers(1);
+    async function getMembersInitialData() {
+      await getMembers(1);
+      await getMembers(2);
+    }
+    getMembersInitialData();
   }, [getMembers]);
 
   return (
-    <div>
-      <InfiniteScroll
-        loader={null}
-        hasMore={loadMoreMembers}
-        dataLength={members.length}
-        next={getMembers.bind(null, currentPageCount.current + 1)}
-      >
-        {members.map((member) => {
-          if (member.sdkClientInfo?.uuid === currentUser.sdkClientInfo?.uuid) {
-            return null;
-          }
-          return (
-            <div
-              key={member.sdkClientInfo?.uuid}
-              className="lm-chat-new-chat"
-              onClick={() => createNewDM(member.sdkClientInfo!.uuid)}
-            >
-              {getAvatar({ imageUrl: member.imageUrl, name: member.name })}
+    <InfiniteScroll
+      loader={null}
+      hasMore={loadMoreMembers}
+      dataLength={members.length}
+      next={() => getMembers(currentPageCount.current)}
+      scrollableTarget="lm-channel-list-dm"
+    >
+      {members.map((member) => {
+        if (member.sdkClientInfo?.uuid === currentUser.sdkClientInfo?.uuid) {
+          return null;
+        }
+        return (
+          <div
+            key={member.sdkClientInfo?.uuid}
+            className="lm-chat-new-chat"
+            onClick={() => createNewDM(member.sdkClientInfo!.uuid)}
+          >
+            {getAvatar({ imageUrl: member.imageUrl, name: member.name })}
 
-              {member.name}
-            </div>
-          );
-        })}
-      </InfiniteScroll>
-    </div>
+            {member.name}
+          </div>
+        );
+      })}
+    </InfiniteScroll>
   );
 };
 

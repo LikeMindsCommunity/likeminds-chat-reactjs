@@ -42,7 +42,11 @@ const LMChatDMChannelList = ({ currentChatroomId }: LMDMChannelListProps) => {
     return (
       <div className="lm-channel-list dm-channel-list create-new-dm">
         <div className="lm-channel-list-header">
-          <img src={goBackIcon} onClick={closeDMCreate} />
+          <img
+            src={goBackIcon}
+            onClick={closeDMCreate}
+            className="lm-cursor-pointer"
+          />
           <div className="title">Create New Chat</div>
         </div>
         <div className="lm-channel-list-body" id="lm-channel-list-dm">

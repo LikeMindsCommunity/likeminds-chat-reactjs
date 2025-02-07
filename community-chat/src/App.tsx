@@ -18,7 +18,6 @@ const App = () => {
     apiKey?: string;
   }>({});
 
-  // const lmChatClient = initiateLMClient();
   const VERSION_CODE = 42;
   const PLATFORM_CODE = "rt";
   const EXCLUDED_CONVERSATION_STATES = [] as number[];
@@ -42,12 +41,7 @@ const App = () => {
   return (
     <LMClientOverlayProvider
       client={lmChatClient}
-      // userDetails={userDetails}
-      userDetails={{
-        apiKey: "270b0d18-407f-48fd-ae07-51cee92658dc",
-        username: "Test_user",
-        uuid: "Test_user",
-      }}
+      userDetails={userDetails}
       lmChatTheme={LMChatTheme.COMMUNITY_CHAT}
     >
       <LMChannel />

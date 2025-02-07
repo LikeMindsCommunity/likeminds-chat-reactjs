@@ -1,4 +1,4 @@
-import LMChatClient from "@likeminds.community/chat-js-beta";
+import LMChatClient from "@likeminds.community/chat-js";
 
 export function initiateLMClient(excludedConversationStates?: number[]) {
   const VERSION_CODE = 42;

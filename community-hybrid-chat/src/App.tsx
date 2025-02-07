@@ -1,4 +1,4 @@
-// import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   LMClientOverlayProvider,
   LMChannel,
@@ -19,42 +19,34 @@ import {
 import { useContext, useEffect, useState } from "react";
 
 const App = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // const [userDetails, setUserDetails] = useState<{
-  //   accessToken?: string;
-  //   refreshToken?: string;
-  //   uuid?: string;
-  //   username?: string;
-  //   isGuest?: boolean;
-  //   apiKey?: string;
-  // }>({});
+  const [userDetails, setUserDetails] = useState<{
+    accessToken?: string;
+    refreshToken?: string;
+    uuid?: string;
+    username?: string;
+    isGuest?: boolean;
+    apiKey?: string;
+  }>({});
 
   const lmChatClient = initiateLMClient();
 
-  // useEffect(() => {
-  //   const queryString = window.location.search;
-  //   const params = new URLSearchParams(queryString);
-  //   const apiKey = params.get("apiKey");
-  //   const uuid = params.get("uuid");
-  //   const username = params.get("username");
-  //   setUserDetails({
-  //     apiKey: apiKey || "",
-  //     uuid: uuid || "",
-  //     username: username || "",
-  //   });
-  // }, []);
+  useEffect(() => {
+    const queryString = window.location.search;
+    const params = new URLSearchParams(queryString);
+    const apiKey = params.get("apiKey");
+    const uuid = params.get("uuid");
+    const username = params.get("username");
+    setUserDetails({
+      apiKey: apiKey || "",
+      uuid: uuid || "",
+      username: username || "",
+    });
+  }, []);
   const navigate = useNavigate();
   return (
     <LMClientOverlayProvider
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      client={lmChatClient as any}
-      // userDetails={userDetails}
-      userDetails={{
-        // apiKey: "c142bc84-4c40-4412-ad09-c7e59b93a2ca",
-        apiKey: "f2dbe40c-6c8a-489a-aa9c-13315bd3c162",
-        uuid: "NEW_ANUJ_USER",
-        username: "NEW_ANUJ_USER",
-      }}
+      client={lmChatClient}
+      userDetails={userDetails}
       customCallbacks={{
         chatroomMenuCustomActions: {
           onViewParticipantsCustom: (b, a, id) => {

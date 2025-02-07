@@ -34,6 +34,9 @@ const MediaRenderer = ({ attachments }: { attachments: Attachment[] }) => {
     index: number,
     isThumbnail = false,
   ) => {
+    if (attachment.url) {
+      attachment.fileUrl = attachment.url;
+    }
     if (!attachment || !attachment.fileUrl) {
       return null;
     }
