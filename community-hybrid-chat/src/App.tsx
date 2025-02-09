@@ -3,10 +3,21 @@ import {
   LMClientOverlayProvider,
   LMChannel,
   initiateLMClient,
-  LMChatCurrentMode,
   LMChatTheme,
+  LMParticipantList,
+  LMChatroomDetailContext,
 } from "@likeminds.community/likeminds-chat-reactjs";
+
 import "./App.css";
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+
 const App = () => {
   const [userDetails, setUserDetails] = useState<{
     accessToken?: string;
@@ -16,9 +27,7 @@ const App = () => {
     isGuest?: boolean;
     apiKey?: string;
   }>({});
-  const [currentChatMode, setCurrentChatMode] = useState<LMChatCurrentMode>(
-    LMChatCurrentMode.GROUP_CHAT
-  );
+
   const lmChatClient = initiateLMClient();
 
   useEffect(() => {
@@ -33,37 +42,38 @@ const App = () => {
       username: username || "",
     });
   }, []);
-  function changeChatMode(mode: LMChatCurrentMode) {
-    setCurrentChatMode(mode);
-  }
+  const navigate = useNavigate();
   return (
-    <>
-      <div className="chat-switcher">
-        <button
-          className="community-chat chat-switch"
-          onClick={() => {
-            changeChatMode(LMChatCurrentMode.GROUP_CHAT);
-          }}
-        >
-          Community
-        </button>
-        <button
-          className="network-chat chat-switch"
-          onClick={() => {
-            changeChatMode(LMChatCurrentMode.DIRECT_MESSAGE);
-          }}
-        >
-          DM
-        </button>
-      </div>
-      <LMClientOverlayProvider
-        client={lmChatClient}
-        userDetails={userDetails}
-        lmChatTheme={LMChatTheme.COMMUNITY_HYBRID_CHAT}
-      >
-        <LMChannel currentMode={currentChatMode} />
-      </LMClientOverlayProvider>
-    </>
+    <LMClientOverlayProvider
+      client={lmChatClient}
+      userDetails={userDetails}
+      customCallbacks={{
+        chatroomMenuCustomActions: {
+          onViewParticipantsCustom: (b, a, id) => {
+            console.log("n");
+            console.log(id);
+            navigate(`/participants/${id}`);
+          },
+        },
+      }}
+      lmChatTheme={LMChatTheme.COMMUNITY_HYBRID_CHAT}
+    >
+      <Routes>
+        <Route path="/" element={<LMChannel />} />
+        <Route path="/participants/:id" element={<SampleParticipants />} />
+      </Routes>
+    </LMClientOverlayProvider>
   );
 };
+function SampleParticipants() {
+  const { id } = useParams();
+  const [chatroomId, setChatroomId] = useState<string | undefined>("");
+  useEffect(() => {
+    setChatroomId(id);
+  }, [id]);
+  if (!chatroomId) {
+    return null;
+  }
+  return <LMParticipantList chatroomId={parseInt(chatroomId)} />;
+}
 export default App;

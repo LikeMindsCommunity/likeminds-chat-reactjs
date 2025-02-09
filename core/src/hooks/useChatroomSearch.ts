@@ -12,6 +12,7 @@ import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import { Chatroom } from "../types/models/Chatroom";
 import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 import { CustomActions } from "../customActions";
+import { GetChatroomSearch } from "../types/api-responses/getChatroomSearch";
 
 export function useChatroomSearch(): UseChatroomSearch {
   const { chatroomSearchCustomActions = {} } = useContext(
@@ -48,13 +49,13 @@ export function useChatroomSearch(): UseChatroomSearch {
         return;
       }
       const PAGE_SIZE = 20;
-      const call = await lmChatClient.searchChatroom({
+      const call = (await lmChatClient.searchChatroom({
         search: searchKey,
         page: pageCount.current,
         pageSize: PAGE_SIZE,
         followStatus: followStatus.current,
         searchType: "header",
-      });
+      })) as unknown as GetChatroomSearch;
       if (call?.data.chatrooms.length === 0 && followStatus.current === true) {
         followStatus.current = false;
         pageCount.current = 1;
@@ -65,7 +66,8 @@ export function useChatroomSearch(): UseChatroomSearch {
       }
       if (call?.data && call?.data.chatrooms.length > 0) {
         setSearchList((currentList) => {
-          const newList = [...currentList, ...call.data.chatrooms];
+          const newList = [...currentList, ...call.data.chatrooms.map((chatroom) => (chatroom.chatroom))];
+          console.log(newList)
           return newList;
         });
         pageCount.current = pageCount.current + 1;

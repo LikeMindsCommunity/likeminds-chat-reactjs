@@ -82,7 +82,6 @@ const LMInput: React.FC = () => {
       if (chatRequestState === ChatRequestStates.REJECTED_STATE) {
         isInputBoxDisabled = true;
         disabledInputMessage =
-          // chatroom.chatroom.member.id.toString() === currentUser?.id.toString()
           chatroomDetails?.chatroom?.chatRequestedBy?.id.toString() ===
           currentUser?.id.toString()
             ? ConstantStrings.DM_REQUEST_REJECTED_MESSAGE_CHATROOM_USER
@@ -95,8 +94,7 @@ const LMInput: React.FC = () => {
         disabledInputMessage =
           chatroomDetails.chatroom.chatRequestedBy?.id.toString() ===
           currentUser?.id.toString()
-            ? // chatroom.chatroom.member.id.toString() === currentUser?.id.toString()
-              ConstantStrings.DM_REQUEST_PENDING_MESSAGING_CHATROOM_USER
+            ? ConstantStrings.DM_REQUEST_PENDING_MESSAGING_CHATROOM_USER
             : ConstantStrings.DM_REQUEST_PENDING_MESSAGING_CHATROOM_WITH_USER;
       }
     }

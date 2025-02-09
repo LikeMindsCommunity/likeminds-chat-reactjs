@@ -98,12 +98,18 @@ function MessageOptions() {
 
           if (
             option.title === ConversationActions.REPLY_PRIVATELY_ON_MESSAGE &&
-            message.member.id.toString() === currentUser?.id.toString() &&
-            canUserReplyPrivately !==
-              ReplyDmQueries.REPLY_PRIVATELY_NOT_ALLOWED &&
-            chatroomDetails?.chatroom.type?.toString() !==
-              ChatroomTypes.DIRECT_MESSAGE_CHATROOM.toString()
+            canUserReplyPrivately !== ReplyDmQueries.REPLY_PRIVATELY_NOT_ALLOWED
           ) {
+            if (message.member.id.toString() === currentUser?.id.toString()) {
+              return null;
+            }
+            if (
+              chatroomDetails.chatroom.type ===
+              ChatroomTypes.DIRECT_MESSAGE_CHATROOM
+            ) {
+              return null;
+            }
+
             if (
               message.member.state === MemberType.MEMBER &&
               canUserReplyPrivately ===

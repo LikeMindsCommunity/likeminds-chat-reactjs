@@ -9,6 +9,8 @@ import { Chatroom } from "../types/models/Chatroom";
 import Member from "../types/models/member";
 import { CustomActions } from "../customActions";
 import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
+import { ReplyDmQueries } from "../enums/lm-reply-dm-queries";
+import { GetSyncConversationsResponse } from "../types/api-responses/getSyncConversationsResponse";
 
 /**
  * Custom hook for managing DM channel lists.
@@ -37,6 +39,8 @@ export default function useDmChannelLists(
   );
   const [usersData, setUsersData] = useState<Record<string, Member>>({});
   const [dmChatrooms, setDmChatrooms] = useState<Chatroom[]>([]);
+  const [showDM, setShowDM] = useState<boolean>(false);
+  const [showList, setShowList] = useState<number>(1);
   const dmChatroomsPageCount = useRef<number>(1);
   const loadMoreDmChatrooms = useRef<boolean>(true);
 
@@ -127,12 +131,33 @@ export default function useDmChannelLists(
    *
    * @param chatroomId - The ID of the chatroom to be refreshed.
    */
-  const refreshDMChatrooms = (chatroomId: string | number) => {
+  const refreshDMChatrooms = (chatroomId: string | number, conversationData?: GetSyncConversationsResponse) => {
+    if (conversationData) {
+      const {
+        conversationsData,
+        convAttachmentsMeta,
+      } = conversationData.data;
+
+      const targetConversation = conversationsData[0];
+      if (!targetConversation) {
+        return;
+      }
+      setConversationsData((currentConversationsMeta) => {
+        currentConversationsMeta = { ...currentConversationsMeta };
+        currentConversationsMeta[targetConversation.id!] = targetConversation;
+        currentConversationsMeta[targetConversation.id!].attachments =
+          convAttachmentsMeta[targetConversation.id!];
+        return currentConversationsMeta;
+      });
     setDmChatrooms((dmChatrooms) => {
       const dmChatroomsCopy = [...dmChatrooms];
       const targetChatroom = dmChatroomsCopy.find(
         (chatroom) => chatroom.id.toString() === chatroomId.toString(),
       );
+      if(targetChatroom?.lastConversationId){
+        console.log(`The targeted chatroom conversation is ${targetConversation.id.toString()}`);
+        targetChatroom.lastConversationId = targetConversation.id.toString();
+      }
       const newDmChatroomsCopy = dmChatroomsCopy.filter(
         (chatroom) => chatroom.id.toString() !== chatroomId.toString(),
       );
@@ -142,25 +167,59 @@ export default function useDmChannelLists(
       }
       return dmChatroomsCopy;
     });
-  };
-  //   TODO TBD
-  //   const handleLastConversation = ()=>{}
+  }
+  }
+  useEffect(() => {
+    async function checkDMStatus() {
+      try {
+        const call = await lmChatClient.checkDMStatus({
+          requestFrom: ReplyDmQueries.DM_CHANNEL,
+        });
+        if (call.data.showDm) {
+          setShowDM(true);
+        }
+        const cta = call.data.cta;
+        const URLSearchParams = new URL(cta).searchParams;
+        const showList = URLSearchParams.get("show_list");
+        if (showList) {
+          setShowList(parseInt(showList));
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    checkDMStatus();
+  }, [lmChatClient]);
+
   useEffect(() => {
     if (!lmChatClient) {
       return;
     }
     const fb = lmChatClient.fbInstance();
     const query = ref(fb, `community/${currentCommunity.id}`);
-    return onValue(query, (snapshot) => {
+    return onValue(query, async (snapshot) => {
       if (snapshot.exists()) {
         const chatroomId = snapshot.val().chatroom_id;
-        refreshDMChatrooms(chatroomId);
-      }
-    });
+        const conversationId = snapshot.val().conversation_id;
+        const chatroomConversationsCall: GetSyncConversationsResponse =
+                  await lmChatClient.getConversations({
+                    chatroomId: parseInt(chatroomId!.toString()),
+                    page: 1,
+                    pageSize: 1,
+                    conversationId: parseInt(conversationId?.toString() || ""),
+                    minTimestamp: 0,
+                    maxTimestamp: Date.now(),
+                    isLocalDb: false,
+                  });
+        refreshDMChatrooms(chatroomId,chatroomConversationsCall);
+      }})
+    
   }, [currentCommunity.id, lmChatClient]);
+
   useEffect(() => {
     getDMChatroomsList();
   }, [getDMChatroomsList]);
+
   const dmChannelListDefaultActions: DMChannelListDefaultActions = {
     getDMChatroomsList,
     refreshDMChatrooms,
@@ -172,7 +231,7 @@ export default function useDmChannelLists(
     loadMoreDmChatrooms: loadMoreDmChatrooms.current,
     conversationsData,
     usersData,
-    currentSelectedChatroomId: chatroomId,
+    currentSelectedChatroomId: chatroomId ? parseInt(chatroomId!.toString()): undefined,
   };
   return {
     dmChatrooms,
@@ -208,6 +267,8 @@ export default function useDmChannelLists(
         )
       : selectNewChatroom,
     currentSelectedChatroomId: chatroomId,
+    showDM,
+    showList,
     // Return any additional functions here
   };
 }
@@ -221,6 +282,8 @@ export interface UseDmChannelLists {
   markReadADMChatroom: OneArgVoidReturns<string | number>;
   selectNewChatroom: OneArgVoidReturns<number>;
   currentSelectedChatroomId?: number;
+  showDM: boolean;
+  showList: number;
   // Add any additional functions here
 }
 

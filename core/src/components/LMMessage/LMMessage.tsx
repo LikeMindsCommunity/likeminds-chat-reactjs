@@ -26,6 +26,8 @@ import { useMessageOptions } from "../../hooks/useMessageOptions";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { MemberRole } from "@likeminds.community/chat-js";
 import MediaRendererLocal from "../../shared/components/LMLocalMediaRenderer";
+import { LMConversationAttachments } from "../../enums/lm-conversation-attachments";
+import { LMMessageVoiceNote } from "./LMMessageVoiceNote";
 
 const LMMessage = () => {
   const { customComponents } = useContext(LMGlobalClientProviderContext);
@@ -41,7 +43,6 @@ const LMMessage = () => {
   const imageUrl = message?.member.imageUrl;
   const name = message?.member.name;
   const avatarContent = getAvatar({ imageUrl, name });
-
   // custom message component
 
   if (message?.widgetId?.length && messageBubbles?.customWidget) {
@@ -62,7 +63,7 @@ const LMMessage = () => {
     )
       if (
         currentUser.id.toString() ===
-        chatroomDetails?.chatroom.chatroomWithUser?.id.toString()
+        chatroomDetails?.chatroom.chatRequestedBy?.id.toString()
       ) {
         return (
           <span
@@ -102,7 +103,6 @@ const LMMessage = () => {
           : chatroomDetails.chatroom.member;
       return (
         <div className="data-pill">
-          {/* {Utils.parseAndReplaceTags(message?.answer || "")} */}
           {`This is the very beginning of your direct message with ${
             chatroomuser?.name
           }`}
@@ -151,6 +151,7 @@ const LMMessage = () => {
       if (messageBubbles?.chatroomNormalChatBubble) {
         return <messageBubbles.chatroomNormalChatBubble />;
       }
+
       return (
         <>
           {renderDatePill()}
@@ -222,7 +223,18 @@ const LMMessage = () => {
                     </div>
                   </div>
                 )}
-
+                {message.attachments?.some(
+                  (attachment) =>
+                    attachment.type === LMConversationAttachments.VOICE_NOTE,
+                ) ? (
+                  messageBubbles?.voiceNote ? (
+                    <messageBubbles.voiceNote
+                      attachment={message!.attachments![0]}
+                    />
+                  ) : (
+                    <LMMessageVoiceNote attachment={message!.attachments![0]} />
+                  )
+                ) : null}
                 <div className="msg">
                   {message?.answer.includes(
                     "* This is a gif message. Please update your app *",
@@ -271,8 +283,6 @@ const LMMessage = () => {
                 </div>
               </div>
             )}
-
-            {/* <div className="data-pill">{message?.date}</div> */}
           </div>
         </>
       );

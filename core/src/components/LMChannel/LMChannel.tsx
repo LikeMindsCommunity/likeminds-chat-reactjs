@@ -2,19 +2,17 @@ import React, { useState, useEffect, useContext } from "react";
 
 import LMChannelList from "../LMChannelList/LMChannelList";
 import LMChatroom from "./LMChatChatroom";
-import { LMChatCurrentMode } from "../../enums/lm-chat-modes";
 import LMHeader from "../LMHeader/LMHeader";
 import LMMessageList from "../LMMessageList/LMMessageList";
 import LMInput from "../LMInput/LMInput";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
-import { LMChatTheme } from "../../enums/lm-chat-theme";
+import { CustomisationContextProvider } from "../../context/LMChatCustomisationContext";
 
-const LMChannel = ({
-  currentChatroomId,
-  currentMode = LMChatCurrentMode.GROUP_CHAT,
-}: LMChannelProps) => {
+const LMChannel = ({ currentChatroomId }: LMChannelProps) => {
   const { lmChatTheme } = useContext(LMGlobalClientProviderContext);
-
+  const { chatroomMenuCustomActions } = useContext(
+    CustomisationContextProvider,
+  );
   // State to track whether the screen is mobile size
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 768);
 
@@ -41,18 +39,14 @@ const LMChannel = ({
         >
           <LMChannelList
             currentChatroomId={currentChatroomId}
-            currentMode={
-              lmChatTheme === LMChatTheme.NETWORKING_CHAT
-                ? LMChatCurrentMode.DIRECT_MESSAGE
-                : currentMode
-            }
+            currentTheme={lmChatTheme}
           />
         </div>
       )}
       <div className="lm-right-panel">
         <div className="lm-chat-box">
           <LMChatroom currentChatroomId={currentChatroomId}>
-            <LMHeader />
+            <LMHeader chatroomMenuCustomActions={chatroomMenuCustomActions} />
             <LMMessageList />
             <LMInput />
           </LMChatroom>
@@ -66,5 +60,4 @@ export default LMChannel;
 
 export interface LMChannelProps {
   currentChatroomId?: number;
-  currentMode: LMChatCurrentMode;
 }

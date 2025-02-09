@@ -1,5 +1,5 @@
 import { useCallback, useContext, useMemo } from "react";
-import { ZeroArgVoidReturns } from "./useInput";
+import { OneArgVoidReturns, ZeroArgVoidReturns } from "./useInput";
 import GlobalClientProviderContext from "../context/LMGlobalClientProviderContext";
 import { LMChatroomContext } from "../context/LMChatChatroomContext";
 import UserProviderContext from "../context/LMUserProviderContext";
@@ -84,13 +84,12 @@ function useChatroomMenuOptions(
       console.log(error);
     }
   }, [chatroomDetails, currentUser, lmChatClient, setNewChatroom]);
-  const onViewParticipants = useCallback(async () => {
-    try {
-      //
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
+  const onViewParticipants = useCallback(
+    async (chatroomId: string | number) => {
+      // 
+    },
+    [],
+  );
   const onUnBlock = useCallback(async () => {
     try {
       const unblockCall = await lmChatClient.blockMember({
@@ -243,7 +242,7 @@ export default useChatroomMenuOptions;
 
 export interface UseChatroomMenuOptions {
   onMute: ZeroArgVoidReturns;
-  onViewParticipants: ZeroArgVoidReturns;
+  onViewParticipants: OneArgVoidReturns<string | number>;
   onLeaveChatroom: ZeroArgVoidReturns;
   onBlock: ZeroArgVoidReturns;
   onUnBlock: ZeroArgVoidReturns;
@@ -251,7 +250,7 @@ export interface UseChatroomMenuOptions {
 
 export interface ChatroomMenuDefaultActions {
   onMute: ZeroArgVoidReturns;
-  onViewParticipants: ZeroArgVoidReturns;
+  onViewParticipants: OneArgVoidReturns<string | number>;
   onLeaveChatroom: ZeroArgVoidReturns;
   onBlock: ZeroArgVoidReturns;
   onUnBlock: ZeroArgVoidReturns;

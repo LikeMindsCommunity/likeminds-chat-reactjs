@@ -188,6 +188,7 @@ export default function useChatroomList(
         setExploreGroupChatrooms((currentExpolreChatrooms) => {
           return [...currentExpolreChatrooms].map((chatroom) => {
             if (chatroom.id.toString() === chatroomID?.toString()) {
+              chatroom.participantsCount = (parseInt(chatroom.participantsCount!.toString()) - 1).toString();
               chatroom.followStatus = false;
             }
             return chatroom;
@@ -209,16 +210,20 @@ export default function useChatroomList(
       setExploreGroupChatrooms((currentExpolreChatrooms) => {
         setGroupChatrooms((currentGroupChatrooms) => {
           const currentGroupChatroomsCopy = [...currentGroupChatrooms];
-          const targetChatroom = currentExpolreChatrooms.find(
+          const chatroomFromExploreChatrooms = currentExpolreChatrooms.find(
             (chatroom) => chatroom.id.toString() === collabcardId.toString(),
           );
-          if (targetChatroom) {
+          
+          if (chatroomFromExploreChatrooms) {
+            const targetChatroom = {...chatroomFromExploreChatrooms}
+            targetChatroom.participantsCount = targetChatroom.participantsCount! + 1;
             currentGroupChatroomsCopy.unshift(targetChatroom);
           }
           return currentGroupChatroomsCopy;
         });
         return [...currentExpolreChatrooms].map((chatroom) => {
           if (chatroom.id.toString() === collabcardId?.toString()) {
+            chatroom.participantsCount = chatroom.participantsCount! + 1;
             chatroom.followStatus = true;
           }
           return chatroom;

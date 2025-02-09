@@ -217,7 +217,7 @@ export default function useConversations(): UseConversations {
       return logError(error);
     }
   }, [chatroomId, lmChatClient]);
-  const getChatroomConversationsOnTopScroll = useCallback(async () => {
+  const getChatroomConversationsOnTopScroll = useCallback(async (newTimeStamp?: number) => {
     try {
       if (stopAdditionalCalls.current) {
         return;
@@ -227,7 +227,7 @@ export default function useConversations(): UseConversations {
         await lmChatClient?.getConversations({
           chatroomId: parseInt(chatroomId!.toString()),
           pageSize: CONVERSATIONS_PAGINATE_BY || 50,
-          maxTimestamp: currentChatroomMaxTimeStamp.current,
+          maxTimestamp: newTimeStamp ? newTimeStamp :currentChatroomMaxTimeStamp.current,
           minTimestamp: 0,
           isLocalDb: false,
           page: currentChatroomTopPageCount.current,
@@ -276,6 +276,7 @@ export default function useConversations(): UseConversations {
               return currentConversations;
             }
 
+           
             const newConversations = [
               ...currentConversations,
               ...chatroomConversationsCall.data.conversations,
@@ -437,7 +438,8 @@ export default function useConversations(): UseConversations {
   useEffect(() => {
     async function fetchChannel() {
       try {
-        await getChatroomConversationsOnTopScroll();
+        const newTimeStamp = Date.now()
+        await getChatroomConversationsOnTopScroll(newTimeStamp);
         newChatroomConversationsLoaded.current = true;
         showLoader.current = false;
       } catch (error) {
@@ -478,6 +480,7 @@ export default function useConversations(): UseConversations {
         return logError(error);
       }
     };
+
     const query = ref(db, `collabcards/${chatroomId}`);
     return onValue(query, async (snapshot) => {
       try {
@@ -562,6 +565,29 @@ export default function useConversations(): UseConversations {
       };
     }
   }, [chatroomDetails.chatroom, currentUser]);
+
+  useEffect(()=>{
+    function failedConversationEventListener(event: Event){
+      const failedConversation: Conversation = (event as CustomEvent).detail.conversation;
+      setConversations((currentConversations) => {
+       if(currentConversations){
+        const newConversationList = currentConversations?.filter((conversation) => {
+          if(conversation.temporaryId !== failedConversation.temporaryId){
+            return conversation
+          }
+          
+        })
+        return newConversationList
+       }else{
+          return currentConversations
+       }
+      })
+    } 
+    document.addEventListener(CustomActions.CONVERSATION_FAILED_TO_SEND, failedConversationEventListener)
+    return () => {
+      document.removeEventListener(CustomActions.CONVERSATION_FAILED_TO_SEND, failedConversationEventListener)
+    }
+  })
 
   useEffect(() => {
     document.addEventListener(

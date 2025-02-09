@@ -1,24 +1,31 @@
 import LMChatDMChannelList from "./LMDMChatChannels";
 import LMChatGroupChannelList from "./LMGroupChatChannelList";
-import { LMChatCurrentMode } from "../../enums/lm-chat-modes";
+import { LMChatTheme } from "../../enums/lm-chat-theme";
+import { LMChatChannelListToggle } from "./LMChatChannelToggle";
 
 const LMChannelList = ({
-  currentMode,
+  currentTheme,
   currentChatroomId,
 }: LMChannelListProps) => {
-  const switcher = () => {
-    if (currentMode === LMChatCurrentMode.GROUP_CHAT) {
+  // Render the channel list based on the current theme
+  switch (currentTheme) {
+    case LMChatTheme.COMMUNITY_CHAT: {
+      // Render code for the group chat channel list rendering
       return <LMChatGroupChannelList currentChatroomId={currentChatroomId} />;
-    } else if (currentMode === LMChatCurrentMode.DIRECT_MESSAGE) {
+    }
+    case LMChatTheme.NETWORKING_CHAT: {
+      // Render code for the direct message channel list rendering
       return <LMChatDMChannelList currentChatroomId={currentChatroomId} />;
     }
-  };
-  return switcher();
+    case LMChatTheme.COMMUNITY_HYBRID_CHAT: {
+      return <LMChatChannelListToggle />;
+    }
+  }
 };
 
 export interface LMChannelListProps {
   currentChatroomId?: number;
-  currentMode: LMChatCurrentMode;
+  currentTheme: LMChatTheme;
 }
 
 export default LMChannelList;

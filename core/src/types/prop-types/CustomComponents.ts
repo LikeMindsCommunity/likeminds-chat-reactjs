@@ -41,6 +41,7 @@ import {
   ChatroomSearchDataStore,
   ChatroomSearchDefaultActions,
 } from "../../hooks/useChatroomSearch";
+import { Attachment } from "../models/Attachment";
 
 export interface CustomComponents {
   message?: CustomComponentType; //added
@@ -57,6 +58,7 @@ export interface CustomComponents {
     chatroomMembersAddedBubble?: CustomComponentType;
     chatroomDirectMessageRequestRejectedBubble?: CustomComponentType;
     chatroomDirectMessageRequestAcceptedBubble?: CustomComponentType;
+    voiceNote?: CustomComponentType<{ attachment: Attachment }>;
   };
   messageList?: CustomComponentType;
   chatroomHeader?: CustomComponentType;
@@ -276,7 +278,7 @@ export type ChatroomSearchCustomCallback = (
 
 // ================== ChatroomSearch Custom Actions ==================
 
-export type CustomComponentType = React.FC;
+export type CustomComponentType<T = unknown> = React.FC<T>;
 // for input actions callback
 export type InputActionsCallback = (
   inputDefaultActions: InputDefaultActions,
