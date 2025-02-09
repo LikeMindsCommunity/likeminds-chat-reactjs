@@ -86,12 +86,7 @@ function useChatroomMenuOptions(
   }, [chatroomDetails, currentUser, lmChatClient, setNewChatroom]);
   const onViewParticipants = useCallback(
     async (chatroomId: string | number) => {
-      try {
-        //
-        console.log(chatroomId);
-      } catch (error) {
-        console.log(error);
-      }
+      // 
     },
     [],
   );

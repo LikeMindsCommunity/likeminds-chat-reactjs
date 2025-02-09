@@ -323,7 +323,6 @@ export default function useConversations(): UseConversations {
           ...(preConversationCall.data.conversations || []),
           ...(postConversationCall.data.conversations || []),
         ];
-        console.log(newConversations)
         shouldScrollToBottom.current = false;
         if (newConversations.length) {
           currentChatroomMaxTimeStamp.current =

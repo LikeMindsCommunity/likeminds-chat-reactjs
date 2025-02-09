@@ -135,8 +135,6 @@ export default function useDmChannelLists(
     if (conversationData) {
       const {
         conversationsData,
-        // userMeta,
-        // chatroomMeta,
         convAttachmentsMeta,
       } = conversationData.data;
 
@@ -160,9 +158,6 @@ export default function useDmChannelLists(
         console.log(`The targeted chatroom conversation is ${targetConversation.id.toString()}`);
         targetChatroom.lastConversationId = targetConversation.id.toString();
       }
-      console.log(`The targeted chatroom`);
-      console.log(targetChatroom);
-      
       const newDmChatroomsCopy = dmChatroomsCopy.filter(
         (chatroom) => chatroom.id.toString() !== chatroomId.toString(),
       );

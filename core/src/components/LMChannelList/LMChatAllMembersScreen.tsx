@@ -87,7 +87,6 @@ const LMChatAllMembersScreen = ({
           }
         }
       } catch (error) {
-        console.log("loggin error");
         console.log(error);
       }
     },

@@ -523,7 +523,6 @@ export function useInput(): UseInputReturns {
             },
           }))
           if(openSnackbar){
-            console.log(postConversationsCall)
             openSnackbar(`${postConversationsCall.errorMessage.response.data.error_message}`)
           }
           
