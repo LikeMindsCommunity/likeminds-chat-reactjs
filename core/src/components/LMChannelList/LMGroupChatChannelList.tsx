@@ -9,7 +9,7 @@ import UserProviderContext from "../../context/LMUserProviderContext";
 
 // Icons
 import joinIcon from "../../assets/img/icon_join.svg";
-import document from "../../assets/img/document.svg";
+import { Compass } from "@phosphor-icons/react";
 import searchIcon from "../../assets/img/search.svg";
 import joinedIcon from "../../assets/img/icon_joined.svg";
 import participantsIcon from "../../assets/img/explore-feed_chatroom_participants.svg";
@@ -357,7 +357,12 @@ function LMChatExploreTabButton({
           className="explore-button lm-cursor-pointer"
           onClick={openExploreTab}
         >
-          <img src={exploreTabIcon} alt="exploreTabIcon" />
+          <Compass
+            size={32}
+            className="lm-chat-icon-explore-chats"
+            weight="fill"
+          />
+
           <span>Explore groups</span>
           <img src={rightArrowExploreTab} alt="rightArrowExploreTab" />
         </div>

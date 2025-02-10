@@ -7,7 +7,12 @@ import CreateDMIcon from "../../assets/img/new-dm-icon.png";
 import { useContext, useState } from "react";
 import LMChatAllMembersScreen from "./LMChatAllMembersScreen";
 import goBackIcon from "../../assets/img/back-navigation-arrow.svg";
+import { Utils } from "../../utils/helpers";
+import LMUserProviderContext from "../../context/LMUserProviderContext";
+import { Chatroom } from "../../types/models/Chatroom";
 const LMChatDMChannelList = ({ currentChatroomId }: LMDMChannelListProps) => {
+  const { currentUser } = useContext(LMUserProviderContext);
+
   const [openNewDM, setOpenNewDM] = useState<boolean>(false);
 
   const {
@@ -97,6 +102,9 @@ const LMChatDMChannelList = ({ currentChatroomId }: LMDMChannelListProps) => {
             scrollableTarget="lm-channel-list-dm"
           >
             {dmChatrooms.map((chatroom) => {
+              if (Utils.isOtherUserAIChatbot(chatroom, currentUser)) {
+                return null;
+              }
               return (
                 <LMChatJoinedChannelTile
                   key={chatroom.id.toString()}

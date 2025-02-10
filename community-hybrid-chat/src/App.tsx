@@ -1,13 +1,10 @@
-import { useEffect, useState } from "react";
 import {
   LMClientOverlayProvider,
   LMChannel,
   initiateLMClient,
   LMChatTheme,
   LMParticipantList,
-  LMChatroomDetailContext,
 } from "@likeminds.community/likeminds-chat-reactjs";
-
 import "./App.css";
 import {
   BrowserRouter,
@@ -16,7 +13,7 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const App = () => {
   const [userDetails, setUserDetails] = useState<{
@@ -29,7 +26,6 @@ const App = () => {
   }>({});
 
   const lmChatClient = initiateLMClient();
-
   useEffect(() => {
     const queryString = window.location.search;
     const params = new URLSearchParams(queryString);
@@ -50,8 +46,6 @@ const App = () => {
       customCallbacks={{
         chatroomMenuCustomActions: {
           onViewParticipantsCustom: (b, a, id) => {
-            console.log("n");
-            console.log(id);
             navigate(`/participants/${id}`);
           },
         },
