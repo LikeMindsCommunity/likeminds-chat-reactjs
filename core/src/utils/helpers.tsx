@@ -661,10 +661,14 @@ export class Utils {
     }
   }
 
+  static isOtherUserAChatbot(memeber: Member) {
+    return memeber?.roles?.includes(MemberRole.Chatbot);
+  }
+
   static isOtherUserAIChatbot(chatroom: Chatroom, currentUser: Member) {
     const currentUUID = currentUser?.uuid;
     const otherMember =
-      chatroom.member.sdkClientInfo?.uuid === currentUUID
+      chatroom?.member?.sdkClientInfo?.uuid === currentUUID
         ? chatroom.chatroomWithUser
         : chatroom.member;
     const isChatroomRolePresent = otherMember?.roles?.includes(

@@ -2,6 +2,7 @@ import {
   PropsWithChildren,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -105,6 +106,11 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
   const onCloseSearch = () => {
     setOpenSearchField(false);
   };
+  useEffect(() => {
+    return () => {
+      setOpenSearchField(false);
+    };
+  }, [chatroomDetails.chatroom.id]);
   const renderHeaderComponents = () => {
     switch (openSearchField) {
       case true: {
@@ -164,7 +170,9 @@ const LMHeader: React.FC<PropsWithChildren<LMHeaderProps>> = ({
                             case ChatroomAction.ACTION_UNFOLLOW:
                               return onLeaveChatroom();
                             case ChatroomAction.ACTION_VIEW_PARTICIPANTS:
-                              return onViewParticipants();
+                              return onViewParticipants(
+                                chatroomDetails.chatroom.id,
+                              );
                             case ChatroomAction.ACTION_BLOCK_CHATROOM:
                               return onBlock();
                             case ChatroomAction.ACTION_UNBLOCK_CHATROOM:

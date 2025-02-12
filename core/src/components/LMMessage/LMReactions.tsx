@@ -28,7 +28,7 @@ const Reactions = () => {
         }}
       >
         <div className="message-reactions-picker-wrapper">
-          <Picker data={data} onEmojiSelect={onEmojiSelect} />
+          <Picker data={data} theme="light" onEmojiSelect={onEmojiSelect} />
         </div>
       </Menu>
       <span onClick={openMenu}>

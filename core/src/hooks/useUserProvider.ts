@@ -154,11 +154,14 @@ export default function useUserProvider(
             localRefreshToken.length
           ) {
             await validateChatUser(localAccessToken, localRefreshToken);
+            setUserNotLoadedErrorState(false);
           } else {
             await initiateFeedUser(apiKey, uuid, username, isGuest || false);
+            setUserNotLoadedErrorState(false);
           }
         } else if (accessToken && refreshToken) {
           await validateChatUser(accessToken, refreshToken);
+          setUserNotLoadedErrorState(false);
         } else {
           throw Error("Neither API key nor Tokens provided");
         }

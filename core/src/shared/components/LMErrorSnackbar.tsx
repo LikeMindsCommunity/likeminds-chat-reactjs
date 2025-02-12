@@ -9,7 +9,14 @@ interface ErrorSnackbarProps {
 }
 
 const Alert = (props: AlertProps) => {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
+  return (
+    <MuiAlert
+      elevation={6}
+      variant="filled"
+      {...props}
+      className="lm-chat-alert"
+    />
+  );
 };
 
 const ErrorSnackbar: React.FC<ErrorSnackbarProps> = ({

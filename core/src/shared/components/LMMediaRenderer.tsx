@@ -1,5 +1,6 @@
 import React, { SyntheticEvent, useState } from "react";
 import { Carousel } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.css";
 import crossIcon from "../../assets/img/carousel-cross-icon.svg";
 import pdfIcon from "../../assets/img/pdf-document.svg";
 import { Attachment } from "@likeminds.community/chat-js";
@@ -33,6 +34,9 @@ const MediaRenderer = ({ attachments }: { attachments: Attachment[] }) => {
     index: number,
     isThumbnail = false,
   ) => {
+    if (attachment.url) {
+      attachment.fileUrl = attachment.url;
+    }
     if (!attachment || !attachment.fileUrl) {
       return null;
     }
@@ -96,6 +100,7 @@ const MediaRenderer = ({ attachments }: { attachments: Attachment[] }) => {
           onSelect={(selectedIndex) => setCurrentIndex(selectedIndex)}
           indicators={attachments.length > 1}
           controls={attachments.length > 1}
+          interval={null}
         >
           {attachments.map((attachment, index) => (
             <Carousel.Item key={index} className="lm-modal-media">

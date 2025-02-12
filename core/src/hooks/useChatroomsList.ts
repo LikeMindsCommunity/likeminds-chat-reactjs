@@ -81,7 +81,7 @@ export default function useChatroomList(
 
   //   state for groupchat chatrooms should come here
   const [groupChatrooms, setGroupChatrooms] = useState<Chatroom[]>([]);
-  const [groupChatroomConversationsMeta, setgroupChatroomConversationsMeta] =
+  const [groupChatroomConversationsMeta, setGroupChatroomConversationsMeta] =
     useState<Record<string, Conversation>>({});
   const [groupChatroomMember, setgroupChatroomMember] = useState<
     Record<string, Member>
@@ -188,6 +188,7 @@ export default function useChatroomList(
         setExploreGroupChatrooms((currentExpolreChatrooms) => {
           return [...currentExpolreChatrooms].map((chatroom) => {
             if (chatroom.id.toString() === chatroomID?.toString()) {
+              chatroom.participantsCount = (parseInt(chatroom.participantsCount!.toString()) - 1).toString();
               chatroom.followStatus = false;
             }
             return chatroom;
@@ -209,16 +210,20 @@ export default function useChatroomList(
       setExploreGroupChatrooms((currentExpolreChatrooms) => {
         setGroupChatrooms((currentGroupChatrooms) => {
           const currentGroupChatroomsCopy = [...currentGroupChatrooms];
-          const targetChatroom = currentExpolreChatrooms.find(
+          const chatroomFromExploreChatrooms = currentExpolreChatrooms.find(
             (chatroom) => chatroom.id.toString() === collabcardId.toString(),
           );
-          if (targetChatroom) {
+          
+          if (chatroomFromExploreChatrooms) {
+            const targetChatroom = {...chatroomFromExploreChatrooms}
+            targetChatroom.participantsCount = targetChatroom.participantsCount! + 1;
             currentGroupChatroomsCopy.unshift(targetChatroom);
           }
           return currentGroupChatroomsCopy;
         });
         return [...currentExpolreChatrooms].map((chatroom) => {
           if (chatroom.id.toString() === collabcardId?.toString()) {
+            chatroom.participantsCount = chatroom.participantsCount! + 1;
             chatroom.followStatus = true;
           }
           return chatroom;
@@ -236,15 +241,23 @@ export default function useChatroomList(
       conversationData?: GetSyncConversationsResponse,
     ) => {
       if (conversationData) {
-        const { conversationsData, userMeta, chatroomMeta } =
-          conversationData.data;
+        const {
+          conversationsData,
+          userMeta,
+          chatroomMeta,
+          convAttachmentsMeta,
+        } = conversationData.data;
+
         const targetConversation = conversationsData[0];
         if (!targetConversation) {
           return;
         }
-        setgroupChatroomConversationsMeta((currentConversationsMeta) => {
+
+        setGroupChatroomConversationsMeta((currentConversationsMeta) => {
           currentConversationsMeta = { ...currentConversationsMeta };
           currentConversationsMeta[targetConversation.id!] = targetConversation;
+          currentConversationsMeta[targetConversation.id!].attachments =
+            convAttachmentsMeta[targetConversation.id!];
           return currentConversationsMeta;
         });
         setgroupChatroomMember((currentMembersMeta) => {
@@ -350,7 +363,7 @@ export default function useChatroomList(
             ...getChatroomsMineCall.data.chatroomsData,
           ];
         });
-        setgroupChatroomConversationsMeta((currentConversationsMeta) => {
+        setGroupChatroomConversationsMeta((currentConversationsMeta) => {
           return {
             ...currentConversationsMeta,
             ...getChatroomsMineCall?.data.conversationMeta,
@@ -409,18 +422,58 @@ export default function useChatroomList(
       }
     });
   }, [currentCommunity, lmChatClient, refreshGroupChatrooms]);
+
+  // Effect for local handling of chatroom leave action
   useEffect(() => {
-    addEventListener(
+    document.addEventListener(
       CustomActions.CHATROOM_LEAVE_ACTION_COMPLETED,
       chatroolLeaveActionListener,
     );
+
     return () => {
-      removeEventListener(
+      document.removeEventListener(
         CustomActions.CHATROOM_LEAVE_ACTION_COMPLETED,
         chatroolLeaveActionListener,
       );
     };
   }, [chatroolLeaveActionListener]);
+
+  // Effect for local handling of delete conversation handler
+  useEffect(() => {
+    function deleteConversationHandler(eventObject: Event) {
+      const conversation: Conversation = (eventObject as CustomEvent).detail
+        .conversation;
+
+      const { id } = conversation;
+      const metaConversation = {
+        ...groupChatroomConversationsMeta,
+      };
+      let deletedConversationFromMetaConversations = metaConversation[id];
+
+      if (deletedConversationFromMetaConversations) {
+        deletedConversationFromMetaConversations = {
+          ...deletedConversationFromMetaConversations,
+          ...conversation,
+        };
+        deletedConversationFromMetaConversations.deletedByUserId =
+          currentUser.sdkClientInfo?.uuid;
+      }
+
+      metaConversation[id] = deletedConversationFromMetaConversations;
+      setGroupChatroomConversationsMeta(metaConversation);
+    }
+    document.addEventListener(
+      CustomActions.CONVERSATION_DELETED,
+      deleteConversationHandler,
+    );
+
+    return () => {
+      document.removeEventListener(
+        CustomActions.CONVERSATION_DELETED,
+        deleteConversationHandler,
+      );
+    };
+  });
   const channelListDefaultActions: ChannelListDefaultActions = {
     getChatroomsMine,
     getExploreGroupChatrooms,

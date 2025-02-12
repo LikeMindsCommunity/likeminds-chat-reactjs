@@ -46,6 +46,7 @@ import ConversationStates from "../enums/lm-conversation-states";
 import { ConstantStrings } from "../enums/lm-common-strings";
 import { CustomisationContextProvider } from "../context/LMChatCustomisationContext";
 import { MemberRightsState } from "../enums/lm-member-rights-states";
+import LMLoaderContextProvider from "../context/LMLoaderContextProvider";
 export function useInput(): UseInputReturns {
   //contexts
   const { inputCustomActions = {} } = useContext(CustomisationContextProvider);
@@ -88,6 +89,7 @@ export function useInput(): UseInputReturns {
       chatroom: { id: chatroomId },
     },
   } = useContext(LMChatroomContext);
+  const {openSnackbar} = useContext(LMLoaderContextProvider)
   // state
   const [inputText, setInputText] = useState<string>("");
   const [tagSearchKey, setTagSearchKey] = useState<string | null>(null);
@@ -299,6 +301,7 @@ export function useInput(): UseInputReturns {
             detail: sendDmRequestCall?.data.conversation,
           }),
         );
+        
 
         const newChatroom = { ...chatroomDetails };
         if (newChatroom.chatroom && newChatroom.chatroom) {
@@ -405,6 +408,8 @@ export function useInput(): UseInputReturns {
         const messageText = Utils.extractTextFromNode(
           inputBoxRef.current!,
         ).trim();
+        setOpenGifCollapse(false);
+        setGifMedia(null);
         if (
           chatroomDetails.chatroom.type ===
             ChatroomTypes.DIRECT_MESSAGE_CHATROOM &&
@@ -415,6 +420,11 @@ export function useInput(): UseInputReturns {
             MemberType.COMMUNITY_MANAGER
         ) {
           await sendDMRequest(messageText);
+          document.dispatchEvent(
+            new CustomEvent(CustomActions.NEW_DM_CHATROOM_CREATED, {
+              detail: {chatroomId: chatroomId},
+            }),
+          );
           return;
         }
         // returns when no message text ans no media
@@ -446,7 +456,10 @@ export function useInput(): UseInputReturns {
 
         const attachmentsList = imagesAndVideosMediaList
           ? [...imagesAndVideosMediaList]
-          : [...(documentsMediaList || [])];
+          : documentsMediaList
+            ? [...documentsMediaList]
+            : [];
+
         setImagesAndVideosMediaList([]);
         setDocumentMediaList([]);
         const temporaryId = Date.now().toString();
@@ -509,29 +522,24 @@ export function useInput(): UseInputReturns {
         // sending the conversation
         const postConversationsCall: PostConversationResponse =
           await lmChatClient.postConversation(postConversationCallConfig);
-
+        if(!postConversationsCall.success){
+          document.dispatchEvent(new CustomEvent(CustomActions.CONVERSATION_FAILED_TO_SEND, {
+            detail: {
+              conversation: localConversation,
+            },
+          }))
+          if(openSnackbar){
+            openSnackbar(`${postConversationsCall.errorMessage.response.data.error_message}`)
+          }
+          
+        }
         setFocusOnInputField();
         removeOgTag();
       } catch (error) {
         console.log(error);
       }
     },
-    [
-      buildMediaAttachments,
-      chatroomDetails,
-      conversationToReply,
-      conversationToedit,
-      createLocalConversation,
-      currentUser,
-      documentsMediaList,
-      gifMedia,
-      imagesAndVideosMediaList,
-      lmChatClient,
-      ogTags,
-      sendDMRequest,
-      setConversationToEdit,
-      setConversationToReply,
-    ],
+    [buildMediaAttachments, chatroomDetails, conversationToReply, conversationToedit, createLocalConversation, currentUser, documentsMediaList, gifMedia, imagesAndVideosMediaList, lmChatClient, ogTags, openSnackbar, sendDMRequest, setConversationToEdit, setConversationToReply],
   );
 
   // normal functions

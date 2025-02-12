@@ -26,6 +26,8 @@ import { useMessageOptions } from "../../hooks/useMessageOptions";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { MemberRole } from "@likeminds.community/chat-js";
 import MediaRendererLocal from "../../shared/components/LMLocalMediaRenderer";
+import { LMConversationAttachments } from "../../enums/lm-conversation-attachments";
+import { LMMessageVoiceNote } from "./LMMessageVoiceNote";
 
 const LMMessage = () => {
   const { customComponents } = useContext(LMGlobalClientProviderContext);
@@ -41,7 +43,6 @@ const LMMessage = () => {
   const imageUrl = message?.member.imageUrl;
   const name = message?.member.name;
   const avatarContent = getAvatar({ imageUrl, name });
-
   // custom message component
 
   if (message?.widgetId?.length && messageBubbles?.customWidget) {
@@ -62,7 +63,7 @@ const LMMessage = () => {
     )
       if (
         currentUser.id.toString() ===
-        chatroomDetails?.chatroom.chatroomWithUser?.id.toString()
+        chatroomDetails?.chatroom.chatRequestedBy?.id.toString()
       ) {
         return (
           <span
@@ -102,7 +103,6 @@ const LMMessage = () => {
           : chatroomDetails.chatroom.member;
       return (
         <div className="data-pill">
-          {/* {Utils.parseAndReplaceTags(message?.answer || "")} */}
           {`This is the very beginning of your direct message with ${
             chatroomuser?.name
           }`}
@@ -121,7 +121,10 @@ const LMMessage = () => {
       return <messageBubbles.chatroomDeletedChatBubble />;
     }
     return (
-      <div className={`lm-chat-card ${messageClass} ${message?.state}`}>
+      <div
+        className={`lm-chat-card ${messageClass} ${message?.state}`}
+        id={`lm-chat-message-${message.id}-${message.temporaryId}-${message.state}`}
+      >
         {!isSender ? <div className="lmUserData">{avatarContent}</div> : null}
         <div className={`conversation ${messageClass}`}>
           {!isSender ? (
@@ -133,14 +136,6 @@ const LMMessage = () => {
               : ConstantStrings.MESSAGE_DELETED_NOT_BY_SELF}
           </div>
           <div className="time">{message?.createdAt}</div>
-        </div>
-        <div className={`actions ${message?.deletedBy ? "none" : ""}`}>
-          <div className="lm-cursor-pointer">
-            <MessageOptions />
-          </div>
-          <div className="lm-cursor-pointer">
-            <Reactions />
-          </div>
         </div>
       </div>
     );
@@ -156,10 +151,14 @@ const LMMessage = () => {
       if (messageBubbles?.chatroomNormalChatBubble) {
         return <messageBubbles.chatroomNormalChatBubble />;
       }
+
       return (
         <>
           {renderDatePill()}
-          <div className={`lm-chat-card ${messageClass} ${message?.state} `}>
+          <div
+            className={`lm-chat-card ${messageClass} ${message?.state} `}
+            id={`lm-chat-message-${message.id}-${message.temporaryId}-${message.state}`}
+          >
             {!isSender ? (
               <div className="lmUserData">{avatarContent}</div>
             ) : null}
@@ -224,7 +223,18 @@ const LMMessage = () => {
                     </div>
                   </div>
                 )}
-
+                {message.attachments?.some(
+                  (attachment) =>
+                    attachment.type === LMConversationAttachments.VOICE_NOTE,
+                ) ? (
+                  messageBubbles?.voiceNote ? (
+                    <messageBubbles.voiceNote
+                      attachment={message!.attachments![0]}
+                    />
+                  ) : (
+                    <LMMessageVoiceNote attachment={message!.attachments![0]} />
+                  )
+                ) : null}
                 <div className="msg">
                   {message?.answer.includes(
                     "* This is a gif message. Please update your app *",
@@ -273,8 +283,6 @@ const LMMessage = () => {
                 </div>
               </div>
             )}
-
-            {/* <div className="data-pill">{message?.date}</div> */}
           </div>
         </>
       );
@@ -288,7 +296,10 @@ const LMMessage = () => {
         <>
           {renderDatePill()}
 
-          <div className="lm-chat-card">
+          <div
+            className="lm-chat-card"
+            id={`lm-chat-message-${message.id}-${message.temporaryId}-${message.state}`}
+          >
             <div className="lm-date-data ">{renderStateHeaderMessage()}</div>
           </div>
         </>
@@ -303,7 +314,10 @@ const LMMessage = () => {
         <>
           {renderDatePill()}
 
-          <div className="lm-chat-card">
+          <div
+            className="lm-chat-card"
+            id={`lm-chat-message-${message.id}-${message.temporaryId}-${message.state}`}
+          >
             <div className="lm-date-data ">
               <div className="data-pill">
                 {Utils.parseAndReplaceTags(message?.answer || "")}
@@ -322,7 +336,10 @@ const LMMessage = () => {
         <>
           {renderDatePill()}
 
-          <div className="lm-chat-card">
+          <div
+            className="lm-chat-card"
+            id={`lm-chat-message-${message.id}-${message.temporaryId}-${message.state}`}
+          >
             <div className="lm-date-data ">
               <div className="data-pill">
                 {Utils.parseAndReplaceTags(message?.answer || "")}
@@ -337,7 +354,10 @@ const LMMessage = () => {
         return <messageBubbles.chatroomMembersAddedBubble />;
       }
       return (
-        <div className={`lm-chat-card ${message?.state}`}>
+        <div
+          className={`lm-chat-card ${message?.state}`}
+          id={`lm-chat-message-${message.id}-${message.temporaryId}-${message.state}`}
+        >
           <div className="data-pill">{message?.answer}</div>
         </div>
       );
@@ -346,7 +366,10 @@ const LMMessage = () => {
         return <messageBubbles.chatroomDirectMessageRequestRejectedBubble />;
       }
       return (
-        <div className={`lm-chat-card ${message?.state}`}>
+        <div
+          className={`lm-chat-card ${message?.state}`}
+          id={`lm-chat-message-${message.id}-${message.temporaryId}-${message.state}`}
+        >
           <div className="data-pill">
             {message?.answer}
             {renderTapToUndo()}
@@ -359,7 +382,10 @@ const LMMessage = () => {
         return <messageBubbles.chatroomDirectMessageRequestAcceptedBubble />;
       }
       return (
-        <div className={`lm-chat-card ${message?.state}`}>
+        <div
+          className={`lm-chat-card ${message?.state}`}
+          id={`lm-chat-message-${message.id}-${message.temporaryId}-${message.state}`}
+        >
           <div className="data-pill">
             {" "}
             {Utils.parseAndReplaceTags(message?.answer || "")}
@@ -372,7 +398,10 @@ const LMMessage = () => {
         return <messageBubbles.chatroomNormalChatBubble />;
       }
       return (
-        <div className={`lm-chat-card ${messageClass} ${message?.state} `}>
+        <div
+          className={`lm-chat-card ${messageClass} ${message?.state} `}
+          id={`lm-chat-message-${message.id}-${message.temporaryId}-${message.state}`}
+        >
           {!isSender ? <div className="lmUserData">{avatarContent}</div> : null}
           <div className="lm-chat-message-reactions-holder-plate">
             <div

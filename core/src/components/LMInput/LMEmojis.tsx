@@ -15,6 +15,7 @@ const LMEmojis = () => {
     addEmojiToText(emojiData, mouseEvent);
     closeMenu();
   };
+
   const { customComponents } = useContext(LMGlobalClientProviderContext);
   // Custom component
   if (customComponents?.input?.chatroomInputEmojiSelector) {
@@ -31,16 +32,8 @@ const LMEmojis = () => {
           vertical: "bottom",
           horizontal: "center",
         }}
-        sx={{
-          padding: "0",
-        }}
-        MenuListProps={{
-          sx: {
-            padding: 0,
-          },
-        }}
       >
-        <Picker data={data} onEmojiSelect={onEmojiSelect} />
+        <Picker data={data} theme="light" onEmojiSelect={onEmojiSelect} />
       </Menu>
       <img onClick={openMenu} src={smileyIcon} alt="smileyIcon" />
     </div>

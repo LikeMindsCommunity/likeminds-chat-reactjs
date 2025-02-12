@@ -3,9 +3,18 @@ import useDmChannelLists from "../../hooks/useDMChannelLists";
 import { LMDMChannelListContext } from "../../context/LMDMChannelListContext";
 import LMChatJoinedChannelTile from "./LMJoinedDMChannelTile";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
-import { useContext } from "react";
-
+import CreateDMIcon from "../../assets/img/new-dm-icon.png";
+import { useContext, useState } from "react";
+import LMChatAllMembersScreen from "./LMChatAllMembersScreen";
+import goBackIcon from "../../assets/img/back-navigation-arrow.svg";
+import { Utils } from "../../utils/helpers";
+import LMUserProviderContext from "../../context/LMUserProviderContext";
+import { Chatroom } from "../../types/models/Chatroom";
 const LMChatDMChannelList = ({ currentChatroomId }: LMDMChannelListProps) => {
+  const { currentUser } = useContext(LMUserProviderContext);
+
+  const [openNewDM, setOpenNewDM] = useState<boolean>(false);
+
   const {
     dmChatrooms,
     loadMoreDmChatrooms,
@@ -16,17 +25,56 @@ const LMChatDMChannelList = ({ currentChatroomId }: LMDMChannelListProps) => {
     usersData,
     selectNewChatroom,
     currentSelectedChatroomId,
+    showDM,
+    showList,
   } = useDmChannelLists(currentChatroomId);
 
   const { customComponents } = useContext(LMGlobalClientProviderContext);
+
+  function openDMCreate() {
+    setOpenNewDM(true);
+  }
+
+  function closeDMCreate() {
+    setOpenNewDM(false);
+  }
 
   // Custom component
   if (customComponents?.dmChannelList) {
     return <customComponents.dmChannelList />;
   }
+  if (openNewDM) {
+    return (
+      <div className="lm-channel-list dm-channel-list create-new-dm">
+        <div className="lm-channel-list-header">
+          <img
+            src={goBackIcon}
+            onClick={closeDMCreate}
+            className="lm-cursor-pointer"
+          />
+          <div className="title">Create New Chat</div>
+        </div>
+        <div className="lm-channel-list-body" id="lm-channel-list-dm">
+          <LMChatAllMembersScreen
+            closeNewDMScreen={closeDMCreate}
+            showList={showList}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="lm-channel-list dm-channel-list">
+      {showDM ? (
+        <div
+          className="lm-chat-create-new-dm-conversation"
+          onClick={openDMCreate}
+        >
+          <img src={CreateDMIcon} />
+          New Chat
+        </div>
+      ) : null}
       <div className="lm-channel-list-header">
         <div className="title">Direct Messages</div>
       </div>
@@ -42,6 +90,8 @@ const LMChatDMChannelList = ({ currentChatroomId }: LMDMChannelListProps) => {
             conversationsData,
             selectNewChatroom,
             currentSelectedChatroomId,
+            showDM,
+            showList,
           }}
         >
           <InfiniteScroll
@@ -52,6 +102,9 @@ const LMChatDMChannelList = ({ currentChatroomId }: LMDMChannelListProps) => {
             scrollableTarget="lm-channel-list-dm"
           >
             {dmChatrooms.map((chatroom) => {
+              if (Utils.isOtherUserAIChatbot(chatroom, currentUser)) {
+                return null;
+              }
               return (
                 <LMChatJoinedChannelTile
                   key={chatroom.id.toString()}

@@ -3,9 +3,8 @@ import {
   LMClientOverlayProvider,
   LMChannel,
   initiateLMClient,
-  LMChatCurrentMode,
+  LMChatTheme,
 } from "@likeminds.community/likeminds-chat-reactjs";
-
 const App = () => {
   const [userDetails, setUserDetails] = useState<{
     accessToken?: string;
@@ -17,23 +16,26 @@ const App = () => {
   }>({});
 
   const lmChatClient = initiateLMClient();
-
   useEffect(() => {
     const queryString = window.location.search;
     const params = new URLSearchParams(queryString);
-    const apiKey = params.get("apiKey");
-    const uuid = params.get("uuid");
-    const username = params.get("username");
+    const apiKey = params.get("apiKey") || "";
+    const uuid = params.get("uuid") || "";
+    const username = params.get("username") || "";
     setUserDetails({
-      apiKey: apiKey || "",
-      uuid: uuid || "",
-      username: username || "",
+      apiKey: apiKey,
+      uuid: uuid,
+      username: username,
     });
   }, []);
 
   return (
-    <LMClientOverlayProvider client={lmChatClient} userDetails={userDetails}>
-      <LMChannel currentMode={LMChatCurrentMode.GROUP_CHAT} />
+    <LMClientOverlayProvider
+      client={lmChatClient}
+      userDetails={userDetails}
+      lmChatTheme={LMChatTheme.COMMUNITY_CHAT}
+    >
+      <LMChannel />
     </LMClientOverlayProvider>
   );
 };
