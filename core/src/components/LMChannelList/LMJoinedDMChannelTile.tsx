@@ -39,8 +39,11 @@ const LMChatJoinedChannelTile = ({ chatroom }: LMJoinedDMChannelTileProps) => {
 
   const showLastConversationTime = () => {
     const presentDate = new Date();
-    const lastConversationDate = new Date(lastConversation.date!);
-    if (lastConversationDate.getTime() === presentDate.getTime()) {
+    if (!lastConversation.date) {
+      return;
+    }
+    const lastConversationDate = new Date(lastConversation.date);
+    if (lastConversationDate.toDateString() === presentDate.toDateString()) {
       return lastConversation.createdAt;
     } else {
       return lastConversation.date;

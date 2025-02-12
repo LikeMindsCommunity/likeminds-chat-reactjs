@@ -301,6 +301,7 @@ export function useInput(): UseInputReturns {
             detail: sendDmRequestCall?.data.conversation,
           }),
         );
+        
 
         const newChatroom = { ...chatroomDetails };
         if (newChatroom.chatroom && newChatroom.chatroom) {
@@ -419,6 +420,11 @@ export function useInput(): UseInputReturns {
             MemberType.COMMUNITY_MANAGER
         ) {
           await sendDMRequest(messageText);
+          document.dispatchEvent(
+            new CustomEvent(CustomActions.NEW_DM_CHATROOM_CREATED, {
+              detail: {chatroomId: chatroomId},
+            }),
+          );
           return;
         }
         // returns when no message text ans no media

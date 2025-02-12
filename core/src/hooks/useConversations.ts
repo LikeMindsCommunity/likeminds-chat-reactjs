@@ -425,7 +425,7 @@ export default function useConversations(): UseConversations {
     (conversation: Conversation) => {
       setConversations((currentConversations) => {
         if (!currentConversations) {
-          return currentConversations;
+          return [  {...conversation}];
         }
         currentConversations = [...currentConversations];
         currentConversations.push(conversation);

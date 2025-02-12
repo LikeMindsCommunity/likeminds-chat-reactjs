@@ -23,7 +23,6 @@
     "@emotion/styled": "11.11.5",
     "@giphy/react-components": "9.5.0",
     "@likeminds.community/chat-js": "1.12.1",
-    "@likeminds.community/chat-js-beta": "^1.1.197",
     "@mui/icons-material": "5.15.20",
     "@mui/lab": "5.0.0-alpha.170",
     "@mui/material": "5.15.10",
@@ -54,6 +53,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@phosphor-icons/react": "^2.1.7",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",

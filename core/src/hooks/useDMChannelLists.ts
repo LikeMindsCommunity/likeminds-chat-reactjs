@@ -21,6 +21,7 @@ export default function useDmChannelLists(
   currentChatroomId?: number,
 ): UseDmChannelLists {
   const { lmChatClient } = useContext(GlobalClientProviderContext);
+  const {currentUser} = useContext(UserProviderContext);
   const { dmChannelListCustomActions = {} } = useContext(
     CustomisationContextProvider,
   );
@@ -44,18 +45,31 @@ export default function useDmChannelLists(
   const dmChatroomsPageCount = useRef<number>(1);
   const loadMoreDmChatrooms = useRef<boolean>(true);
 
+  const getChatroomuser = useCallback((chatroom: Chatroom, usersData: Record<string, Member>)=>{
+    const {userId, chatroomWithUserId} = chatroom
+    if(userId){
+      if (userId.toString() === currentUser?.id.toString()) {
+        const chatroomUser = usersData[chatroomWithUserId || ""];
+        return chatroomUser;
+      } else {
+        const chatroomUser = usersData[userId.toString()];
+        return chatroomUser;
+      }
+    }
+  },[currentUser])
+
   // Add any functions here that interact with dmChatrooms, such as fetching, updating, etc.
   /**
    * Fetches the list of direct message chatrooms.
    *
    * @returns {Promise<void>} A promise that resolves when the chatrooms list is fetched.
    */
-  const getDMChatroomsList = useCallback(async () => {
+  const getDMChatroomsList = useCallback(async (newPageCount?: number) => {
     try {
       const currentPageCount = dmChatroomsPageCount.current;
       const newChatroomsCall: GetChatroomsSyncResponse =
         await lmChatClient.fetchDMFeed({
-          page: currentPageCount,
+          page: newPageCount ? newPageCount : currentPageCount,
           chatroomTypes: [10],
           pageSize: 50,
           maxTimestamp: Date.now(),
@@ -78,13 +92,28 @@ export default function useDmChannelLists(
 
         dmChatroomsPageCount.current = currentPageCount + 1;
         setDmChatrooms((prevChatrooms) => {
-          return [...prevChatrooms, ...newChatrooms];
+          if(newPageCount){
+            return [...newChatrooms.map((chatroom)=>{
+              const chatroomUser = getChatroomuser(chatroom,newUsersData);
+              if(chatroomUser){
+                chatroom.member = chatroomUser;
+              }
+              return chatroom
+            })]
+          }
+          return [...prevChatrooms, ...newChatrooms.map((chatroom)=>{
+            const chatroomUser = getChatroomuser(chatroom,newUsersData);
+            if(chatroomUser){
+              chatroom.member = chatroomUser;
+            }
+            return chatroom
+          })];
         });
       }
     } catch (error) {
       console.log(error);
     }
-  }, [lmChatClient]);
+  }, [getChatroomuser, lmChatClient]);
 
   /**
    * Marks a direct message chatroom as read.
@@ -125,6 +154,19 @@ export default function useDmChannelLists(
     document.dispatchEvent(NEW_CHATROOM_SELECTED);
   };
 
+
+   
+  useEffect(()=>{
+    const refreshDMChatroomListOnNewConversation = () => {
+      getDMChatroomsList(1);
+    };
+  
+    document.addEventListener(CustomActions.NEW_DM_CHATROOM_CREATED, refreshDMChatroomListOnNewConversation)
+    return ()=>{
+      document.removeEventListener(CustomActions.NEW_DM_CHATROOM_CREATED, refreshDMChatroomListOnNewConversation)
+    }
+  },[getDMChatroomsList])
+
   /**
    * Refreshes the DM chatrooms list by moving the specified chatroom to the top.
    * If the chatroom is not found in the list, the list remains unchanged.
@@ -155,7 +197,6 @@ export default function useDmChannelLists(
         (chatroom) => chatroom.id.toString() === chatroomId.toString(),
       );
       if(targetChatroom?.lastConversationId){
-        console.log(`The targeted chatroom conversation is ${targetConversation.id.toString()}`);
         targetChatroom.lastConversationId = targetConversation.id.toString();
       }
       const newDmChatroomsCopy = dmChatroomsCopy.filter(
@@ -200,6 +241,7 @@ export default function useDmChannelLists(
     return onValue(query, async (snapshot) => {
       if (snapshot.exists()) {
         const chatroomId = snapshot.val().chatroom_id;
+       
         const conversationId = snapshot.val().conversation_id;
         const chatroomConversationsCall: GetSyncConversationsResponse =
                   await lmChatClient.getConversations({

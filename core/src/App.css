@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
+:root {
+  --color-green-secondary: #00897B;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -235,7 +239,7 @@ body {
 }
 
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc button {
-  background: #00897b;
+  background: var(--color-green-secondary);
   border-radius: 8px;
   font-weight: 500;
   font-size: 13px;
@@ -253,8 +257,8 @@ body {
 
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc button.joined {
   background: #fff;
-  color: #00897b;
-  border: 1px solid #00897b;
+  color: var(--color-green-secondary);
+  border: 1px solid var(--color-green-secondary);
 }
 
 .lm-channel-list .lm-channel-list-body .channel-media .channel-desc button img {
@@ -1874,7 +1878,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  color: #00897B;
+  color: var(--color-green-secondary);
   border: 1px solid #D0D8E2;
   border-radius: 10px;
   padding: 16px;
@@ -1947,7 +1951,7 @@ body {
   margin-top: 12px !important;
   width: 54px;
   height: 54px;
-  background-color: #00897B !important;
+  background-color: var(--color-green-secondary) !important;
   position: fixed;
   bottom: 16px;
   left: 50%;
@@ -3036,11 +3040,11 @@ input.disabled-state {
 }
 
 .lm-chat-channel-toggle .Mui-selected {
-  color: #00897B !important;
+  color: var(--color-green-secondary) !important;
 }
 
 .lm-chat-channel-toggle .MuiTabs-indicator {
-  background-color: #00897B;
+  background-color: var(--color-green-secondary);
 }
 
 
@@ -3052,7 +3056,7 @@ input.disabled-state {
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #00897B;
+  background-color: var(--color-green-secondary);
   font-size: 16px;
   line-height: 20px;
   font-weight: 500;
@@ -3061,6 +3065,7 @@ input.disabled-state {
   bottom: 60px;
   color: white;
   cursor: pointer;
+  z-index: 9;
 }
 
 .lm-chat-create-new-dm-conversation>img {
@@ -3121,4 +3126,15 @@ input.disabled-state {
 }
 .lm-chat-explore-chat-button .explore-button > span{
   flex-grow: 1;
+}
+
+.lm-chat-icon-explore-chats {
+  color: var(--color-green-secondary);
+}
+
+.lm-chat-box .MuiAlert-message{
+  color: #484F67;
+}
+.MuiMenu-list{
+  padding: 0px !important;
 }

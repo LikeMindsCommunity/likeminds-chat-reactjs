@@ -67,7 +67,6 @@ export function useChatroomSearch(): UseChatroomSearch {
       if (call?.data && call?.data.chatrooms.length > 0) {
         setSearchList((currentList) => {
           const newList = [...currentList, ...call.data.chatrooms.map((chatroom) => (chatroom.chatroom))];
-          console.log(newList)
           return newList;
         });
         pageCount.current = pageCount.current + 1;

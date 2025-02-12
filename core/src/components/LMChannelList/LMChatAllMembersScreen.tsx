@@ -14,6 +14,7 @@ import { ZeroArgVoidReturns } from "../../hooks/useInput";
 import LMUserProviderContext from "../../context/LMUserProviderContext";
 import { MemberType } from "../../enums/lm-member-type";
 import LMLoaderContextProvider from "../../context/LMLoaderContextProvider";
+import { Utils } from "../../utils/helpers";
 
 interface LMChatAllMembersScreenProps {
   showList?: number;
@@ -138,6 +139,9 @@ const LMChatAllMembersScreen = ({
     >
       {members.map((member) => {
         if (member.sdkClientInfo?.uuid === currentUser.sdkClientInfo?.uuid) {
+          return null;
+        }
+        if (Utils.isOtherUserAChatbot(member)) {
           return null;
         }
         return (
