@@ -27,7 +27,6 @@
     "@mui/lab": "5.0.0-alpha.170",
     "@mui/material": "5.15.10",
     "@mui/x-date-pickers": "7.8.0",
-    "@phosphor-icons/react": "^2.1.7",
     "@rajesh896/broprint.js": "2.1.1",
     "@types/react-slick": "0.23.13",
     "bootstrap": "^5.3.3",
@@ -54,6 +53,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@phosphor-icons/react": "^2.1.7",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
