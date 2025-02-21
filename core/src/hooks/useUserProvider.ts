@@ -29,11 +29,11 @@ interface Device {
 export default function useUserProvider(
   client: LMClient,
   userDetails: UserDetails,
-  customCallbacks: LMChatCustomActions
+  customCallbacks?: LMChatCustomActions
 ): UserProviderInterface {
   const lmChatClient = client;
   const { openSnackbar } = useContext(LMLoaderContextProvider)
-  const { userProviderCustomActions } = customCallbacks
+  const { userProviderCustomActions } = customCallbacks || {}
   const [lmChatUser, setLmChatUser] = useState<null | Member>(null);
   const [lmChatUserMemberState, setLmChatUserMemberState] = useState<
     number | null

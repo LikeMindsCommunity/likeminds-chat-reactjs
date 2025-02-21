@@ -9,8 +9,9 @@ function insertAtTop(element) {
     } else {
       parent.appendChild(element);
     }
-  
+
     window._lastElementInsertedByStyleLoader = element;
   }
   
-  module.exports = insertAtTop;
+
+module.exports = insertAtTop;

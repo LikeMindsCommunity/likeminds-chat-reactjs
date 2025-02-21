@@ -5,8 +5,7 @@ import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import UserProviderContext from "../../context/LMUserProviderContext";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { Utils } from "../../utils/helpers";
-import CloseIconImage from "../../assets/img/close-chatbot-mobile-icon.png";
-import { ArrowClockwise } from "@phosphor-icons/react";
+import { ArrowClockwise, X } from "@phosphor-icons/react";
 export interface LMChatAIChatbotHeaderInterface {
   closeAIChatbot?: () => void;
   isClearChatOptionEnabled: boolean;
@@ -81,7 +80,7 @@ const LMChatAIChatbotHeader: FC<LMChatAIChatbotHeaderInterface> = ({
             </span>
           ) : null}
           <span className="close-ai-chatbot" onClick={closeAIChatbot}>
-            <img src={CloseIconImage} alt="CloseIcon" className="src" />
+            <X size={32} />
           </span>
         </div>
       </div>

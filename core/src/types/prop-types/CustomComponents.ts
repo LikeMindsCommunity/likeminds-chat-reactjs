@@ -316,4 +316,5 @@ export interface Router {
 
 
 // custom action type for UserProvider custom actions
+
 export type UserProviderActionsCallback = (defaultActions: UserProviderDefaultActions, userProviderDataStore: UserProviderDataStore) => any

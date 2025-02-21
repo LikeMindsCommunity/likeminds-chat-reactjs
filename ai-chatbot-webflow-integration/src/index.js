@@ -5,7 +5,7 @@ import {
   LMChatAIButton,
   LMChatTheme,
   initiateLMClient
-} from "@likeminds.community/likeminds-chat-reactjs-beta";
+} from "@likeminds.community/likeminds-chat-reactjs";
 
 const App = ({apiKey, username}) => {
   const [userDetails, setUserDetails] = useState({
@@ -45,7 +45,7 @@ const App = ({apiKey, username}) => {
 const targetElement = document.getElementById('react-target')
 const apiKey = targetElement.getAttribute('api-key') 
 const username = targetElement.getAttribute('username')
-
 const root = createRoot(targetElement)
 
+// Rendering the SDK in the target container
 root.render(<App apiKey={apiKey} username={username}/>)
