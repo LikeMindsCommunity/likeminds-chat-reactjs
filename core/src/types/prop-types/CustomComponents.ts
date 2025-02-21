@@ -41,6 +41,9 @@ import {
   ChatroomSearchDataStore,
   ChatroomSearchDefaultActions,
 } from "../../hooks/useChatroomSearch";
+import { UserProviderDataStore, UserProviderDefaultActions }
+  from "../../hooks/useUserProvider"
+
 import { Attachment } from "../models/Attachment";
 
 export interface CustomComponents {
@@ -271,6 +274,10 @@ export interface ChatroomSearchCustomActions {
   resetSearchCustomCallback?: ChatroomSearchCustomCallback;
 }
 
+export interface UserProviderCustomActions {
+  logOutCustomCallback?: UserProviderActionsCallback
+}
+
 export type ChatroomSearchCustomCallback = (
   chatroomSearchDefaultActions: ChatroomSearchDefaultActions,
   chatroomSearchDataStore: ChatroomSearchDataStore,
@@ -306,3 +313,7 @@ export type ChatroomHeaderActionsCallback = (
 export interface Router {
   location: Location;
 }
+
+
+// custom action type for UserProvider custom actions
+export type UserProviderActionsCallback = (defaultActions: UserProviderDefaultActions, userProviderDataStore: UserProviderDataStore) => any

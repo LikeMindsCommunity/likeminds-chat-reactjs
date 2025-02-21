@@ -9,13 +9,14 @@ import "./App.css";
 
 const App = () => {
   const [userDetails, setUserDetails] = useState<{
-    accessToken?: string;
-    refreshToken?: string;
     uuid?: string;
     username?: string;
-    isGuest?: boolean;
     apiKey?: string;
-  }>({});
+  }>({
+    apiKey: "ENTER YOUT API KEY HERE",
+    uuid: "ENTER YOUR UUID HERE",
+    username: "ENTER YOUR USERNAME HERE",
+  });
 
   const lmChatClient = initiateLMClient();
 
@@ -33,11 +34,19 @@ const App = () => {
   }, []);
 
   return (
-    <LMChatAIButton
-      client={lmChatClient}
-      userDetails={userDetails}
-      lmChatTheme={LMChatTheme.NETWORKING_CHAT}
-    />
+    <>
+      <LMChatAIButton
+        isClearChatOptionEnabled={true}
+        client={lmChatClient}
+        userDetails={userDetails}
+        lmChatTheme={LMChatTheme.NETWORKING_CHAT}
+        customComponents={{
+          input: {
+            chatroomInputAttachmentsSelector: () => null,
+          },
+        }}
+      />
+    </>
   );
 };
 

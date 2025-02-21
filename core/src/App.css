@@ -439,6 +439,7 @@ body {
 .lm-channel-header .lm-header-left {
   display: flex;
   align-items: center;
+  flex-grow: 1;
 }
 
 .lm-channel-header .lm-channel-img {
@@ -463,6 +464,7 @@ body {
 .lm-channel-header .lm-channel-desc {
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
 }
 
 .lm-channel-header .lm-channel-desc .lm-channel-title {
@@ -2770,7 +2772,7 @@ input.disabled-state {
 /* Styles for AI-Chatbot */
 
 .lm-chat-ai-bot-button {
-  position: absolute;
+  position: fixed;
   bottom: 48px;
   right: 24px;
 }
@@ -2808,46 +2810,12 @@ input.disabled-state {
   display: none;
 }
 
-@media only screen and (max-width: 475px) {
-  .lm-chat-ai-bot-button.open-state {
-    position: static
-  }
 
-  .lm-chat-ai-bot-fab-container {
-    display: block !important;
-  }
-
-  .lm-chat-ai-bot-container {
-    width: 100vw;
-    height: 100vh;
-    top: 0;
-    left: 0;
-  }
-
-  .lm-channel {
-    padding: 0;
-  }
-
-  .lm-chat-ai-bot-fab-button.open {
-    display: none;
-  }
-
-  .close-ai-chatbot {
-    display: inline-block;
-    position: absolute;
-    right: 20px;
-    top: 22px;
-    cursor: pointer;
-  }
-
-  .lm-chat-ai-bot-channel .lm-chat-card.receiver {
-    width: 80vw;
-  }
-}
 
 
 .lm-chat-ai-bot-loader {
   height: 100%;
+  background-color: #FFFFFF;
 }
 
 .lm-chai-ai-bot-label {
@@ -2896,7 +2864,13 @@ input.disabled-state {
   color: #FFFFFF;
 }
 
-
+.refresh-ai-bot.icon{
+  margin-right: 8px;
+  height: 18px;
+  width: 18px;
+  margin-bottom: 8px;
+  margin-right: 18px;
+}
 
 .lm-chat-ai-bot-fab-container {
   display: inline-block;
@@ -2931,6 +2905,46 @@ input.disabled-state {
 
 .lm-chat-ai-bot-input-attachment-selecter-wrapper:hover {
   background-color: #F5F5F5;
+}
+
+@media only screen and (max-width: 475px) {
+  .lm-chat-ai-bot-button.open-state {
+    position: static
+  }
+
+  .lm-chat-ai-bot-fab-container {
+    display: block !important;
+  }
+
+  .lm-chat-ai-bot-container {
+    width: 100vw;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: fixed;
+  }
+
+  .lm-channel {
+    padding: 0;
+  }
+
+  .lm-chat-ai-bot-fab-button.open {
+    display: none;
+  }
+
+  .close-ai-chatbot {
+    display: inline-block;
+    /* position: absolute;
+    right: 20px;
+    top: 22px; */
+    cursor: pointer;
+  }
+
+  .lm-chat-ai-bot-channel .lm-chat-card.receiver {
+    width: 80vw;
+  }
+
+  
 }
 
 .lm-message-media-carousel-wrapper {

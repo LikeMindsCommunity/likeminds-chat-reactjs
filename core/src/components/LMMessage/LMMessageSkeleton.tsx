@@ -37,7 +37,6 @@ const LMMessageSkeleton = () => {
             "ai-chatbot-conversation"
           }`}
         >
-          <Skeleton />
           <Skeleton animation="wave" />
           <Skeleton animation={false} />
         </div>

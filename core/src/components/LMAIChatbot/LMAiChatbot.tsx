@@ -9,6 +9,7 @@ const LMAIChatbot: FC<LMChatAIButtonProps> = ({
   loadingScreenAnimatons,
   closeAIChatbot,
   showSettingUpChatbotText = false,
+  isClearChatOptionEnabled = false,
 }) => {
   // Variables destructured form Hook
   const { showAnimation, aiChatbotChatroomId } = useAIChatbot();
@@ -27,6 +28,7 @@ const LMAIChatbot: FC<LMChatAIButtonProps> = ({
       if (aiChatbotChatroomId) {
         return (
           <LMAIBotScreen
+            isClearChatOptionEnabled={isClearChatOptionEnabled}
             closeAIChatbot={closeAIChatbot}
             aiChatbotChatroomId={aiChatbotChatroomId}
           />

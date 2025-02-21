@@ -13,6 +13,7 @@ import {
   ParticipantsCustomActions,
   PollCustomActions,
   ReactionsCustomActions,
+  UserProviderCustomActions,
 } from "../types/prop-types/CustomComponents";
 import { LMInputAttachments } from "../enums/lm-input-attachment-options";
 
@@ -30,6 +31,7 @@ export interface LMCustomisationContextInterface {
   channelListCustomActions?: ChannelListCustomActions;
   chatroomCustomActions?: ChatroomCustomActions;
   chatroomSearchCustomActions?: ChatroomSearchCustomActions;
+  userProviderCustomActions?: UserProviderCustomActions;
   attachmentOptions?: LMInputAttachments[];
 }
 
@@ -38,4 +40,4 @@ export const CustomisationContextProvider =
     {} as LMCustomisationContextInterface,
   );
 
-export interface LMChatCustomActions extends LMCustomisationContextInterface {}
+export interface LMChatCustomActions extends LMCustomisationContextInterface { }
