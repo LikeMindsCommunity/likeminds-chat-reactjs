@@ -5,17 +5,18 @@ import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import UserProviderContext from "../../context/LMUserProviderContext";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
 import { Utils } from "../../utils/helpers";
-import CloseIconImage from "../../assets/img/close-chatbot-mobile-icon.png";
-
+import { ArrowClockwise, X } from "@phosphor-icons/react";
 export interface LMChatAIChatbotHeaderInterface {
   closeAIChatbot?: () => void;
+  isClearChatOptionEnabled: boolean;
 }
 
 const LMChatAIChatbotHeader: FC<LMChatAIChatbotHeaderInterface> = ({
   closeAIChatbot,
+  isClearChatOptionEnabled,
 }) => {
   const { chatroomDetails } = useContext(LMChatroomContext);
-  const { currentUser } = useContext(UserProviderContext);
+  const { currentUser, logoutUser } = useContext(UserProviderContext);
   const { customComponents } = useContext(LMGlobalClientProviderContext);
 
   // Function for retrieve the Other user in Chatroom
@@ -65,10 +66,22 @@ const LMChatAIChatbotHeader: FC<LMChatAIChatbotHeaderInterface> = ({
           <div className="lm-channel-img">{chatroomAvatar}</div>
           <div className="lm-channel-desc">
             <div className="lm-channel-title">{chatroomTitle}</div>
-            <span className="close-ai-chatbot" onClick={closeAIChatbot}>
-              <img src={CloseIconImage} alt="CloseIcon" className="src" />
-            </span>
           </div>
+          {isClearChatOptionEnabled ? (
+            <span
+              className="refresh-ai-bot icon"
+              onClick={() => {
+                if (logoutUser) {
+                  logoutUser();
+                }
+              }}
+            >
+              <ArrowClockwise size={24} />
+            </span>
+          ) : null}
+          <span className="close-ai-chatbot" onClick={closeAIChatbot}>
+            <X size={24} />
+          </span>
         </div>
       </div>
     );

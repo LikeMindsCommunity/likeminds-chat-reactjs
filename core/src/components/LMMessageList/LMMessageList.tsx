@@ -107,7 +107,11 @@ const LMMessageList: React.FC<PropsWithChildren<MessageListProps>> = memo(
           messageCustomActions: messageCustomActions,
         }}
       >
-        <div className="lm-channel" ref={messageListContainerRef}>
+        <div
+          className="lm-channel"
+          id="lm-channel-message-list"
+          ref={messageListContainerRef}
+        >
           {/* Set Chatroom Topic */}
           <div
             className="lm-media-render-portal"

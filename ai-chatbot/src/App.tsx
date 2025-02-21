@@ -9,13 +9,14 @@ import "./App.css";
 
 const App = () => {
   const [userDetails, setUserDetails] = useState<{
-    accessToken?: string;
-    refreshToken?: string;
     uuid?: string;
     username?: string;
-    isGuest?: boolean;
     apiKey?: string;
-  }>({});
+  }>({
+    apiKey: "ENTER YOUT API KEY HERE",
+    uuid: "ENTER YOUR UUID HERE",
+    username: "ENTER YOUR USERNAME HERE",
+  });
 
   const lmChatClient = initiateLMClient();
 
@@ -33,11 +34,34 @@ const App = () => {
   }, []);
 
   return (
-    <LMChatAIButton
-      client={lmChatClient}
-      userDetails={userDetails}
-      lmChatTheme={LMChatTheme.NETWORKING_CHAT}
-    />
+    <>
+      <LMChatAIButton
+        isClearChatOptionEnabled={true}
+        client={lmChatClient}
+        // userDetails={userDetails}
+        customCallbacks={{
+          userProviderCustomActions: {
+            logOutCustomCallback: (defaultActions, _dataStore) => {
+              defaultActions.logoutUser();
+              localStorage.removeItem("chatroomIdWithAIChatbot");
+              localStorage.removeItem("LOCAL_ACCESS_TOKEN");
+              localStorage.removeItem("LOCAL_REFRESH_TOKEN");
+              setUserDetails((a) => ({ ...a }));
+            },
+          },
+        }}
+        userDetails={{
+          apiKey: "e4ef40e2-c5b4-4682-9873-13ed29bb5c1e",
+          username: "follow-you",
+        }}
+        lmChatTheme={LMChatTheme.NETWORKING_CHAT}
+        customComponents={{
+          input: {
+            chatroomInputAttachmentsSelector: () => null,
+          },
+        }}
+      />
+    </>
   );
 };
 

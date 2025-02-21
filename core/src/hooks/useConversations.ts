@@ -222,12 +222,14 @@ export default function useConversations(): UseConversations {
       if (stopAdditionalCalls.current) {
         return;
       }
-
+      if (!(chatroomDetails && chatroomDetails.chatroom)) {
+        return
+      }
       const chatroomConversationsCall: GetSyncConversationsResponse =
         await lmChatClient?.getConversations({
           chatroomId: parseInt(chatroomId!.toString()),
           pageSize: CONVERSATIONS_PAGINATE_BY || 50,
-          maxTimestamp: newTimeStamp ? newTimeStamp :currentChatroomMaxTimeStamp.current,
+          maxTimestamp: newTimeStamp ? newTimeStamp : currentChatroomMaxTimeStamp.current,
           minTimestamp: 0,
           isLocalDb: false,
           page: currentChatroomTopPageCount.current,
@@ -254,7 +256,7 @@ export default function useConversations(): UseConversations {
     } catch (error) {
       return logError(error);
     }
-  }, [lmChatClient, chatroomId]);
+  }, [chatroomDetails, lmChatClient, chatroomId]);
   const getChatroomConversationsOnBottomScroll = useCallback(async () => {
     try {
       if (stopAdditionalCalls.current) {
@@ -276,7 +278,7 @@ export default function useConversations(): UseConversations {
               return currentConversations;
             }
 
-           
+
             const newConversations = [
               ...currentConversations,
               ...chatroomConversationsCall.data.conversations,
@@ -425,7 +427,7 @@ export default function useConversations(): UseConversations {
     (conversation: Conversation) => {
       setConversations((currentConversations) => {
         if (!currentConversations) {
-          return [  {...conversation}];
+          return [{ ...conversation }];
         }
         currentConversations = [...currentConversations];
         currentConversations.push(conversation);
@@ -438,14 +440,14 @@ export default function useConversations(): UseConversations {
   useEffect(() => {
     async function fetchChannel() {
       try {
-        const newTimeStamp = Date.now()
-        await getChatroomConversationsOnTopScroll(newTimeStamp);
+        await getChatroomConversationsOnTopScroll(Number.MAX_SAFE_INTEGER);
         newChatroomConversationsLoaded.current = true;
         showLoader.current = false;
       } catch (error) {
         console.log(error);
       }
     }
+    // Todo Uncomment this block
     fetchChannel();
   }, [
     chatroomId,
@@ -456,12 +458,16 @@ export default function useConversations(): UseConversations {
   ]);
 
   useEffect(() => {
+    if (!(chatroomDetails && chatroomDetails.chatroom)) {
+      return
+    }
     const db = lmChatClient?.fbInstance();
     if (!db) {
       return;
     }
     const getChatroomConversationsWithID = async (
       conversationId: number | string | undefined,
+      timeStamp: number
     ) => {
       try {
         const chatroomConversationsCall: GetSyncConversationsResponse =
@@ -471,7 +477,7 @@ export default function useConversations(): UseConversations {
             pageSize: 1,
             conversationId: parseInt(conversationId?.toString() || ""),
             minTimestamp: 0,
-            maxTimestamp: Date.now(),
+            maxTimestamp: timeStamp,
             isLocalDb: false,
           });
 
@@ -486,7 +492,7 @@ export default function useConversations(): UseConversations {
       try {
         if (snapshot.exists() && newChatroomConversationsLoaded.current) {
           const collabcardId = snapshot.val().collabcard.answer_id;
-          getChatroomConversationsWithID(collabcardId).then(
+          getChatroomConversationsWithID(collabcardId, Number.MAX_SAFE_INTEGER).then(
             (targetConversation: GetSyncConversationsResponse | null) => {
               if (!targetConversation) return;
               if (targetConversation.data.conversationsData.length === 0)
@@ -500,6 +506,7 @@ export default function useConversations(): UseConversations {
                 if (!currentConversations) {
                   return currentConversations;
                 }
+
                 // utilising for loop with reverse indexing to make checks faster
                 let alreadyHasIt = false;
                 const currentConversationsLength = currentConversations?.length;
@@ -536,7 +543,7 @@ export default function useConversations(): UseConversations {
         console.log(error);
       }
     });
-  }, [chatroomId, lmChatClient]);
+  }, [chatroomId, lmChatClient, chatroomDetails]);
 
   /**
    * Sets up an event listener to handle when a conversation is posted on an AI chatbot.
@@ -566,23 +573,23 @@ export default function useConversations(): UseConversations {
     }
   }, [chatroomDetails.chatroom, currentUser]);
 
-  useEffect(()=>{
-    function failedConversationEventListener(event: Event){
+  useEffect(() => {
+    function failedConversationEventListener(event: Event) {
       const failedConversation: Conversation = (event as CustomEvent).detail.conversation;
       setConversations((currentConversations) => {
-       if(currentConversations){
-        const newConversationList = currentConversations?.filter((conversation) => {
-          if(conversation.temporaryId !== failedConversation.temporaryId){
-            return conversation
-          }
-          
-        })
-        return newConversationList
-       }else{
+        if (currentConversations) {
+          const newConversationList = currentConversations?.filter((conversation) => {
+            if (conversation.temporaryId !== failedConversation.temporaryId) {
+              return conversation
+            }
+
+          })
+          return newConversationList
+        } else {
           return currentConversations
-       }
+        }
       })
-    } 
+    }
     document.addEventListener(CustomActions.CONVERSATION_FAILED_TO_SEND, failedConversationEventListener)
     return () => {
       document.removeEventListener(CustomActions.CONVERSATION_FAILED_TO_SEND, failedConversationEventListener)

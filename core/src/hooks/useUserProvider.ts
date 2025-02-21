@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { LMClient } from "../types/DataLayerExportsTypes";
 import Member from "../types/models/member";
 import { UserDetails } from "../context/LMGlobalClientProviderContext";
@@ -9,6 +9,8 @@ import { generateToken, messaging } from "../notifications/firebase";
 import toast from "react-hot-toast";
 import { CustomActions } from "../customActions";
 import { Community } from "../types/models/Community";
+import LMLoaderContextProvider from "../context/LMLoaderContextProvider";
+import { LMChatCustomActions } from "../context/LMChatCustomisationContext";
 
 interface UserProviderInterface {
   lmChatUser: null | Member;
@@ -27,8 +29,11 @@ interface Device {
 export default function useUserProvider(
   client: LMClient,
   userDetails: UserDetails,
+  customCallbacks?: LMChatCustomActions
 ): UserProviderInterface {
   const lmChatClient = client;
+  const { openSnackbar } = useContext(LMLoaderContextProvider)
+  const { userProviderCustomActions } = customCallbacks || {}
   const [lmChatUser, setLmChatUser] = useState<null | Member>(null);
   const [lmChatUserMemberState, setLmChatUserMemberState] = useState<
     number | null
@@ -96,7 +101,7 @@ export default function useUserProvider(
     ) {
       try {
         // TODO Fix the initiateUser model
-        if (!(apiKey && uuid && username)) {
+        if (!(apiKey && username)) {
           throw Error("Either API key or UUID or Username not provided");
         }
 
@@ -112,10 +117,7 @@ export default function useUserProvider(
             initiateUserCall?.data?.accessToken || "",
             initiateUserCall?.data?.refreshToken || "",
           );
-          lmChatClient.setApiKeyInLocalStorage(apiKey);
-          lmChatClient.setUserInLocalStorage(
-            JSON.stringify(initiateUserCall?.data?.user),
-          );
+
         }
         const memberStateCall = await lmChatClient.getMemberState();
         if (initiateUserCall.success && memberStateCall.success) {
@@ -127,6 +129,10 @@ export default function useUserProvider(
           setLmChatUser(user || null);
           setLmChatUserCurrentCommunity(
             initiateUserCall?.data?.community || null,
+          );
+          lmChatClient.setApiKeyInLocalStorage(apiKey);
+          lmChatClient.setUserInLocalStorage(
+            JSON.stringify(user),
           );
           return {
             accessToken: initiateUserCall?.data?.accessToken,
@@ -141,7 +147,8 @@ export default function useUserProvider(
 
     async function setUser() {
       try {
-        if (apiKey && username && uuid) {
+        if (apiKey && username) {
+          // if (apiKey && username && uuid) {
           const localAccessToken =
             lmChatClient.getAccessTokenFromLocalStorage();
           const localRefreshToken =
@@ -156,7 +163,7 @@ export default function useUserProvider(
             await validateChatUser(localAccessToken, localRefreshToken);
             setUserNotLoadedErrorState(false);
           } else {
-            await initiateFeedUser(apiKey, uuid, username, isGuest || false);
+            await initiateFeedUser(apiKey, uuid || "", username, isGuest || false);
             setUserNotLoadedErrorState(false);
           }
         } else if (accessToken && refreshToken) {
@@ -221,16 +228,55 @@ export default function useUserProvider(
       });
     }
   }, [deviceNotificationTrigger]);
+
+  async function logOut() {
+    try {
+      const logOutCall = await lmChatClient.logout({
+        deviceId: currentBrowserId.current
+      })
+      if (!logOutCall.success) {
+        if (openSnackbar) {
+          openSnackbar(logOutCall.errorMessage || `Error logging out`)
+        }
+
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   function logoutUser() {
+    logOut()
     setLmChatUser(null);
     setLmChatUserMemberState(null);
+  }
+
+  const userProviderDataStore: UserProviderDataStore = {
+    lmChatUser,
+    lmChatUserCurrentCommunity,
+    lmChatUserMemberState,
+    userNotLoadedErrorState
+  }
+  const userProviderDefaultActions: UserProviderDefaultActions = {
+    logoutUser: logoutUser
   }
 
   return {
     lmChatUser,
     lmChatUserMemberState,
-    logoutUser,
+    logoutUser: userProviderCustomActions?.logOutCustomCallback ? userProviderCustomActions.logOutCustomCallback.bind(null, userProviderDefaultActions, userProviderDataStore) : logoutUser,
     lmChatUserCurrentCommunity,
     userNotLoadedErrorState,
   };
+}
+
+export interface UserProviderDefaultActions {
+  logoutUser: () => void;
+}
+
+export interface UserProviderDataStore {
+  lmChatUser: null | Member;
+  lmChatUserMemberState: number | null;
+  lmChatUserCurrentCommunity: Community | null;
+  userNotLoadedErrorState: boolean;
 }
