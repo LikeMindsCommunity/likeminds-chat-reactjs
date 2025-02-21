@@ -27,6 +27,7 @@ export interface LMChatAIButtonProps {
   previewText?: string;
   closeAIChatbot?: () => void;
   showSettingUpChatbotText?: boolean;
+  isClearChatOptionEnabled: boolean;
 }
 
 const LMChatAIButton: React.FC<
@@ -39,6 +40,8 @@ const LMChatAIButton: React.FC<
   buttonText,
   previewText,
   loadingScreenAnimatons,
+  isClearChatOptionEnabled,
+  customCallbacks,
 }) => {
   const [isAIBotOpen, setIsAIBotOpen] = useState<boolean>(false);
   const [showSettingUpChatbotText, setShowSettingUpChatbotText] =
@@ -149,12 +152,14 @@ const LMChatAIButton: React.FC<
             userDetails={userDetails}
             customComponents={customComponentsProp}
             lmChatTheme={LMChatTheme.NETWORKING_CHAT}
+            customCallbacks={customCallbacks}
           >
             <LMAIChatbot
               previewText={previewText}
               loadingScreenAnimatons={loadingScreenAnimatons}
               closeAIChatbot={closeAIBot}
               showSettingUpChatbotText={showSettingUpChatbotText}
+              isClearChatOptionEnabled={isClearChatOptionEnabled}
             />
           </LMClientOverlayProvider>
         )}

@@ -8,12 +8,16 @@ import LMChatroom from "../LMChannel/LMChatChatroom";
 const LMAIBotScreen: React.FC<LMAIBotScreenProps> = ({
   aiChatbotChatroomId,
   closeAIChatbot,
+  isClearChatOptionEnabled,
 }) => {
   return (
     <LMChatroom currentChatroomId={aiChatbotChatroomId}>
       <div className="lm-chat-ai-bot-container">
         <div className="lm-chat-ai-bot-channel">
-          <LMChatAIChatbotHeader closeAIChatbot={closeAIChatbot} />
+          <LMChatAIChatbotHeader
+            closeAIChatbot={closeAIChatbot}
+            isClearChatOptionEnabled={isClearChatOptionEnabled}
+          />
           <LMMessageList />
           <LMAIChatbotInput />
         </div>
@@ -27,4 +31,5 @@ export default LMAIBotScreen;
 export interface LMAIBotScreenProps {
   aiChatbotChatroomId: number;
   closeAIChatbot?: () => void;
+  isClearChatOptionEnabled: boolean;
 }

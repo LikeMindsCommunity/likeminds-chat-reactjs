@@ -30,7 +30,7 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
     logoutUser,
     lmChatUserCurrentCommunity,
     userNotLoadedErrorState,
-  } = useUserProvider(client, userDetails);
+  } = useUserProvider(client, userDetails, customCallbacks);
   const [showSnackbarMessage, setShowSnackbarMessage] = useState<string | null>(
     null,
   );
@@ -75,19 +75,19 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
       <CustomisationContextProvider.Provider
         value={{ ...customCallbacks, attachmentOptions }}
       >
-        <UserProviderContext.Provider
+        <LoaderContextProvider.Provider
           value={{
-            currentUser: lmChatUser!,
-            memberState: lmChatUserMemberState || MemberType.MEMBER,
-            logoutUser: logoutUser,
-            currentCommunity: lmChatUserCurrentCommunity as unknown as any,
+            loader: false,
+            setLoader: null,
+            openSnackbar: openSnackbar,
           }}
         >
-          <LoaderContextProvider.Provider
+          <UserProviderContext.Provider
             value={{
-              loader: false,
-              setLoader: null,
-              openSnackbar: openSnackbar,
+              currentUser: lmChatUser!,
+              memberState: lmChatUserMemberState || MemberType.MEMBER,
+              logoutUser: logoutUser,
+              currentCommunity: lmChatUserCurrentCommunity as unknown as any,
             }}
           >
             <Toaster position="top-right" />
@@ -97,8 +97,8 @@ const LMClientOverlayProvider: React.FC<PropsWithChildren<LMChatProps>> = ({
               message={showSnackbarMessage || ""}
               onClose={closeSnackbar}
             />
-          </LoaderContextProvider.Provider>
-        </UserProviderContext.Provider>
+          </UserProviderContext.Provider>
+        </LoaderContextProvider.Provider>
       </CustomisationContextProvider.Provider>
     </GlobalClientProviderContext.Provider>
   );
