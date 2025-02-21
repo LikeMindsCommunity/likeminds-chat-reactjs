@@ -38,7 +38,22 @@ const App = () => {
       <LMChatAIButton
         isClearChatOptionEnabled={true}
         client={lmChatClient}
-        userDetails={userDetails}
+        // userDetails={userDetails}
+        customCallbacks={{
+          userProviderCustomActions: {
+            logOutCustomCallback: (defaultActions, _dataStore) => {
+              defaultActions.logoutUser();
+              localStorage.removeItem("chatroomIdWithAIChatbot");
+              localStorage.removeItem("LOCAL_ACCESS_TOKEN");
+              localStorage.removeItem("LOCAL_REFRESH_TOKEN");
+              setUserDetails((a) => ({ ...a }));
+            },
+          },
+        }}
+        userDetails={{
+          apiKey: "e4ef40e2-c5b4-4682-9873-13ed29bb5c1e",
+          username: "follow-you",
+        }}
         lmChatTheme={LMChatTheme.NETWORKING_CHAT}
         customComponents={{
           input: {

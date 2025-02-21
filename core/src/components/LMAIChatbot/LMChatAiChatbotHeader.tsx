@@ -80,7 +80,7 @@ const LMChatAIChatbotHeader: FC<LMChatAIChatbotHeaderInterface> = ({
             </span>
           ) : null}
           <span className="close-ai-chatbot" onClick={closeAIChatbot}>
-            <X size={32} />
+            <X size={24} />
           </span>
         </div>
       </div>
