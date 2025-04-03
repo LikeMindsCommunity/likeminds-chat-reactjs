@@ -51,8 +51,9 @@ const App = () => {
           },
         }}
         userDetails={{
-          apiKey: "e4ef40e2-c5b4-4682-9873-13ed29bb5c1e",
-          username: "follow-you",
+          apiKey: userDetails.apiKey,
+          username: userDetails.username,
+          uuid: userDetails.uuid,
         }}
         lmChatTheme={LMChatTheme.NETWORKING_CHAT}
         customComponents={{
