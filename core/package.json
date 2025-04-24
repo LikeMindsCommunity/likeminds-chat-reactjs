@@ -1,6 +1,6 @@
 {
   "name": "@likeminds.community/likeminds-chat-reactjs-beta",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "public": true,
   "scripts": {
     "dev": "vite",
