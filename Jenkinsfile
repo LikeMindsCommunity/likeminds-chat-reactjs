@@ -132,7 +132,7 @@ pipeline {
                                         "color": "#36a64f",
                                         "title": "✅ ReactJS Chat Core SDK Deployed",
                                         "title_link": "https://github.com/${REPO}/releases/tag/${version}",
-                                        "text": "A new version of the React SDK has been deployed and released.",
+                                        "text": "A new version of the React Chat Core SDK has been deployed and released.",
                                         "fields": [
                                             { "title": "Version", "value": "${version}", "short": true },
                                             { "title": "Branch", "value": "${branch}", "short": true },
