@@ -117,7 +117,7 @@ pipeline {
 
         stage('Notify Slack') {
             steps {
-                withCredentials([string(credentialsId: 'SLACK_TEST_JS_PIPELINE', variable: 'SLACK_WEBHOOK')]) {
+                withCredentials([string(credentialsId: 'SLACK_JS_CHANNEL_URL', variable: 'SLACK_WEBHOOK')]) {
                     script {
                         def version     = sh(script: "node -p \"require('./core/package.json').version\"", returnStdout: true).trim()
                         def branch      = env.GIT_BRANCH ?: 'unknown'
