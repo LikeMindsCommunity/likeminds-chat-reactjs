@@ -143,7 +143,7 @@ export default function useConversations(): UseConversations {
           const newRepliedConversation = conversationMeta[
             conversation.replyId
           ] as any;
-          if (newRepliedConversation.attachment_count) {
+          if (newRepliedConversation.attachmentCount) {
             newRepliedConversation.attachments =
               convAttachmentsMeta[newConversation.replyId!.toString()];
           }
@@ -217,46 +217,51 @@ export default function useConversations(): UseConversations {
       return logError(error);
     }
   }, [chatroomId, lmChatClient]);
-  const getChatroomConversationsOnTopScroll = useCallback(async (newTimeStamp?: number) => {
-    try {
-      if (stopAdditionalCalls.current) {
-        return;
-      }
-      if (!(chatroomDetails && chatroomDetails.chatroom)) {
-        return
-      }
-      const chatroomConversationsCall: GetSyncConversationsResponse =
-        await lmChatClient?.getConversations({
-          chatroomId: parseInt(chatroomId!.toString()),
-          pageSize: CONVERSATIONS_PAGINATE_BY || 50,
-          maxTimestamp: newTimeStamp ? newTimeStamp : currentChatroomMaxTimeStamp.current,
-          minTimestamp: 0,
-          isLocalDb: false,
-          page: currentChatroomTopPageCount.current,
-        });
-      if (chatroomConversationsCall.success) {
-        shouldScrollToBottom.current = false;
-        const { conversationsData } = chatroomConversationsCall.data;
-        if (!conversationsData.length) {
-          setLoadMore(false);
-        } else {
-          setConversations((currentConversations) => {
-            const newConversationsList = transformConversations(
-              currentConversations || [],
-              chatroomConversationsCall,
-            );
-            return newConversationsList;
-          });
-          currentChatroomTopPageCount.current =
-            currentChatroomTopPageCount.current + 1;
+  const getChatroomConversationsOnTopScroll = useCallback(
+    async (newTimeStamp?: number) => {
+      try {
+        if (stopAdditionalCalls.current) {
+          return;
         }
-      }
+        if (!(chatroomDetails && chatroomDetails.chatroom)) {
+          return;
+        }
+        const chatroomConversationsCall: GetSyncConversationsResponse =
+          await lmChatClient?.getConversations({
+            chatroomId: parseInt(chatroomId!.toString()),
+            pageSize: CONVERSATIONS_PAGINATE_BY || 50,
+            maxTimestamp: newTimeStamp
+              ? newTimeStamp
+              : currentChatroomMaxTimeStamp.current,
+            minTimestamp: 0,
+            isLocalDb: false,
+            page: currentChatroomTopPageCount.current,
+          });
+        if (chatroomConversationsCall.success) {
+          shouldScrollToBottom.current = false;
+          const { conversationsData } = chatroomConversationsCall.data;
+          if (!conversationsData.length) {
+            setLoadMore(false);
+          } else {
+            setConversations((currentConversations) => {
+              const newConversationsList = transformConversations(
+                currentConversations || [],
+                chatroomConversationsCall,
+              );
+              return newConversationsList;
+            });
+            currentChatroomTopPageCount.current =
+              currentChatroomTopPageCount.current + 1;
+          }
+        }
 
-      return;
-    } catch (error) {
-      return logError(error);
-    }
-  }, [chatroomDetails, lmChatClient, chatroomId]);
+        return;
+      } catch (error) {
+        return logError(error);
+      }
+    },
+    [chatroomDetails, lmChatClient, chatroomId],
+  );
   const getChatroomConversationsOnBottomScroll = useCallback(async () => {
     try {
       if (stopAdditionalCalls.current) {
@@ -277,7 +282,6 @@ export default function useConversations(): UseConversations {
             if (!currentConversations) {
               return currentConversations;
             }
-
 
             const newConversations = [
               ...currentConversations,
@@ -459,7 +463,7 @@ export default function useConversations(): UseConversations {
 
   useEffect(() => {
     if (!(chatroomDetails && chatroomDetails.chatroom)) {
-      return
+      return;
     }
     const db = lmChatClient?.fbInstance();
     if (!db) {
@@ -467,7 +471,7 @@ export default function useConversations(): UseConversations {
     }
     const getChatroomConversationsWithID = async (
       conversationId: number | string | undefined,
-      timeStamp: number
+      timeStamp: number,
     ) => {
       try {
         const chatroomConversationsCall: GetSyncConversationsResponse =
@@ -492,52 +496,51 @@ export default function useConversations(): UseConversations {
       try {
         if (snapshot.exists() && newChatroomConversationsLoaded.current) {
           const collabcardId = snapshot.val().collabcard.answer_id;
-          getChatroomConversationsWithID(collabcardId, Number.MAX_SAFE_INTEGER).then(
-            (targetConversation: GetSyncConversationsResponse | null) => {
-              if (!targetConversation) return;
-              if (targetConversation.data.conversationsData.length === 0)
-                return;
-              setConversations((currentConversationsArray) => {
-                if (!currentConversationsArray)
-                  return currentConversationsArray;
-                const currentConversations = [...currentConversationsArray];
-                const targetConversationObject =
-                  targetConversation?.data?.conversationsData[0];
-                if (!currentConversations) {
-                  return currentConversations;
-                }
+          getChatroomConversationsWithID(
+            collabcardId,
+            Number.MAX_SAFE_INTEGER,
+          ).then((targetConversation: GetSyncConversationsResponse | null) => {
+            if (!targetConversation) return;
+            if (targetConversation.data.conversationsData.length === 0) return;
+            setConversations((currentConversationsArray) => {
+              if (!currentConversationsArray) return currentConversationsArray;
+              const currentConversations = [...currentConversationsArray];
+              const targetConversationObject =
+                targetConversation?.data?.conversationsData[0];
+              if (!currentConversations) {
+                return currentConversations;
+              }
 
-                // utilising for loop with reverse indexing to make checks faster
-                let alreadyHasIt = false;
-                const currentConversationsLength = currentConversations?.length;
-                for (
-                  let index = currentConversationsLength - 1;
-                  index >= 0;
-                  index--
+              // utilising for loop with reverse indexing to make checks faster
+              let alreadyHasIt = false;
+              const currentConversationsLength = currentConversations?.length;
+              for (
+                let index = currentConversationsLength - 1;
+                index >= 0;
+                index--
+              ) {
+                const conversationObject = currentConversations[index];
+                if (
+                  conversationObject?.id!.toString() ===
+                  targetConversationObject?.id!.toString()
                 ) {
-                  const conversationObject = currentConversations[index];
-                  if (
-                    conversationObject?.id!.toString() ===
-                    targetConversationObject?.id!.toString()
-                  ) {
-                    alreadyHasIt = true;
-                    break;
-                  }
+                  alreadyHasIt = true;
+                  break;
                 }
-                if (alreadyHasIt) {
-                  return currentConversations;
-                } else {
-                  const newConversationsList = transformConversations(
-                    currentConversations || [],
-                    targetConversation,
-                    true,
-                  );
+              }
+              if (alreadyHasIt) {
+                return currentConversations;
+              } else {
+                const newConversationsList = transformConversations(
+                  currentConversations || [],
+                  targetConversation,
+                  true,
+                );
 
-                  return newConversationsList;
-                }
-              });
-            },
-          );
+                return newConversationsList;
+              }
+            });
+          });
         }
       } catch (error) {
         console.log(error);
@@ -575,26 +578,34 @@ export default function useConversations(): UseConversations {
 
   useEffect(() => {
     function failedConversationEventListener(event: Event) {
-      const failedConversation: Conversation = (event as CustomEvent).detail.conversation;
+      const failedConversation: Conversation = (event as CustomEvent).detail
+        .conversation;
       setConversations((currentConversations) => {
         if (currentConversations) {
-          const newConversationList = currentConversations?.filter((conversation) => {
-            if (conversation.temporaryId !== failedConversation.temporaryId) {
-              return conversation
-            }
-
-          })
-          return newConversationList
+          const newConversationList = currentConversations?.filter(
+            (conversation) => {
+              if (conversation.temporaryId !== failedConversation.temporaryId) {
+                return conversation;
+              }
+            },
+          );
+          return newConversationList;
         } else {
-          return currentConversations
+          return currentConversations;
         }
-      })
+      });
     }
-    document.addEventListener(CustomActions.CONVERSATION_FAILED_TO_SEND, failedConversationEventListener)
+    document.addEventListener(
+      CustomActions.CONVERSATION_FAILED_TO_SEND,
+      failedConversationEventListener,
+    );
     return () => {
-      document.removeEventListener(CustomActions.CONVERSATION_FAILED_TO_SEND, failedConversationEventListener)
-    }
-  })
+      document.removeEventListener(
+        CustomActions.CONVERSATION_FAILED_TO_SEND,
+        failedConversationEventListener,
+      );
+    };
+  });
 
   useEffect(() => {
     document.addEventListener(
