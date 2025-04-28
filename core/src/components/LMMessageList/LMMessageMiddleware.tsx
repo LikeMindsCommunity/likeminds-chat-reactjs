@@ -37,7 +37,13 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
 
   function editMessageLocally(newMessage: Conversation) {
     if (localMessageCopy?.id === newMessage.id) {
-      setLocalMessageCopy(newMessage);
+      setLocalMessageCopy((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          answer: newMessage.answer,
+        };
+      });
     }
   }
 

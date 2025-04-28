@@ -89,7 +89,7 @@ export function useInput(): UseInputReturns {
       chatroom: { id: chatroomId },
     },
   } = useContext(LMChatroomContext);
-  const {openSnackbar} = useContext(LMLoaderContextProvider)
+  const { openSnackbar } = useContext(LMLoaderContextProvider);
   // state
   const [inputText, setInputText] = useState<string>("");
   const [tagSearchKey, setTagSearchKey] = useState<string | null>(null);
@@ -301,7 +301,6 @@ export function useInput(): UseInputReturns {
             detail: sendDmRequestCall?.data.conversation,
           }),
         );
-        
 
         const newChatroom = { ...chatroomDetails };
         if (newChatroom.chatroom && newChatroom.chatroom) {
@@ -422,7 +421,7 @@ export function useInput(): UseInputReturns {
           await sendDMRequest(messageText);
           document.dispatchEvent(
             new CustomEvent(CustomActions.NEW_DM_CHATROOM_CREATED, {
-              detail: {chatroomId: chatroomId},
+              detail: { chatroomId: chatroomId },
             }),
           );
           return;
@@ -522,16 +521,19 @@ export function useInput(): UseInputReturns {
         // sending the conversation
         const postConversationsCall: PostConversationResponse =
           await lmChatClient.postConversation(postConversationCallConfig);
-        if(!postConversationsCall.success){
-          document.dispatchEvent(new CustomEvent(CustomActions.CONVERSATION_FAILED_TO_SEND, {
-            detail: {
-              conversation: localConversation,
-            },
-          }))
-          if(openSnackbar){
-            openSnackbar(`${postConversationsCall.errorMessage.response.data.error_message}`)
+        if (!postConversationsCall.success) {
+          document.dispatchEvent(
+            new CustomEvent(CustomActions.CONVERSATION_FAILED_TO_SEND, {
+              detail: {
+                conversation: localConversation,
+              },
+            }),
+          );
+          if (openSnackbar) {
+            openSnackbar(
+              `${postConversationsCall.errorMessage.response.data.error_message}`,
+            );
           }
-          
         }
         setFocusOnInputField();
         removeOgTag();
@@ -539,7 +541,23 @@ export function useInput(): UseInputReturns {
         console.log(error);
       }
     },
-    [buildMediaAttachments, chatroomDetails, conversationToReply, conversationToedit, createLocalConversation, currentUser, documentsMediaList, gifMedia, imagesAndVideosMediaList, lmChatClient, ogTags, openSnackbar, sendDMRequest, setConversationToEdit, setConversationToReply],
+    [
+      buildMediaAttachments,
+      chatroomDetails,
+      conversationToReply,
+      conversationToedit,
+      createLocalConversation,
+      currentUser,
+      documentsMediaList,
+      gifMedia,
+      imagesAndVideosMediaList,
+      lmChatClient,
+      ogTags,
+      openSnackbar,
+      sendDMRequest,
+      setConversationToEdit,
+      setConversationToReply,
+    ],
   );
 
   // normal functions

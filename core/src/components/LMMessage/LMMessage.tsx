@@ -24,7 +24,7 @@ import { ChatRequestStates } from "../../enums/lm-chat-request-states";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import { useMessageOptions } from "../../hooks/useMessageOptions";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
-import { MemberRole } from "@likeminds.community/chat-js";
+import { Conversation, MemberRole } from "@likeminds.community/chat-js";
 import MediaRendererLocal from "../../shared/components/LMLocalMediaRenderer";
 import { LMConversationAttachments } from "../../enums/lm-conversation-attachments";
 import { LMMessageVoiceNote } from "./LMMessageVoiceNote";
@@ -115,6 +115,51 @@ const LMMessage = () => {
         </div>
       );
     }
+  }
+  function renderReplyContent(replyConversationObject: Conversation) {
+    const attachments = replyConversationObject?.attachments;
+
+    if (!attachments || attachments.length === 0)
+      return replyConversationObject.answer;
+
+    const firstAttachment = attachments[0];
+
+    if (firstAttachment.type === LMConversationAttachments.GIF) {
+      return "GIF";
+    }
+    if (firstAttachment.type === LMConversationAttachments.IMAGE) {
+      return "Photo";
+    }
+    if (firstAttachment.type === LMConversationAttachments.VIDEO) {
+      return "Video";
+    }
+    if (firstAttachment.type === LMConversationAttachments.AUDIO) {
+      return "Audio";
+    }
+    if (firstAttachment.type === LMConversationAttachments.PDF) {
+      return "PDF";
+    }
+    if (firstAttachment.type === LMConversationAttachments.VOICE_NOTE) {
+      return (
+        <span className="reply-on-voice-note">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="20"
+            viewBox="0 0 16 20"
+            fill="none"
+            style={{ marginLeft: "4px" }}
+          >
+            <path
+              d="M0.75 0.8125V19.1875L15.1875 10L0.75 0.8125Z"
+              fill="white"
+            />
+          </svg>
+        </span>
+      );
+    }
+
+    return replyConversationObject.answer;
   }
   if (message?.deletedBy || message?.deletedByUserId) {
     if (messageBubbles?.chatroomDeletedChatBubble) {
@@ -218,7 +263,7 @@ const LMMessage = () => {
                         {message.replyConversationObject.member.name}
                       </div>
                       <div className="lm-reply-wrapper-content-msg">
-                        {message.replyConversationObject.answer}
+                        {renderReplyContent(message.replyConversationObject)}
                       </div>
                     </div>
                   </div>
