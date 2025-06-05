@@ -22,7 +22,7 @@
     "@emotion/react": "11.11.4",
     "@emotion/styled": "11.11.5",
     "@giphy/react-components": "9.5.0",
-    "@likeminds.community/chat-js": "file:../../chat_data/likeminds.community-chat-js-1.16.0.tgz",
+    "@likeminds.community/chat-js": "^1.16.0",
     "@mui/icons-material": "5.15.20",
     "@mui/lab": "5.0.0-alpha.170",
     "@mui/material": "5.15.10",
@@ -43,7 +43,6 @@
     "react-hot-toast": "2.4.1",
     "react-infinite-scroll-component": "6.1.0",
     "react-responsive-carousel": "3.2.23",
-    "react-router-dom": "^7.6.2",
     "react-slick": "0.30.2",
     "react-tabs": "6.0.2",
     "slick-carousel": "1.8.1",
@@ -81,5 +80,18 @@
     "vite": "^5.0.8",
     "vite-plugin-dts": "^3.9.1",
     "vite-plugin-lib-inject-css": "^2.1.1"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.umd.cjs"
+    }
   }
 }
