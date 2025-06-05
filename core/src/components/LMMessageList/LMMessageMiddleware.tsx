@@ -42,6 +42,7 @@ const LMMessageMiddleware = memo((props: LMMessageMiddlewareProps) => {
         return {
           ...prev,
           answer: newMessage.answer,
+          isEdited: newMessage.isEdited,
         };
       });
     }

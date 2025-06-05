@@ -15,6 +15,8 @@ import LMChatClient, { Chatroom } from "@likeminds.community/chat-js";
 import { MemberRole } from "@likeminds.community/chat-js";
 import { ChatroomDetails } from "../types/api-responses/getChatroomResponse";
 import { ChatroomTypes } from "../enums/lm-chatroom-types";
+import { LMConversationAttachments } from "../enums/lm-conversation-attachments";
+import { Attachment } from "../types/models/Attachment";
 type StringTagType = {
   text: string;
   type: number;
@@ -734,6 +736,47 @@ export class Utils {
         : chatroomDetails.chatroom.member;
     return recieverUser;
   };
+
+  static renderAttachmentType(attachments: Attachment[] | undefined | null): ReactNode {
+    if (!attachments || attachments.length === 0) return null;
+
+    if (attachments.some(att => att.type === LMConversationAttachments.VOICE_NOTE)) {
+      return (
+        <span className="reply-on-voice-note">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="20"
+            viewBox="0 0 16 20"
+            fill="none"
+            style={{ marginLeft: "4px" }}
+          >
+            <path
+              d="M0.75 0.8125V19.1875L15.1875 10L0.75 0.8125Z"
+              fill="white"
+            />
+          </svg>
+        </span>
+      );
+    }
+    if (attachments.some(att => att.type === LMConversationAttachments.IMAGE)) {
+      return "Photo";
+    }
+    if (attachments.some(att => att.type === LMConversationAttachments.GIF)) {
+      return "GIF";
+    }
+    if (attachments.some(att => att.type === LMConversationAttachments.VIDEO)) {
+      return "Video";
+    }
+    if (attachments.some(att => att.type === LMConversationAttachments.AUDIO)) {
+      return "Audio";
+    }
+    if (attachments.some(att => att.type === LMConversationAttachments.PDF)) {
+      return "PDF";
+    }
+
+    return null;
+  }
 }
 export interface TagInfo {
   tagString: string;

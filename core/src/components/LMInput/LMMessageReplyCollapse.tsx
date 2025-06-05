@@ -5,6 +5,7 @@ import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderC
 import { Utils } from "../../utils/helpers";
 import { LMInputAttachments } from "../../enums/lm-input-attachment-options";
 import { LMConversationAttachments } from "../../enums/lm-conversation-attachments";
+
 function LMMessageReplyCollapse() {
   const { conversationToReply, setConversationToReply } =
     useContext(LMChatroomContext);
@@ -13,48 +14,6 @@ function LMMessageReplyCollapse() {
   }
 
   const { customComponents } = useContext(LMGlobalClientProviderContext);
-
-  const renderAttachmentType = () => {
-    const attachments = conversationToReply?.attachments;
-
-    if (!attachments || attachments.length === 0) return null;
-
-    if (
-      attachments.some(
-        (att) => att.type === LMConversationAttachments.VOICE_NOTE,
-      )
-    ) {
-      return (
-        <span className="reply-on-voice-note">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="20"
-            viewBox="0 0 16 20"
-            fill="none"
-            style={{ marginLeft: "4px" }}
-          >
-            <path
-              d="M0.75 0.8125V19.1875L15.1875 10L0.75 0.8125Z"
-              fill="white"
-            />
-          </svg>
-        </span>
-      );
-    }
-    if (attachments.some((att) => att.type === LMConversationAttachments.IMAGE))
-      return "Photo";
-    if (attachments.some((att) => att.type === LMConversationAttachments.GIF))
-      return "GIF";
-    if (attachments.some((att) => att.type === LMConversationAttachments.VIDEO))
-      return "Video";
-    if (attachments.some((att) => att.type === LMConversationAttachments.AUDIO))
-      return "Audio";
-    if (attachments.some((att) => att.type === LMConversationAttachments.PDF))
-      return "PDF";
-
-    return null;
-  };
 
   // Custom component
   if (customComponents?.input?.chatroomInputMessageReplyCollapse) {
@@ -67,7 +26,7 @@ function LMMessageReplyCollapse() {
         <div className="lm-input-message-username">
           {conversationToReply?.member.name}
         </div>
-        {renderAttachmentType()}
+        {Utils.renderAttachmentType(conversationToReply?.attachments)}
         {conversationToReply?.attachments &&
         conversationToReply?.attachments?.length > 0 ? null : (
           <div className="lm-input-message-text">
