@@ -737,6 +737,7 @@ export class Utils {
     return recieverUser;
   };
 
+  // Determines reply type based on attachment types.
   static renderAttachmentType(attachments: Attachment[] | undefined | null): ReactNode {
     if (!attachments || attachments.length === 0) return null;
 
