@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@likeminds.community/likeminds-chat-reactjs": "^1.4.0",
+    "@likeminds.community/likeminds-chat-reactjs": "^1.7.0",
     "css-loader": "^7.1.2",
     "file-loader": "^6.2.0",
     "react": "^18.3.1",
