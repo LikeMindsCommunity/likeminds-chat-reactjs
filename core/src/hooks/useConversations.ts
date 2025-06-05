@@ -178,6 +178,9 @@ export default function useConversations(): UseConversations {
         );
         if (updatedConversation) {
           const updatedConversationCopy = { ...updatedConversation };
+          if (conversation.replyConversationObject) {
+            updatedConversationCopy.replyConversationObject = conversation.replyConversationObject;
+          }
           newConversationRemovedMap.set(
             updatedConversationCopy.id,
             conversation,
