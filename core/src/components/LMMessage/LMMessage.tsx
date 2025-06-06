@@ -464,7 +464,7 @@ const LMMessage = () => {
                       {message.replyConversationObject.member.name}
                     </div>
                     <div className="lm-reply-wrapper-content-msg">
-                      {message.replyConversationObject.answer}
+                    {renderReplyContent(message.replyConversationObject)}
                     </div>
                   </div>
                 </div>
