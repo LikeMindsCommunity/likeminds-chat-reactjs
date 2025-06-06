@@ -459,15 +459,6 @@ export function useInput(): UseInputReturns {
             ? [...documentsMediaList]
             : [];
 
-        // Add GIF to attachmentsList if present
-        if (gifMedia) {
-          // Convert GIF URL to File object
-          const response = await fetch(gifMedia.images.fixed_height.url);
-          const blob = await response.blob();
-          const gifFile = new File([blob], `${gifMedia.title}.gif`, { type: 'image/gif' });
-          attachmentsList.push(gifFile);
-        }
-
         setImagesAndVideosMediaList([]);
         setDocumentMediaList([]);
         const temporaryId = Date.now().toString();
