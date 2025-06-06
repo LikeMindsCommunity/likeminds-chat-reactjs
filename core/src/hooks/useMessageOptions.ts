@@ -169,12 +169,25 @@ export function useMessageOptions(): UseMessageOptionsReturn {
     },
     [lmChatClient, message],
   );
+
   useEffect(() => {
-    addEventListener(CustomActions.EDIT_ACTION_COMPLETED, (newEvent) => {
+    const handleEditComplete = (newEvent: Event) => {
       const detail = (newEvent as CustomEvent).detail;
       editMessageLocally(detail as unknown as Conversation);
-    });
-  });
+    };
+
+    document.addEventListener(
+      CustomActions.EDIT_ACTION_COMPLETED,
+      handleEditComplete,
+    );
+
+    return () => {
+      document.removeEventListener(
+        CustomActions.EDIT_ACTION_COMPLETED,
+        handleEditComplete,
+      );
+    };
+  }, [editMessageLocally]);
   const messageDefaultActions = useMemo(() => {
     return {
       onReport,

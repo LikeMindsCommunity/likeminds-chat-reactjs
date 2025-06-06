@@ -24,7 +24,7 @@ import { ChatRequestStates } from "../../enums/lm-chat-request-states";
 import { ChatroomTypes } from "../../enums/lm-chatroom-types";
 import { useMessageOptions } from "../../hooks/useMessageOptions";
 import LMGlobalClientProviderContext from "../../context/LMGlobalClientProviderContext";
-import { MemberRole } from "@likeminds.community/chat-js";
+import { Conversation, MemberRole } from "@likeminds.community/chat-js";
 import MediaRendererLocal from "../../shared/components/LMLocalMediaRenderer";
 import { LMConversationAttachments } from "../../enums/lm-conversation-attachments";
 import { LMMessageVoiceNote } from "./LMMessageVoiceNote";
@@ -115,6 +115,13 @@ const LMMessage = () => {
         </div>
       );
     }
+  }
+  function renderReplyContent(replyConversationObject: Conversation) {
+    const attachments = replyConversationObject?.attachments;
+    if (!attachments || attachments.length === 0) {
+      return replyConversationObject.answer;
+    }
+    return Utils.renderAttachmentType(attachments) || replyConversationObject.answer;
   }
   if (message?.deletedBy || message?.deletedByUserId) {
     if (messageBubbles?.chatroomDeletedChatBubble) {
@@ -218,7 +225,7 @@ const LMMessage = () => {
                         {message.replyConversationObject.member.name}
                       </div>
                       <div className="lm-reply-wrapper-content-msg">
-                        {message.replyConversationObject.answer}
+                        {renderReplyContent(message.replyConversationObject)}
                       </div>
                     </div>
                   </div>
@@ -457,7 +464,7 @@ const LMMessage = () => {
                       {message.replyConversationObject.member.name}
                     </div>
                     <div className="lm-reply-wrapper-content-msg">
-                      {message.replyConversationObject.answer}
+                    {renderReplyContent(message.replyConversationObject)}
                     </div>
                   </div>
                 </div>
