@@ -9,7 +9,7 @@
     "build": "webpack"
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "dependencies": {
     "@likeminds.community/likeminds-chat-reactjs": "^1.7.0",
     "css-loader": "^7.1.2",
