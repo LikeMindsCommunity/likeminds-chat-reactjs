@@ -79,3 +79,13 @@ Security issues go to **natesh@likeminds.community**, not the issue tracker.
 ## License
 
 Apache 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+
+---
+
+## A note on the Jenkinsfile
+
+The `Jenkinsfile` in this repo is **retained for historical reference and is not operational**. The
+Jenkins server it ran on was decommissioned in August 2026.
+
+It performed a build-and-archive step that nothing downstream consumed. Publishing has always run
+through the GitHub Actions workflows in `.github/workflows`, which are unaffected.
